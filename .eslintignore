@@ -1,0 +1,8 @@
+dist
+*.d.ts
+node_modules
+babel.config.js
+graphqlEnums.js
+.eslintrc.js
+commitlint.config.js
+next.config.js
