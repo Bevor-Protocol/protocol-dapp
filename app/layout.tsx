@@ -1,6 +1,7 @@
 import "@/styles/globals.css";
 import { Metadata } from "next";
 import { Plus_Jakarta_Sans } from "next/font/google";
+import WalletProvider from "@/providers/wallet";
 
 const jakarta = Plus_Jakarta_Sans({ subsets: ["latin"], weight: ["500", "700", "800"] });
 
@@ -48,7 +49,9 @@ export const metadata: Metadata = {
 export default ({ children }: { children: React.ReactNode }): JSX.Element => {
   return (
     <html lang="en">
-      <body className={jakarta.className}>{children}</body>
+      <body className={jakarta.className}>
+        <WalletProvider>{children}</WalletProvider>
+      </body>
     </html>
   );
 };

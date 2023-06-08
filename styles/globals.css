@@ -23,7 +23,6 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
-
 .text-grad-light {
   background: var(--text-light);
   background-clip: text;
@@ -124,7 +123,6 @@ h3 {
     font-size: 3rem;
   }
 }
-
 
 @media screen and (max-width: 450px) {
   html {
