@@ -1,15 +1,12 @@
 "use client";
 
 import { WagmiConfig, createConfig, configureChains } from "wagmi";
-import { mainnet } from "wagmi/chains";
-import { alchemyProvider } from "wagmi/providers/alchemy";
+import { localhost } from "wagmi/chains";
+import { publicProvider } from "wagmi/providers/public";
 import { RainbowKitProvider, getDefaultWallets } from "@rainbow-me/rainbowkit";
 
 export default ({ children }: { children: React.ReactNode }): JSX.Element => {
-  const { chains, publicClient } = configureChains(
-    [mainnet],
-    [alchemyProvider({ apiKey: process.env.NEXT_PUBLIC_ALCHEMY_ID as string })],
-  );
+  const { chains, publicClient } = configureChains([localhost], [publicProvider()]);
 
   const { connectors } = getDefaultWallets({
     appName: "Bevor Protocol",
