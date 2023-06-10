@@ -1,5 +1,6 @@
 :root {
   --bg: radial-gradient(111.14% 117.16% at 16.61% 0%, #001062 0%, #000626 100%);
+  --card-bg: rgb(13, 17, 28);
   --text-light: linear-gradient(180deg, #F4F5F7 6.58%, #C8D0E7 81.58%);
   --text-dark: linear-gradient(180deg, #001062 0%, #000626 100%);
   --btn-dark: #00041B;
@@ -39,8 +40,9 @@ footer {
 }
 
 main {
-  height: 100vh;
   min-height: 100vh;
+  display: flex;
+  flex-direction: column;
 }
 
 .text-grad-light {
@@ -145,10 +147,10 @@ h3 {
 }
 
 @media screen and (max-width: 450px) {
+  :root {
+    --padding-screen: 0 20px;
+  }
   html {
     font-size: 14px;
-  }
-  main {
-    padding: 0 20px;
   }
 }

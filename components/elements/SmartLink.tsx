@@ -1,27 +1,24 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import Link from "next/link";
 
-export default ({
-  children,
-  external,
-  href,
-  className,
-  ...props
-}: {
+type PropsI = {
   children: React.ReactNode;
-  external: boolean;
-  href: string;
-  className: string;
-}): JSX.Element => {
+  [key: string]: any;
+};
+
+export default ({ children, ...props }: PropsI): JSX.Element => {
+  const { href, external, ...rest } = props;
+
   if (external) {
     return (
-      <a {...props} href={href} className={className} target="_blank" referrerPolicy="no-referrer">
+      <a {...rest} target="_blank" referrerPolicy="no-referrer" href={href}>
         {children}
       </a>
     );
   }
 
   return (
-    <Link {...props} href={href} className={className}>
+    <Link {...props} href={href}>
       {children}
     </Link>
   );

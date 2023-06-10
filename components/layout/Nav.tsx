@@ -23,6 +23,11 @@ const navItems = [
     external: false,
   },
   {
+    url: "/dao",
+    text: "DAO",
+    external: false,
+  },
+  {
     url: "https://docs.bevor.io",
     text: "docs",
     external: true,

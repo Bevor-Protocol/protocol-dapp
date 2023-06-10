@@ -22,6 +22,9 @@ export default (): JSX.Element => {
             <Discord height="1.5rem" width="1.5rem" fill="white" />
           </a>
         </div>
+        <div className={styles.copy}>
+          <p>Bevor &copy; {`${new Date().getFullYear()}`}</p>
+        </div>
       </div>
     </footer>
   );
