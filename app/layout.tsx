@@ -1,4 +1,4 @@
-import "@/styles/globals.css";
+import "./globals.css";
 import "@rainbow-me/rainbowkit/styles.css";
 import { Metadata } from "next";
 import { Plus_Jakarta_Sans } from "next/font/google";
