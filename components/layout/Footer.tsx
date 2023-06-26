@@ -1,5 +1,5 @@
 import { Twitter, Discord, Gitbook, Github } from "@/assets";
-import styles from "@/styles/layout.module.css";
+import styles from "./styles.module.css";
 
 export default (): JSX.Element => {
   return (

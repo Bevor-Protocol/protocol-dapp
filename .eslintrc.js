@@ -68,7 +68,8 @@ module.exports = {
     {
       files: ["assets/*.tsx"],
       rules: {
-        "max-len": [OFF]
+        "max-len": [OFF],
+        "@typescript-eslint/no-explicit-any": [OFF],
       },
     },
   ],

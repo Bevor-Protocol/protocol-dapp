@@ -85,25 +85,3 @@
 .footer_items a:hover {
   opacity: 0.75;
 }
-
-/* Common Layout */
-.section {
-  display: flex;
-  flex-direction: column;
-}
-
-.section.center_v {
-  justify-content: center;
-}
-
-.section.center_h {
-  align-items: center;
-}
-
-.section.fill_height {
-  min-height: 100vh;
-}
-
-.section.pad_common {
-  padding: var(--padding-screen);
-}

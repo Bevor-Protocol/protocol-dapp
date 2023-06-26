@@ -18,7 +18,7 @@ export default ({ children, ...props }: PropsI): JSX.Element => {
   }
 
   return (
-    <Link {...props} href={href}>
+    <Link {...rest} href={href}>
       {children}
     </Link>
   );

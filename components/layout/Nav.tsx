@@ -1,10 +1,12 @@
+"use client";
+
 import Image from "next/image";
 import { ConnectButton } from "@rainbow-me/rainbowkit";
 import classNames from "classnames";
 
 import { Arrow } from "@/assets";
 import SmartLink from "@/components/elements/SmartLink";
-import styles from "@/styles/layout.module.css";
+import styles from "./styles.module.css";
 
 const navItems = [
   {
@@ -55,7 +57,14 @@ export default ({ curPath }: { curPath: string }): JSX.Element => {
               </div>
             </SmartLink>
           ))}
-          <ConnectButton label="Connect" accountStatus="address" />
+          <ConnectButton
+            label="connect"
+            showBalance={false}
+            accountStatus={{
+              smallScreen: "avatar",
+              largeScreen: "full",
+            }}
+          />
         </div>
       </div>
     </nav>
