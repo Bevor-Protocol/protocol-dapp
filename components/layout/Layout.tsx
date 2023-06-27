@@ -1,3 +1,5 @@
+import styles from "./styles.module.css";
+
 export default ({ children }: { children: React.ReactNode }): JSX.Element => {
-  return <div>{children}</div>;
+  return <div className={styles.layout}>{children}</div>;
 };

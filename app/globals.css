@@ -20,27 +20,12 @@ body {
   color: #FFFFFF;
   background: var(--bg);
   font-size: 18px;
-  overflow-x: hidden;
+  contain: paint;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
-nav {
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-}
-
-footer {
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  right: 0;
-}
-
 main {
-  min-height: 100vh;
   display: flex;
   flex-direction: column;
 }
