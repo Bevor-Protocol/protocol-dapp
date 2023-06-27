@@ -40,9 +40,9 @@ export default ({ curPath }: { curPath: string }): JSX.Element => {
   return (
     <nav>
       <div className={styles.nav_div}>
-        <div className={styles.nav_logo}>
+        <SmartLink external={false} href="/" className={styles.nav_logo}>
           <Image src="/name.png" alt="brand name" fill={true} sizes="any" />
-        </div>
+        </SmartLink>
         <div className={styles.nav_items}>
           {navItems.map((item, ind) => (
             <SmartLink
