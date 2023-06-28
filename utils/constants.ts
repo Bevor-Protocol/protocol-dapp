@@ -125,3 +125,54 @@ export const leaderboard = [
     available: true,
   },
 ];
+
+export const audits = [
+  {
+    auditee: "Protocol 1",
+    auditors: ["user 1", "user 2"],
+    money: 10_000,
+    description:
+      "this is an example description, submitted by the auditee of what their protocol is.",
+    status: "open",
+  },
+  {
+    auditee: "Protocol 2",
+    auditors: [],
+    money: 20_000,
+    description:
+      "this is an example description, submitted by the auditee of what their protocol is.",
+    status: "soon",
+  },
+  {
+    auditee: "Protocol 3",
+    auditors: ["user 2", "user 3"],
+    money: 10_000,
+    description:
+      "this is an example description, submitted by the auditee of what their protocol is.",
+    status: "open",
+  },
+  {
+    auditee: "Protocol 4",
+    auditors: ["user 1", "user 2"],
+    money: 100,
+    description:
+      "this is an example description, submitted by the auditee of what their protocol is.",
+    status: "closed",
+  },
+  {
+    auditee: "Protocol 5",
+    auditors: [],
+    money: 50_000,
+    description:
+      "this is an example description, submitted by the auditee of what their protocol is.",
+    status: "soon",
+  },
+  {
+    auditee: "Protocol 6",
+    auditors: ["user 1", "user 2", "user 3"],
+    money: 2_000,
+    description:
+      "this is an example description, submitted by the auditee of what their protocol is.",
+    status: "closed",
+  },
+];

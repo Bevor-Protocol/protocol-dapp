@@ -1,8 +1,9 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { leaderboard } from "@/utils/constants";
 import { Arrow } from "@/assets";
+import Jazzicon from "react-jazzicon";
 import classNames from "classnames";
 
 import styles from "./styles.module.css";
@@ -21,6 +22,9 @@ export default (): JSX.Element => {
   const [keyOrder, setKeyOrder] = useState("name");
   const [decOrder, setDecOrder] = useState(true);
   const [arrOrdered, setArrOrdered] = useState<ArrI[]>([...leaderboard]);
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => setMounted(true), []);
 
   const handleOrder = (key: string): void => {
     setKeyOrder(key);
@@ -40,7 +44,7 @@ export default (): JSX.Element => {
         <ul className={styles.grid}>
           {headers.map((header, ind) => (
             <li key={ind} onClick={(): void => handleOrder(header)}>
-              {header}
+              <span>{header}</span>
               {header === keyOrder && (
                 <Arrow
                   fill="white"
@@ -56,7 +60,19 @@ export default (): JSX.Element => {
         {arrOrdered.map((arr, ind) => (
           <ul key={ind} className={styles.grid}>
             {headers.map((header, ind2) => (
-              <li key={ind2}>{arr[header as keyof ArrI].toLocaleString()}</li>
+              <li key={ind2}>
+                {header === "name" && (
+                  <div className={styles.icon}>
+                    {mounted && (
+                      <Jazzicon
+                        seed={Math.round((ind / arrOrdered.length) * 10000000)}
+                        paperStyles={{ minWidth: "30px", minHeight: "30px" }}
+                      />
+                    )}
+                  </div>
+                )}
+                <span>{arr[header as keyof ArrI].toLocaleString()}</span>
+              </li>
             ))}
           </ul>
         ))}
