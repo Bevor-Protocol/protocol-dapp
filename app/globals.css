@@ -1,8 +1,10 @@
 :root {
   --bg: radial-gradient(111.14% 117.16% at 16.61% 0%, #001062 0%, #000626 100%);
+  --card-bg: rgb(13, 17, 28);
   --text-light: linear-gradient(180deg, #F4F5F7 6.58%, #C8D0E7 81.58%);
   --text-dark: linear-gradient(180deg, #001062 0%, #000626 100%);
   --btn-dark: #00041B;
+  --padding-screen: 0 max(50px, calc((100vw - 1440px + 50px)/2));
 }
 
 *,
@@ -18,11 +20,15 @@ body {
   color: #FFFFFF;
   background: var(--bg);
   font-size: 18px;
-  overflow-x: hidden;
+  contain: paint;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
+main {
+  display: flex;
+  flex-direction: column;
+}
 
 .text-grad-light {
   background: var(--text-light);
@@ -69,7 +75,7 @@ button {
   border: none;
   font-weight: 700;
   transition: transform 0.25s ease-in-out;
-  font-size: 0.89rem;
+  font-size: 0.89rem !important;
   line-height: 1.3rem;
 }
 
@@ -96,6 +102,34 @@ h3 {
   font-size: 1.125rem;
   line-height: 1.15rem;
   font-weight: 800;
+}
+
+/* Common Layout */
+.content {
+  display: flex;
+  flex-direction: column;
+}
+
+.content.center-v {
+  justify-content: center;
+}
+
+.content.center-h {
+  align-items: center;
+}
+
+.content.fill-height {
+  min-height: 100vh;
+}
+
+.content.pad-common {
+  padding: var(--padding-screen);
+}
+
+dialog::backdrop {
+  background: rbga(0, 0, 0, 0.7);
+  backdrop-filter: blur(2px);
+  pointer-events: none;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -125,12 +159,11 @@ h3 {
   }
 }
 
-
 @media screen and (max-width: 450px) {
+  :root {
+    --padding-screen: 0 20px;
+  }
   html {
     font-size: 14px;
-  }
-  main {
-    padding: 0 20px;
   }
 }
