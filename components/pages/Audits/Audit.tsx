@@ -2,9 +2,8 @@
 
 import { useState, useRef } from "react";
 import Jazzicon from "react-jazzicon";
-import classNames from "classnames";
 
-import styles from "./styles.module.css";
+import * as Styled from "@/styles/pages.styled";
 
 type ArrI = {
   auditee: string;
@@ -37,11 +36,11 @@ export default ({ arr, mounted }: { arr: ArrI[]; mounted: boolean }): JSX.Elemen
   };
 
   return (
-    <div className={styles.audit_wrapper}>
+    <Styled.AuditGroup>
       {arr.map((audit, ind) => (
-        <div key={ind} className={styles.audit}>
-          <div className={styles.content}>
-            <div className={styles.icon}>
+        <Styled.Audit key={ind}>
+          <Styled.AuditContent>
+            <Styled.Icon $size="large">
               {mounted && (
                 <Jazzicon
                   diameter={75}
@@ -49,21 +48,21 @@ export default ({ arr, mounted }: { arr: ArrI[]; mounted: boolean }): JSX.Elemen
                   paperStyles={{ minWidth: "75px", minHeight: "75px" }}
                 />
               )}
-            </div>
-            <div className={styles.text}>
+            </Styled.Icon>
+            <div className="text">
               <h4>{audit.auditee}</h4>
               <p>{audit.description}</p>
             </div>
             <div>${audit.money.toLocaleString()}</div>
-          </div>
-          <div className={styles.footer}>
+          </Styled.AuditContent>
+          <Styled.AuditFooter $disabled={audit.status !== "closed"}>
             <div>{audit.status}</div>
-            <div className={styles.auditors}>
+            <Styled.AuditAuditors>
               <span>auditors:</span>
               {audit.status !== "soon" ? (
                 audit.auditors.map((auditor, ind2) => (
-                  <div
-                    className={styles.icon_small}
+                  <Styled.Icon
+                    $size="small"
                     data-auditor={auditor}
                     key={ind2}
                     onMouseOver={handleToolTip}
@@ -80,21 +79,17 @@ export default ({ arr, mounted }: { arr: ArrI[]; mounted: boolean }): JSX.Elemen
                         }}
                       />
                     )}
-                  </div>
+                  </Styled.Icon>
                 ))
               ) : (
                 <span>TBD</span>
               )}
-            </div>
-            <div className={styles.tooltip} ref={tooltip}>
-              {cont}
-            </div>
-            <div className={classNames({ [styles.disabled]: audit.status !== "closed" })}>
-              View Competition
-            </div>
-          </div>
-        </div>
+            </Styled.AuditAuditors>
+            <Styled.AuditTooltip ref={tooltip}>{cont}</Styled.AuditTooltip>
+            <div className="competition">View Competition</div>
+          </Styled.AuditFooter>
+        </Styled.Audit>
       ))}
-    </div>
+    </Styled.AuditGroup>
   );
 };

@@ -4,9 +4,8 @@ import { useState, useEffect } from "react";
 import { leaderboard } from "@/utils/constants";
 import { Arrow } from "@/assets";
 import Jazzicon from "react-jazzicon";
-import classNames from "classnames";
 
-import styles from "./styles.module.css";
+import * as Styled from "@/styles/pages.styled";
 
 type ArrI = {
   name: string;
@@ -39,9 +38,9 @@ export default (): JSX.Element => {
   };
 
   return (
-    <div className={styles.grid_holder}>
-      <div className={styles.header}>
-        <ul className={styles.grid}>
+    <Styled.Leaderboard>
+      <Styled.LeadHeader>
+        <Styled.LeadGrid>
           {headers.map((header, ind) => (
             <li key={ind} onClick={(): void => handleOrder(header)}>
               <span>{header}</span>
@@ -49,34 +48,37 @@ export default (): JSX.Element => {
                 <Arrow
                   fill="white"
                   height="0.6rem"
-                  className={classNames(styles.arrow, { [styles.decrease]: decOrder })}
+                  style={{
+                    transform: decOrder ? "rotate(135deg)" : "rotate(-45deg)",
+                    marginLeft: "5px",
+                  }}
                 />
               )}
             </li>
           ))}
-        </ul>
-      </div>
-      <div className={styles.data}>
+        </Styled.LeadGrid>
+      </Styled.LeadHeader>
+      <Styled.LeadData>
         {arrOrdered.map((arr, ind) => (
-          <ul key={ind} className={styles.grid}>
+          <Styled.LeadGrid key={ind}>
             {headers.map((header, ind2) => (
               <li key={ind2}>
                 {header === "name" && (
-                  <div className={styles.icon}>
+                  <Styled.Icon $size="medium">
                     {mounted && (
                       <Jazzicon
                         seed={Math.round((ind / arrOrdered.length) * 10000000)}
                         paperStyles={{ minWidth: "30px", minHeight: "30px" }}
                       />
                     )}
-                  </div>
+                  </Styled.Icon>
                 )}
                 <span>{arr[header as keyof ArrI].toLocaleString()}</span>
               </li>
             ))}
-          </ul>
+          </Styled.LeadGrid>
         ))}
-      </div>
-    </div>
+      </Styled.LeadData>
+    </Styled.Leaderboard>
   );
 };

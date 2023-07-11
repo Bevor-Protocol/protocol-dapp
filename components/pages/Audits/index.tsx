@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import { audits } from "@/utils/constants";
 
-import styles from "./styles.module.css";
+import * as Styled from "@/styles/pages.styled";
 import Audit from "./Audit";
 
 type ArrI = {
@@ -29,19 +29,19 @@ export default (): JSX.Element => {
   }, []);
 
   return (
-    <div className={styles.wrapper}>
-      <div className={styles.audit_section}>
+    <Styled.AuditMain>
+      <Styled.AuditSection>
         <h2>Open Audits</h2>
         <Audit arr={arrActive} mounted={mounted} />
-      </div>
-      <div className={styles.audit_section}>
+      </Styled.AuditSection>
+      <Styled.AuditSection>
         <h2>Pending Audits</h2>
         <Audit arr={arrSoon} mounted={mounted} />
-      </div>
-      <div className={styles.audit_section}>
+      </Styled.AuditSection>
+      <Styled.AuditSection>
         <h2>Closed Audits</h2>
         <Audit arr={arrClosed} mounted={mounted} />
-      </div>
-    </div>
+      </Styled.AuditSection>
+    </Styled.AuditMain>
   );
 };

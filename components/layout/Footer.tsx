@@ -1,31 +1,32 @@
 import { Twitter, Discord, Gitbook, Github } from "@/assets";
-import styles from "./styles.module.css";
+import * as Styled from "@/styles/layout.styled";
+import SmartLink from "@/components/elements/SmartLink";
 
 export default (): JSX.Element => {
   return (
     <footer>
-      <div className={styles.footer_div}>
+      <Styled.Footer>
         <div>
           <p>de-risk. incentivize. audit. decentralize.</p>
         </div>
-        <div className={styles.footer_items}>
-          <a href="https://twitter.com/BevorProtocol" referrerPolicy="no-referrer" target="_blank">
+        <Styled.FooterItems>
+          <SmartLink href="https://twitter.com/BevorProtocol" external={true}>
             <Twitter height="1.5rem" width="1.5rem" fill="white" />
-          </a>
-          <a href="https://docs.bevor.io" referrerPolicy="no-referrer" target="_blank">
+          </SmartLink>
+          <SmartLink href="https://docs.bevor.io" external={true}>
             <Gitbook height="1.5rem" width="1.5rem" fill="white" />
-          </a>
-          <a href="https://github.com/Bevor-Protocol" referrerPolicy="no-referrer" target="_blank">
+          </SmartLink>
+          <SmartLink href="https://github.com/Bevor-Protocol" external={true}>
             <Github height="1.5rem" width="1.5rem" fill="white" />
-          </a>
-          <a href="https://discord.gg/MDfNgatN" referrerPolicy="no-referrer" target="_blank">
+          </SmartLink>
+          <SmartLink href="https://discord.gg/MDfNgatN" external={true}>
             <Discord height="1.5rem" width="1.5rem" fill="white" />
-          </a>
-        </div>
-        <div className={styles.copy}>
+          </SmartLink>
+        </Styled.FooterItems>
+        <div className="copy">
           <p>Bevor &copy; {`${new Date().getFullYear()}`}</p>
         </div>
-      </div>
+      </Styled.Footer>
     </footer>
   );
 };

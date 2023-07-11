@@ -1,5 +1,5 @@
-import styles from "./styles.module.css";
+import * as Styled from "@/styles/layout.styled";
 
 export default ({ children }: { children: React.ReactNode }): JSX.Element => {
-  return <div className={styles.layout}>{children}</div>;
+  return <Styled.Layout>{children}</Styled.Layout>;
 };

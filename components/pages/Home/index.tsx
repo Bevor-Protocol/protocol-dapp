@@ -1,12 +1,12 @@
-import styles from "./styles.module.css";
-import Button from "@/components/elements/Button";
 import { Arrow } from "@/assets";
 import { stats } from "@/utils/constants";
+import * as Styled from "@/styles/pages.styled";
+import * as Common from "@/styles/elements.styled";
 
 export default (): JSX.Element => {
   return (
-    <div className={styles.home_holder}>
-      <div className={styles.home_text}>
+    <Styled.Home>
+      <Styled.HomeText>
         <h1 className="text-grad-light">
           Ensuring <br /> quality audits
         </h1>
@@ -14,24 +14,24 @@ export default (): JSX.Element => {
           On-chain solution for establishing terms and carrying out smart contract audits. Register
           as an auditee, auditor, or DAO participant.
         </p>
-        <div className={styles.button_wrapper}>
-          <Button theme="light">
+        <Styled.HomeButtons>
+          <Common.Button $light={true}>
             <div>
               <span className="text-grad-dark">Get Audited</span>
               <Arrow height="0.75rem" width="0.75rem" />
             </div>
-          </Button>
-          <Button theme="light">
+          </Common.Button>
+          <Common.Button $light={true}>
             <div>
               <span className="text-grad-dark">Conduct Audit</span>
               <Arrow height="0.75rem" width="0.75rem" />
             </div>
-          </Button>
-        </div>
-      </div>
-      <div className={styles.stats_grid}>
+          </Common.Button>
+        </Styled.HomeButtons>
+      </Styled.HomeText>
+      <Styled.HomeStats>
         {stats.map((stat, ind) => (
-          <div className={styles.stat} key={ind}>
+          <div key={ind}>
             <div>
               <h3 className="text-grad-light">
                 {stat.symbol}
@@ -41,7 +41,7 @@ export default (): JSX.Element => {
             </div>
           </div>
         ))}
-      </div>
-    </div>
+      </Styled.HomeStats>
+    </Styled.Home>
   );
 };

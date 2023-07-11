@@ -2,34 +2,30 @@
 
 import Image from "next/image";
 import { ConnectButton } from "@rainbow-me/rainbowkit";
-import classNames from "classnames";
 import { usePathname } from "next/navigation";
 
 import { Arrow } from "@/assets";
 import SmartLink from "@/components/elements/SmartLink";
-import styles from "./styles.module.css";
+import * as Styled from "@/styles/layout.styled";
 import { navItems } from "@/utils/constants";
 
 export default (): JSX.Element => {
   const pathname = usePathname();
   return (
     <nav>
-      <div className={styles.nav_div}>
-        <SmartLink external={false} href="/" className={styles.nav_logo}>
-          <Image src="/name.png" alt="brand name" fill={true} sizes="any" />
+      <Styled.Nav>
+        <SmartLink external={false} href="/">
+          <Styled.Logo>
+            <Image src="/name.png" alt="brand name" fill={true} sizes="any" />
+          </Styled.Logo>
         </SmartLink>
-        <div className={styles.nav_items}>
+        <Styled.NavItems>
           {navItems.map((item, ind) => (
-            <SmartLink
-              external={item.external}
-              className={classNames(styles.nav_item, { [styles.active]: pathname === item.url })}
-              href={item.url}
-              key={ind}
-            >
-              <div>
+            <SmartLink external={item.external} href={item.url} key={ind}>
+              <Styled.NavItem $active={pathname === item.url}>
                 {item.text}
                 {item.external && <Arrow fill="white" height={10} width={10} />}
-              </div>
+              </Styled.NavItem>
             </SmartLink>
           ))}
           <ConnectButton
@@ -40,8 +36,8 @@ export default (): JSX.Element => {
               largeScreen: "full",
             }}
           />
-        </div>
-      </div>
+        </Styled.NavItems>
+      </Styled.Nav>
     </nav>
   );
 };
