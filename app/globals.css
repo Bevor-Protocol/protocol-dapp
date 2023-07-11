@@ -20,7 +20,6 @@ body {
   color: #FFFFFF;
   background: var(--bg);
   font-size: 18px;
-  contain: paint;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
