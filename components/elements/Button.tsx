@@ -1,5 +1,4 @@
-import classNames from "classnames";
-import styles from "./styles.module.css";
+import * as Styled from "./styled";
 
 type Props = {
   children: React.ReactNode;
@@ -11,14 +10,8 @@ export default (props: Props): JSX.Element => {
   const { children, theme, disabled } = props;
 
   return (
-    <button
-      className={classNames(styles.btn, {
-        [styles.light]: theme === "light",
-        [styles.dark]: theme === "dark",
-      })}
-      disabled={disabled}
-    >
+    <Styled.Button $light={theme === "light"} disabled={disabled}>
       {children}
-    </button>
+    </Styled.Button>
   );
 };

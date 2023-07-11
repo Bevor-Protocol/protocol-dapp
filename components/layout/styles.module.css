@@ -37,10 +37,7 @@
   transition: opacity 0.25s ease-in-out;
 }
 
-.nav_div.active {
-  opacity: 0.5;
-}
-
+.nav_item.active,
 .nav_item:hover {
   opacity: 0.5;
 }

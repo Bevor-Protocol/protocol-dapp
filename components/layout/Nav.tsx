@@ -3,40 +3,15 @@
 import Image from "next/image";
 import { ConnectButton } from "@rainbow-me/rainbowkit";
 import classNames from "classnames";
+import { usePathname } from "next/navigation";
 
 import { Arrow } from "@/assets";
 import SmartLink from "@/components/elements/SmartLink";
 import styles from "./styles.module.css";
+import { navItems } from "@/utils/constants";
 
-const navItems = [
-  {
-    url: "/leaderboard",
-    text: "leaderboard",
-    external: false,
-  },
-  {
-    url: "/audits",
-    text: "audits",
-    external: false,
-  },
-  {
-    url: "/messaging",
-    text: "messaging",
-    external: false,
-  },
-  {
-    url: "/dao",
-    text: "DAO",
-    external: false,
-  },
-  {
-    url: "https://docs.bevor.io",
-    text: "docs",
-    external: true,
-  },
-];
-
-export default ({ curPath }: { curPath: string }): JSX.Element => {
+export default (): JSX.Element => {
+  const pathname = usePathname();
   return (
     <nav>
       <div className={styles.nav_div}>
@@ -47,7 +22,7 @@ export default ({ curPath }: { curPath: string }): JSX.Element => {
           {navItems.map((item, ind) => (
             <SmartLink
               external={item.external}
-              className={classNames(styles.nav_item, { [styles.active]: curPath === item.text })}
+              className={classNames(styles.nav_item, { [styles.active]: pathname === item.url })}
               href={item.url}
               key={ind}
             >

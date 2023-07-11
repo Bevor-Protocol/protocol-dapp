@@ -1,3 +1,31 @@
+export const navItems = [
+  {
+    url: "/leaderboard",
+    text: "leaderboard",
+    external: false,
+  },
+  {
+    url: "/audits",
+    text: "audits",
+    external: false,
+  },
+  {
+    url: "/messaging",
+    text: "messaging",
+    external: false,
+  },
+  {
+    url: "/dao",
+    text: "DAO",
+    external: false,
+  },
+  {
+    url: "https://docs.bevor.io",
+    text: "docs",
+    external: true,
+  },
+];
+
 export const stats = [
   {
     text: "audits conducted",
