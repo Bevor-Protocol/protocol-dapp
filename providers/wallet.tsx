@@ -1,7 +1,7 @@
 "use client";
 
 import { WagmiConfig, createConfig, configureChains } from "wagmi";
-import { localhost } from "wagmi/chains";
+import { localhost, goerli } from "wagmi/chains";
 import { publicProvider } from "wagmi/providers/public";
 import {
   RainbowKitProvider,
@@ -18,7 +18,7 @@ import {
 } from "@rainbow-me/rainbowkit/wallets";
 
 export default ({ children }: { children: React.ReactNode }): JSX.Element => {
-  const { chains, publicClient } = configureChains([localhost], [publicProvider()]);
+  const { chains, publicClient } = configureChains([localhost, goerli], [publicProvider()]);
 
   const appName = "Bevor Protocol";
   const projectId = "protocol-dapp";

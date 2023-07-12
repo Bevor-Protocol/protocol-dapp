@@ -1,6 +1,6 @@
 "use client";
 
-import { styled } from "styled-components";
+import { styled, css } from "styled-components";
 
 // Home
 
@@ -158,7 +158,11 @@ export const Icon = styled.div<{ $size: string }>`
     props.$size === "large" ? "75px" : props.$size === "medium" ? "30px" : "15px"};
   margin-right: 0px;
   border-radius: 100%;
-  ${(props): any => props.$size !== "small" && "background: white"};
+  ${(props): any =>
+    props.$size !== "small" &&
+    css`
+      background: white;
+    `};
   transition: all 0.25s ease-in-out;
 `;
 

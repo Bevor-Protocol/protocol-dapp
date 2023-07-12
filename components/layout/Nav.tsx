@@ -31,10 +31,8 @@ export default (): JSX.Element => {
           <ConnectButton
             label="connect"
             showBalance={false}
-            accountStatus={{
-              smallScreen: "avatar",
-              largeScreen: "full",
-            }}
+            chainStatus="icon"
+            accountStatus="address"
           />
         </Styled.NavItems>
       </Styled.Nav>
