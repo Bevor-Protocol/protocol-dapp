@@ -6,9 +6,9 @@ import WalletProvider from "@/providers/wallet";
 import StyledComponentRegistry from "@/providers/ssr_styled";
 import ThemeProvider from "@/providers/theme";
 
-import Footer from "@/components/layout/Footer";
-import Layout from "@/components/layout/Layout";
-import Nav from "@/components/layout/Nav";
+import Footer from "@/components/Footer";
+import { Layout } from "@/components/Common";
+import Nav from "@/components/Nav";
 
 const jakarta = Plus_Jakarta_Sans({ subsets: ["latin"], weight: ["500", "700", "800"] });
 
@@ -62,7 +62,7 @@ export default ({ children }: { children: React.ReactNode }): JSX.Element => {
             <ThemeProvider>
               <Layout>
                 <Nav />
-                {children}
+                <main>{children}</main>
                 <Footer />
               </Layout>
             </ThemeProvider>

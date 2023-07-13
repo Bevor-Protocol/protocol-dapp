@@ -9,11 +9,11 @@ export const opacify = (amount: number, hexColor: string): string => {
     );
   }
 
-  if (amount < 0 || amount > 100) {
+  if (amount < 0 || amount > 1) {
     throw new Error("opacify: provided amount should be between 0 and 100");
   }
 
-  const opacityHex = Math.round((amount / 100) * 255).toString(16);
+  const opacityHex = Math.round(amount * 255).toString(16);
   const opacifySuffix = opacityHex.length < 2 ? `0${opacityHex}` : opacityHex;
 
   return `${hexColor.slice(0, 7)}${opacifySuffix}`;
@@ -37,5 +37,5 @@ export const mainTheme = {
   textGradDark: `linear-gradient(180deg, ${colors.boldBlue} 0%, ${colors.darkBlue} 100%)`,
   textGradLight: `linear-gradient(180deg, ${colors.offWhite} 6.58%, ${colors.darkWhite} 81.58%)`,
   textPrimary: colors.white,
-  whiteHover: opacify(50, colors.white),
+  whiteHover: opacify(0.5, colors.white),
 };

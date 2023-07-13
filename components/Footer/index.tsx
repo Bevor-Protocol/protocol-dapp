@@ -1,15 +1,50 @@
+"use client";
+
+import styled from "styled-components";
+
 import { Twitter, Discord, Gitbook, Github } from "@/assets";
-import * as Styled from "@/styles/layout.styled";
-import SmartLink from "@/components/elements/SmartLink";
+
+import SmartLink from "@/components/Link";
+import { Column, Row } from "@/components/Box";
+import { CommonPad } from "@/components/Common";
+
+const Footer = styled(Column)`
+  ${CommonPad}
+  padding-top: 30px;
+  padding-bottom: 30px;
+  text-align: center;
+  position: relative;
+  & p {
+    font-size: 0.85em;
+    line-height: 1em;
+    opacity: ${({ theme }): number => theme.opacity.disable};
+  }
+
+  & .copy {
+    font-size: 0.8em;
+    line-height: 0.85em;
+  }
+`;
+
+const FooterItems = styled(Row)`
+  & > a {
+    opacity: ${({ theme }): number => theme.opacity.disable};
+    transition: opacity ${({ theme }): string => theme.transitions.speed.md}
+      ${({ theme }): string => theme.transitions.ease};
+  }
+  & > a:hover {
+    opacity: ${({ theme }): number => theme.opacity.hover};
+  }
+`;
 
 export default (): JSX.Element => {
   return (
     <footer>
-      <Styled.Footer>
+      <Footer $gap="rem1">
         <div>
           <p>de-risk. incentivize. audit. decentralize.</p>
         </div>
-        <Styled.FooterItems>
+        <FooterItems $gap="rem2">
           <SmartLink href="https://twitter.com/BevorProtocol" external={true}>
             <Twitter height="1.5rem" width="1.5rem" fill="white" />
           </SmartLink>
@@ -22,11 +57,11 @@ export default (): JSX.Element => {
           <SmartLink href="https://discord.gg/MDfNgatN" external={true}>
             <Discord height="1.5rem" width="1.5rem" fill="white" />
           </SmartLink>
-        </Styled.FooterItems>
+        </FooterItems>
         <div className="copy">
           <p>Bevor &copy; {`${new Date().getFullYear()}`}</p>
         </div>
-      </Styled.Footer>
+      </Footer>
     </footer>
   );
 };

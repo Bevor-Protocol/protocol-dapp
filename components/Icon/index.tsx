@@ -30,3 +30,9 @@ export const IconLarge = styled.div`
   background: white;
   ${Icon}
 `;
+
+export const Logo = styled.div<{ $height: string }>`
+  height: ${({ $height }): string => $height};
+  aspect-ratio: 2135 / 401;
+  position: relative;
+`;

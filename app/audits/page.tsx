@@ -4,10 +4,8 @@ import { Section } from "@/components/Section";
 
 export default (): JSX.Element => {
   return (
-    <main>
-      <Section $fillHeight $padCommon $centerH $centerV>
-        <Audits />
-      </Section>
-    </main>
+    <Section $fillHeight $padCommon $centerH $centerV>
+      <Audits />
+    </Section>
   );
 };
