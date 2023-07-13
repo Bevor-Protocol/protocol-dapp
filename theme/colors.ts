@@ -33,7 +33,7 @@ export const mainTheme = {
   bg: `radial-gradient(111.14% 117.16% at 16.61% 0%, ${colors.boldBlue} 0%, ${colors.darkBlue} 100%)`,
   cardBg: colors.lightBlack,
   textGradDark: `linear-gradient(180deg, ${colors.boldBlue} 0%, ${colors.darkBlue} 100%)`,
-  textGradLight: `linear-gradient(180deg, ${colors.offWhite}6.58%, ${colors.darkWhite} 81.58%)`,
+  textGradLight: `linear-gradient(180deg, ${colors.offWhite} 6.58%, ${colors.darkWhite} 81.58%)`,
   textPrimary: colors.white,
   whiteHover: opacify(50, colors.white),
 };

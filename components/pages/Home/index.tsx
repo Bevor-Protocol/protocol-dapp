@@ -1,43 +1,49 @@
 import { Arrow } from "@/assets";
 import { stats } from "@/utils/constants";
 import * as Styled from "@/styles/pages.styled";
-import * as Common from "@/styles/elements.styled";
+
+import { H1, H3, P, Span } from "@/components/Text";
+import { ButtonLight } from "@/components/Button";
+
+// const Span = styled.span`
+//   ${TextGradDark}
+// `;
 
 export default (): JSX.Element => {
   return (
     <Styled.Home>
       <Styled.HomeText>
-        <h1 className="text-grad-light">
+        <H1 $gradient>
           Ensuring <br /> quality audits
-        </h1>
-        <p className="text-grad-light">
+        </H1>
+        <P $gradient>
           On-chain solution for establishing terms and carrying out smart contract audits. Register
           as an auditee, auditor, or DAO participant.
-        </p>
+        </P>
         <Styled.HomeButtons>
-          <Common.Button $light={true}>
+          <ButtonLight>
             <div>
-              <span className="text-grad-dark">Get Audited</span>
+              <Span>Get Audited</Span>
               <Arrow height="0.75rem" width="0.75rem" />
             </div>
-          </Common.Button>
-          <Common.Button $light={true}>
+          </ButtonLight>
+          <ButtonLight>
             <div>
-              <span className="text-grad-dark">Conduct Audit</span>
+              <Span>Conduct Audit</Span>
               <Arrow height="0.75rem" width="0.75rem" />
             </div>
-          </Common.Button>
+          </ButtonLight>
         </Styled.HomeButtons>
       </Styled.HomeText>
       <Styled.HomeStats>
         {stats.map((stat, ind) => (
           <div key={ind}>
             <div>
-              <h3 className="text-grad-light">
+              <H3 $gradient>
                 {stat.symbol}
                 {stat.stat.toLocaleString()}
-              </h3>
-              <p className="text-grad-light">{stat.text}</p>
+              </H3>
+              <P $gradient>{stat.text}</P>
             </div>
           </div>
         ))}
