@@ -31,3 +31,9 @@ export const ButtonLight = styled(Button)`
 export const ButtonDark = styled(Button)`
   background: ${({ theme }): string => theme.textGradDark};
 `;
+
+export const ButtonContent = styled.div`
+  display: flex;
+  flex-direction: row;
+  gap: 5px;
+`;

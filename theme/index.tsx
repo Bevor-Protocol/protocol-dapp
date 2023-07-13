@@ -1,4 +1,4 @@
-import { createGlobalStyle } from "styled-components";
+import { CSSProp, createGlobalStyle, css } from "styled-components";
 import { mainTheme } from "./colors";
 
 const BREAKPOINTS = {
@@ -53,6 +53,14 @@ export const getTheme = (): any => {
   };
 };
 
+export const getBreakpoint = (size: string, innerCSS: CSSProp): CSSProp => {
+  return css`
+    @media screen and (max-width: ${BREAKPOINTS[size as keyof typeof BREAKPOINTS]}px) {
+      ${innerCSS}
+    }
+  `;
+};
+
 export const ThemedGlobalStyle = createGlobalStyle`
   *,
   ::before,
@@ -92,21 +100,30 @@ export const ThemedGlobalStyle = createGlobalStyle`
     }
   }
 
-  @media screen and (max-width: 1074px) {
-    html {
-      font-size: ${({ theme }): string => theme.fontsize.lg};
-    }
-  }
-  
-  @media screen and (max-width: 850px) {
-    html {
-      font-size: ${({ theme }): string => theme.fontsize.md};
-    }
-  }
-  
-  @media screen and (max-width: 450px) {
-    html {
-      font-size: ${({ theme }): string => theme.fontsize.sm};
-    }
-  }
+  ${getBreakpoint(
+    "xxl",
+    css`
+      html {
+        font-size: ${({ theme }): string => theme.fontsize.lg};
+      }
+    `,
+  )}
+
+  ${getBreakpoint(
+    "xl",
+    css`
+      html {
+        font-size: ${({ theme }): string => theme.fontsize.md};
+      }
+    `,
+  )}
+
+  ${getBreakpoint(
+    "xs",
+    css`
+      html {
+        font-size: ${({ theme }): string => theme.fontsize.sm};
+      }
+    `,
+  )}
 `;
