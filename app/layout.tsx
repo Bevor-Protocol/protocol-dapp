@@ -1,9 +1,10 @@
-import "./globals.css";
+// import "./globals.css";
 import "@rainbow-me/rainbowkit/styles.css";
 import { Metadata } from "next";
 import { Plus_Jakarta_Sans } from "next/font/google";
 import WalletProvider from "@/providers/wallet";
-import StyledComponentRegistry from "@/providers/styledcomponent";
+import StyledComponentRegistry from "@/providers/ssr_styled";
+import ThemeProvider from "@/providers/theme";
 
 import Footer from "@/components/layout/Footer";
 import Layout from "@/components/layout/Layout";
@@ -58,11 +59,13 @@ export default ({ children }: { children: React.ReactNode }): JSX.Element => {
       <body className={jakarta.className}>
         <WalletProvider>
           <StyledComponentRegistry>
-            <Layout>
-              <Nav />
-              {children}
-              <Footer />
-            </Layout>
+            <ThemeProvider>
+              <Layout>
+                <Nav />
+                {children}
+                <Footer />
+              </Layout>
+            </ThemeProvider>
           </StyledComponentRegistry>
         </WalletProvider>
       </body>
