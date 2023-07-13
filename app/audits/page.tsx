@@ -1,11 +1,13 @@
 import Audits from "@/components/pages/Audits";
 
+import { Section } from "@/components/Section";
+
 export default (): JSX.Element => {
   return (
     <main>
-      <div className="content fill-height pad-common center-v center-h">
+      <Section $fillHeight $padCommon $centerH $centerV>
         <Audits />
-      </div>
+      </Section>
     </main>
   );
 };

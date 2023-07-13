@@ -1,10 +1,22 @@
 "use client";
 
+import styled from "styled-components";
+
 import { useState, useEffect } from "react";
 import { audits } from "@/utils/constants";
+import { Column } from "@/components/Box";
+import { H2 } from "@/components/Text";
 
-import * as Styled from "@/styles/pages.styled";
 import Audit from "./Audit";
+
+const AuditSection = styled.div`
+  width: 100%;
+  margin: 2rem;
+
+  & ${H2} {
+    margin-bottom: 1rem;
+  }
+`;
 
 type ArrI = {
   auditee: string;
@@ -29,19 +41,19 @@ export default (): JSX.Element => {
   }, []);
 
   return (
-    <Styled.AuditMain>
-      <Styled.AuditSection>
-        <h2>Open Audits</h2>
+    <Column $gap="rem2">
+      <AuditSection>
+        <H2>Open Audits</H2>
         <Audit arr={arrActive} mounted={mounted} />
-      </Styled.AuditSection>
-      <Styled.AuditSection>
-        <h2>Pending Audits</h2>
+      </AuditSection>
+      <AuditSection>
+        <H2>Pending Audits</H2>
         <Audit arr={arrSoon} mounted={mounted} />
-      </Styled.AuditSection>
-      <Styled.AuditSection>
-        <h2>Closed Audits</h2>
+      </AuditSection>
+      <AuditSection>
+        <H2>Closed Audits</H2>
         <Audit arr={arrClosed} mounted={mounted} />
-      </Styled.AuditSection>
-    </Styled.AuditMain>
+      </AuditSection>
+    </Column>
   );
 };

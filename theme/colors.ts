@@ -24,6 +24,7 @@ export const colors = {
   darkBlue: "#000626",
   offWhite: "#F4F5F7",
   darkWhite: "#C8D0E7",
+  grey: "#565266",
   lightBlack: "#0D111C",
   white: "#FFFFFF",
   darkShadow: "rgba(0, 0, 0, 0.25)",
@@ -32,6 +33,7 @@ export const colors = {
 export const mainTheme = {
   bg: `radial-gradient(111.14% 117.16% at 16.61% 0%, ${colors.boldBlue} 0%, ${colors.darkBlue} 100%)`,
   cardBg: colors.lightBlack,
+  greyBorder: colors.grey,
   textGradDark: `linear-gradient(180deg, ${colors.boldBlue} 0%, ${colors.darkBlue} 100%)`,
   textGradLight: `linear-gradient(180deg, ${colors.offWhite} 6.58%, ${colors.darkWhite} 81.58%)`,
   textPrimary: colors.white,

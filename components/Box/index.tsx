@@ -17,7 +17,6 @@ export const Row = styled.div<{
 }>`
   display: flex;
   flex-direction: row;
-  align-items: center;
   gap: ${({ theme, $gap }): string => $gap && theme.gaps[$gap]};
   flex-wrap: ${({ $wrap }): string => ($wrap ? "wrap" : "nowrap")};
   align-items: ${({ $align }): string => $align ?? "center"};
@@ -32,7 +31,6 @@ export const Column = styled.div<{
 }>`
   display: flex;
   flex-direction: column;
-  align-items: center;
   gap: ${({ theme, $gap }): string => $gap && theme.gaps[$gap]};
   flex-wrap: ${({ $wrap }): string => ($wrap ? "wrap" : "nowrap")};
   align-items: ${({ $align }): string => $align ?? "center"};

@@ -37,6 +37,10 @@ const GAPS = {
   md: "12px",
   lg: "24px",
   xl: "32px",
+  rem05: "0.5rem",
+  rem1: "1rem",
+  rem2: "2rem",
+  rem3: "3rem",
 };
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any

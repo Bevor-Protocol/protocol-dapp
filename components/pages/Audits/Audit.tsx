@@ -2,8 +2,62 @@
 
 import { useState, useRef } from "react";
 import Jazzicon from "react-jazzicon";
+import styled from "styled-components";
 
-import * as Styled from "@/styles/pages.styled";
+import { H3, P, Span } from "@/components/Text";
+import { Column, Row } from "@/components/Box";
+import { IconLarge, IconSmall } from "@/components/Icon";
+import { ToolTip } from "@/components/Tooltip";
+
+const Audit = styled(Column)`
+  background: ${({ theme }): string => theme.cardBg};
+  border-radius: 10px;
+  border: 2px solid ${({ theme }): string => theme.greyBorder};
+  width: 100%;
+`;
+
+const AuditContent = styled(Row)`
+  padding: 1rem;
+  width: 100%;
+
+  & :last-child {
+    margin-left: auto;
+  }
+
+  & .text {
+    max-width: 40%;
+
+    & ${H3} {
+      margin-bottom: 0.5rem;
+    }
+  }
+`;
+
+const AuditFooter = styled(Row)<{ $disabled: boolean }>`
+  border-top: 1px solid ${({ theme }): string => theme.greyBorder};
+  height: 40px;
+  padding: 0 1rem;
+  width: 100%;
+
+  & :last-child {
+    margin-left: auto;
+  }
+
+  & .competition {
+    opacity: ${({ $disabled }): number => ($disabled ? 0.5 : 1)};
+  }
+`;
+
+const AuditAuditors = styled(Row)`
+  & span {
+    margin-right: 10px;
+  }
+
+  &:hover ${IconSmall} {
+    width: 25px;
+    margin-right: 5px;
+  }
+`;
 
 type ArrI = {
   auditee: string;
@@ -36,11 +90,11 @@ export default ({ arr, mounted }: { arr: ArrI[]; mounted: boolean }): JSX.Elemen
   };
 
   return (
-    <Styled.AuditGroup>
+    <Column $gap="md">
       {arr.map((audit, ind) => (
-        <Styled.Audit key={ind}>
-          <Styled.AuditContent>
-            <Styled.Icon $size="large">
+        <Audit key={ind}>
+          <AuditContent $align="flex-start" $justify="flex-start" $gap="rem2">
+            <IconLarge>
               {mounted && (
                 <Jazzicon
                   diameter={75}
@@ -48,21 +102,20 @@ export default ({ arr, mounted }: { arr: ArrI[]; mounted: boolean }): JSX.Elemen
                   paperStyles={{ minWidth: "75px", minHeight: "75px" }}
                 />
               )}
-            </Styled.Icon>
+            </IconLarge>
             <div className="text">
-              <h4>{audit.auditee}</h4>
-              <p>{audit.description}</p>
+              <H3>{audit.auditee}</H3>
+              <P>{audit.description}</P>
             </div>
             <div>${audit.money.toLocaleString()}</div>
-          </Styled.AuditContent>
-          <Styled.AuditFooter $disabled={audit.status !== "closed"}>
-            <div>{audit.status}</div>
-            <Styled.AuditAuditors>
-              <span>auditors:</span>
+          </AuditContent>
+          <AuditFooter $disabled={audit.status !== "closed"} $justify="flex-start" $gap="rem2">
+            <Span>{audit.status}</Span>
+            <AuditAuditors>
+              <Span>auditors:</Span>
               {audit.status !== "soon" ? (
                 audit.auditors.map((auditor, ind2) => (
-                  <Styled.Icon
-                    $size="small"
+                  <IconSmall
                     data-auditor={auditor}
                     key={ind2}
                     onMouseOver={handleToolTip}
@@ -79,17 +132,17 @@ export default ({ arr, mounted }: { arr: ArrI[]; mounted: boolean }): JSX.Elemen
                         }}
                       />
                     )}
-                  </Styled.Icon>
+                  </IconSmall>
                 ))
               ) : (
-                <span>TBD</span>
+                <Span>TBD</Span>
               )}
-            </Styled.AuditAuditors>
-            <Styled.AuditTooltip ref={tooltip}>{cont}</Styled.AuditTooltip>
-            <div className="competition">View Competition</div>
-          </Styled.AuditFooter>
-        </Styled.Audit>
+            </AuditAuditors>
+            <ToolTip ref={tooltip}>{cont}</ToolTip>
+            <Span className="competition">View Competition</Span>
+          </AuditFooter>
+        </Audit>
       ))}
-    </Styled.AuditGroup>
+    </Column>
   );
 };
