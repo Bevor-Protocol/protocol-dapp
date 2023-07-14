@@ -1,11 +1,11 @@
 import Leaderboard from "@/components/pages/Leaderboard";
 
+import { Section } from "@/components/Common";
+
 export default (): JSX.Element => {
   return (
-    <main>
-      <div className="content fill-height pad-common center-v center-h">
-        <Leaderboard />
-      </div>
-    </main>
+    <Section $fillHeight $padCommon $centerH $centerV>
+      <Leaderboard />
+    </Section>
   );
 };

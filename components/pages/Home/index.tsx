@@ -1,47 +1,72 @@
-import styles from "./styles.module.css";
-import Button from "@/components/elements/Button";
-import { Arrow } from "@/assets";
-import { stats } from "@/utils/constants";
+"use client";
 
-export default (): JSX.Element => {
-  return (
-    <div className={styles.home_holder}>
-      <div className={styles.home_text}>
-        <h1 className="text-grad-light">
-          Ensuring <br /> quality audits
-        </h1>
-        <p className="text-grad-light">
-          On-chain solution for establishing terms and carrying out smart contract audits. Register
-          as an auditee, auditor, or DAO participant.
-        </p>
-        <div className={styles.button_wrapper}>
-          <Button theme="light">
-            <div>
-              <span className="text-grad-dark">Get Audited</span>
-              <Arrow height="0.75rem" width="0.75rem" />
-            </div>
-          </Button>
-          <Button theme="light">
-            <div>
-              <span className="text-grad-dark">Conduct Audit</span>
-              <Arrow height="0.75rem" width="0.75rem" />
-            </div>
-          </Button>
-        </div>
-      </div>
-      <div className={styles.stats_grid}>
-        {stats.map((stat, ind) => (
-          <div className={styles.stat} key={ind}>
-            <div>
-              <h3 className="text-grad-light">
-                {stat.symbol}
-                {stat.stat.toLocaleString()}
-              </h3>
-              <p className="text-grad-light">{stat.text}</p>
-            </div>
-          </div>
-        ))}
-      </div>
-    </div>
-  );
-};
+import styled, { css } from "styled-components";
+
+import { getBreakpoint } from "@/theme";
+import { Grid, Column, Row } from "@/components/Box";
+
+export const Home = styled(Grid)`
+  grid-template-columns: repeat(2, 1fr);
+  width: 100%;
+
+  ${getBreakpoint(
+    "md",
+    css`
+      grid-template-columns: 1fr;
+    `,
+  )}
+`;
+
+export const HomeText = styled(Column)`
+  text-align: left;
+
+  ${getBreakpoint(
+    "md",
+    css`
+      text-align: center;
+      align-items: center;
+    `,
+  )}
+`;
+
+export const HomeStats = styled(Grid)`
+  grid-template-columns: repeat(2, 1fr);
+  grid-template-rows: repeat(2, 1fr);
+
+  ${getBreakpoint(
+    "xxl",
+    css`
+      grid-template-columns: 1fr;
+      grid-template-rows: repeat(4, 1fr);
+    `,
+  )}
+  ${getBreakpoint(
+    "md",
+    css`
+      grid-template-columns: repeat(2, 1fr);
+      grid-template-rows: repeat(2, 1fr);
+    `,
+  )}
+  ${getBreakpoint(
+    "sm",
+    css`
+      grid-template-columns: 1fr;
+      grid-template-rows: repeat(4, 1fr);
+    `,
+  )}
+`;
+
+export const HomeStat = styled(Row)`
+  background-color: ${({ theme }): string => theme.cardBg};
+  padding: 1.5rem;
+  border-radius: 10px;
+  text-align: center;
+  justify-content: center;
+  filter: brightness(1);
+  transition: filter ${({ theme }): string => theme.transitions.speed.md}
+    ${({ theme }): string => theme.transitions.ease};
+
+  &:hover {
+    filter: brightness(1.4);
+  }
+`;

@@ -1,0 +1,48 @@
+"use client";
+
+import styled, { css, CSSProp } from "styled-components";
+import { getBreakpoint } from "@/theme";
+
+export const CommonPad = css`
+  padding: ${({ theme }): string => theme.mainPadLarge};
+
+  ${getBreakpoint(
+    "xs",
+    css`
+      padding: ${({ theme }): string => theme.mainPadSmall};
+    `,
+  )}
+`;
+
+export const Layout = styled.div`
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+`;
+
+export const Section = styled.div<{
+  $centerV?: boolean;
+  $centerH?: boolean;
+  $fillHeight?: boolean;
+  $padCommon?: boolean;
+}>`
+  display: flex;
+  flex-direction: column;
+  ${({ $centerV }): CSSProp =>
+    $centerV &&
+    css`
+      justify-content: center;
+    `}
+  ${({ $centerH }): CSSProp =>
+    $centerH &&
+    css`
+      align-items: center;
+    `}
+  ${({ $fillHeight }): CSSProp =>
+    $fillHeight &&
+    css`
+      min-height: 100vh;
+    `}
+  ${({ $padCommon }): CSSProp => $padCommon && CommonPad}
+`;

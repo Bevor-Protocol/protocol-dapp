@@ -1,11 +1,54 @@
-import Audits from "@/components/pages/Audits";
+import Audit, { AuditSection } from "@/components/pages/Audits";
+import { audits } from "@/utils/constants";
 
-export default (): JSX.Element => {
+import { Section } from "@/components/Common";
+import { Column } from "@/components/Box";
+import { H2 } from "@/components/Text";
+
+type ArrI = {
+  auditee: string;
+  auditors: string[];
+  money: number;
+  description: string;
+  status: string;
+};
+
+type PropsI = {
+  open: ArrI[];
+  soon: ArrI[];
+  closed: ArrI[];
+};
+
+const getData = (): PropsI => {
+  const open = audits.filter((audit) => audit.status === "open");
+  const soon = audits.filter((audit) => audit.status === "soon");
+  const closed = audits.filter((audit) => audit.status === "closed");
+
+  return {
+    open,
+    soon,
+    closed,
+  };
+};
+
+export default async (): Promise<JSX.Element> => {
+  const { open, soon, closed } = await getData();
   return (
-    <main>
-      <div className="content fill-height pad-common center-v center-h">
-        <Audits />
-      </div>
-    </main>
+    <Section $fillHeight $padCommon $centerH $centerV>
+      <Column $gap="rem2">
+        <AuditSection>
+          <H2>Open Audits</H2>
+          <Audit arr={open} />
+        </AuditSection>
+        <AuditSection>
+          <H2>Pending Audits</H2>
+          <Audit arr={soon} />
+        </AuditSection>
+        <AuditSection>
+          <H2>Closed Audits</H2>
+          <Audit arr={closed} />
+        </AuditSection>
+      </Column>
+    </Section>
   );
 };
