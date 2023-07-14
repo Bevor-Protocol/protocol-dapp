@@ -1,6 +1,6 @@
 import Leaderboard from "@/components/pages/Leaderboard";
 
-import { Section } from "@/components/Section";
+import { Section } from "@/components/Common";
 
 export default (): JSX.Element => {
   return (
