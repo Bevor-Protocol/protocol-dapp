@@ -19,7 +19,7 @@ type PropsI = {
   closed: ArrI[];
 };
 
-export const getData = (): PropsI => {
+const getData = (): PropsI => {
   const open = audits.filter((audit) => audit.status === "open");
   const soon = audits.filter((audit) => audit.status === "soon");
   const closed = audits.filter((audit) => audit.status === "closed");
