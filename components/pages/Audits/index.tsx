@@ -1,13 +1,13 @@
 "use client";
 
 import { useState, useRef, useEffect } from "react";
-import Jazzicon from "react-jazzicon";
 import styled from "styled-components";
 
 import { H2, H3, P, Span } from "@/components/Text";
 import { Column, Row } from "@/components/Box";
 import { IconLarge, IconSmall } from "@/components/Icon";
 import { ToolTip } from "@/components/Tooltip";
+import { JazziconClient } from "@/components/Icon";
 
 export const AuditSection = styled.div`
   width: 100%;
@@ -110,13 +110,12 @@ export default ({ arr }: { arr: ArrI[] }): JSX.Element => {
         <Audit key={ind}>
           <AuditContent $align="flex-start" $justify="flex-start" $gap="rem2">
             <IconLarge>
-              {mounted && (
-                <Jazzicon
-                  diameter={75}
-                  seed={Math.round((ind / arr.length) * 10000000)}
-                  paperStyles={{ minWidth: "75px", minHeight: "75px" }}
-                />
-              )}
+              <JazziconClient
+                mounted={mounted}
+                randVal={ind / arr.length}
+                paperStyles={{ minWidth: "75px", minHeight: "75px" }}
+                diameter={75}
+              />
             </IconLarge>
             <div className="text">
               <H3>{audit.auditee}</H3>
@@ -136,17 +135,16 @@ export default ({ arr }: { arr: ArrI[] }): JSX.Element => {
                     onMouseOver={handleToolTip}
                     onMouseOut={clearToolTip}
                   >
-                    {mounted && (
-                      <Jazzicon
-                        seed={Math.round((ind2 / arr.length) * 10000000)}
-                        paperStyles={{
-                          minWidth: "25px",
-                          minHeight: "25px",
-                          maxWidth: "25px",
-                          maxHeight: "25px",
-                        }}
-                      />
-                    )}
+                    <JazziconClient
+                      mounted={mounted}
+                      randVal={ind2 / arr.length}
+                      paperStyles={{
+                        minWidth: "25px",
+                        minHeight: "25px",
+                        maxWidth: "25px",
+                        maxHeight: "25px",
+                      }}
+                    />
                   </IconSmall>
                 ))
               ) : (

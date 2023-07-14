@@ -1,6 +1,7 @@
 "use client";
 
 import styled, { css } from "styled-components";
+import Jazzicon from "react-jazzicon";
 
 const Icon = css`
   margin-right: 0px;
@@ -36,3 +37,20 @@ export const Logo = styled.div<{ $height: string }>`
   aspect-ratio: 2135 / 401;
   position: relative;
 `;
+
+export const JazziconClient = ({
+  mounted,
+  randVal,
+  ...rest
+}: {
+  mounted: boolean;
+  randVal: number;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  [key: string]: any;
+}): JSX.Element => {
+  if (!mounted) {
+    return <></>;
+  }
+
+  return <Jazzicon seed={Math.round(randVal * 10000000)} {...rest} />;
+};
