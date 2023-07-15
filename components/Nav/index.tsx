@@ -59,17 +59,17 @@ export default (): JSX.Element => {
                     <Row $gap="md">
                       <SmartLink href="https://twitter.com/BevorProtocol" external={true}>
                         <NavItemBg $pad="7px" $radius="100%">
-                          <Twitter height="0.8rem" width="0.8rem" fill="white" />
+                          <Twitter height="0.9rem" width="0.9rem" fill="white" />
                         </NavItemBg>
                       </SmartLink>
                       <SmartLink href="https://github.com/Bevor-Protocol" external={true}>
                         <NavItemBg $pad="7px" $radius="100%">
-                          <Github height="0.8rem" width="0.8rem" fill="white" />
+                          <Github height="0.9rem" width="0.9rem" fill="white" />
                         </NavItemBg>
                       </SmartLink>
                       <SmartLink href="https://discord.gg/MDfNgatN" external={true}>
                         <NavItemBg $pad="7px" $radius="100%">
-                          <Discord height="0.8rem" width="0.8rem" fill="white" />
+                          <Discord height="0.9rem" width="0.9rem" fill="white" />
                         </NavItemBg>
                       </SmartLink>
                     </Row>
