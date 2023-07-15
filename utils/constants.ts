@@ -16,11 +16,11 @@ export const navItems = {
   dropdown: [
     {
       url: "/dao",
-      text: "DAO",
+      text: "Governance",
     },
     {
       url: "https://docs.bevor.io",
-      text: "Docs",
+      text: "Documentation",
     },
   ],
 };

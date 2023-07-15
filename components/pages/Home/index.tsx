@@ -61,7 +61,6 @@ export const HomeStat = styled(Row)`
   padding: 1.5rem;
   border-radius: 10px;
   text-align: center;
-  justify-content: center;
   filter: brightness(1);
   transition: filter ${({ theme }): string => theme.transitions.speed.md}
     ${({ theme }): string => theme.transitions.ease};

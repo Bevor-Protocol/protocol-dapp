@@ -17,7 +17,8 @@ export const NavItem = styled(Row)<{ $active: boolean; $pad?: string }>`
   padding-bottom: ${({ $pad }): string => $pad ?? "0px"};
   opacity: ${({ $active, theme }): number =>
     $active ? theme.opacity.disable : theme.opacity.enabled};
-  transition: opacity 0.25s ease-in-out;
+  transition: opacity ${({ theme }): string => theme.transitions.speed.md}
+    ${({ theme }): string => theme.transitions.ease};
 
   &:hover,
   &:focus {
@@ -25,37 +26,25 @@ export const NavItem = styled(Row)<{ $active: boolean; $pad?: string }>`
   }
 `;
 
+export const NavItemBg = styled(Row)<{ $pad?: string; $radius?: string }>`
+  padding: ${({ $pad }): string => $pad ?? "0px"};
+  width: 100%;
+  background-color: ${({ theme }): string => theme.cardBg};
+  border-radius: ${({ $radius }): string => $radius ?? "10px"};
+  filter: brightness(1);
+  transition: filter ${({ theme }): string => theme.transitions.speed.md}
+    ${({ theme }): string => theme.transitions.ease};
+
+  & * {
+    opacity: ${({ theme }): number => theme.opacity.disable};
+  }
+
+  &:hover {
+    filter: brightness(1.4);
+  }
+`;
+
 export const MenuHolder = styled(Row)`
   position: relative;
   cursor: pointer;
-  width: 30px;
-  height: 35px;
-`;
-
-export const MenuDots = styled.div`
-  height: 5px;
-  width: 5px;
-  background-color: currentColor;
-  border-radius: 100%;
-  position: relative;
-
-  &:before {
-    content: "";
-    height: 5px;
-    width: 5px;
-    background-color: currentColor;
-    position: absolute;
-    left: 10px;
-    border-radius: 100%;
-  }
-
-  &:after {
-    content: "";
-    height: 5px;
-    width: 5px;
-    background-color: currentColor;
-    position: absolute;
-    right: 10px;
-    border-radius: 100%;
-  }
 `;
