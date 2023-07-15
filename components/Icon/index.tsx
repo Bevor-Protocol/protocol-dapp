@@ -32,9 +32,15 @@ export const IconLarge = styled.div`
   ${Icon}
 `;
 
-export const Logo = styled.div<{ $height: string }>`
+export const LogoName = styled.div<{ $height: string }>`
   height: ${({ $height }): string => $height};
   aspect-ratio: 2135 / 401;
+  position: relative;
+`;
+
+export const LogoIcon = styled.div<{ $height: string }>`
+  height: ${({ $height }): string => $height};
+  aspect-ratio: 1091 / 1685;
   position: relative;
 `;
 

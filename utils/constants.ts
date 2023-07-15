@@ -1,30 +1,29 @@
-export const navItems = [
-  {
-    url: "/leaderboard",
-    text: "leaderboard",
-    external: false,
-  },
-  {
-    url: "/audits",
-    text: "audits",
-    external: false,
-  },
-  {
-    url: "/messaging",
-    text: "messaging",
-    external: false,
-  },
-  {
-    url: "/dao",
-    text: "DAO",
-    external: false,
-  },
-  {
-    url: "https://docs.bevor.io",
-    text: "docs",
-    external: true,
-  },
-];
+export const navItems = {
+  main: [
+    {
+      url: "/leaderboard",
+      text: "leaderboard",
+    },
+    {
+      url: "/audits",
+      text: "audits",
+    },
+    {
+      url: "/messaging",
+      text: "messaging",
+    },
+  ],
+  dropdown: [
+    {
+      url: "/dao",
+      text: "DAO",
+    },
+    {
+      url: "https://docs.bevor.io",
+      text: "Docs",
+    },
+  ],
+};
 
 export const stats = [
   {

@@ -14,3 +14,16 @@ export const ToolTip = styled.div`
   transform: translateX(-25%);
   border: 1px solid ${({ theme }): string => theme.greyBorder};
 `;
+
+export const DropDown = styled.div<{ $active: boolean }>`
+  position: absolute;
+  top: 100%;
+  right: 0;
+  display: ${({ $active }): string => ($active ? "block" : "none")};
+  padding: 15px;
+  background: ${({ theme }): string => theme.cardBg};
+  border: 1px solid ${({ theme }): string => theme.greyBorder};
+  border-radius: 10px;
+  z-index: 1000;
+  cursor: default;
+`;
