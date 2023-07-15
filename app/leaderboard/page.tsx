@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useReducer } from "react";
+import { useReducer } from "react";
 
 import { IconMedium } from "@/components/Icon";
 
@@ -10,14 +10,8 @@ import { Section } from "@/components/Common";
 import { Arrow } from "@/assets";
 import { JazziconClient } from "@/components/Icon";
 import { sortLeaderboardReducer } from "@/utils/reducers";
-
-type ArrI = {
-  name: string;
-  money: number;
-  active: number;
-  completed: number;
-  available: boolean;
-};
+import { LeaderboardI } from "@/utils/types";
+import { useIsMounted } from "@/hooks/useIsMounted";
 
 const headers = ["name", "money", "active", "completed", "available"];
 
@@ -28,9 +22,8 @@ export default (): JSX.Element => {
     arr: [...leaderboard],
   };
 
-  const [mounted, setMounted] = useState(false);
+  const mounted = useIsMounted();
   const [state, dispatch] = useReducer(sortLeaderboardReducer, initState);
-  useEffect(() => setMounted(true), []);
 
   return (
     <Section $fillHeight $padCommon $centerH $centerV>
@@ -68,7 +61,7 @@ export default (): JSX.Element => {
                       />
                     </IconMedium>
                   )}
-                  <span>{item[header as keyof ArrI].toLocaleString()}</span>
+                  <span>{item[header as keyof LeaderboardI].toLocaleString()}</span>
                 </li>
               ))}
             </LeadGrid>

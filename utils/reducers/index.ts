@@ -1,16 +1,4 @@
-type ArrI = {
-  name: string;
-  money: number;
-  active: number;
-  completed: number;
-  available: boolean;
-};
-
-type SortLeaderI = {
-  key: string;
-  decrease: boolean;
-  arr: ArrI[];
-};
+import { SortLeaderI, LeaderboardI } from "../types";
 
 export const sortLeaderboardReducer = (
   state: SortLeaderI,
@@ -20,8 +8,8 @@ export const sortLeaderboardReducer = (
   const { decrease, arr } = state;
 
   const newArr = arr.sort((a, b) => {
-    const aVal = a[key as keyof ArrI];
-    const bVal = b[key as keyof ArrI];
+    const aVal = a[key as keyof LeaderboardI];
+    const bVal = b[key as keyof LeaderboardI];
     return aVal > bVal ? 2 * Number(decrease) - 1 : bVal > aVal ? 2 * Number(!decrease) - 1 : 0;
   });
   return { key, decrease: !decrease, arr: newArr };

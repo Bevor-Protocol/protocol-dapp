@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef } from "react";
 import styled from "styled-components";
 
 import { H2, H3, P, Span } from "@/components/Text";
@@ -8,6 +8,8 @@ import { Column, Row } from "@/components/Box";
 import { IconLarge, IconSmall } from "@/components/Icon";
 import { ToolTip } from "@/components/Tooltip";
 import { JazziconClient } from "@/components/Icon";
+import { AuditI } from "@/utils/types";
+import { useIsMounted } from "@/hooks/useIsMounted";
 
 export const AuditSection = styled.div`
   width: 100%;
@@ -68,23 +70,10 @@ const AuditAuditors = styled(Row)`
   }
 `;
 
-type ArrI = {
-  auditee: string;
-  auditors: string[];
-  money: number;
-  description: string;
-  status: string;
-};
-
-export default ({ arr }: { arr: ArrI[] }): JSX.Element => {
+export default ({ arr }: { arr: AuditI[] }): JSX.Element => {
   const [cont, setCont] = useState("");
-  const [mounted, setMounted] = useState(false);
+  const mounted = useIsMounted();
   const tooltip = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    setMounted(true);
-    return () => setMounted(false);
-  }, []);
 
   const handleToolTip = (event: React.MouseEvent<HTMLElement>): void => {
     if (!tooltip.current) return;
@@ -152,7 +141,7 @@ export default ({ arr }: { arr: ArrI[] }): JSX.Element => {
               )}
             </AuditAuditors>
             <ToolTip ref={tooltip}>{cont}</ToolTip>
-            <Span className="competition">View Competition</Span>
+            <Span className="competition">View Audit</Span>
           </AuditFooter>
         </Audit>
       ))}
