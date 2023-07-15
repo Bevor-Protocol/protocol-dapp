@@ -10,18 +10,18 @@ import {
 } from "@rainbow-me/rainbowkit";
 import {
   injectedWallet,
-  rainbowWallet,
-  walletConnectWallet,
-  coinbaseWallet,
-  metaMaskWallet,
-  ledgerWallet,
+  // rainbowWallet,
+  // walletConnectWallet,
+  // coinbaseWallet,
+  // metaMaskWallet,
+  // ledgerWallet,
 } from "@rainbow-me/rainbowkit/wallets";
 
 export default ({ children }: { children: React.ReactNode }): JSX.Element => {
   const { chains, publicClient } = configureChains([localhost, goerli], [publicProvider()]);
 
-  const appName = "Bevor Protocol";
-  const projectId = "protocol-dapp";
+  // const appName = "Bevor Protocol";
+  // const projectId = "protocol-dapp";
 
   // const { connectors } = getDefaultWallets({
   //   appName: "Bevor Protocol",
@@ -34,16 +34,16 @@ export default ({ children }: { children: React.ReactNode }): JSX.Element => {
       groupName: "Recommended",
       wallets: [
         injectedWallet({ chains }),
-        metaMaskWallet({ chains, projectId }),
-        walletConnectWallet({ projectId, chains }),
+        // metaMaskWallet({ chains, projectId }),
+        // walletConnectWallet({ projectId, chains }),
       ],
     },
     {
       groupName: "Other",
       wallets: [
-        rainbowWallet({ projectId, chains }),
-        coinbaseWallet({ appName, chains }),
-        ledgerWallet({ chains, projectId }),
+        // rainbowWallet({ projectId, chains }),
+        // coinbaseWallet({ appName, chains }),
+        // ledgerWallet({ chains, projectId }),
       ],
     },
   ]);
