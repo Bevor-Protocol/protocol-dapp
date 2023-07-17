@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import { useRef, useReducer } from "react";
-import { ConnectButton } from "@rainbow-me/rainbowkit";
+import { Web3Button } from "@web3modal/react";
 import { usePathname } from "next/navigation";
 
 import { Arrow, Twitter, Discord, Github } from "@/assets";
@@ -80,12 +80,7 @@ export default (): JSX.Element => {
           </Row>
         </Row>
         <Row>
-          <ConnectButton
-            label="connect"
-            showBalance={false}
-            chainStatus="icon"
-            accountStatus="address"
-          />
+          <Web3Button label="connect" icon="show" balance="show" />
         </Row>
       </Nav>
     </nav>
