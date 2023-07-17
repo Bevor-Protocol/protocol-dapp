@@ -2,8 +2,10 @@
 
 import Image from "next/image";
 import { useRef, useReducer } from "react";
-import { Web3Button } from "@web3modal/react";
 import { usePathname } from "next/navigation";
+
+import { useWeb3Modal } from "@web3modal/react";
+import { useAccount, useNetwork } from "wagmi";
 
 import { Arrow, Twitter, Discord, Github } from "@/assets";
 import { navItems } from "@/utils/constants";
@@ -16,12 +18,22 @@ import { Ellipsis, HR } from "@/components/Common";
 import { DropDown } from "@/components/Tooltip";
 import { Nav, NavItem, MenuHolder, NavItemBg } from "./styled";
 import { useClickOutside } from "@/hooks/useClickOutside";
+import { useIsMounted } from "@/hooks/useIsMounted";
 
 export default (): JSX.Element => {
   const pathname = usePathname();
   const [show, setShow] = useReducer((s) => !s, false);
   const ref = useRef<HTMLDivElement>(null);
   useClickOutside(ref, show ? setShow : undefined);
+  const mounted = useIsMounted();
+
+  const { open } = useWeb3Modal();
+  const { chain } = useNetwork();
+  const { address, isConnected } = useAccount();
+
+  const handleOpenW3M = (route?: string): void => {
+    open({ route });
+  };
 
   return (
     <nav>
@@ -79,8 +91,17 @@ export default (): JSX.Element => {
             </MenuHolder>
           </Row>
         </Row>
-        <Row>
-          <Web3Button label="connect" icon="show" balance="show" />
+        <Row $gap="sm">
+          {mounted && (
+            <button onClick={(): void => handleOpenW3M("SelectNetwork")}>
+              {chain?.name ?? "meh"}
+            </button>
+          )}
+          {mounted && (
+            <button onClick={(): void => handleOpenW3M()}>
+              {isConnected ? address : "connect"}
+            </button>
+          )}
         </Row>
       </Nav>
     </nav>

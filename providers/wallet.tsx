@@ -5,7 +5,7 @@ import { goerli, polygonMumbai } from "wagmi/chains";
 import { EthereumClient, w3mConnectors, w3mProvider } from "@web3modal/ethereum";
 import { Web3Modal } from "@web3modal/react";
 
-import { jakarta } from "@/theme/fonts";
+import { w3Variables } from "@/theme/web3modal";
 
 const chains = [goerli, polygonMumbai];
 const projectId = process.env.NEXT_PUBLIC_WC_PROJECT_ID as string;
@@ -28,11 +28,7 @@ export default ({ children }: { children: React.ReactNode }): JSX.Element => {
       <Web3Modal
         projectId={projectId}
         ethereumClient={ethereumClient}
-        themeVariables={{
-          "--w3m-font-family": jakarta.style.fontFamily,
-          "--w3m-font-feature-settings": "normal",
-          "--w3m-background-color": "rgb(20,20,20)",
-        }}
+        themeVariables={w3Variables}
         // termsOfServiceUrl="https://bevor.io"
         // chainImages={{
         //   5: "https://chainlist.org/unknown-logo.png",
