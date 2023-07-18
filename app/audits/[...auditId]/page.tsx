@@ -6,14 +6,6 @@ import { Column } from "@/components/Box";
 import { H2 } from "@/components/Text";
 import { Address } from "wagmi";
 
-type ArrI = {
-  auditor: string;
-  auditee: string[];
-  money: number;
-  description: string;
-  status: string;
-};
-
 type PropsI = {
   // beneficiary of tokens after they are released
   auditor: Address;
@@ -42,8 +34,8 @@ type PropsI = {
 };
 
 const getData = (): PropsI => {
-  const auditor = mockAuditInfo.auditors[0];
-  const auditee = mockAuditInfo.auditee;
+  const auditor = mockAuditInfo.auditors[0] as Address;
+  const auditee = mockAuditInfo.auditee as Address;
   const cliff = mockAuditInfo.cliff;
   const start = mockAuditInfo.start;
   const duration = mockAuditInfo.duration;
@@ -52,7 +44,7 @@ const getData = (): PropsI => {
   const amountTotal = mockAuditInfo.amountTotal;
   const withdrawn = mockAuditInfo.withdrawn;
   const auditInvalidated = mockAuditInfo.auditInvalidated;
-  const token = mockAuditInfo.token;
+  const token = mockAuditInfo.token as Address;
   const tokenId = mockAuditInfo.tokenId;
 
   return {
@@ -67,7 +59,7 @@ const getData = (): PropsI => {
     withdrawn,
     auditInvalidated,
     token,
-    tokenId
+    tokenId,
   };
 };
 
@@ -75,12 +67,10 @@ export default async (): Promise<JSX.Element> => {
   const audit = await getData();
   return (
     <Section $fillHeight $padCommon $centerH $centerV>
-      <Column $gap="rem2">
-        <AuditSection>
-          <H2>[Audit Name]</H2>
-          <AuditDashboard audit={audit} />
-        </AuditSection>
-      </Column>
+      <AuditSection>
+        <H2>[Audit Name]</H2>
+        <AuditDashboard audit={audit} />
+      </AuditSection>
     </Section>
   );
 };

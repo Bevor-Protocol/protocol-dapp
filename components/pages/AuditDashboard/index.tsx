@@ -8,6 +8,7 @@ import { H2, H3, P, Span } from "@/components/Text";
 import { Column, Row } from "@/components/Box";
 import { IconLarge, IconSmall } from "@/components/Icon";
 import { ToolTip } from "@/components/Tooltip";
+import { Address } from "wagmi";
 
 export const AuditSection = styled.div`
   width: 100%;
@@ -68,18 +69,36 @@ const AuditAuditors = styled(Row)`
   }
 `;
 
-type AudI = {
-  auditee: string;
-  auditor: string;
-  money: number;
-  description: string;
-  status: string;
+type PropsI = {
+  // beneficiary of tokens after they are released
+  auditor: Address;
+  // beneficiary of tokens after they are released
+  auditee: Address;
+  // cliff period in seconds
+  cliff: number;
+  // start time of the vesting period
+  start: number;
+  // duration of the vesting period in seconds
+  duration: number;
+  // duration of a slice period for the vesting in seconds
+  slicePeriodSeconds: number;
+  // whether the vesting is revocable
+  withdrawlPaused: boolean;
+  // total amount of tokens to be released at the end of the vesting
+  amountTotal: number;
+  // amount of tokens withdrawn
+  withdrawn: number;
+  // amount of tokens in escrow for payment
+  auditInvalidated: boolean;
+  // address of the ERC20 token vesting
+  token: Address;
+  // address of the ERC721 audit NFT
+  tokenId: number;
 };
-
-export default ({ audit }: { audit: AudI }): JSX.Element => {
+export default ({ audit }: { audit: PropsI }): JSX.Element => {
   const [cont, setCont] = useState("");
   const [mounted, setMounted] = useState(false);
-  const tooltip = useRef<HTMLDivElement>(null);
+  const tooltip = useRef<HTMLDivElement>(null as HTMLDivElement);
 
   useEffect(() => {
     setMounted(true);
@@ -118,36 +137,33 @@ export default ({ audit }: { audit: AudI }): JSX.Element => {
             )}
           </IconLarge>
           <div className="text">
-            <H3>{audit.name}</H3>
-            <P>{audit.description}</P>
+            <H3>{audit.auditor}</H3>
+            <P>{audit.duration}</P>
           </div>
-          <div>${audit.money.toLocaleString()}</div>
+          <div>${audit.amountTotal.toLocaleString()}</div>
         </AuditContent>
-        <AuditFooter $disabled={audit.status !== "closed"} $justify="flex-start" $gap="rem2">
-          <Span>{audit.status}</Span>
+        <AuditFooter $disabled={!audit.withdrawlPaused} $justify="flex-start" $gap="rem2">
+          <Span>{audit.withdrawlPaused}</Span>
           <AuditAuditors>
             <Span>auditors:</Span>
-            {audit.status !== "soon" ? (
-              audit.auditors.map((auditor, ind2) => (
-                <IconSmall
-                  data-auditor={auditor}
-                  key={ind2}
-                  onMouseOver={handleToolTip}
-                  onMouseOut={clearToolTip}
-                >
-                  {mounted && (
-                    <Jazzicon
-                      seed={Math.round((ind2 / arr.length) * 10000000)}
-                      paperStyles={{
-                        minWidth: "25px",
-                        minHeight: "25px",
-                        maxWidth: "25px",
-                        maxHeight: "25px",
-                      }}
-                    />
-                  )}
-                </IconSmall>
-              ))
+            {!audit.withdrawlPaused ? (
+              <IconSmall
+                data-auditor={audit.auditor}
+                onMouseOver={handleToolTip}
+                onMouseOut={clearToolTip}
+              >
+                {mounted && (
+                  <Jazzicon
+                    seed={Math.round(3 * 10000000)}
+                    paperStyles={{
+                      minWidth: "25px",
+                      minHeight: "25px",
+                      maxWidth: "25px",
+                      maxHeight: "25px",
+                    }}
+                  />
+                )}
+              </IconSmall>
             ) : (
               <Span>TBD</Span>
             )}
