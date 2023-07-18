@@ -1,6 +1,17 @@
 "use client";
 
-import styled from "styled-components";
+import styled, { css } from "styled-components";
+
+export const Grow = css`
+  transition: transform ${({ theme }): string => theme.transitions.speed.md}
+    ${({ theme }): string => theme.transitions.ease};
+
+  &:not(:disabled):hover,
+  &:not(:disabled):focus,
+  &:not(:disabled):active {
+    transform: scale(1.025);
+  }
+`;
 
 export const Button = styled.button`
   outline: none;
@@ -14,22 +25,21 @@ export const Button = styled.button`
   font-size: 0.89rem !important;
   line-height: 1.3rem;
   cursor: pointer;
-  transition: transform ${({ theme }): string => theme.transitions.speed.md}
-    ${({ theme }): string => theme.transitions.ease};
 
   &:disabled {
     cursor: default;
     opacity: ${({ theme }): number => theme.opacity.disable};
   }
-  &:not(:disabled):hover {
-    transform: scale(1.025);
-  }
 `;
 
 export const ButtonLight = styled(Button)`
   background: ${({ theme }): string => theme.textGradLight};
+  color: ${({ theme }): string => theme.textDark};
+  ${Grow}
 `;
 
 export const ButtonDark = styled(Button)`
   background: ${({ theme }): string => theme.textGradDark};
+  color: ${({ theme }): string => theme.textPrimary};
+  ${Grow}
 `;

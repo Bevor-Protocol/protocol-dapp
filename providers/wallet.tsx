@@ -31,8 +31,8 @@ export default ({ children }: { children: React.ReactNode }): JSX.Element => {
         themeVariables={w3Variables}
         // termsOfServiceUrl="https://bevor.io"
         // chainImages={{
-        //   5: "https://chainlist.org/unknown-logo.png",
-        //   80001: "https://assets-global.website-files.com/637359c81e22b715cec245ad/63f775c90fb78119d7a9808e_polygon-webclip.png",
+        //   5: "/images/eth.png",
+        //   80001: "/images/polygon.png",
         // }}
       />
     </>

@@ -1,8 +1,8 @@
 export const ChainPresets = {
   // Ethereum
-  1: "https://icons.llamao.fi/icons/chains/rsz_ethereum.jpg",
+  5: "/images/eth.png",
   // Polygon
-  137: "https://icons.llamao.fi/icons/chains/rsz_polygon.jpg",
+  80001: "/images/polygon.png",
   // Default
-  99999: "https://chainlist.org/unknown-logo.png",
+  99999: "/images/unknown.png",
 };
