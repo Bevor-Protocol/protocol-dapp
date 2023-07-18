@@ -88,6 +88,10 @@ export const ThemedGlobalStyle = createGlobalStyle`
     flex-direction: column;
   }
 
+  button {
+    font-family: inherit !important;
+  }
+
   h1,
   h2,
   h3,

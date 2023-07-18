@@ -1,7 +1,5 @@
 // import "./globals.css";
-import "@rainbow-me/rainbowkit/styles.css";
 import { Metadata } from "next";
-import { Plus_Jakarta_Sans } from "next/font/google";
 import WalletProvider from "@/providers/wallet";
 import StyledComponentRegistry from "@/providers/ssr_styled";
 import ThemeProvider from "@/providers/theme";
@@ -9,8 +7,7 @@ import ThemeProvider from "@/providers/theme";
 import Footer from "@/components/Footer";
 import { Layout } from "@/components/Common";
 import Nav from "@/components/Nav";
-
-const jakarta = Plus_Jakarta_Sans({ subsets: ["latin"], weight: ["500", "700", "800"] });
+import { jakarta } from "@/theme/fonts";
 
 export const metadata: Metadata = {
   title: "Bevor Protocol",

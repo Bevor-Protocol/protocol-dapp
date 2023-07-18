@@ -1,6 +1,6 @@
 "use client";
 
-import styled, { css, CSSProp } from "styled-components";
+import styled, { css, CSSProp, keyframes } from "styled-components";
 import { getBreakpoint } from "@/theme";
 import { EllipsesDot, EllipsesHolder } from "./styled";
 
@@ -75,3 +75,22 @@ export const Ellipsis = ({
     </EllipsesHolder>
   );
 };
+
+const spin = keyframes`
+  0% {transform: rotate(0deg);}
+  100% {transform: rotate(-360deg);}
+`;
+
+export const Loader = styled.div<{ $size: string }>`
+  height: ${({ $size }): string => $size};
+  width: ${({ $size }): string => $size};
+  z-index: 0;
+  animation: ${spin} 1.25s linear infinite;
+  background: conic-gradient(white, transparent);
+  padding: 3px;
+  border-radius: 100%;
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+`;

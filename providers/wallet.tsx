@@ -1,64 +1,40 @@
 "use client";
 
 import { WagmiConfig, createConfig, configureChains } from "wagmi";
-import { localhost, goerli } from "wagmi/chains";
-import { publicProvider } from "wagmi/providers/public";
-import {
-  RainbowKitProvider,
-  // getDefaultWallets,
-  connectorsForWallets,
-} from "@rainbow-me/rainbowkit";
-import {
-  injectedWallet,
-  // rainbowWallet,
-  // walletConnectWallet,
-  // coinbaseWallet,
-  // metaMaskWallet,
-  // ledgerWallet,
-} from "@rainbow-me/rainbowkit/wallets";
+import { goerli, polygonMumbai } from "wagmi/chains";
+import { EthereumClient, w3mConnectors, w3mProvider } from "@web3modal/ethereum";
+import { Web3Modal } from "@web3modal/react";
+
+import { w3Variables } from "@/theme/web3modal";
+
+const chains = [goerli, polygonMumbai];
+const projectId = process.env.NEXT_PUBLIC_WC_PROJECT_ID as string;
+
+const { publicClient } = configureChains(chains, [w3mProvider({ projectId })]);
+const wagmiConfig = createConfig({
+  autoConnect: true,
+  connectors: w3mConnectors({
+    projectId,
+    chains,
+  }),
+  publicClient,
+});
+const ethereumClient = new EthereumClient(wagmiConfig, chains);
 
 export default ({ children }: { children: React.ReactNode }): JSX.Element => {
-  const { chains, publicClient } = configureChains([localhost, goerli], [publicProvider()]);
-
-  // const appName = "Bevor Protocol";
-  // const projectId = "protocol-dapp";
-
-  // const { connectors } = getDefaultWallets({
-  //   appName: "Bevor Protocol",
-  //   projectId: "protocol-dapp",
-  //   chains,
-  // });
-
-  const connectors = connectorsForWallets([
-    {
-      groupName: "Recommended",
-      wallets: [
-        injectedWallet({ chains }),
-        // metaMaskWallet({ chains, projectId }),
-        // walletConnectWallet({ projectId, chains }),
-      ],
-    },
-    {
-      groupName: "Other",
-      wallets: [
-        // rainbowWallet({ projectId, chains }),
-        // coinbaseWallet({ appName, chains }),
-        // ledgerWallet({ chains, projectId }),
-      ],
-    },
-  ]);
-
-  const config = createConfig({
-    autoConnect: true,
-    connectors,
-    publicClient,
-  });
-
   return (
-    <WagmiConfig config={config}>
-      <RainbowKitProvider chains={chains} modalSize="compact">
-        {children}
-      </RainbowKitProvider>
-    </WagmiConfig>
+    <>
+      <WagmiConfig config={wagmiConfig}>{children}</WagmiConfig>
+      <Web3Modal
+        projectId={projectId}
+        ethereumClient={ethereumClient}
+        themeVariables={w3Variables}
+        // termsOfServiceUrl="https://bevor.io"
+        // chainImages={{
+        //   5: "/images/eth.png",
+        //   80001: "/images/polygon.png",
+        // }}
+      />
+    </>
   );
 };

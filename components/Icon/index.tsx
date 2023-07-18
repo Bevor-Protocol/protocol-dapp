@@ -4,6 +4,7 @@ import styled, { css } from "styled-components";
 import Jazzicon from "react-jazzicon";
 
 const Icon = css`
+  position: relative;
   margin-right: 0px;
   border-radius: 100%;
   transition: all 0.25s ease-in-out;

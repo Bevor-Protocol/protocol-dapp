@@ -2,7 +2,6 @@
 
 import Image from "next/image";
 import { useRef, useReducer } from "react";
-import { ConnectButton } from "@rainbow-me/rainbowkit";
 import { usePathname } from "next/navigation";
 
 import { Arrow, Twitter, Discord, Github } from "@/assets";
@@ -16,6 +15,7 @@ import { Ellipsis, HR } from "@/components/Common";
 import { DropDown } from "@/components/Tooltip";
 import { Nav, NavItem, MenuHolder, NavItemBg } from "./styled";
 import { useClickOutside } from "@/hooks/useClickOutside";
+import Connector from "./web3";
 
 export default (): JSX.Element => {
   const pathname = usePathname();
@@ -79,14 +79,7 @@ export default (): JSX.Element => {
             </MenuHolder>
           </Row>
         </Row>
-        <Row>
-          <ConnectButton
-            label="connect"
-            showBalance={false}
-            chainStatus="icon"
-            accountStatus="address"
-          />
-        </Row>
+        <Connector />
       </Nav>
     </nav>
   );

@@ -27,6 +27,7 @@ export const colors = {
   grey: "#565266",
   lightBlack: "#0D111C",
   white: "#FFFFFF",
+  black: "#000000",
   darkShadow: "rgba(0, 0, 0, 0.25)",
 };
 
@@ -37,5 +38,6 @@ export const mainTheme = {
   textGradDark: `linear-gradient(180deg, ${colors.boldBlue} 0%, ${colors.darkBlue} 100%)`,
   textGradLight: `linear-gradient(180deg, ${colors.offWhite} 6.58%, ${colors.darkWhite} 81.58%)`,
   textPrimary: colors.white,
+  textDark: colors.black,
   whiteHover: opacify(0.5, colors.white),
 };
