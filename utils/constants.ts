@@ -204,3 +204,60 @@ export const audits = [
     status: "closed",
   },
 ];
+
+export const mockAuditInfo = {
+  auditee: "Bevor",
+  auditors: ["Certique"],
+  money: 100_000,
+  description:
+    "this is an example description, submitted by the auditee of what their protocol is.",
+  status: "open",
+  cliff: 100,
+  start: 0,
+  duration: 1000,
+  slicePeriodSeconds: 100,
+  withdrawlPaused: false,
+  amountTotal: 100,
+  withdrawn: 35,
+  auditInvalidated: false,
+  token: "0x0",
+  tokenId: 3,
+};
+
+export const mockAuditInfoInvalid = {
+  auditee: "Bevor",
+  auditors: ["Certique"],
+  money: 100_000,
+  description:
+    "this is an example description, submitted by the auditee of what their protocol is.",
+  status: "open",
+  cliff: 100,
+  start: 0,
+  duration: 1000,
+  slicePeriodSeconds: 100,
+  withdrawlPaused: true,
+  amountTotal: 100,
+  withdrawn: 35,
+  auditInvalidated: true,
+  token: "0x0",
+  tokenId: 3,
+};
+
+export const mockAuditInfoPaused = {
+  auditee: "Bevor",
+  auditors: ["Certique"],
+  money: 100_000,
+  description:
+    "this is an example description, submitted by the auditee of what their protocol is.",
+  status: "open",
+  cliff: 100,
+  start: 0,
+  duration: 1000,
+  slicePeriodSeconds: 100,
+  withdrawlPaused: true,
+  amountTotal: 100,
+  withdrawn: 35,
+  auditInvalidated: false,
+  token: "0x0",
+  tokenId: 3,
+};

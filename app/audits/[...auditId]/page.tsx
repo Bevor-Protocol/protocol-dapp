@@ -1,5 +1,5 @@
 import AuditDashboard, { AuditSection } from "@/components/pages/AuditDashboard";
-import { audits } from "@/utils/constants";
+import { mockAuditInfo } from "@/utils/constants";
 
 import { Section } from "@/components/Common";
 import { Column } from "@/components/Box";
@@ -42,18 +42,18 @@ type PropsI = {
 };
 
 const getData = (): PropsI => {
-  const auditor = audits.filter((audit) => audit.status === "open");
-  const auditee = audits.filter((audit) => audit.status === "soon");
-  const cliff = audits.filter((audit) => audit.status === "closed");
-  const start;
-  const duration;
-  const slicePeriodSeconds;
-  const withdrawlPaused;
-  const amountTotal;
-  const withdrawn;
-  const auditInvalidated;
-  const token;
-  const tokenId;
+  const auditor = mockAuditInfo.auditors[0];
+  const auditee = mockAuditInfo.auditee;
+  const cliff = mockAuditInfo.cliff;
+  const start = mockAuditInfo.start;
+  const duration = mockAuditInfo.duration;
+  const slicePeriodSeconds = mockAuditInfo.slicePeriodSeconds;
+  const withdrawlPaused = mockAuditInfo.withdrawlPaused;
+  const amountTotal = mockAuditInfo.amountTotal;
+  const withdrawn = mockAuditInfo.withdrawn;
+  const auditInvalidated = mockAuditInfo.auditInvalidated;
+  const token = mockAuditInfo.token;
+  const tokenId = mockAuditInfo.tokenId;
 
   return {
     auditor,
@@ -72,13 +72,13 @@ const getData = (): PropsI => {
 };
 
 export default async (): Promise<JSX.Element> => {
-  const { open, soon, closed } = await getData();
+  const audit = await getData();
   return (
     <Section $fillHeight $padCommon $centerH $centerV>
       <Column $gap="rem2">
         <AuditSection>
           <H2>[Audit Name]</H2>
-          <AuditDashboard arr={open} />
+          <AuditDashboard audit={audit} />
         </AuditSection>
       </Column>
     </Section>

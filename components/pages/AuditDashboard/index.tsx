@@ -68,15 +68,15 @@ const AuditAuditors = styled(Row)`
   }
 `;
 
-type ArrI = {
+type AudI = {
   auditee: string;
-  auditors: string[];
+  auditor: string;
   money: number;
   description: string;
   status: string;
 };
 
-export default ({ arr }: { arr: ArrI[] }): JSX.Element => {
+export default ({ audit }: { audit: AudI }): JSX.Element => {
   const [cont, setCont] = useState("");
   const [mounted, setMounted] = useState(false);
   const tooltip = useRef<HTMLDivElement>(null);
@@ -106,58 +106,56 @@ export default ({ arr }: { arr: ArrI[] }): JSX.Element => {
 
   return (
     <Column $gap="md">
-      {arr.map((audit, ind) => (
-        <Audit key={ind}>
-          <AuditContent $align="flex-start" $justify="flex-start" $gap="rem2">
-            <IconLarge>
-              {mounted && (
-                <Jazzicon
-                  diameter={75}
-                  seed={Math.round((ind / arr.length) * 10000000)}
-                  paperStyles={{ minWidth: "75px", minHeight: "75px" }}
-                />
-              )}
-            </IconLarge>
-            <div className="text">
-              <H3>{audit.auditee}</H3>
-              <P>{audit.description}</P>
-            </div>
-            <div>${audit.money.toLocaleString()}</div>
-          </AuditContent>
-          <AuditFooter $disabled={audit.status !== "closed"} $justify="flex-start" $gap="rem2">
-            <Span>{audit.status}</Span>
-            <AuditAuditors>
-              <Span>auditors:</Span>
-              {audit.status !== "soon" ? (
-                audit.auditors.map((auditor, ind2) => (
-                  <IconSmall
-                    data-auditor={auditor}
-                    key={ind2}
-                    onMouseOver={handleToolTip}
-                    onMouseOut={clearToolTip}
-                  >
-                    {mounted && (
-                      <Jazzicon
-                        seed={Math.round((ind2 / arr.length) * 10000000)}
-                        paperStyles={{
-                          minWidth: "25px",
-                          minHeight: "25px",
-                          maxWidth: "25px",
-                          maxHeight: "25px",
-                        }}
-                      />
-                    )}
-                  </IconSmall>
-                ))
-              ) : (
-                <Span>TBD</Span>
-              )}
-            </AuditAuditors>
-            <ToolTip ref={tooltip}>{cont}</ToolTip>
-            <Span className="competition">View Competition</Span>
-          </AuditFooter>
-        </Audit>
-      ))}
+      <Audit>
+        <AuditContent $align="flex-start" $justify="flex-start" $gap="rem2">
+          <IconLarge>
+            {mounted && (
+              <Jazzicon
+                diameter={75}
+                seed={Math.round(10000000)}
+                paperStyles={{ minWidth: "75px", minHeight: "75px" }}
+              />
+            )}
+          </IconLarge>
+          <div className="text">
+            <H3>{audit.name}</H3>
+            <P>{audit.description}</P>
+          </div>
+          <div>${audit.money.toLocaleString()}</div>
+        </AuditContent>
+        <AuditFooter $disabled={audit.status !== "closed"} $justify="flex-start" $gap="rem2">
+          <Span>{audit.status}</Span>
+          <AuditAuditors>
+            <Span>auditors:</Span>
+            {audit.status !== "soon" ? (
+              audit.auditors.map((auditor, ind2) => (
+                <IconSmall
+                  data-auditor={auditor}
+                  key={ind2}
+                  onMouseOver={handleToolTip}
+                  onMouseOut={clearToolTip}
+                >
+                  {mounted && (
+                    <Jazzicon
+                      seed={Math.round((ind2 / arr.length) * 10000000)}
+                      paperStyles={{
+                        minWidth: "25px",
+                        minHeight: "25px",
+                        maxWidth: "25px",
+                        maxHeight: "25px",
+                      }}
+                    />
+                  )}
+                </IconSmall>
+              ))
+            ) : (
+              <Span>TBD</Span>
+            )}
+          </AuditAuditors>
+          <ToolTip ref={tooltip}>{cont}</ToolTip>
+          <Span className="competition">View Competition</Span>
+        </AuditFooter>
+      </Audit>
     </Column>
   );
 };
