@@ -13,7 +13,7 @@ import { LogoIcon } from "@/components/Icon";
 import { Row, Column } from "@/components/Box";
 import { Ellipsis, HR } from "@/components/Common";
 import { DropDown } from "@/components/Tooltip";
-import { Nav, NavItem, MenuHolder, NavItemBg } from "./styled";
+import { Nav, NavItem, MenuHolder } from "./styled";
 import { useClickOutside } from "@/hooks/useClickOutside";
 import Connector from "./web3";
 
@@ -32,45 +32,72 @@ export default (): JSX.Element => {
               <Image src="/logo.png" alt="brand logo" fill={true} sizes="any" />
             </LogoIcon>
           </SmartLink>
-          <Row $gap="lg">
+          <Row $gap="sm">
             {navItems.main.map((item, ind) => (
               <SmartLink external={false} href={item.url} key={ind}>
-                <NavItem $active={pathname === item.url} $pad="15px">
-                  {item.text}
+                <NavItem $active={pathname === item.url} $hover="bg">
+                  <Span>{item.text}</Span>
                 </NavItem>
               </SmartLink>
             ))}
             <MenuHolder ref={ref}>
-              <Ellipsis height="1.25rem" fadeOnHover={true} onClick={setShow} />
+              <NavItem onClick={setShow} $active={show} $hover="bg">
+                <Ellipsis />
+              </NavItem>
               {show && (
-                <DropDown $top="30px">
-                  <Column $align="flex-start" $gap="sm">
+                <DropDown $top="100%">
+                  <Column $gap="sm" $padding="5px 10px" $align="initial">
                     <Column $align="stretch" $gap="sm" style={{ width: "100%" }}>
                       {navItems.dropdown.map((item, ind) => (
                         <SmartLink external={true} href={item.url} key={ind}>
-                          <NavItemBg $pad="8px 5px" $justify="flex-start" $gap="xs">
+                          <NavItem
+                            $height="fit-content"
+                            $justify="flex-start"
+                            $gap="xs"
+                            $active={false}
+                            $hover="bright"
+                            $pad="5px 10px"
+                          >
                             <Span>{item.text}</Span>
                             <Arrow fill="white" height={10} width={10} />
-                          </NavItemBg>
+                          </NavItem>
                         </SmartLink>
                       ))}
                     </Column>
-                    <HR />
-                    <Row $gap="md">
+                    <HR $width="auto" $margin="0 10px" />
+                    <Row $gap="xs" $padding="0 3px" $justify="flex-start">
                       <SmartLink href="https://twitter.com/BevorProtocol" external={true}>
-                        <NavItemBg $pad="7px" $radius="100%">
+                        <NavItem
+                          $pad="7px"
+                          $border="100%"
+                          $active={false}
+                          $hover="bright"
+                          $height="fit-content"
+                        >
                           <Twitter height="0.9rem" width="0.9rem" fill="white" />
-                        </NavItemBg>
+                        </NavItem>
                       </SmartLink>
                       <SmartLink href="https://github.com/Bevor-Protocol" external={true}>
-                        <NavItemBg $pad="7px" $radius="100%">
+                        <NavItem
+                          $pad="7px"
+                          $border="100%"
+                          $active={false}
+                          $hover="bright"
+                          $height="fit-content"
+                        >
                           <Github height="0.9rem" width="0.9rem" fill="white" />
-                        </NavItemBg>
+                        </NavItem>
                       </SmartLink>
                       <SmartLink href="https://discord.gg/MDfNgatN" external={true}>
-                        <NavItemBg $pad="7px" $radius="100%">
+                        <NavItem
+                          $pad="7px"
+                          $border="100%"
+                          $active={false}
+                          $hover="bright"
+                          $height="fit-content"
+                        >
                           <Discord height="0.9rem" width="0.9rem" fill="white" />
-                        </NavItemBg>
+                        </NavItem>
                       </SmartLink>
                     </Row>
                   </Column>

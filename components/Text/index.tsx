@@ -51,4 +51,6 @@ export const H3 = styled.h3<{ $gradient?: boolean }>`
 
 export const Span = styled.span<{ $gradient?: boolean }>`
   ${({ $gradient }): CSSProp => $gradient && TextGradDark};
+  transition: opacity ${({ theme }): string => theme.transitions.speed.md}
+    ${({ theme }): string => theme.transitions.ease};
 `;

@@ -8,7 +8,6 @@ const LinkStyle = css`
   font-family: inherit !important;
   cursor: pointer;
 
-  &:focus,
   &:focus-visible {
     outline: 1px solid ${({ theme }): string => theme.greyBorder};
     border-radius: 10px;

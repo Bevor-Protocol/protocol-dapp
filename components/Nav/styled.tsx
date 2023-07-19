@@ -1,6 +1,6 @@
 "use client";
 
-import styled from "styled-components";
+import styled, { css, CSSProp } from "styled-components";
 
 import { Row } from "@/components/Box";
 import { Button } from "@/components/Button";
@@ -13,38 +13,57 @@ export const Nav = styled(Row)`
   width: 100%;
 `;
 
-export const NavItem = styled(Row)<{ $active: boolean; $pad?: string }>`
-  padding-top: ${({ $pad }): string => $pad ?? "0px"};
-  padding-bottom: ${({ $pad }): string => $pad ?? "0px"};
-  opacity: ${({ $active, theme }): number =>
-    $active ? theme.opacity.disable : theme.opacity.enabled};
-  transition: opacity ${({ theme }): string => theme.transitions.speed.md}
+const hoverBg = css`
+  transition: background-color ${({ theme }): string => theme.transitions.speed.md}
     ${({ theme }): string => theme.transitions.ease};
 
-  &:hover,
-  &:focus,
-  &:active,
-  &:focus-visible {
-    opacity: ${({ $active, theme }): number => !$active && theme.opacity.disable};
+  &:hover {
+    background-color: ${({ theme }): string => theme.cardBgHover};
   }
 `;
 
-export const NavItemBg = styled(Row)<{ $pad?: string; $radius?: string }>`
-  padding: ${({ $pad }): string => $pad ?? "0px"};
-  width: 100%;
-  background-color: ${({ theme }): string => theme.cardBg};
-  border-radius: ${({ $radius }): string => $radius ?? "10px"};
-  filter: brightness(1);
-  transition: filter ${({ theme }): string => theme.transitions.speed.md}
+const hoverBorder = css`
+  transition: border ${({ theme }): string => theme.transitions.speed.md}
     ${({ theme }): string => theme.transitions.ease};
 
-  & * {
-    opacity: ${({ theme }): number => theme.opacity.disable};
+  &:hover {
+    border: 1px solid ${({ theme }): number => theme.greyBorder};
   }
+`;
+
+const hoverBrighten = css`
+  background: ${({ theme }): string => theme.cardBg};
+  transition: filter ${({ theme }): string => theme.transitions.speed.md}
+    ${({ theme }): string => theme.transitions.ease};
 
   &:hover {
     filter: brightness(1.4);
   }
+`;
+
+export const NavItem = styled(Row)<{
+  $active: boolean;
+  $hover?: string;
+  $border?: string;
+  $height?: string;
+  $pad?: string;
+}>`
+  height: ${({ $height }): string => $height ?? "3rem"};
+  padding: ${({ $pad }): string => $pad ?? "0 10px"};
+  background-color: transparent;
+  border: 1px solid transparent;
+  width: 100%;
+  border-radius: ${({ $border }): string => $border ?? "10px"};
+  position: relative;
+
+  & * {
+    opacity: ${({ $active, theme }): number =>
+      $active ? theme.opacity.enabled : theme.opacity.disable};
+  }
+
+  ${({ $hover }): CSSProp => $hover === "bg" && hoverBg};
+  ${({ $hover }): CSSProp => $hover === "border" && hoverBorder};
+  ${({ $hover }): CSSProp => $hover === "bright" && hoverBrighten};
 `;
 
 export const MenuHolder = styled(Row)`
@@ -53,7 +72,7 @@ export const MenuHolder = styled(Row)`
 `;
 
 export const NetworkHolder = styled(Button)<{ $invalid: boolean }>`
-  padding: 7px 15px;
+  padding: 7px 10px;
   border: 1px solid ${({ $invalid }): string => ($invalid ? "#dc3545" : "transparent")};
   background: transparent;
 
@@ -79,7 +98,7 @@ export const NetworkHolder = styled(Button)<{ $invalid: boolean }>`
 `;
 
 export const AddressHolder = styled(Button)<{ $active: boolean }>`
-  padding: 7px 15px;
+  padding: 7px 10px;
   border: 1px solid transparent;
   color: ${({ $active, theme }): string => ($active ? theme.textPrimary : theme.textBlack)};
   background: ${({ $active, theme }): string => ($active ? "transparent" : theme.textGradLight)};

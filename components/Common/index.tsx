@@ -48,27 +48,16 @@ export const Section = styled.div<{
   ${({ $padCommon }): CSSProp => $padCommon && CommonPad}
 `;
 
-export const HR = styled.div<{ $width?: string }>`
+export const HR = styled.div<{ $width?: string; $margin?: string }>`
   width: ${({ $width }): string => $width ?? "100%"};
+  margin: ${({ $margin }): string => $margin ?? "0"};
   height: 1px;
   background: ${({ theme }): string => theme.greyBorder};
 `;
 
-export const Ellipsis = ({
-  size,
-  gap,
-  height,
-  fadeOnHover,
-  onClick,
-}: {
-  size?: string;
-  gap?: string;
-  height?: string;
-  fadeOnHover?: boolean;
-  onClick?: () => void;
-}): JSX.Element => {
+export const Ellipsis = ({ size, gap }: { size?: string; gap?: string }): JSX.Element => {
   return (
-    <EllipsesHolder $gap={gap} $height={height} $fade={fadeOnHover} onClick={onClick}>
+    <EllipsesHolder $gap={gap}>
       <EllipsesDot $size={size} />
       <EllipsesDot $size={size} />
       <EllipsesDot $size={size} />
