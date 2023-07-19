@@ -12,8 +12,8 @@ const Icon = css`
 
 export const IconSmall = styled.div`
   height: 25px;
-  width: 15px;
-  min-width: 15px;
+  width: 25px;
+  min-width: 25px;
   ${Icon}
 `;
 

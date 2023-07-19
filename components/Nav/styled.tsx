@@ -26,8 +26,11 @@ const hoverBorder = css`
   transition: border ${({ theme }): string => theme.transitions.speed.md}
     ${({ theme }): string => theme.transitions.ease};
 
-  &:hover {
+  &:hover,
+  &:focus,
+  &:active {
     border: 1px solid ${({ theme }): number => theme.greyBorder};
+    outline: none;
   }
 `;
 
@@ -97,23 +100,14 @@ export const NetworkHolder = styled(Button)<{ $invalid: boolean }>`
   }
 `;
 
-export const AddressHolder = styled(Button)<{ $active: boolean }>`
+export const WalletHolder = styled(Row)`
   padding: 7px 10px;
   border: 1px solid transparent;
-  color: ${({ $active, theme }): string => ($active ? theme.textPrimary : theme.textBlack)};
-  background: ${({ $active, theme }): string => ($active ? "transparent" : theme.textGradLight)};
+  background-color: transparent;
+  color: ${({ theme }): string => theme.textPrimary};
+  border-radius: 10px;
+  font-size: 0.9rem;
+  cursor: pointer;
 
-  transition: all ${({ theme }): string => theme.transitions.speed.md}
-    ${({ theme }): string => theme.transitions.ease};
-
-  &:disabled {
-    cursor: default;
-    opacity: ${({ theme }): number => theme.opacity.disable};
-  }
-  &:not(:disabled):hover,
-  &:not(:disabled):focus,
-  &:not(:disabled):active {
-    opacity: ${({ theme }): number => theme.opacity.hover};
-    border: 1px solid ${({ theme }): number => theme.greyBorder};
-  }
+  ${hoverBorder}
 `;

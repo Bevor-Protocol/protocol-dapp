@@ -4,5 +4,5 @@ export const ChainPresets = {
   // Polygon
   80001: "/images/polygon.png",
   // Default
-  99999: "/images/unknown.png",
+  99999: "/images/unknown.svg",
 };

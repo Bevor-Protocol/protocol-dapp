@@ -1,8 +1,8 @@
 "use client";
 
-import styled, { css } from "styled-components";
+import styled, { css, CSSProp } from "styled-components";
 
-export const Grow = css`
+const Grow = css`
   transition: transform ${({ theme }): string => theme.transitions.speed.md}
     ${({ theme }): string => theme.transitions.ease};
 
@@ -13,14 +13,26 @@ export const Grow = css`
   }
 `;
 
-export const Button = styled.button`
+const Dim = css`
+  transition: opacity ${({ theme }): string => theme.transitions.speed.md}
+    ${({ theme }): string => theme.transitions.ease};
+
+  &:not(:disabled):hover,
+  &:not(:disabled):focus,
+  &:not(:disabled):active {
+    opacity: ${({ theme }): number => theme.opacity.hover};
+  }
+`;
+
+export const Button = styled.button<{ $pad?: string; $border?: string }>`
   outline: none;
   border: none;
   font-weight: 700;
   position: relative;
   display: flex;
   align-items: center;
-  padding: 10px 20px;
+  padding: ${({ $pad }): string => $pad ?? "10px 20px"};
+  border: ${({ $border }): string => $border ?? "none"};
   border-radius: 5px;
   font-size: 0.89rem !important;
   line-height: 1.3rem;
@@ -32,14 +44,14 @@ export const Button = styled.button`
   }
 `;
 
-export const ButtonLight = styled(Button)`
+export const ButtonLight = styled(Button)<{ $hover?: string }>`
   background: ${({ theme }): string => theme.textGradLight};
   color: ${({ theme }): string => theme.textDark};
-  ${Grow}
+  ${({ $hover }): CSSProp => ($hover === "dim" ? Dim : Grow)};
 `;
 
-export const ButtonDark = styled(Button)`
+export const ButtonDark = styled(Button)<{ $hover?: string }>`
   background: ${({ theme }): string => theme.textGradDark};
   color: ${({ theme }): string => theme.textPrimary};
-  ${Grow}
+  ${({ $hover }): CSSProp => ($hover === "dim" ? Dim : Grow)};
 `;
