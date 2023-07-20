@@ -24,7 +24,7 @@ const Dim = css`
   }
 `;
 
-export const Button = styled.button<{ $pad?: string; $border?: string }>`
+export const Button = styled.button<{ $pad?: string; $border?: string; $hover?: string }>`
   outline: none;
   border: none;
   font-weight: 700;
@@ -42,16 +42,16 @@ export const Button = styled.button<{ $pad?: string; $border?: string }>`
     cursor: default;
     opacity: ${({ theme }): number => theme.opacity.disable};
   }
+  ${({ $hover }): CSSProp => $hover === "dim" && Dim};
+  ${({ $hover }): CSSProp => $hover === "grow" && Grow};
 `;
 
-export const ButtonLight = styled(Button)<{ $hover?: string }>`
+export const ButtonLight = styled(Button)`
   background: ${({ theme }): string => theme.textGradLight};
   color: ${({ theme }): string => theme.textDark};
-  ${({ $hover }): CSSProp => ($hover === "dim" ? Dim : Grow)};
 `;
 
 export const ButtonDark = styled(Button)<{ $hover?: string }>`
   background: ${({ theme }): string => theme.textGradDark};
   color: ${({ theme }): string => theme.textPrimary};
-  ${({ $hover }): CSSProp => ($hover === "dim" ? Dim : Grow)};
 `;

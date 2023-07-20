@@ -4,6 +4,7 @@ import styled, { css } from "styled-components";
 
 import { getBreakpoint } from "@/theme";
 import { Grid, Column, Row } from "@/components/Box";
+import { hoverBrighten } from "@/components/Common";
 
 export const Home = styled(Grid)`
   grid-template-columns: repeat(2, 1fr);
@@ -62,10 +63,6 @@ export const HomeStat = styled(Row)`
   border-radius: 10px;
   text-align: center;
   filter: brightness(1);
-  transition: filter ${({ theme }): string => theme.transitions.speed.md}
-    ${({ theme }): string => theme.transitions.ease};
 
-  &:hover {
-    filter: brightness(1.4);
-  }
+  ${hoverBrighten}
 `;

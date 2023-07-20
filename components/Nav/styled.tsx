@@ -1,47 +1,16 @@
 "use client";
 
-import styled, { css, CSSProp } from "styled-components";
+import styled, { CSSProp } from "styled-components";
 
 import { Row } from "@/components/Box";
 import { Button } from "@/components/Button";
-import { CommonPad } from "@/components/Common";
+import { CommonPad, hoverBg, hoverBorder, hoverBrighten } from "@/components/Common";
 
 export const Nav = styled(Row)`
   ${CommonPad}
   padding-top: 30px;
   padding-bottom: 30px;
   width: 100%;
-`;
-
-const hoverBg = css`
-  transition: background-color ${({ theme }): string => theme.transitions.speed.md}
-    ${({ theme }): string => theme.transitions.ease};
-
-  &:hover {
-    background-color: ${({ theme }): string => theme.cardBgHover};
-  }
-`;
-
-const hoverBorder = css`
-  transition: border ${({ theme }): string => theme.transitions.speed.md}
-    ${({ theme }): string => theme.transitions.ease};
-
-  &:hover,
-  &:focus,
-  &:active {
-    border: 1px solid ${({ theme }): number => theme.greyBorder};
-    outline: none;
-  }
-`;
-
-const hoverBrighten = css`
-  background: ${({ theme }): string => theme.cardBg};
-  transition: filter ${({ theme }): string => theme.transitions.speed.md}
-    ${({ theme }): string => theme.transitions.ease};
-
-  &:hover {
-    filter: brightness(1.4);
-  }
 `;
 
 export const NavItem = styled(Row)<{

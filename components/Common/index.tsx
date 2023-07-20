@@ -15,6 +15,37 @@ export const CommonPad = css`
   )}
 `;
 
+export const hoverBg = css`
+  transition: background-color ${({ theme }): string => theme.transitions.speed.md}
+    ${({ theme }): string => theme.transitions.ease};
+
+  &:hover {
+    background-color: ${({ theme }): string => theme.cardBgHover};
+  }
+`;
+
+export const hoverBorder = css`
+  transition: border ${({ theme }): string => theme.transitions.speed.md}
+    ${({ theme }): string => theme.transitions.ease};
+
+  &:hover,
+  &:focus,
+  &:active {
+    border: 1px solid ${({ theme }): number => theme.greyBorder};
+    outline: none;
+  }
+`;
+
+export const hoverBrighten = css`
+  background: ${({ theme }): string => theme.cardBg};
+  transition: filter ${({ theme }): string => theme.transitions.speed.md}
+    ${({ theme }): string => theme.transitions.ease};
+
+  &:hover {
+    filter: brightness(1.4);
+  }
+`;
+
 export const Layout = styled.div`
   min-height: 100vh;
   display: flex;

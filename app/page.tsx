@@ -19,13 +19,13 @@ export default (): JSX.Element => {
             Register as an auditee, auditor, or DAO participant.
           </P>
           <Row $gap="sm">
-            <ButtonLight>
+            <ButtonLight $hover="dim">
               <Row $gap="xs" $align="flex-start">
                 <Span>Get Audited</Span>
                 <Arrow height="0.75rem" width="0.75rem" />
               </Row>
             </ButtonLight>
-            <ButtonLight>
+            <ButtonLight $hover="dim">
               <Row $gap="xs" $align="flex-start">
                 <Span>Conduct Audit</Span>
                 <Arrow height="0.75rem" width="0.75rem" />
