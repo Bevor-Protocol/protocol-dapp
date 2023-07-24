@@ -39,7 +39,7 @@ const Bar = styled(Row)`
 
 const ContainerStyles = styled.div`
   height: 20px;
-  width: 100%;
+  width: 80vh;
   background-color: #e0e0de;
   border-radius: 50px;
   margin: 50px;
@@ -48,7 +48,7 @@ const ContainerStyles = styled.div`
 const FillerStyles = styled.div`
   height: 100%;
   width: 18%;
-  background-color: #e0e0de;
+  background-color: blue;
   border-radius: inherit;
   text-align: right;
 `;
@@ -68,13 +68,11 @@ export default (): JSX.Element => {
         <div>
           <p>Vesting Progress</p>
         </div>
-        <Bar $gap="rem2">
           <ContainerStyles>
             <FillerStyles>
               <LabelStyles>{`${completed}%`}</LabelStyles>
             </FillerStyles>
           </ContainerStyles>
-        </Bar>
         <div className="copy">
           <p>1000/10000 ETH vested</p>
         </div>

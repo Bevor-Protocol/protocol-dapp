@@ -10,6 +10,8 @@ import { IconLarge, IconSmall } from "@/components/Icon";
 import { ToolTip } from "@/components/Tooltip";
 import { Address } from "wagmi";
 import ProgressBar from "@/components/ProgressBar";
+import { ButtonLight } from "@/components/Button";
+import { useAccount } from "wagmi";
 
 export const AuditSection = styled.div`
   width: 100%;
@@ -46,7 +48,7 @@ const AuditContent = styled(Row)`
 
 const AuditFooter = styled(Row)<{ $disabled: boolean }>`
   border-top: 1px solid ${({ theme }): string => theme.greyBorder};
-  height: 40px;
+  height: 60px;
   padding: 0 1rem;
   width: 100%;
 
@@ -100,6 +102,7 @@ export default ({ audit }: { audit: PropsI }): JSX.Element => {
   const [cont, setCont] = useState("");
   const [mounted, setMounted] = useState(false);
   const tooltip = useRef<HTMLDivElement>(null as HTMLDivElement);
+  const account = useAccount();
 
   useEffect(() => {
     setMounted(true);
@@ -122,6 +125,18 @@ export default ({ audit }: { audit: PropsI }): JSX.Element => {
     if (!tooltip.current) return;
     tooltip.current.style.display = "none";
     setCont("");
+  };
+
+  const buttonLabel = (): string => {
+    if (audit.auditor === account) {
+      return "Withdraw";
+    }
+    else if (audit.auditee === account) {
+      return "Challenge Validity";
+    }
+    else {
+      return "Disabled";
+    }
   };
 
   return (
@@ -171,7 +186,7 @@ export default ({ audit }: { audit: PropsI }): JSX.Element => {
             )}
           </AuditAuditors>
           <ToolTip ref={tooltip}>{cont}</ToolTip>
-          <Span className="competition">View Competition</Span>
+          <ButtonLight>{buttonLabel()}</ButtonLight>
         </AuditFooter>
       </Audit>
     </Column>
