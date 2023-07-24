@@ -9,6 +9,7 @@ import { Column, Row } from "@/components/Box";
 import { IconLarge, IconSmall } from "@/components/Icon";
 import { ToolTip } from "@/components/Tooltip";
 import { Address } from "wagmi";
+import ProgressBar from "@/components/ProgressBar";
 
 export const AuditSection = styled.div`
   width: 100%;
@@ -142,6 +143,7 @@ export default ({ audit }: { audit: PropsI }): JSX.Element => {
           </div>
           <div>${audit.amountTotal.toLocaleString()}</div>
         </AuditContent>
+        <ProgressBar amountTotal={audit.amountTotal} />
         <AuditFooter $disabled={!audit.withdrawlPaused} $justify="flex-start" $gap="rem2">
           <Span>{audit.withdrawlPaused}</Span>
           <AuditAuditors>

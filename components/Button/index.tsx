@@ -2,7 +2,7 @@
 
 import styled from "styled-components";
 
-export const Button = styled.button`
+export const LoadingBar = styled.button`
   outline: none;
   border: none;
   font-weight: 700;
@@ -26,10 +26,10 @@ export const Button = styled.button`
   }
 `;
 
-export const ButtonLight = styled(Button)`
+export const ButtonLight = styled(LoadingBar)`
   background: ${({ theme }): string => theme.textGradLight};
 `;
 
-export const ButtonDark = styled(Button)`
+export const ButtonDark = styled(LoadingBar)`
   background: ${({ theme }): string => theme.textGradDark};
 `;
