@@ -40,15 +40,16 @@ const Bar = styled(Row)`
 const ContainerStyles = styled.div`
   height: 20px;
   width: 80vh;
-  background-color: #e0e0de;
-  border-radius: 50px;
-  margin: 50px;
+  background: ${({ theme }): string => theme.cardBg};
+  border-radius: 10px;
+  border: 2px solid ${({ theme }): string => theme.greyBorder};
+  margin: 20px;
 `;
 
 const FillerStyles = styled.div`
   height: 100%;
   width: 18%;
-  background-color: blue;
+  background: ${({ theme }): string => theme.textGradLight};
   border-radius: inherit;
   text-align: right;
 `;
@@ -70,7 +71,7 @@ export default (): JSX.Element => {
         </div>
           <ContainerStyles>
             <FillerStyles>
-              <LabelStyles>{`${completed}%`}</LabelStyles>
+              {/*<LabelStyles>{`${completed}%`}</LabelStyles>*/}
             </FillerStyles>
           </ContainerStyles>
         <div className="copy">
