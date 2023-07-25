@@ -24,12 +24,12 @@ export default async (): Promise<JSX.Element> => {
     <Section $fillHeight $padCommon $centerH $centerV>
       <Column $gap="rem2">
         <AuditSection>
-          <H2>Open Audits</H2>
-          <Audit arr={open} />
-        </AuditSection>
-        <AuditSection>
           <H2>Pending Audits</H2>
           <Audit arr={soon} />
+        </AuditSection>
+        <AuditSection>
+          <H2>Open Audits</H2>
+          <Audit arr={open} />
         </AuditSection>
         <AuditSection>
           <H2>Closed Audits</H2>

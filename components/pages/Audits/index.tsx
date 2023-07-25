@@ -59,14 +59,21 @@ const AuditFooter = styled(Row)<{ $disabled: boolean }>`
   }
 `;
 
-const AuditAuditors = styled(Row)`
+const Auditor = styled.div<{ $offset: string }>`
+  height: fit-content;
+  width: fit-content;
+  transform: ${({ $offset }): string => `translateX(${$offset})`};
+  transition: transform ${({ theme }): string => theme.transitions.speed.md}
+    ${({ theme }): string => theme.transitions.ease};
+`;
+
+const AuditorWrapper = styled(Row)`
   & span {
     margin-right: 10px;
   }
 
-  &:hover ${IconSmall} {
-    width: 25px;
-    margin-right: 5px;
+  &:hover ${Auditor} {
+    transform: translateX(0);
   }
 `;
 
@@ -114,32 +121,25 @@ export default ({ arr }: { arr: AuditI[] }): JSX.Element => {
           </AuditContent>
           <AuditFooter $disabled={audit.status !== "closed"} $justify="flex-start" $gap="rem2">
             <Span>{audit.status}</Span>
-            <AuditAuditors>
+            <AuditorWrapper>
               <Span>auditors:</Span>
               {audit.status !== "soon" ? (
                 audit.auditors.map((auditor, ind2) => (
-                  <IconSmall
-                    data-auditor={auditor}
-                    key={ind2}
-                    onMouseOver={handleToolTip}
-                    onMouseOut={clearToolTip}
-                  >
-                    <JazziconClient
-                      mounted={mounted}
-                      randVal={ind2 / arr.length}
-                      paperStyles={{
-                        minWidth: "25px",
-                        minHeight: "25px",
-                        maxWidth: "25px",
-                        maxHeight: "25px",
-                      }}
-                    />
-                  </IconSmall>
+                  <Auditor $offset={`-${ind2 * 12.5}px`}>
+                    <IconSmall
+                      data-auditor={auditor}
+                      key={ind2}
+                      onMouseOver={handleToolTip}
+                      onMouseOut={clearToolTip}
+                    >
+                      <JazziconClient mounted={mounted} randVal={ind2 / arr.length} />
+                    </IconSmall>
+                  </Auditor>
                 ))
               ) : (
                 <Span>TBD</Span>
               )}
-            </AuditAuditors>
+            </AuditorWrapper>
             <ToolTip ref={tooltip}>{cont}</ToolTip>
             <Span className="competition">View Audit</Span>
           </AuditFooter>

@@ -202,4 +202,28 @@ export const audits = [
       "this is an example description, submitted by the auditee of what their protocol is.",
     status: "closed",
   },
+  {
+    auditee: "Protocol 7",
+    auditors: ["user 3", "user 4", "user 5"],
+    money: 200,
+    description:
+      "this is an example description, submitted by the auditee of what their protocol is.",
+    status: "closed",
+  },
+  {
+    auditee: "Protocol 8",
+    auditors: ["user 2"],
+    money: 20_000,
+    description:
+      "this is an example description, submitted by the auditee of what their protocol is.",
+    status: "closed",
+  },
+  {
+    auditee: "Protocol 9",
+    auditors: ["user 5", "user 4"],
+    money: 100_000,
+    description:
+      "this is an example description, submitted by the auditee of what their protocol is.",
+    status: "closed",
+  },
 ];
