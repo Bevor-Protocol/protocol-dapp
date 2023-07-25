@@ -68,7 +68,7 @@ export default async (): Promise<JSX.Element> => {
   return (
     <Section $fillHeight $padCommon $centerH $centerV>
       <AuditSection>
-        <H2>[Audit Name]</H2>
+        <H2>Test Audit</H2>
         <AuditDashboard audit={audit} />
       </AuditSection>
     </Section>

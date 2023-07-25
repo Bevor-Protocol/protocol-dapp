@@ -12,10 +12,14 @@ import { Address } from "wagmi";
 import ProgressBar from "@/components/ProgressBar";
 import { ButtonLight } from "@/components/Button";
 import { useAccount } from "wagmi";
+import ReactMarkdown from "react-markdown";
+import { mockAuditInfo } from "@/utils/constants";
+import UnderlineNav from "@/components/UnderlineNav";
 
 export const AuditSection = styled.div`
   width: 100%;
-  margin: 2rem;
+  min-height: 100vh;
+  //margin: 2rem;
 
   & ${H2} {
     margin-bottom: 1rem;
@@ -72,6 +76,11 @@ const AuditAuditors = styled(Row)`
   }
 `;
 
+const AuditDetails = styled.div`
+  text-align: left;
+  width: 90%;
+`;
+
 type PropsI = {
   // beneficiary of tokens after they are released
   auditor: Address;
@@ -101,6 +110,7 @@ type PropsI = {
 export default ({ audit }: { audit: PropsI }): JSX.Element => {
   const [cont, setCont] = useState("");
   const [mounted, setMounted] = useState(false);
+  const [descriptionIndex, setDescriptionIndex] = useState(0);
   const tooltip = useRef<HTMLDivElement>(null as HTMLDivElement);
   const account = useAccount();
 
@@ -139,6 +149,8 @@ export default ({ audit }: { audit: PropsI }): JSX.Element => {
     }
   };
 
+  const descriptions = [mockAuditInfo.description, mockAuditInfo.deliverable];
+
   return (
     <Column $gap="md">
       <Audit>
@@ -159,6 +171,12 @@ export default ({ audit }: { audit: PropsI }): JSX.Element => {
           <div>${audit.amountTotal.toLocaleString()}</div>
         </AuditContent>
         <ProgressBar amountTotal={audit.amountTotal} />
+
+        <AuditDetails>
+          <UnderlineNav index={descriptionIndex} setIndex={setDescriptionIndex} />
+          <ReactMarkdown>{descriptions[descriptionIndex]}</ReactMarkdown>
+        </AuditDetails>
+
         <AuditFooter $disabled={!audit.withdrawlPaused} $justify="flex-start" $gap="rem2">
           <Span>{audit.withdrawlPaused}</Span>
           <AuditAuditors>
