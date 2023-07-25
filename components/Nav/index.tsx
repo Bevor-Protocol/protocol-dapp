@@ -15,7 +15,7 @@ import { Row } from "@/components/Box";
 import { CommonPad } from "@/components/Common";
 
 const Nav = styled(Row)`
-  ${CommonPad}
+  ${CommonPad};
   padding-top: 30px;
   padding-bottom: 30px;
   width: 100%;

@@ -1,11 +1,7 @@
 "use client";
 
 import styled from "styled-components";
-
-import { Twitter, Discord, Gitbook, Github } from "@/assets";
-
-import SmartLink from "@/components/Link";
-import { Column, Row } from "@/components/Box";
+import { Column } from "@/components/Box";
 import { CommonPad } from "@/components/Common";
 
 const Container = styled(Column)`
@@ -26,17 +22,6 @@ const Container = styled(Column)`
   }
 `;
 
-const Bar = styled(Row)`
-  & > a {
-    opacity: ${({ theme }): number => theme.opacity.disable};
-    transition: opacity ${({ theme }): string => theme.transitions.speed.md}
-      ${({ theme }): string => theme.transitions.ease};
-  }
-  & > a:hover {
-    opacity: ${({ theme }): number => theme.opacity.hover};
-  }
-`;
-
 const ContainerStyles = styled.div`
   height: 20px;
   width: 80vh;
@@ -54,14 +39,14 @@ const FillerStyles = styled.div`
   text-align: right;
 `;
 
-const LabelStyles = styled.span`
-  padding: 5px;
-  color: white;
-  font-weight: bold;
-`;
+// const LabelStyles = styled.span`
+//   padding: 5px;
+//   color: white;
+//   font-weight: bold;
+// `;
 
 export default (): JSX.Element => {
-  const completed = 18;
+  // const completed = 18;
 
   return (
     <footer>
@@ -69,11 +54,9 @@ export default (): JSX.Element => {
         <div>
           <p>Vesting Progress</p>
         </div>
-          <ContainerStyles>
-            <FillerStyles>
-              {/*<LabelStyles>{`${completed}%`}</LabelStyles>*/}
-            </FillerStyles>
-          </ContainerStyles>
+        <ContainerStyles>
+          <FillerStyles>{/*<LabelStyles>{`${completed}%`}</LabelStyles>*/}</FillerStyles>
+        </ContainerStyles>
         <div className="copy">
           <p>1000/10000 ETH vested</p>
         </div>

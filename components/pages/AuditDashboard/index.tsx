@@ -107,11 +107,12 @@ type PropsI = {
   // address of the ERC721 audit NFT
   tokenId: number;
 };
+
 export default ({ audit }: { audit: PropsI }): JSX.Element => {
   const [cont, setCont] = useState("");
   const [mounted, setMounted] = useState(false);
   const [descriptionIndex, setDescriptionIndex] = useState(0);
-  const tooltip = useRef<HTMLDivElement>(null as HTMLDivElement);
+  const tooltip = useRef<HTMLDivElement>(null);
   const account = useAccount();
 
   useEffect(() => {
@@ -138,13 +139,11 @@ export default ({ audit }: { audit: PropsI }): JSX.Element => {
   };
 
   const buttonLabel = (): string => {
-    if (audit.auditor === account) {
+    if (audit.auditor.toString() === account.toString()) {
       return "Withdraw";
-    }
-    else if (audit.auditee === account) {
+    } else if (audit.auditee.toString() === account.toLocaleString()) {
       return "Challenge Validity";
-    }
-    else {
+    } else {
       return "Disabled";
     }
   };
@@ -165,12 +164,12 @@ export default ({ audit }: { audit: PropsI }): JSX.Element => {
             )}
           </IconLarge>
           <div className="text">
-            <H3>{audit.auditor}</H3>
+            <H3>{audit.auditee}</H3>
             <P>{audit.duration}</P>
           </div>
           <div>${audit.amountTotal.toLocaleString()}</div>
         </AuditContent>
-        <ProgressBar amountTotal={audit.amountTotal} />
+        <ProgressBar />
 
         <AuditDetails>
           <UnderlineNav index={descriptionIndex} setIndex={setDescriptionIndex} />

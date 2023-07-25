@@ -1,7 +1,6 @@
 "use client";
 
 import styled from "styled-components";
-import { usePathname } from "next/navigation";
 
 import { Arrow } from "@/assets";
 import { auditNavItems } from "@/utils/constants";
@@ -11,7 +10,7 @@ import { Row } from "@/components/Box";
 import { Dispatch, SetStateAction } from "react";
 
 type Props = {
-  index: number,
+  index: number;
   setIndex: Dispatch<SetStateAction<number>>;
 };
 
@@ -47,7 +46,7 @@ export default ({ index, setIndex }: Props): JSX.Element => {
       <Nav $justify="space-between">
         <Row $gap="lg">
           {auditNavItems.map((item, ind) => (
-            <NavItem onClick={() => setIndex(ind)} $active={index === ind}>
+            <NavItem onClick={(): void => setIndex(ind)} $active={index === ind}>
               {item.text}
               {item.external && <Arrow fill="white" height={10} width={10} />}
             </NavItem>

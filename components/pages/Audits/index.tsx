@@ -8,6 +8,7 @@ import { H2, H3, P, Span } from "@/components/Text";
 import { Column, Row } from "@/components/Box";
 import { IconLarge, IconSmall } from "@/components/Icon";
 import { ToolTip } from "@/components/Tooltip";
+import SmartLink from "@/components/Link";
 
 export const AuditSection = styled.div`
   width: 100%;
@@ -23,6 +24,7 @@ const Audit = styled(Column)`
   border-radius: 10px;
   border: 2px solid ${({ theme }): string => theme.greyBorder};
   width: 100%;
+  cursor: pointer;
 `;
 
 const AuditContent = styled(Row)`
@@ -105,59 +107,61 @@ export default ({ arr }: { arr: ArrI[] }): JSX.Element => {
   };
 
   return (
-    <Column $gap="md">
-      {arr.map((audit, ind) => (
-        <Audit key={ind}>
-          <AuditContent $align="flex-start" $justify="flex-start" $gap="rem2">
-            <IconLarge>
-              {mounted && (
-                <Jazzicon
-                  diameter={75}
-                  seed={Math.round((ind / arr.length) * 10000000)}
-                  paperStyles={{ minWidth: "75px", minHeight: "75px" }}
-                />
-              )}
-            </IconLarge>
-            <div className="text">
-              <H3>{audit.auditee}</H3>
-              <P>{audit.description}</P>
-            </div>
-            <div>${audit.money.toLocaleString()}</div>
-          </AuditContent>
-          <AuditFooter $disabled={audit.status !== "closed"} $justify="flex-start" $gap="rem2">
-            <Span>{audit.status}</Span>
-            <AuditAuditors>
-              <Span>auditors:</Span>
-              {audit.status !== "soon" ? (
-                audit.auditors.map((auditor, ind2) => (
-                  <IconSmall
-                    data-auditor={auditor}
-                    key={ind2}
-                    onMouseOver={handleToolTip}
-                    onMouseOut={clearToolTip}
-                  >
-                    {mounted && (
-                      <Jazzicon
-                        seed={Math.round((ind2 / arr.length) * 10000000)}
-                        paperStyles={{
-                          minWidth: "25px",
-                          minHeight: "25px",
-                          maxWidth: "25px",
-                          maxHeight: "25px",
-                        }}
-                      />
-                    )}
-                  </IconSmall>
-                ))
-              ) : (
-                <Span>TBD</Span>
-              )}
-            </AuditAuditors>
-            <ToolTip ref={tooltip}>{cont}</ToolTip>
-            <Span className="competition">View Competition</Span>
-          </AuditFooter>
-        </Audit>
-      ))}
-    </Column>
+    <SmartLink external={false} href={"/audits/1"} key={"test"}>
+      <Column $gap="md">
+        {arr.map((audit, ind) => (
+          <Audit>
+            <AuditContent $align="flex-start" $justify="flex-start" $gap="rem2">
+              <IconLarge>
+                {mounted && (
+                  <Jazzicon
+                    diameter={75}
+                    seed={Math.round((ind / arr.length) * 10000000)}
+                    paperStyles={{ minWidth: "75px", minHeight: "75px" }}
+                  />
+                )}
+              </IconLarge>
+              <div className="text">
+                <H3>{audit.auditee}</H3>
+                <P>{audit.description}</P>
+              </div>
+              <div>${audit.money.toLocaleString()}</div>
+            </AuditContent>
+            <AuditFooter $disabled={audit.status !== "closed"} $justify="flex-start" $gap="rem2">
+              <Span>{audit.status}</Span>
+              <AuditAuditors>
+                <Span>auditors:</Span>
+                {audit.status !== "soon" ? (
+                  audit.auditors.map((auditor, ind2) => (
+                    <IconSmall
+                      data-auditor={auditor}
+                      key={ind2}
+                      onMouseOver={handleToolTip}
+                      onMouseOut={clearToolTip}
+                    >
+                      {mounted && (
+                        <Jazzicon
+                          seed={Math.round((ind2 / arr.length) * 10000000)}
+                          paperStyles={{
+                            minWidth: "25px",
+                            minHeight: "25px",
+                            maxWidth: "25px",
+                            maxHeight: "25px",
+                          }}
+                        />
+                      )}
+                    </IconSmall>
+                  ))
+                ) : (
+                  <Span>TBD</Span>
+                )}
+              </AuditAuditors>
+              <ToolTip ref={tooltip}>{cont}</ToolTip>
+              <Span className="competition">View Competition</Span>
+            </AuditFooter>
+          </Audit>
+        ))}
+      </Column>
+    </SmartLink>
   );
 };

@@ -2,7 +2,6 @@ import AuditDashboard, { AuditSection } from "@/components/pages/AuditDashboard"
 import { mockAuditInfo } from "@/utils/constants";
 
 import { Section } from "@/components/Common";
-import { Column } from "@/components/Box";
 import { H2 } from "@/components/Text";
 import { Address } from "wagmi";
 
@@ -68,7 +67,7 @@ export default async (): Promise<JSX.Element> => {
   return (
     <Section $fillHeight $padCommon $centerH $centerV>
       <AuditSection>
-        <H2>Test Audit</H2>
+        <H2>Audit Dashboard</H2>
         <AuditDashboard audit={audit} />
       </AuditSection>
     </Section>
