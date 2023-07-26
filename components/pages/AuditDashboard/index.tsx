@@ -1,14 +1,12 @@
 "use client";
 
 import { useState, useRef } from "react";
-import Jazzicon from "react-jazzicon";
 import styled from "styled-components";
 
-import { H2, H3, P, Span } from "@/components/Text";
-import { Column, Row } from "@/components/Box";
-import { IconLarge, IconSmall } from "@/components/Icon";
+import { H3, P, Span } from "@/components/Text";
+import { Column } from "@/components/Box";
+import { IconLarge, IconSmall, JazziconClient } from "@/components/Icon";
 import { ToolTip } from "@/components/Tooltip";
-import { Address } from "wagmi";
 import ProgressBar from "@/components/ProgressBar";
 import { ButtonLight } from "@/components/Button";
 import { useAccount } from "wagmi";
@@ -16,100 +14,15 @@ import ReactMarkdown from "react-markdown";
 import { mockAuditInfo } from "@/utils/constants";
 import UnderlineNav from "@/components/UnderlineNav";
 import { useIsMounted } from "@/hooks/useIsMounted";
-
-export const AuditSection = styled.div`
-  width: 100%;
-  min-height: 100vh;
-  //margin: 2rem;
-
-  & ${H2} {
-    margin-bottom: 1rem;
-  }
-`;
-
-const Audit = styled(Column)`
-  background: ${({ theme }): string => theme.cardBg};
-  border-radius: 10px;
-  border: 2px solid ${({ theme }): string => theme.greyBorder};
-  width: 100%;
-`;
-
-const AuditContent = styled(Row)`
-  padding: 1rem;
-  width: 100%;
-
-  & :last-child {
-    margin-left: auto;
-  }
-
-  & .text {
-    max-width: 40%;
-
-    & ${H3} {
-      margin-bottom: 0.5rem;
-    }
-  }
-`;
-
-const AuditFooter = styled(Row)<{ $disabled: boolean }>`
-  border-top: 1px solid ${({ theme }): string => theme.greyBorder};
-  height: 60px;
-  padding: 0 1rem;
-  width: 100%;
-
-  & :last-child {
-    margin-left: auto;
-  }
-
-  & .competition {
-    opacity: ${({ $disabled }): number => ($disabled ? 0.5 : 1)};
-  }
-`;
-
-const AuditAuditors = styled(Row)`
-  & span {
-    margin-right: 10px;
-  }
-
-  &:hover ${IconSmall} {
-    width: 25px;
-    margin-right: 5px;
-  }
-`;
+import { AuditDashI } from "@/utils/types";
+import { Audit, AuditContent, AuditFooter, Auditor, AuditorWrapper } from "../Audits";
 
 const AuditDetails = styled.div`
   text-align: left;
   width: 90%;
 `;
 
-type PropsI = {
-  // beneficiary of tokens after they are released
-  auditor: Address;
-  // beneficiary of tokens after they are released
-  auditee: Address;
-  // cliff period in seconds
-  cliff: number;
-  // start time of the vesting period
-  start: number;
-  // duration of the vesting period in seconds
-  duration: number;
-  // duration of a slice period for the vesting in seconds
-  slicePeriodSeconds: number;
-  // whether the vesting is revocable
-  withdrawlPaused: boolean;
-  // total amount of tokens to be released at the end of the vesting
-  amountTotal: number;
-  // amount of tokens withdrawn
-  withdrawn: number;
-  // amount of tokens in escrow for payment
-  auditInvalidated: boolean;
-  // address of the ERC20 token vesting
-  token: Address;
-  // address of the ERC721 audit NFT
-  tokenId: number;
-};
-
-export default ({ audit }: { audit: PropsI }): JSX.Element => {
+export default ({ audit }: { audit: AuditDashI }): JSX.Element => {
   const [cont, setCont] = useState("");
   const mounted = useIsMounted();
   const [descriptionIndex, setDescriptionIndex] = useState(0);
@@ -151,13 +64,12 @@ export default ({ audit }: { audit: PropsI }): JSX.Element => {
       <Audit>
         <AuditContent $align="flex-start" $justify="flex-start" $gap="rem2">
           <IconLarge>
-            {mounted && (
-              <Jazzicon
-                diameter={75}
-                seed={Math.round(10000000)}
-                paperStyles={{ minWidth: "75px", minHeight: "75px" }}
-              />
-            )}
+            <JazziconClient
+              mounted={mounted}
+              randVal={Math.round(10000000)}
+              paperStyles={{ minWidth: "75px", minHeight: "75px" }}
+              diameter={75}
+            />
           </IconLarge>
           <div className="text">
             <H3>{audit.auditee}</H3>
@@ -174,30 +86,22 @@ export default ({ audit }: { audit: PropsI }): JSX.Element => {
 
         <AuditFooter $disabled={!audit.withdrawlPaused} $justify="flex-start" $gap="rem2">
           <Span>{audit.withdrawlPaused}</Span>
-          <AuditAuditors>
+          <AuditorWrapper>
             <Span>auditors:</Span>
             {!audit.withdrawlPaused ? (
-              <IconSmall
-                data-auditor={audit.auditor}
-                onMouseOver={handleToolTip}
-                onMouseOut={clearToolTip}
-              >
-                {mounted && (
-                  <Jazzicon
-                    seed={Math.round(3 * 10000000)}
-                    paperStyles={{
-                      minWidth: "25px",
-                      minHeight: "25px",
-                      maxWidth: "25px",
-                      maxHeight: "25px",
-                    }}
-                  />
-                )}
-              </IconSmall>
+              <Auditor $offset={`-${0 * 12.5}px`} key={0}>
+                <IconSmall
+                  data-auditor={audit.auditor}
+                  onMouseOver={handleToolTip}
+                  onMouseOut={clearToolTip}
+                >
+                  <JazziconClient mounted={mounted} randVal={Math.round(3 * 10000000)} />
+                </IconSmall>
+              </Auditor>
             ) : (
               <Span>TBD</Span>
             )}
-          </AuditAuditors>
+          </AuditorWrapper>
           <ToolTip ref={tooltip}>{cont}</ToolTip>
           <ButtonLight>{buttonLabel()}</ButtonLight>
         </AuditFooter>

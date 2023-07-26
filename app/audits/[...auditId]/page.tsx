@@ -1,38 +1,13 @@
-import AuditDashboard, { AuditSection } from "@/components/pages/AuditDashboard";
+import AuditDashboard from "@/components/pages/AuditDashboard";
 import { mockAuditInfo } from "@/utils/constants";
 
 import { Section } from "@/components/Common";
 import { H2 } from "@/components/Text";
+import { AuditSection } from "@/components/pages/Audits";
 import { Address } from "wagmi";
+import { AuditDashI } from "@/utils/types";
 
-type PropsI = {
-  // beneficiary of tokens after they are released
-  auditor: Address;
-  // beneficiary of tokens after they are released
-  auditee: Address;
-  // cliff period in seconds
-  cliff: number;
-  // start time of the vesting period
-  start: number;
-  // duration of the vesting period in seconds
-  duration: number;
-  // duration of a slice period for the vesting in seconds
-  slicePeriodSeconds: number;
-  // whether the vesting is revocable
-  withdrawlPaused: boolean;
-  // total amount of tokens to be released at the end of the vesting
-  amountTotal: number;
-  // amount of tokens withdrawn
-  withdrawn: number;
-  // amount of tokens in escrow for payment
-  auditInvalidated: boolean;
-  // address of the ERC20 token vesting
-  token: Address;
-  // address of the ERC721 audit NFT
-  tokenId: number;
-};
-
-const getData = (): PropsI => {
+const getData = (): AuditDashI => {
   const auditor = mockAuditInfo.auditors[0] as Address;
   const auditee = mockAuditInfo.auditee as Address;
   const cliff = mockAuditInfo.cliff;
