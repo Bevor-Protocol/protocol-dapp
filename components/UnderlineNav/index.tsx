@@ -46,7 +46,7 @@ export default ({ index, setIndex }: Props): JSX.Element => {
       <Nav $justify="space-between">
         <Row $gap="lg">
           {auditNavItems.map((item, ind) => (
-            <NavItem onClick={(): void => setIndex(ind)} $active={index === ind}>
+            <NavItem onClick={(): void => setIndex(ind)} $active={index === ind} key={ind}>
               {item.text}
               {item.external && <Arrow fill="white" height={10} width={10} />}
             </NavItem>

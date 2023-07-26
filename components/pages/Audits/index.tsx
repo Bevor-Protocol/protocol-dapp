@@ -126,7 +126,7 @@ export default ({ arr }: { arr: AuditI[] }): JSX.Element => {
               <Span>auditors:</Span>
               {audit.status !== "soon" ? (
                 audit.auditors.map((auditor, ind2) => (
-                  <Auditor $offset={`-${ind2 * 12.5}px`}>
+                  <Auditor $offset={`-${ind2 * 12.5}px`} key={ind2}>
                     <IconSmall
                       data-auditor={auditor}
                       key={ind2}
