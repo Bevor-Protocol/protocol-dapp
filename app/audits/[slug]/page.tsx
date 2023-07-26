@@ -37,12 +37,12 @@ const getData = (): AuditDashI => {
   };
 };
 
-export default async (): Promise<JSX.Element> => {
+export default async ({ params }: { params: { slug: string } }): Promise<JSX.Element> => {
   const audit = await getData();
   return (
     <Section $fillHeight $padCommon $centerH $centerV>
       <AuditSection>
-        <H2>Audit Dashboard</H2>
+        <H2>Audit Dashboard {params.slug}</H2>
         <AuditDashboard audit={audit} />
       </AuditSection>
     </Section>

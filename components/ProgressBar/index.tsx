@@ -49,7 +49,7 @@ export default (): JSX.Element => {
   // const completed = 18;
 
   return (
-    <footer>
+    <div>
       <Container $gap="rem1">
         <div>
           <p>Vesting Progress</p>
@@ -61,6 +61,6 @@ export default (): JSX.Element => {
           <p>1000/10000 ETH vested</p>
         </div>
       </Container>
-    </footer>
+    </div>
   );
 };

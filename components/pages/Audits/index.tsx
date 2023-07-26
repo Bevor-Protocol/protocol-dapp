@@ -27,6 +27,10 @@ export const Audit = styled(Column)<{ $cursor?: string }>`
   border: 2px solid ${({ theme }): string => theme.greyBorder};
   width: 100%;
   cursor: ${({ $cursor }): string => $cursor ?? "default"};
+
+  & > a {
+    width: 100%;
+  }
 `;
 
 export const AuditContent = styled(Row)`

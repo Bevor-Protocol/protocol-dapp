@@ -4,22 +4,39 @@ import { useState, useRef } from "react";
 import styled from "styled-components";
 
 import { H3, P, Span } from "@/components/Text";
-import { Column } from "@/components/Box";
+import { Column, Row } from "@/components/Box";
 import { IconLarge, IconSmall, JazziconClient } from "@/components/Icon";
 import { ToolTip } from "@/components/Tooltip";
 import ProgressBar from "@/components/ProgressBar";
 import { ButtonLight } from "@/components/Button";
 import { useAccount } from "wagmi";
 import ReactMarkdown from "react-markdown";
-import { mockAuditInfo } from "@/utils/constants";
-import UnderlineNav from "@/components/UnderlineNav";
+import { mockAuditInfo, auditNavItems } from "@/utils/constants";
 import { useIsMounted } from "@/hooks/useIsMounted";
 import { AuditDashI } from "@/utils/types";
 import { Audit, AuditContent, AuditFooter, Auditor, AuditorWrapper } from "../Audits";
 
-const AuditDetails = styled.div`
-  text-align: left;
-  width: 90%;
+const AuditDescription = styled(Column)`
+  padding: 1rem;
+  width: 100%;
+
+  & pre {
+    white-space: pre-line;
+  }
+`;
+
+const NavItem = styled.div<{ $active: boolean }>`
+  position: relative;
+  opacity: ${({ $active, theme }): number =>
+    $active ? theme.opacity.enabled : theme.opacity.disable};
+  cursor: pointer;
+
+  border-bottom: 2px solid ${({ $active }): string => ($active ? "white" : "transparent")};
+
+  &:hover {
+    opacity: ${({ theme }): number => theme.opacity.enabled};
+    transition: opacity 0.25s ease-in-out;
+  }
 `;
 
 export default ({ audit }: { audit: AuditDashI }): JSX.Element => {
@@ -78,12 +95,20 @@ export default ({ audit }: { audit: AuditDashI }): JSX.Element => {
           <div>${audit.amountTotal.toLocaleString()}</div>
         </AuditContent>
         <ProgressBar />
-
-        <AuditDetails>
-          <UnderlineNav index={descriptionIndex} setIndex={setDescriptionIndex} />
+        <AuditDescription $align="flex-start" $gap="lg">
+          <Row $gap="lg" $justify="flex-start" $padding="0 1rem">
+            {auditNavItems.map((item, ind) => (
+              <NavItem
+                onClick={(): void => setDescriptionIndex(ind)}
+                $active={descriptionIndex === ind}
+                key={ind}
+              >
+                {item.text}
+              </NavItem>
+            ))}
+          </Row>
           <ReactMarkdown>{descriptions[descriptionIndex]}</ReactMarkdown>
-        </AuditDetails>
-
+        </AuditDescription>
         <AuditFooter $disabled={!audit.withdrawlPaused} $justify="flex-start" $gap="rem2">
           <Span>{audit.withdrawlPaused}</Span>
           <AuditorWrapper>
@@ -103,7 +128,9 @@ export default ({ audit }: { audit: AuditDashI }): JSX.Element => {
             )}
           </AuditorWrapper>
           <ToolTip ref={tooltip}>{cont}</ToolTip>
-          <ButtonLight>{buttonLabel()}</ButtonLight>
+          <ButtonLight $hover="dim" disabled={true}>
+            {buttonLabel()}
+          </ButtonLight>
         </AuditFooter>
       </Audit>
     </Column>
