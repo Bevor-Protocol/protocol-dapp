@@ -9,6 +9,7 @@ import { IconLarge, IconSmall } from "@/components/Icon";
 import { ToolTip } from "@/components/Tooltip";
 import { JazziconClient } from "@/components/Icon";
 import { AuditI } from "@/utils/types";
+import SmartLink from "@/components/Link";
 import { useIsMounted } from "@/hooks/useIsMounted";
 
 export const AuditSection = styled.div`
@@ -102,50 +103,52 @@ export default ({ arr }: { arr: AuditI[] }): JSX.Element => {
   };
 
   return (
-    <Column $gap="md">
-      {arr.map((audit, ind) => (
-        <Audit key={ind}>
-          <AuditContent $align="flex-start" $justify="flex-start" $gap="rem2">
-            <IconLarge>
-              <JazziconClient
-                mounted={mounted}
-                randVal={ind / arr.length}
-                paperStyles={{ minWidth: "75px", minHeight: "75px" }}
-                diameter={75}
-              />
-            </IconLarge>
-            <div className="text">
-              <H3>{audit.auditee}</H3>
-              <P>{audit.description}</P>
-            </div>
-            <div>${audit.money.toLocaleString()}</div>
-          </AuditContent>
-          <AuditFooter $disabled={audit.status !== "closed"} $justify="flex-start" $gap="rem2">
-            <Span>{audit.status}</Span>
-            <AuditorWrapper>
-              <Span>auditors:</Span>
-              {audit.status !== "soon" ? (
-                audit.auditors.map((auditor, ind2) => (
-                  <Auditor $offset={`-${ind2 * 12.5}px`} key={ind2}>
-                    <IconSmall
-                      data-auditor={auditor}
-                      key={ind2}
-                      onMouseOver={handleToolTip}
-                      onMouseOut={clearToolTip}
-                    >
-                      <JazziconClient mounted={mounted} randVal={ind2 / arr.length} />
-                    </IconSmall>
-                  </Auditor>
-                ))
-              ) : (
-                <Span>TBD</Span>
-              )}
-            </AuditorWrapper>
-            <ToolTip ref={tooltip}>{cont}</ToolTip>
-            <Span className="competition">View Audit</Span>
-          </AuditFooter>
-        </Audit>
-      ))}
-    </Column>
+    <SmartLink external={false} href={"/audits/1"}>
+      <Column $gap="md">
+        {arr.map((audit, ind) => (
+          <Audit key={ind}>
+            <AuditContent $align="flex-start" $justify="flex-start" $gap="rem2">
+              <IconLarge>
+                <JazziconClient
+                  mounted={mounted}
+                  randVal={ind / arr.length}
+                  paperStyles={{ minWidth: "75px", minHeight: "75px" }}
+                  diameter={75}
+                />
+              </IconLarge>
+              <div className="text">
+                <H3>{audit.auditee}</H3>
+                <P>{audit.description}</P>
+              </div>
+              <div>${audit.money.toLocaleString()}</div>
+            </AuditContent>
+            <AuditFooter $disabled={audit.status !== "closed"} $justify="flex-start" $gap="rem2">
+              <Span>{audit.status}</Span>
+              <AuditorWrapper>
+                <Span>auditors:</Span>
+                {audit.status !== "soon" ? (
+                  audit.auditors.map((auditor, ind2) => (
+                    <Auditor $offset={`-${ind2 * 12.5}px`} key={ind2}>
+                      <IconSmall
+                        data-auditor={auditor}
+                        key={ind2}
+                        onMouseOver={handleToolTip}
+                        onMouseOut={clearToolTip}
+                      >
+                        <JazziconClient mounted={mounted} randVal={ind2 / arr.length} />
+                      </IconSmall>
+                    </Auditor>
+                  ))
+                ) : (
+                  <Span>TBD</Span>
+                )}
+              </AuditorWrapper>
+              <ToolTip ref={tooltip}>{cont}</ToolTip>
+              <Span className="competition">View Audit</Span>
+            </AuditFooter>
+          </Audit>
+        ))}
+      </Column>
+    </SmartLink>
   );
 };

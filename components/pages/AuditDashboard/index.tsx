@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef } from "react";
 import Jazzicon from "react-jazzicon";
 import styled from "styled-components";
 
@@ -15,6 +15,7 @@ import { useAccount } from "wagmi";
 import ReactMarkdown from "react-markdown";
 import { mockAuditInfo } from "@/utils/constants";
 import UnderlineNav from "@/components/UnderlineNav";
+import { useIsMounted } from "@/hooks/useIsMounted";
 
 export const AuditSection = styled.div`
   width: 100%;
@@ -110,15 +111,10 @@ type PropsI = {
 
 export default ({ audit }: { audit: PropsI }): JSX.Element => {
   const [cont, setCont] = useState("");
-  const [mounted, setMounted] = useState(false);
+  const mounted = useIsMounted();
   const [descriptionIndex, setDescriptionIndex] = useState(0);
   const tooltip = useRef<HTMLDivElement>(null);
   const account = useAccount();
-
-  useEffect(() => {
-    setMounted(true);
-    return () => setMounted(false);
-  }, []);
 
   const handleToolTip = (event: React.MouseEvent<HTMLElement>): void => {
     if (!tooltip.current) return;
