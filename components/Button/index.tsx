@@ -46,7 +46,7 @@ export const Button = styled.button<{ $pad?: string; $border?: string; $hover?: 
   ${({ $hover }): CSSProp => $hover === "grow" && Grow};
 `;
 
-export const ButtonLight = styled(LoadingBar)`
+export const ButtonLight = styled(Button)`
   background: ${({ theme }): string => theme.textGradLight};
   color: ${({ theme }): string => theme.textDark};
 `;

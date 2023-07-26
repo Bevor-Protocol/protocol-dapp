@@ -1,4 +1,4 @@
-export const opacity = (amount: number, hexColor: string): string => {
+export const opacify = (amount: number, hexColor: string): string => {
   if (!hexColor.startsWith("#")) {
     return hexColor;
   }
