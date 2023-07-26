@@ -14,6 +14,8 @@ export const Row = styled.div<{
   $wrap?: boolean;
   $align?: string;
   $justify?: string;
+  $padding?: string;
+  $margin?: string;
 }>`
   display: flex;
   flex-direction: row;
@@ -21,6 +23,8 @@ export const Row = styled.div<{
   flex-wrap: ${({ $wrap }): string => ($wrap ? "wrap" : "nowrap")};
   align-items: ${({ $align }): string => $align ?? "center"};
   justify-content: ${({ $justify }): string => $justify ?? "center"};
+  padding: ${({ $padding }): string => $padding ?? "0"};
+  margin: ${({ $margin }): string => $margin ?? "0"};
 `;
 
 export const Column = styled.div<{
@@ -28,6 +32,8 @@ export const Column = styled.div<{
   $wrap?: boolean;
   $align?: string;
   $justify?: string;
+  $padding?: string;
+  $margin?: string;
 }>`
   display: flex;
   flex-direction: column;
@@ -35,4 +41,6 @@ export const Column = styled.div<{
   flex-wrap: ${({ $wrap }): string => ($wrap ? "wrap" : "nowrap")};
   align-items: ${({ $align }): string => $align ?? "center"};
   justify-content: ${({ $justify }): string => $justify ?? "center"};
+  padding: ${({ $padding }): string => $padding ?? "0"};
+  margin: ${({ $margin }): string => $margin ?? "0"};
 `;

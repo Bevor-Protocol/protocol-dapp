@@ -1,4 +1,4 @@
-export const opacity = (amount: number, hexColor: string): string => {
+export const opacify = (amount: number, hexColor: string): string => {
   if (!hexColor.startsWith("#")) {
     return hexColor;
   }
@@ -25,17 +25,20 @@ export const colors = {
   offWhite: "#F4F5F7",
   darkWhite: "#C8D0E7",
   grey: "#565266",
-  lightBlack: "#0D111C",
+  darkGrey: "#0D111C",
   white: "#FFFFFF",
+  black: "#000000",
   darkShadow: "rgba(0, 0, 0, 0.25)",
 };
 
 export const mainTheme = {
   bg: `radial-gradient(111.14% 117.16% at 16.61% 0%, ${colors.boldBlue} 0%, ${colors.darkBlue} 100%)`,
-  cardBg: colors.lightBlack,
+  cardBg: colors.darkGrey,
+  cardBgHover: opacify(0.6, colors.darkGrey),
   greyBorder: colors.grey,
   textGradDark: `linear-gradient(180deg, ${colors.boldBlue} 0%, ${colors.darkBlue} 100%)`,
   textGradLight: `linear-gradient(180deg, ${colors.offWhite} 6.58%, ${colors.darkWhite} 81.58%)`,
   textPrimary: colors.white,
-  whiteHover: opacity(0.5, colors.white),
+  textDark: colors.black,
+  whiteHover: opacify(0.5, colors.white),
 };

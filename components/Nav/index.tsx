@@ -1,69 +1,112 @@
 "use client";
 
-import styled from "styled-components";
-
 import Image from "next/image";
-import { ConnectButton } from "@rainbow-me/rainbowkit";
+import { useRef, useReducer } from "react";
 import { usePathname } from "next/navigation";
 
-import { Arrow } from "@/assets";
+import { Arrow, Twitter, Discord, Github } from "@/assets";
 import { navItems } from "@/utils/constants";
 
+import { Span } from "@/components/Text";
 import SmartLink from "@/components/Link";
-import { Logo } from "@/components/Icon";
-import { Row } from "@/components/Box";
-import { CommonPad } from "@/components/Common";
-
-const Nav = styled(Row)`
-  ${CommonPad};
-  padding-top: 30px;
-  padding-bottom: 30px;
-  width: 100%;
-`;
-
-const NavItem = styled.div<{ $active: boolean }>`
-  position: relative;
-  opacity: ${({ $active, theme }): number =>
-    $active ? theme.opacity.disable : theme.opacity.enabled};
-  transition: opacity 0.25s ease-in-out;
-
-  &:hover {
-    opacity: ${({ theme }): number => theme.opacity.disable};
-  }
-
-  & svg {
-    position: absolute;
-    top: 0;
-    right: -12px;
-  }
-`;
+import { LogoIcon } from "@/components/Icon";
+import { Row, Column } from "@/components/Box";
+import { Ellipsis, HR } from "@/components/Common";
+import { DropDown } from "@/components/Tooltip";
+import { Nav, NavItem, MenuHolder } from "./styled";
+import { useClickOutside } from "@/hooks/useClickOutside";
+import Connector from "./web3";
 
 export default (): JSX.Element => {
   const pathname = usePathname();
+  const [show, setShow] = useReducer((s) => !s, false);
+  const ref = useRef<HTMLDivElement>(null);
+  useClickOutside(ref, show ? setShow : undefined);
+
   return (
     <nav>
       <Nav $justify="space-between">
-        <SmartLink external={false} href="/">
-          <Logo $height="25px">
-            <Image src="/name.png" alt="brand name" fill={true} sizes="any" />
-          </Logo>
-        </SmartLink>
         <Row $gap="lg">
-          {navItems.map((item, ind) => (
-            <SmartLink external={item.external} href={item.url} key={ind}>
-              <NavItem $active={pathname === item.url}>
-                {item.text}
-                {item.external && <Arrow fill="white" height={10} width={10} />}
+          <SmartLink external={false} href="/">
+            <LogoIcon $height="65px">
+              <Image src="/logo.png" alt="brand logo" fill={true} sizes="any" />
+            </LogoIcon>
+          </SmartLink>
+          <Row $gap="sm">
+            {navItems.main.map((item, ind) => (
+              <SmartLink external={false} href={item.url} key={ind}>
+                <NavItem $active={pathname === item.url} $hover="bg">
+                  <Span>{item.text}</Span>
+                </NavItem>
+              </SmartLink>
+            ))}
+            <MenuHolder ref={ref}>
+              <NavItem onClick={setShow} $active={show} $hover="bg">
+                <Ellipsis />
               </NavItem>
-            </SmartLink>
-          ))}
-          <ConnectButton
-            label="connect"
-            showBalance={false}
-            chainStatus="icon"
-            accountStatus="address"
-          />
+              {show && (
+                <DropDown $top="100%">
+                  <Column $gap="sm" $padding="5px 10px" $align="initial">
+                    <Column $align="stretch" $gap="sm" style={{ width: "100%" }}>
+                      {navItems.dropdown.map((item, ind) => (
+                        <SmartLink external={true} href={item.url} key={ind}>
+                          <NavItem
+                            $height="fit-content"
+                            $justify="flex-start"
+                            $gap="xs"
+                            $active={false}
+                            $hover="bright"
+                            $pad="5px 10px"
+                          >
+                            <Span>{item.text}</Span>
+                            <Arrow fill="white" height={10} width={10} />
+                          </NavItem>
+                        </SmartLink>
+                      ))}
+                    </Column>
+                    <HR $width="auto" $margin="0 10px" />
+                    <Row $gap="xs" $padding="0 3px" $justify="flex-start">
+                      <SmartLink href="https://twitter.com/BevorProtocol" external={true}>
+                        <NavItem
+                          $pad="7px"
+                          $border="100%"
+                          $active={false}
+                          $hover="bright"
+                          $height="fit-content"
+                        >
+                          <Twitter height="0.9rem" width="0.9rem" fill="white" />
+                        </NavItem>
+                      </SmartLink>
+                      <SmartLink href="https://github.com/Bevor-Protocol" external={true}>
+                        <NavItem
+                          $pad="7px"
+                          $border="100%"
+                          $active={false}
+                          $hover="bright"
+                          $height="fit-content"
+                        >
+                          <Github height="0.9rem" width="0.9rem" fill="white" />
+                        </NavItem>
+                      </SmartLink>
+                      <SmartLink href="https://discord.gg/MDfNgatN" external={true}>
+                        <NavItem
+                          $pad="7px"
+                          $border="100%"
+                          $active={false}
+                          $hover="bright"
+                          $height="fit-content"
+                        >
+                          <Discord height="0.9rem" width="0.9rem" fill="white" />
+                        </NavItem>
+                      </SmartLink>
+                    </Row>
+                  </Column>
+                </DropDown>
+              )}
+            </MenuHolder>
+          </Row>
         </Row>
+        <Connector />
       </Nav>
     </nav>
   );

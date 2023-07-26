@@ -1,30 +1,29 @@
-export const navItems = [
-  {
-    url: "/leaderboard",
-    text: "leaderboard",
-    external: false,
-  },
-  {
-    url: "/audits",
-    text: "audits",
-    external: false,
-  },
-  {
-    url: "/messaging",
-    text: "messaging",
-    external: false,
-  },
-  {
-    url: "/dao",
-    text: "DAO",
-    external: false,
-  },
-  {
-    url: "https://docs.bevor.io",
-    text: "docs",
-    external: true,
-  },
-];
+export const navItems = {
+  main: [
+    {
+      url: "/leaderboard",
+      text: "leaderboard",
+    },
+    {
+      url: "/audits",
+      text: "audits",
+    },
+    {
+      url: "/messaging",
+      text: "messaging",
+    },
+  ],
+  dropdown: [
+    {
+      url: "/dao",
+      text: "Governance",
+    },
+    {
+      url: "https://docs.bevor.io",
+      text: "Documentation",
+    },
+  ],
+};
 
 export const auditNavItems = [
   {
@@ -210,6 +209,30 @@ export const audits = [
     auditee: "Protocol 6",
     auditors: ["user 1", "user 2", "user 3"],
     money: 2_000,
+    description:
+      "this is an example description, submitted by the auditee of what their protocol is.",
+    status: "closed",
+  },
+  {
+    auditee: "Protocol 7",
+    auditors: ["user 3", "user 4", "user 5"],
+    money: 200,
+    description:
+      "this is an example description, submitted by the auditee of what their protocol is.",
+    status: "closed",
+  },
+  {
+    auditee: "Protocol 8",
+    auditors: ["user 2"],
+    money: 20_000,
+    description:
+      "this is an example description, submitted by the auditee of what their protocol is.",
+    status: "closed",
+  },
+  {
+    auditee: "Protocol 9",
+    auditors: ["user 5", "user 4"],
+    money: 100_000,
     description:
       "this is an example description, submitted by the auditee of what their protocol is.",
     status: "closed",

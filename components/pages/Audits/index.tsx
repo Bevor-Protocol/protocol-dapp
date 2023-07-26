@@ -1,14 +1,15 @@
 "use client";
 
-import { useState, useRef, useEffect } from "react";
-import Jazzicon from "react-jazzicon";
+import { useState, useRef } from "react";
 import styled from "styled-components";
 
 import { H2, H3, P, Span } from "@/components/Text";
 import { Column, Row } from "@/components/Box";
 import { IconLarge, IconSmall } from "@/components/Icon";
 import { ToolTip } from "@/components/Tooltip";
-import SmartLink from "@/components/Link";
+import { JazziconClient } from "@/components/Icon";
+import { AuditI } from "@/utils/types";
+import { useIsMounted } from "@/hooks/useIsMounted";
 
 export const AuditSection = styled.div`
   width: 100%;
@@ -59,34 +60,28 @@ const AuditFooter = styled(Row)<{ $disabled: boolean }>`
   }
 `;
 
-const AuditAuditors = styled(Row)`
+const Auditor = styled.div<{ $offset: string }>`
+  height: fit-content;
+  width: fit-content;
+  transform: ${({ $offset }): string => `translateX(${$offset})`};
+  transition: transform ${({ theme }): string => theme.transitions.speed.md}
+    ${({ theme }): string => theme.transitions.ease};
+`;
+
+const AuditorWrapper = styled(Row)`
   & span {
     margin-right: 10px;
   }
 
-  &:hover ${IconSmall} {
-    width: 25px;
-    margin-right: 5px;
+  &:hover ${Auditor} {
+    transform: translateX(0);
   }
 `;
 
-type ArrI = {
-  auditee: string;
-  auditors: string[];
-  money: number;
-  description: string;
-  status: string;
-};
-
-export default ({ arr }: { arr: ArrI[] }): JSX.Element => {
+export default ({ arr }: { arr: AuditI[] }): JSX.Element => {
   const [cont, setCont] = useState("");
-  const [mounted, setMounted] = useState(false);
+  const mounted = useIsMounted();
   const tooltip = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    setMounted(true);
-    return () => setMounted(false);
-  }, []);
 
   const handleToolTip = (event: React.MouseEvent<HTMLElement>): void => {
     if (!tooltip.current) return;
@@ -107,61 +102,50 @@ export default ({ arr }: { arr: ArrI[] }): JSX.Element => {
   };
 
   return (
-    <SmartLink external={false} href={"/audits/1"} key={"test"}>
-      <Column $gap="md">
-        {arr.map((audit, ind) => (
-          <Audit>
-            <AuditContent $align="flex-start" $justify="flex-start" $gap="rem2">
-              <IconLarge>
-                {mounted && (
-                  <Jazzicon
-                    diameter={75}
-                    seed={Math.round((ind / arr.length) * 10000000)}
-                    paperStyles={{ minWidth: "75px", minHeight: "75px" }}
-                  />
-                )}
-              </IconLarge>
-              <div className="text">
-                <H3>{audit.auditee}</H3>
-                <P>{audit.description}</P>
-              </div>
-              <div>${audit.money.toLocaleString()}</div>
-            </AuditContent>
-            <AuditFooter $disabled={audit.status !== "closed"} $justify="flex-start" $gap="rem2">
-              <Span>{audit.status}</Span>
-              <AuditAuditors>
-                <Span>auditors:</Span>
-                {audit.status !== "soon" ? (
-                  audit.auditors.map((auditor, ind2) => (
+    <Column $gap="md">
+      {arr.map((audit, ind) => (
+        <Audit key={ind}>
+          <AuditContent $align="flex-start" $justify="flex-start" $gap="rem2">
+            <IconLarge>
+              <JazziconClient
+                mounted={mounted}
+                randVal={ind / arr.length}
+                paperStyles={{ minWidth: "75px", minHeight: "75px" }}
+                diameter={75}
+              />
+            </IconLarge>
+            <div className="text">
+              <H3>{audit.auditee}</H3>
+              <P>{audit.description}</P>
+            </div>
+            <div>${audit.money.toLocaleString()}</div>
+          </AuditContent>
+          <AuditFooter $disabled={audit.status !== "closed"} $justify="flex-start" $gap="rem2">
+            <Span>{audit.status}</Span>
+            <AuditorWrapper>
+              <Span>auditors:</Span>
+              {audit.status !== "soon" ? (
+                audit.auditors.map((auditor, ind2) => (
+                  <Auditor $offset={`-${ind2 * 12.5}px`}>
                     <IconSmall
                       data-auditor={auditor}
                       key={ind2}
                       onMouseOver={handleToolTip}
                       onMouseOut={clearToolTip}
                     >
-                      {mounted && (
-                        <Jazzicon
-                          seed={Math.round((ind2 / arr.length) * 10000000)}
-                          paperStyles={{
-                            minWidth: "25px",
-                            minHeight: "25px",
-                            maxWidth: "25px",
-                            maxHeight: "25px",
-                          }}
-                        />
-                      )}
+                      <JazziconClient mounted={mounted} randVal={ind2 / arr.length} />
                     </IconSmall>
-                  ))
-                ) : (
-                  <Span>TBD</Span>
-                )}
-              </AuditAuditors>
-              <ToolTip ref={tooltip}>{cont}</ToolTip>
-              <Span className="competition">View Competition</Span>
-            </AuditFooter>
-          </Audit>
-        ))}
-      </Column>
-    </SmartLink>
+                  </Auditor>
+                ))
+              ) : (
+                <Span>TBD</Span>
+              )}
+            </AuditorWrapper>
+            <ToolTip ref={tooltip}>{cont}</ToolTip>
+            <Span className="competition">View Audit</Span>
+          </AuditFooter>
+        </Audit>
+      ))}
+    </Column>
   );
 };
