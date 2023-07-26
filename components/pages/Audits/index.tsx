@@ -25,6 +25,7 @@ const Audit = styled(Column)`
   border-radius: 10px;
   border: 2px solid ${({ theme }): string => theme.greyBorder};
   width: 100%;
+  cursor: pointer;
 `;
 
 const AuditContent = styled(Row)`

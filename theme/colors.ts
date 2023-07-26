@@ -1,4 +1,4 @@
-export const opacify = (amount: number, hexColor: string): string => {
+export const opacity = (amount: number, hexColor: string): string => {
   if (!hexColor.startsWith("#")) {
     return hexColor;
   }
@@ -14,9 +14,9 @@ export const opacify = (amount: number, hexColor: string): string => {
   }
 
   const opacityHex = Math.round(amount * 255).toString(16);
-  const opacifySuffix = opacityHex.length < 2 ? `0${opacityHex}` : opacityHex;
+  const opacitySuffix = opacityHex.length < 2 ? `0${opacityHex}` : opacityHex;
 
-  return `${hexColor.slice(0, 7)}${opacifySuffix}`;
+  return `${hexColor.slice(0, 7)}${opacitySuffix}`;
 };
 
 export const colors = {
