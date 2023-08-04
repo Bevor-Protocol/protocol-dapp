@@ -16,6 +16,7 @@ import { DropDown } from "@/components/Tooltip";
 import { Nav, NavItem, MenuHolder } from "./styled";
 import { useClickOutside } from "@/hooks/useClickOutside";
 import Connector from "./web3";
+import Dashboard from "./dashboard";
 
 export default (): JSX.Element => {
   const pathname = usePathname();
@@ -33,6 +34,7 @@ export default (): JSX.Element => {
             </LogoIcon>
           </SmartLink>
           <Row $gap="sm">
+            <Dashboard pathname={pathname} />
             {navItems.main.map((item, ind) => (
               <SmartLink external={false} href={item.url} key={ind}>
                 <NavItem $active={pathname === item.url} $hover="bg">

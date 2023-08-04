@@ -1,10 +1,6 @@
 export const navItems = {
   main: [
     {
-      url: "/dashboard",
-      text: "dashboard",
-    },
-    {
       url: "/leaderboard",
       text: "leaderboard",
     },
