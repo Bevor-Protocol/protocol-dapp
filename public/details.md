@@ -1,3 +1,14 @@
+---
+auditee: "Bevor"
+duration: 1000
+amount: 10000
+auditors:
+  - certique
+  - skeet
+  - blek
+date: "december 22, 2023"
+---
+
 # Moonwell audit details
 - Total Prize Pool: $100,000 USDC 
   - HM awards: $71,825 USDC 

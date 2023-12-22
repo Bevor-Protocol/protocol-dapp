@@ -2,6 +2,7 @@
 
 import { useState, useRef } from "react";
 import styled from "styled-components";
+import { useRouter, usePathname } from "next/navigation";
 
 import { H3, P, Span } from "@/components/Text";
 import { Column, Row } from "@/components/Box";
@@ -10,11 +11,9 @@ import { ToolTip } from "@/components/Tooltip";
 import ProgressBar from "@/components/ProgressBar";
 import { ButtonLight } from "@/components/Button";
 import { useAccount } from "wagmi";
-import ReactMarkdown from "react-markdown";
-import { mockAuditInfo, auditNavItems } from "@/utils/constants";
 import { useIsMounted } from "@/hooks/useIsMounted";
-import { AuditDashI } from "@/utils/types";
-import { Audit, AuditContent, AuditFooter, Auditor, AuditorWrapper } from "../Audits";
+import { Markdown } from "@/components/Markdown";
+import { Audit, AuditContent, AuditFooter, Auditor, AuditorWrapper } from "..";
 
 const AuditDescription = styled(Column)`
   padding: 1rem;
@@ -39,12 +38,22 @@ const NavItem = styled.div<{ $active: boolean }>`
   }
 `;
 
-export default ({ audit }: { audit: AuditDashI }): JSX.Element => {
+type Props = {
+  data: {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    [key: string]: any;
+  };
+  content: string;
+  display: string;
+};
+
+export default ({ data, content, display }: Props): JSX.Element => {
   const [cont, setCont] = useState("");
   const mounted = useIsMounted();
-  const [descriptionIndex, setDescriptionIndex] = useState(0);
   const tooltip = useRef<HTMLDivElement>(null);
   const account = useAccount();
+  const router = useRouter();
+  const pathname = usePathname();
 
   const handleToolTip = (event: React.MouseEvent<HTMLElement>): void => {
     if (!tooltip.current) return;
@@ -65,16 +74,20 @@ export default ({ audit }: { audit: AuditDashI }): JSX.Element => {
   };
 
   const buttonLabel = (): string => {
-    if (audit.auditor.toString() === account.toString()) {
+    if (data.auditors.includes(account.toString())) {
       return "Withdraw";
-    } else if (audit.auditee.toString() === account.toLocaleString()) {
-      return "Challenge Validity";
+      // } else if (data.auditee.toString() === account.toLocaleString()) {
+      //   return "Challenge Validity";
     } else {
       return "Disabled";
     }
   };
 
-  const descriptions = [mockAuditInfo.description, mockAuditInfo.deliverable];
+  const handleMarkdownChange = (displayType: string): void => {
+    if (display == displayType) return;
+    const path = `${pathname}?display=${displayType}`;
+    router.push(path);
+  };
 
   return (
     <Column $gap="md">
@@ -89,43 +102,44 @@ export default ({ audit }: { audit: AuditDashI }): JSX.Element => {
             />
           </IconLarge>
           <div className="text">
-            <H3>{audit.auditee}</H3>
-            <P>{audit.duration}</P>
+            <H3>{data.auditee}</H3>
+            <P>{data.duration}</P>
+            <P>{new Date(data.date).toLocaleDateString()}</P>
           </div>
-          <div>${audit.amountTotal.toLocaleString()}</div>
+          <div>${data.amount.toLocaleString()}</div>
         </AuditContent>
         <ProgressBar />
         <AuditDescription $align="flex-start" $gap="lg">
           <Row $gap="lg" $justify="flex-start" $padding="0 1rem">
-            {auditNavItems.map((item, ind) => (
-              <NavItem
-                onClick={(): void => setDescriptionIndex(ind)}
-                $active={descriptionIndex === ind}
-                key={ind}
-              >
-                {item.text}
-              </NavItem>
-            ))}
+            <NavItem
+              onClick={(): void => handleMarkdownChange("details")}
+              $active={display === "details"}
+            >
+              Details
+            </NavItem>
+            <NavItem
+              onClick={(): void => handleMarkdownChange("audit")}
+              $active={display === "audit"}
+            >
+              Audit
+            </NavItem>
           </Row>
-          <ReactMarkdown>{descriptions[descriptionIndex]}</ReactMarkdown>
+          <Markdown dangerouslySetInnerHTML={{ __html: content }} />
         </AuditDescription>
-        <AuditFooter $disabled={!audit.withdrawlPaused} $justify="flex-start" $gap="rem2">
-          <Span>{audit.withdrawlPaused}</Span>
+        <AuditFooter $disabled={true} $justify="flex-start" $gap="rem2">
           <AuditorWrapper>
             <Span>auditors:</Span>
-            {!audit.withdrawlPaused ? (
-              <Auditor $offset={`-${0 * 12.5}px`} key={0}>
+            {data.auditors.map((auditor: string, ind: number) => (
+              <Auditor $offset={`-${ind * 12.5}px`} key={ind}>
                 <IconSmall
-                  data-auditor={audit.auditor}
+                  data-auditor={auditor}
                   onMouseOver={handleToolTip}
                   onMouseOut={clearToolTip}
                 >
-                  <JazziconClient mounted={mounted} randVal={Math.round(3 * 10000000)} />
+                  <JazziconClient mounted={mounted} randVal={ind / data.auditors.length} />
                 </IconSmall>
               </Auditor>
-            ) : (
-              <Span>TBD</Span>
-            )}
+            ))}
           </AuditorWrapper>
           <ToolTip ref={tooltip}>{cont}</ToolTip>
           <ButtonLight $hover="dim" disabled={true}>

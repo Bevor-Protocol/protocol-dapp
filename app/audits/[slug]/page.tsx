@@ -1,49 +1,56 @@
-import AuditDashboard from "@/components/pages/AuditDashboard";
-import { mockAuditInfo } from "@/utils/constants";
+import fs from "fs";
+import path from "path";
+import { Suspense } from "react";
+import { remark } from "remark";
+import html from "remark-html";
+import matter from "gray-matter";
 
 import { Section } from "@/components/Common";
 import { H2 } from "@/components/Text";
 import { AuditSection } from "@/components/pages/Audits";
-import { Address } from "wagmi";
-import { AuditDashI } from "@/utils/types";
+import { Loader } from "@/components/Common";
+import AuditDashboard from "@/components/pages/Audits/Dashboard";
 
-const getData = (): AuditDashI => {
-  const auditor = mockAuditInfo.auditors[0] as Address;
-  const auditee = mockAuditInfo.auditee as Address;
-  const cliff = mockAuditInfo.cliff;
-  const start = mockAuditInfo.start;
-  const duration = mockAuditInfo.duration;
-  const slicePeriodSeconds = mockAuditInfo.slicePeriodSeconds;
-  const withdrawlPaused = mockAuditInfo.withdrawlPaused;
-  const amountTotal = mockAuditInfo.amountTotal;
-  const withdrawn = mockAuditInfo.withdrawn;
-  const auditInvalidated = mockAuditInfo.auditInvalidated;
-  const token = mockAuditInfo.token as Address;
-  const tokenId = mockAuditInfo.tokenId;
+type MarkdownI = {
+  data: {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    [key: string]: any;
+  };
+  content: string;
+};
+
+const getMarkdown = async (display: string): Promise<MarkdownI> => {
+  if (!["details", "audit"].includes(display)) {
+    display = "details";
+  }
+  const fullPath = path.join("./public", `${display}.md`);
+  const fileContents = fs.readFileSync(fullPath, "utf8");
+
+  const { data, content } = matter(fileContents);
+  const processedContent = (await remark().use(html).process(content)).toString();
 
   return {
-    auditor,
-    auditee,
-    cliff,
-    start,
-    duration,
-    slicePeriodSeconds,
-    withdrawlPaused,
-    amountTotal,
-    withdrawn,
-    auditInvalidated,
-    token,
-    tokenId,
+    data,
+    content: processedContent,
   };
 };
 
-export default async ({ params }: { params: { slug: string } }): Promise<JSX.Element> => {
-  const audit = await getData();
+export default async ({
+  params,
+  searchParams,
+}: {
+  params: { slug: string };
+  searchParams: { [key: string]: string | undefined };
+}): Promise<JSX.Element> => {
+  const display = searchParams.display ?? "details";
+  const { content, data } = await getMarkdown(display);
   return (
     <Section $fillHeight $padCommon $centerH $centerV>
       <AuditSection>
         <H2>Audit Dashboard {params.slug}</H2>
-        <AuditDashboard audit={audit} />
+        <Suspense fallback={<Loader $size="50px" />}>
+          <AuditDashboard data={data} content={content} display={display} />
+        </Suspense>
       </AuditSection>
     </Section>
   );
