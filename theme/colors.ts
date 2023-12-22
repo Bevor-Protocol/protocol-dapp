@@ -32,7 +32,7 @@ export const colors = {
 };
 
 export const mainTheme = {
-  bg: `radial-gradient(111.14% 117.16% at 16.61% 0%, ${colors.boldBlue} 0%, ${colors.darkBlue} 100%)`,
+  bg: `radial-gradient(111.14% 117.16% at 30% 0%, ${colors.boldBlue} 25%, ${colors.darkBlue} 100%)`,
   cardBg: colors.darkGrey,
   cardBgHover: opacify(0.6, colors.darkGrey),
   greyBorder: colors.grey,

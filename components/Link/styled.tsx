@@ -1,16 +1,17 @@
 import Link from "next/link";
 import styled, { css } from "styled-components";
 
+import { focusBorder } from "@/components/Common";
+
 const LinkStyle = css`
   appearance: none;
   color: inherit;
   text-decoration: none;
   font-family: inherit !important;
+  border: 1px solid transparent;
+  border-radius: 10px;
 
-  &:focus-visible {
-    outline: 1px solid ${({ theme }): string => theme.greyBorder};
-    border-radius: 10px;
-  }
+  ${focusBorder};
 `;
 
 export const StyledNextLink = styled(Link)<{ $disabled?: string }>`

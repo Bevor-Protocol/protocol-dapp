@@ -42,6 +42,11 @@ export const Button = styled.button<{ $pad?: string; $border?: string; $hover?: 
     cursor: default;
     opacity: ${({ theme }): number => theme.opacity.disable};
   }
+  &:focus,
+  &:focus-visible {
+    outline: none;
+  }
+
   ${({ $hover }): CSSProp => $hover === "dim" && Dim};
   ${({ $hover }): CSSProp => $hover === "grow" && Grow};
 `;

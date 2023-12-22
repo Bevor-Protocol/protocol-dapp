@@ -28,9 +28,7 @@ export const hoverBorder = css`
   transition: border ${({ theme }): string => theme.transitions.speed.md}
     ${({ theme }): string => theme.transitions.ease};
 
-  &:hover,
-  &:focus,
-  &:active {
+  &:hover {
     border: 1px solid ${({ theme }): number => theme.greyBorder};
     outline: none;
   }
@@ -43,6 +41,17 @@ export const hoverBrighten = css`
 
   &:hover {
     filter: brightness(1.4);
+  }
+`;
+
+export const focusBorder = css`
+  transition: border ${({ theme }): string => theme.transitions.speed.md}
+    ${({ theme }): string => theme.transitions.ease};
+
+  &:focus-visible,
+  &:focus {
+    border: 1px solid ${({ theme }): number => theme.greyBorder};
+    outline: none;
   }
 `;
 
