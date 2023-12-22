@@ -16,8 +16,8 @@ export const metadata: Metadata = {
   keywords: ["web3", "NextJS", "DAO", "ReactJS", "dApp"],
   icons: {
     icon: "/favicon.ico",
-    apple: "/apple-touch.png",
-    shortcut: "/apple-touch.png",
+    apple: "/apple-icon.png",
+    shortcut: "/apple-icon.png",
   },
   authors: [{ name: "Bevor Protocol" }],
   robots: {

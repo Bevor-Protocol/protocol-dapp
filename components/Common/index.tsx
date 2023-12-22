@@ -48,8 +48,7 @@ export const focusBorder = css`
   transition: border ${({ theme }): string => theme.transitions.speed.md}
     ${({ theme }): string => theme.transitions.ease};
 
-  &:focus-visible,
-  &:focus {
+  &:focus-visible {
     border: 1px solid ${({ theme }): number => theme.greyBorder};
     outline: none;
   }

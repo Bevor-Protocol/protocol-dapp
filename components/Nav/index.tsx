@@ -34,7 +34,7 @@ export default (): JSX.Element => {
             </LogoIcon>
           </SmartLink>
           <Row $gap="sm">
-            <Dashboard pathname={pathname} />
+            <Dashboard active={pathname.split("/")[1] == "user"} />
             {navItems.main.map((item, ind) => (
               <SmartLink external={false} href={item.url} key={ind}>
                 <NavItem $active={pathname === item.url} $hover="bg">
