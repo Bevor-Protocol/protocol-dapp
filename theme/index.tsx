@@ -25,7 +25,7 @@ const FONTSIZE = {
 };
 
 const OPACITIES = {
-  hover: 0.6,
+  hover: 0.75,
   disable: 0.5,
   click: 0.4,
   enabled: 1,
@@ -84,8 +84,10 @@ export const ThemedGlobalStyle = createGlobalStyle`
   }
 
   main {
+    flex: 1 0 0;
     display: flex;
     flex-direction: column;
+    justify-content: center;
   }
 
   button {
