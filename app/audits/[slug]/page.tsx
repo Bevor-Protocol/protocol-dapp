@@ -9,7 +9,7 @@ import { Section } from "@/components/Common";
 import { H2 } from "@/components/Text";
 import { AuditSection } from "@/components/pages/Audits";
 import { Loader } from "@/components/Common";
-import AuditDashboard from "@/components/pages/AuditDashboard";
+import AuditDashboard from "@/components/pages/Audits/Dashboard";
 
 type MarkdownI = {
   data: {

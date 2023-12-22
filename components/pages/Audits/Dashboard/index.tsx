@@ -12,7 +12,8 @@ import ProgressBar from "@/components/ProgressBar";
 import { ButtonLight } from "@/components/Button";
 import { useAccount } from "wagmi";
 import { useIsMounted } from "@/hooks/useIsMounted";
-import { Audit, AuditContent, AuditFooter, Auditor, AuditorWrapper } from "../Audits";
+import { Markdown } from "@/components/Markdown";
+import { Audit, AuditContent, AuditFooter, Auditor, AuditorWrapper } from "..";
 
 const AuditDescription = styled(Column)`
   padding: 1rem;
@@ -123,7 +124,7 @@ export default ({ data, content, display }: Props): JSX.Element => {
               Audit
             </NavItem>
           </Row>
-          <div dangerouslySetInnerHTML={{ __html: content }} />
+          <Markdown dangerouslySetInnerHTML={{ __html: content }} />
         </AuditDescription>
         <AuditFooter $disabled={true} $justify="flex-start" $gap="rem2">
           <AuditorWrapper>
