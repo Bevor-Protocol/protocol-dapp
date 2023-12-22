@@ -60,7 +60,11 @@ export const AuditFooter = styled(Row)<{ $disabled: boolean }>`
   }
 
   & .competition {
-    opacity: ${({ $disabled }): number => ($disabled ? 0.5 : 1)};
+    opacity: ${({ theme, $disabled }): number => ($disabled ? theme.opacity.disable : 1)};
+  }
+
+  & .competition:hover {
+    opacity: ${({ theme, $disabled }): number => !$disabled && theme.opacity.hover};
   }
 `;
 
@@ -109,23 +113,21 @@ export default ({ arr }: { arr: AuditI[] }): JSX.Element => {
     <Column $gap="md">
       {arr.map((audit, ind) => (
         <Audit key={ind}>
-          <SmartLink external={false} href={`/audits/${ind}`}>
-            <AuditContent $align="flex-start" $justify="flex-start" $gap="rem2">
-              <IconLarge>
-                <JazziconClient
-                  mounted={mounted}
-                  randVal={ind / arr.length}
-                  paperStyles={{ minWidth: "75px", minHeight: "75px" }}
-                  diameter={75}
-                />
-              </IconLarge>
-              <div className="text">
-                <H3>{audit.auditee}</H3>
-                <P>{audit.description}</P>
-              </div>
-              <div>${audit.money.toLocaleString()}</div>
-            </AuditContent>
-          </SmartLink>
+          <AuditContent $align="flex-start" $justify="flex-start" $gap="rem2">
+            <IconLarge>
+              <JazziconClient
+                mounted={mounted}
+                randVal={ind / arr.length}
+                paperStyles={{ minWidth: "75px", minHeight: "75px" }}
+                diameter={75}
+              />
+            </IconLarge>
+            <div className="text">
+              <H3>{audit.auditee}</H3>
+              <P>{audit.description}</P>
+            </div>
+            <div>${audit.money.toLocaleString()}</div>
+          </AuditContent>
           <AuditFooter $disabled={audit.status !== "closed"} $justify="flex-start" $gap="rem2">
             <Span>{audit.status}</Span>
             <AuditorWrapper>
@@ -148,7 +150,13 @@ export default ({ arr }: { arr: AuditI[] }): JSX.Element => {
               )}
             </AuditorWrapper>
             <ToolTip ref={tooltip}>{cont}</ToolTip>
-            <Span className="competition">View Audit</Span>
+            <SmartLink
+              external={false}
+              href={`/audits/${ind}`}
+              disabled={audit.status !== "closed"}
+            >
+              <Span className="competition">View Audit</Span>
+            </SmartLink>
           </AuditFooter>
         </Audit>
       ))}

@@ -19,7 +19,7 @@ const getData = (): AuditSSRI => {
 };
 
 export default async (): Promise<JSX.Element> => {
-  const { open, soon, closed } = await getData();
+  const { open, soon, closed } = getData();
   return (
     <Section $fillHeight $padCommon $centerH $centerV>
       <Column $gap="rem2">

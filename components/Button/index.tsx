@@ -7,7 +7,7 @@ const Grow = css`
     ${({ theme }): string => theme.transitions.ease};
 
   &:not(:disabled):hover,
-  &:not(:disabled):focus,
+  &:not(:disabled):focus-visible,
   &:not(:disabled):active {
     transform: scale(1.025);
   }
@@ -18,7 +18,7 @@ const Dim = css`
     ${({ theme }): string => theme.transitions.ease};
 
   &:not(:disabled):hover,
-  &:not(:disabled):focus,
+  &:not(:disabled):focus-visible,
   &:not(:disabled):active {
     opacity: ${({ theme }): number => theme.opacity.hover};
   }
