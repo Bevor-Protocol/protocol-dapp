@@ -1,8 +1,6 @@
-import AuditDashboard from "@/components/pages/AuditDashboard";
-
 import fs from "fs";
 import path from "path";
-
+import { Suspense } from "react";
 import { remark } from "remark";
 import html from "remark-html";
 import matter from "gray-matter";
@@ -10,9 +8,12 @@ import matter from "gray-matter";
 import { Section } from "@/components/Common";
 import { H2 } from "@/components/Text";
 import { AuditSection } from "@/components/pages/Audits";
+import { Loader } from "@/components/Common";
+import AuditDashboard from "@/components/pages/AuditDashboard";
 
 type MarkdownI = {
   data: {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     [key: string]: any;
   };
   content: string;
@@ -47,7 +48,9 @@ export default async ({
     <Section $fillHeight $padCommon $centerH $centerV>
       <AuditSection>
         <H2>Audit Dashboard {params.slug}</H2>
-        <AuditDashboard data={data} content={content} display={display} />
+        <Suspense fallback={<Loader $size="50px" />}>
+          <AuditDashboard data={data} content={content} display={display} />
+        </Suspense>
       </AuditSection>
     </Section>
   );
