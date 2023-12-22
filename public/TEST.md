@@ -1,3 +1,8 @@
+---
+auditor: "moonwell"
+date: "december 22, 2023"
+---
+
 # Moonwell audit details
 - Total Prize Pool: $100,000 USDC 
   - HM awards: $71,825 USDC 

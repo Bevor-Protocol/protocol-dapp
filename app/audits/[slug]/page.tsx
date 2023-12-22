@@ -1,6 +1,13 @@
 import AuditDashboard from "@/components/pages/AuditDashboard";
 import { mockAuditInfo } from "@/utils/constants";
 
+import fs from "fs";
+import path from "path";
+
+import { remark } from "remark";
+import html from "remark-html";
+import matter from "gray-matter";
+
 import { Section } from "@/components/Common";
 import { H2 } from "@/components/Text";
 import { AuditSection } from "@/components/pages/Audits";
@@ -37,8 +44,29 @@ const getData = (): AuditDashI => {
   };
 };
 
+type MarkdownI = {
+  data: {
+    [key: string]: any;
+  };
+  content: string;
+};
+
+const getMarkdown = async (): Promise<MarkdownI> => {
+  const fullPath = path.join("./public", "TEST.md");
+  const fileContents = fs.readFileSync(fullPath, "utf8");
+
+  const { data, content } = matter(fileContents);
+  const processedContent = (await remark().use(html).process(content)).toString();
+
+  return {
+    data,
+    content: processedContent,
+  };
+};
+
 export default async ({ params }: { params: { slug: string } }): Promise<JSX.Element> => {
   const audit = await getData();
+  await getMarkdown();
   return (
     <Section $fillHeight $padCommon $centerH $centerV>
       <AuditSection>
