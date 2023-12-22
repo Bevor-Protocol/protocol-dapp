@@ -10,23 +10,14 @@ import Nav from "@/components/Nav";
 import { jakarta } from "@/theme/fonts";
 
 export const metadata: Metadata = {
+  metadataBase: new URL("https://bevor.io"),
   title: "Bevor Protocol",
   description: "Bevor Protocol + DAO | dApp",
   keywords: ["web3", "NextJS", "DAO", "ReactJS", "dApp"],
-  openGraph: {
-    title: "Bevor Protocol",
-    description: "Bevor Protocol + DAO | dApp",
-    url: "https://www.bevor.io",
-    siteName: "Bevor.io",
-    type: "website",
-    locale: "en_US",
-  },
-  twitter: {
-    card: "summary_large_image",
-    site: "@BevorProtocol",
-    creator: "@BevorProtocol",
-    title: "Bevor Protocol",
-    description: "Bevor Protocol + DAO | dApp",
+  icons: {
+    icon: "/favicon.ico",
+    apple: "/apple-icon.png",
+    shortcut: "/apple-icon.png",
   },
   authors: [{ name: "Bevor Protocol" }],
   robots: {
@@ -47,6 +38,35 @@ export const metadata: Metadata = {
     initialScale: 1,
     maximumScale: 1,
     userScalable: false,
+  },
+  openGraph: {
+    title: "Bevor Protocol",
+    description: "Bevor Protocol + DAO | dApp",
+    url: "https://www.bevor.io",
+    images: [
+      {
+        width: 1200,
+        height: 630,
+        url: "/opengraph.png",
+      },
+    ],
+    siteName: "Bevor.io",
+    type: "website",
+    locale: "en_US",
+  },
+  twitter: {
+    card: "summary_large_image",
+    site: "@BevorProtocol",
+    creator: "@BevorProtocol",
+    title: "Bevor Protocol",
+    description: "Bevor Protocol + DAO | dApp",
+    images: [
+      {
+        width: 1200,
+        height: 630,
+        url: "/opengraph.png",
+      },
+    ],
   },
 };
 

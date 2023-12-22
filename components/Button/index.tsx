@@ -7,7 +7,7 @@ const Grow = css`
     ${({ theme }): string => theme.transitions.ease};
 
   &:not(:disabled):hover,
-  &:not(:disabled):focus,
+  &:not(:disabled):focus-visible,
   &:not(:disabled):active {
     transform: scale(1.025);
   }
@@ -18,7 +18,7 @@ const Dim = css`
     ${({ theme }): string => theme.transitions.ease};
 
   &:not(:disabled):hover,
-  &:not(:disabled):focus,
+  &:not(:disabled):focus-visible,
   &:not(:disabled):active {
     opacity: ${({ theme }): number => theme.opacity.hover};
   }
@@ -42,6 +42,11 @@ export const Button = styled.button<{ $pad?: string; $border?: string; $hover?: 
     cursor: default;
     opacity: ${({ theme }): number => theme.opacity.disable};
   }
+  &:focus,
+  &:focus-visible {
+    outline: none;
+  }
+
   ${({ $hover }): CSSProp => $hover === "dim" && Dim};
   ${({ $hover }): CSSProp => $hover === "grow" && Grow};
 `;

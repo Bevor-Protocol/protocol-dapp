@@ -7,18 +7,24 @@ type PropsI = {
 };
 
 export default ({ children, ...props }: PropsI): JSX.Element => {
-  const { href, external, ...rest } = props;
+  const { href, external, disabled, ...rest } = props;
 
   if (external) {
     return (
-      <StyledLink {...rest} target="_blank" referrerPolicy="no-referrer" href={href}>
+      <StyledLink
+        {...rest}
+        target="_blank"
+        referrerPolicy="no-referrer"
+        href={href}
+        $disabled={disabled}
+      >
         {children}
       </StyledLink>
     );
   }
 
   return (
-    <StyledNextLink {...rest} href={href}>
+    <StyledNextLink {...rest} href={href} $disabled={disabled}>
       {children}
     </StyledNextLink>
   );

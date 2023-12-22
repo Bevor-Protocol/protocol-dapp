@@ -93,7 +93,9 @@ export default (): JSX.Element => {
         </ButtonLight>
       )}
       <DropDown ref={ref} $top="105%" style={{ display: "none", left: 0, right: "unset" }}>
-        <Row $padding="10px 15px">This is an invalid network. Switch it to use the protocol.</Row>
+        <Row $padding="10px 15px">
+          This is an unsupported network. Switch it to use the protocol.
+        </Row>
       </DropDown>
     </Row>
   );

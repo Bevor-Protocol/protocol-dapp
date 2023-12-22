@@ -8,10 +8,6 @@ export const navItems = {
       url: "/audits",
       text: "audits",
     },
-    {
-      url: "/messaging",
-      text: "messaging",
-    },
   ],
   dropdown: [
     {

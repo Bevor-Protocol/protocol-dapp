@@ -21,15 +21,19 @@ export const AuditSection = styled.div`
   }
 `;
 
-const Audit = styled(Column)`
+export const Audit = styled(Column)<{ $cursor?: string }>`
   background: ${({ theme }): string => theme.cardBg};
   border-radius: 10px;
   border: 2px solid ${({ theme }): string => theme.greyBorder};
   width: 100%;
-  cursor: pointer;
+  cursor: ${({ $cursor }): string => $cursor ?? "default"};
+
+  & > a {
+    width: 100%;
+  }
 `;
 
-const AuditContent = styled(Row)`
+export const AuditContent = styled(Row)`
   padding: 1rem;
   width: 100%;
 
@@ -46,10 +50,9 @@ const AuditContent = styled(Row)`
   }
 `;
 
-const AuditFooter = styled(Row)<{ $disabled: boolean }>`
+export const AuditFooter = styled(Row)<{ $disabled: boolean }>`
   border-top: 1px solid ${({ theme }): string => theme.greyBorder};
-  height: 40px;
-  padding: 0 1rem;
+  padding: 0.5rem 1rem;
   width: 100%;
 
   & :last-child {
@@ -57,11 +60,15 @@ const AuditFooter = styled(Row)<{ $disabled: boolean }>`
   }
 
   & .competition {
-    opacity: ${({ $disabled }): number => ($disabled ? 0.5 : 1)};
+    opacity: ${({ theme, $disabled }): number => ($disabled ? theme.opacity.disable : 1)};
+  }
+
+  & .competition:hover {
+    opacity: ${({ theme, $disabled }): number => !$disabled && theme.opacity.hover};
   }
 `;
 
-const Auditor = styled.div<{ $offset: string }>`
+export const Auditor = styled.div<{ $offset: string }>`
   height: fit-content;
   width: fit-content;
   transform: ${({ $offset }): string => `translateX(${$offset})`};
@@ -69,7 +76,7 @@ const Auditor = styled.div<{ $offset: string }>`
     ${({ theme }): string => theme.transitions.ease};
 `;
 
-const AuditorWrapper = styled(Row)`
+export const AuditorWrapper = styled(Row)`
   & span {
     margin-right: 10px;
   }
@@ -103,52 +110,56 @@ export default ({ arr }: { arr: AuditI[] }): JSX.Element => {
   };
 
   return (
-    <SmartLink external={false} href={"/audits/1"}>
-      <Column $gap="md">
-        {arr.map((audit, ind) => (
-          <Audit key={ind}>
-            <AuditContent $align="flex-start" $justify="flex-start" $gap="rem2">
-              <IconLarge>
-                <JazziconClient
-                  mounted={mounted}
-                  randVal={ind / arr.length}
-                  paperStyles={{ minWidth: "75px", minHeight: "75px" }}
-                  diameter={75}
-                />
-              </IconLarge>
-              <div className="text">
-                <H3>{audit.auditee}</H3>
-                <P>{audit.description}</P>
-              </div>
-              <div>${audit.money.toLocaleString()}</div>
-            </AuditContent>
-            <AuditFooter $disabled={audit.status !== "closed"} $justify="flex-start" $gap="rem2">
-              <Span>{audit.status}</Span>
-              <AuditorWrapper>
-                <Span>auditors:</Span>
-                {audit.status !== "soon" ? (
-                  audit.auditors.map((auditor, ind2) => (
-                    <Auditor $offset={`-${ind2 * 12.5}px`} key={ind2}>
-                      <IconSmall
-                        data-auditor={auditor}
-                        key={ind2}
-                        onMouseOver={handleToolTip}
-                        onMouseOut={clearToolTip}
-                      >
-                        <JazziconClient mounted={mounted} randVal={ind2 / arr.length} />
-                      </IconSmall>
-                    </Auditor>
-                  ))
-                ) : (
-                  <Span>TBD</Span>
-                )}
-              </AuditorWrapper>
-              <ToolTip ref={tooltip}>{cont}</ToolTip>
+    <Column $gap="md">
+      {arr.map((audit, ind) => (
+        <Audit key={ind}>
+          <AuditContent $align="flex-start" $justify="flex-start" $gap="rem2">
+            <IconLarge>
+              <JazziconClient
+                mounted={mounted}
+                randVal={ind / arr.length}
+                paperStyles={{ minWidth: "75px", minHeight: "75px" }}
+                diameter={75}
+              />
+            </IconLarge>
+            <div className="text">
+              <H3>{audit.auditee}</H3>
+              <P>{audit.description}</P>
+            </div>
+            <div>${audit.money.toLocaleString()}</div>
+          </AuditContent>
+          <AuditFooter $disabled={audit.status !== "closed"} $justify="flex-start" $gap="rem2">
+            <Span>{audit.status}</Span>
+            <AuditorWrapper>
+              <Span>auditors:</Span>
+              {audit.status !== "soon" ? (
+                audit.auditors.map((auditor, ind2) => (
+                  <Auditor $offset={`-${ind2 * 12.5}px`} key={ind2}>
+                    <IconSmall
+                      data-auditor={auditor}
+                      key={ind2}
+                      onMouseOver={handleToolTip}
+                      onMouseOut={clearToolTip}
+                    >
+                      <JazziconClient mounted={mounted} randVal={ind2 / arr.length} />
+                    </IconSmall>
+                  </Auditor>
+                ))
+              ) : (
+                <Span>TBD</Span>
+              )}
+            </AuditorWrapper>
+            <ToolTip ref={tooltip}>{cont}</ToolTip>
+            <SmartLink
+              external={false}
+              href={`/audits/${ind}`}
+              disabled={audit.status !== "closed"}
+            >
               <Span className="competition">View Audit</Span>
-            </AuditFooter>
-          </Audit>
-        ))}
-      </Column>
-    </SmartLink>
+            </SmartLink>
+          </AuditFooter>
+        </Audit>
+      ))}
+    </Column>
   );
 };

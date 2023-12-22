@@ -7,6 +7,7 @@ import { Twitter, Discord, Gitbook, Github } from "@/assets";
 import SmartLink from "@/components/Link";
 import { Column, Row } from "@/components/Box";
 import { CommonPad } from "@/components/Common";
+import { P, Span } from "@/components/Text";
 
 const Footer = styled(Column)`
   ${CommonPad}
@@ -20,9 +21,10 @@ const Footer = styled(Column)`
     opacity: ${({ theme }): number => theme.opacity.disable};
   }
 
-  & .copy {
+  & span {
     font-size: 0.8em;
     line-height: 0.85em;
+    opacity: ${({ theme }): number => theme.opacity.disable};
   }
 `;
 
@@ -41,9 +43,7 @@ export default (): JSX.Element => {
   return (
     <footer>
       <Footer $gap="rem1">
-        <div>
-          <p>de-risk. incentivize. audit. decentralize.</p>
-        </div>
+        <P>de-risk. incentivize. audit. decentralize.</P>
         <FooterItems $gap="rem2">
           <SmartLink href="https://twitter.com/BevorProtocol" external={true}>
             <Twitter height="1.5rem" width="1.5rem" fill="white" />
@@ -58,9 +58,7 @@ export default (): JSX.Element => {
             <Discord height="1.5rem" width="1.5rem" fill="white" />
           </SmartLink>
         </FooterItems>
-        <div className="copy">
-          <p>Bevor &copy; {`${new Date().getFullYear()}`}</p>
-        </div>
+        <Span>Bevor &copy; {`${new Date().getFullYear()}`}</Span>
       </Footer>
     </footer>
   );
