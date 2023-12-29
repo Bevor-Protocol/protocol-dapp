@@ -1,30 +1,41 @@
-export const opacify = (amount: number, hexColor: string): string => {
-  if (!hexColor.startsWith("#")) {
-    return hexColor;
-  }
+/**
+ * Converts Hex #RRGGBB to RGB() value
+ * @param {string} hexColor
+ * @returns {{r: number; g: number; b: number}} r g b channel
+ */
+export const hexToRgb = (hexColor: string): { r: number; g: number; b: number } => {
+  const hex = hexColor.replace(/^#/, "");
 
-  if (hexColor.length !== 7) {
-    throw new Error(
-      `opacify: provided color ${hexColor} was not in hexadecimal format (e.g. #000000)`,
-    );
-  }
+  const bigInt = parseInt(hex, 16);
+  const r = (bigInt >> 16) & 255;
+  const g = (bigInt >> 8) & 255;
+  const b = bigInt & 255;
 
-  if (amount < 0 || amount > 1) {
-    throw new Error("opacify: provided amount should be between 0 and 100");
-  }
+  return { r, g, b };
+};
 
-  const opacityHex = Math.round(amount * 255).toString(16);
-  const opacitySuffix = opacityHex.length < 2 ? `0${opacityHex}` : opacityHex;
+/**
+ * Opacifies an input Hex color
+ * @param {number} amount
+ * @param {string} hexColor #RRBBGG
+ * @returns {string} rgba color rgba(r,g,b,a)
+ */
+export const opacify = (hexColor: string, amount: number): string => {
+  const { r, g, b } = hexToRgb(hexColor);
 
-  return `${hexColor.slice(0, 7)}${opacitySuffix}`;
+  return `rgba(${r}, ${g}, ${b}, ${amount})`;
 };
 
 export const colors = {
+  primary: "#004080",
+  dark: "#121212",
+  primaryMix15: "color-mix(in oklab, #121212, #004080 15%)",
+  primaryMix25: "color-mix(in oklab, #121212, #004080 25%)",
   boldBlue: "#001062",
   darkBlue: "#000626",
   offWhite: "#F4F5F7",
   darkWhite: "#C8D0E7",
-  grey: "#565266",
+  grey: "#CCCCCC",
   darkGrey: "#0D111C",
   white: "#FFFFFF",
   black: "#000000",
@@ -32,13 +43,15 @@ export const colors = {
 };
 
 export const mainTheme = {
-  bg: `radial-gradient(111.14% 117.16% at 30% 0%, ${colors.boldBlue} 25%, ${colors.darkBlue} 100%)`,
-  cardBg: colors.darkGrey,
-  cardBgHover: opacify(0.6, colors.darkGrey),
+  bg: colors.dark,
+  cardBg: colors.primaryMix15,
+  cardBgHover: opacify(colors.darkGrey, 0.6),
   greyBorder: colors.grey,
   textGradDark: `linear-gradient(180deg, ${colors.boldBlue} 0%, ${colors.darkBlue} 100%)`,
   textGradLight: `linear-gradient(180deg, ${colors.offWhite} 6.58%, ${colors.darkWhite} 81.58%)`,
-  textPrimary: colors.white,
+  textPrimary: opacify(colors.white, 0.87),
+  textSecondary: opacify(colors.white, 0.6),
+  textFaint: colors.grey,
   textDark: colors.black,
-  whiteHover: opacify(0.5, colors.white),
+  whiteHover: opacify(colors.white, 0.5),
 };

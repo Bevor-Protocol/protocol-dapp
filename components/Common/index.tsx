@@ -35,7 +35,6 @@ export const hoverBorder = css`
 `;
 
 export const hoverBrighten = css`
-  background: ${({ theme }): string => theme.cardBg};
   transition: filter ${({ theme }): string => theme.transitions.speed.md}
     ${({ theme }): string => theme.transitions.ease};
 
