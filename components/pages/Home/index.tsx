@@ -3,7 +3,7 @@
 import styled, { css } from "styled-components";
 
 import { getBreakpoint } from "@/theme";
-import { Grid, Column, Row } from "@/components/Box";
+import { Grid, Column } from "@/components/Box";
 import { hoverBrighten } from "@/components/Common";
 
 export const Home = styled(Grid)`
@@ -57,7 +57,7 @@ export const HomeStats = styled(Grid)`
   )}
 `;
 
-export const HomeStat = styled(Row)`
+export const HomeStat = styled(Column)`
   background-color: ${({ theme }): string => theme.cardBg};
   padding: 1.5rem;
   border-radius: 10px;

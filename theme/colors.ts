@@ -44,9 +44,9 @@ export const colors = {
 
 export const mainTheme = {
   bg: colors.dark,
-  cardBg: colors.primaryMix15,
+  cardBg: colors.primaryMix25,
   cardBgHover: opacify(colors.darkGrey, 0.6),
-  greyBorder: colors.grey,
+  greyBorder: opacify(colors.grey, 0.6),
   textGradDark: `linear-gradient(180deg, ${colors.boldBlue} 0%, ${colors.darkBlue} 100%)`,
   textGradLight: `linear-gradient(180deg, ${colors.offWhite} 6.58%, ${colors.darkWhite} 81.58%)`,
   textPrimary: opacify(colors.white, 0.87),

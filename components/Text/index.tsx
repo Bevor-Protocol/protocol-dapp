@@ -1,12 +1,12 @@
 "use client";
 
-import styled, { CSSProp, css } from "styled-components";
+import styled, { css, CSSProp } from "styled-components";
+import { getBreakpoint } from "@/theme";
 
 export const TextGrad = css`
   background-clip: text;
   -webkit-background-clip: text;
   color: transparent;
-  text-shadow: 5px 5px 10px ${({ theme }): string => theme.darkShadow};
 `;
 
 export const TextGradLight = css`
@@ -19,38 +19,46 @@ export const TextGradDark = css`
   ${TextGrad}
 `;
 
-export const P = styled.p<{ $gradient?: boolean }>`
-  font-size: 1rem;
-  line-height: 1.5rem;
-  font-weight: 500;
-  ${({ $gradient }): CSSProp => $gradient && TextGradLight};
-`;
-
-export const H1 = styled.h1<{ $gradient?: boolean }>`
+export const H1 = styled.h1`
   font-size: 3.75rem;
   font-weight: 700;
-  ${({ $gradient }): CSSProp => $gradient && TextGradLight};
+  ${TextGradLight}
 
-  @media screen and (max-width: ${({ theme }): string => theme.breakpoints.xl}px) {
-    font-size: 3rem;
-  }
+  ${getBreakpoint(
+    "xl",
+    css`
+      font-size: 3rem;
+    `,
+  )}
 `;
 
-export const H2 = styled.h2<{ $gradient?: boolean }>`
+export const H2 = styled.h2`
   font-size: 1.5rem;
   font-weight: 900;
-  ${({ $gradient }): CSSProp => $gradient && TextGradLight};
+  ${TextGradLight}
 `;
 
-export const H3 = styled.h3<{ $gradient?: boolean }>`
+export const H3 = styled.h3`
   font-size: 1.125rem;
   line-height: 1.15rem;
   font-weight: 800;
-  ${({ $gradient }): CSSProp => $gradient && TextGradLight};
+  ${TextGradLight}
+`;
+
+export const P = styled.p`
+  font-size: 1rem;
+  line-height: 1.5rem;
+  font-weight: 500;
+`;
+
+export const Strong = styled.strong<{ $large?: boolean }>`
+  font-size: ${({ $large }): string => ($large ? "1.125rem" : "1rem")};
+  line-height: ${({ $large }): string => ($large ? "1.15rem" : "1.5rem")};
+  font-weight: 800;
 `;
 
 export const Span = styled.span<{ $gradient?: boolean }>`
-  ${({ $gradient }): CSSProp => $gradient && TextGradDark};
+  ${({ $gradient }): CSSProp => $gradient && TextGradLight}
   transition: opacity ${({ theme }): string => theme.transitions.speed.md}
     ${({ theme }): string => theme.transitions.ease};
 `;

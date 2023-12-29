@@ -1,7 +1,7 @@
 import { Arrow } from "@/assets";
 import { stats } from "@/utils/constants";
 import { Section } from "@/components/Common";
-import { H1, H3, P, Span } from "@/components/Text";
+import { H1, P, Span, Strong } from "@/components/Text";
 import { Row } from "@/components/Box";
 import { ButtonLight } from "@/components/Button";
 import { Home, HomeText, HomeStat, HomeStats } from "@/components/pages/Home";
@@ -11,10 +11,10 @@ export default (): JSX.Element => {
     <Section $padCommon $centerV $centerH>
       <Home $gap="lg">
         <HomeText $gap="xl" $align="flex-start">
-          <H1 $gradient>
+          <H1>
             Ensuring <br /> quality audits
           </H1>
-          <P $gradient>
+          <P>
             On-chain solution for establishing terms and carrying out smart contract audits.
             Register as an auditee, auditor, or DAO participant.
           </P>
@@ -36,13 +36,15 @@ export default (): JSX.Element => {
         <HomeStats $gap="sm" $align="initial" $justify="initial">
           {stats.map((stat, ind) => (
             <HomeStat key={ind}>
-              <div>
-                <H3 $gradient>
-                  {stat.symbol}
-                  {stat.stat.toLocaleString()}
-                </H3>
-                <P $gradient>{stat.text}</P>
-              </div>
+              <P>
+                <Strong $large>
+                  <Span $gradient>
+                    {stat.symbol}
+                    {stat.stat.toLocaleString()}
+                  </Span>
+                </Strong>
+              </P>
+              <P>{stat.text}</P>
             </HomeStat>
           ))}
         </HomeStats>
