@@ -9,7 +9,7 @@ export const ToolTip = styled.div`
   max-width: 120px;
   text-overflow: ellipsis;
   overflow: hidden;
-  background: ${({ theme }): string => theme.cardBg};
+  background: ${({ theme }): string => theme.primaryMix20};
   padding: 4px 10px;
   transform: translateX(-25%);
   border: 1px solid ${({ theme }): string => theme.greyBorder};

@@ -27,7 +27,7 @@ export const AuditSection = styled.div`
 `;
 
 export const Audit = styled(Column)<{ $cursor?: string }>`
-  background: ${({ theme }): string => theme.cardBg};
+  background: ${({ theme }): string => theme.primaryMix20};
   border-radius: 10px;
   border: 2px solid ${({ theme }): string => theme.greyBorder};
   width: 100%;

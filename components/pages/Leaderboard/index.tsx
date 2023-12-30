@@ -70,7 +70,7 @@ export const LeadData = styled.div`
   margin: 0 10px;
 
   & ${LeadGrid} {
-    background: ${({ theme }): string => theme.cardBg};
+    background: ${({ theme }): string => theme.primaryMix20};
     border-radius: 10px;
     border: 1px solid ${({ theme }): string => theme.greyBorder};
   }

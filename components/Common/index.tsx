@@ -19,7 +19,7 @@ export const hoverBg = css`
     ${({ theme }): string => theme.transitions.ease};
 
   &:hover {
-    background-color: ${({ theme }): string => theme.cardBgHover};
+    background-color: ${({ theme }): string => theme.primaryMix20};
   }
 `;
 
