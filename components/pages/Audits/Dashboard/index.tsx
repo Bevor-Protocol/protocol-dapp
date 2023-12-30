@@ -86,7 +86,7 @@ export default ({ data, content, display }: Props): JSX.Element => {
   const handleMarkdownChange = (displayType: string): void => {
     if (display == displayType) return;
     const path = `${pathname}?display=${displayType}`;
-    router.push(path);
+    router.replace(path);
   };
 
   return (

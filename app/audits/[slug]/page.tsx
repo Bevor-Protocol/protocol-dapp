@@ -3,11 +3,12 @@ import path from "path";
 import { Suspense } from "react";
 import { remark } from "remark";
 import html from "remark-html";
+import remarkGfm from "remark-gfm";
 import matter from "gray-matter";
 
 import { Section } from "@/components/Common";
 import { H2 } from "@/components/Text";
-import { AuditSection } from "@/components/pages/Audits";
+import { AuditSection, AuditHolder } from "@/components/pages/Audits";
 import { Loader } from "@/components/Common";
 import AuditDashboard from "@/components/pages/Audits/Dashboard";
 
@@ -27,7 +28,7 @@ const getMarkdown = async (display: string): Promise<MarkdownI> => {
   const fileContents = fs.readFileSync(fullPath, "utf8");
 
   const { data, content } = matter(fileContents);
-  const processedContent = (await remark().use(html).process(content)).toString();
+  const processedContent = (await remark().use(html).use(remarkGfm).process(content)).toString();
 
   return {
     data,
@@ -46,12 +47,14 @@ export default async ({
   const { content, data } = await getMarkdown(display);
   return (
     <Section $fillHeight $padCommon $centerH $centerV>
-      <AuditSection>
-        <H2>Audit Dashboard {params.slug}</H2>
-        <Suspense fallback={<Loader $size="50px" />}>
-          <AuditDashboard data={data} content={content} display={display} />
-        </Suspense>
-      </AuditSection>
+      <AuditHolder $gap="rem2">
+        <AuditSection>
+          <H2>Audit Dashboard {params.slug}</H2>
+          <Suspense fallback={<Loader $size="50px" />}>
+            <AuditDashboard data={data} content={content} display={display} />
+          </Suspense>
+        </AuditSection>
+      </AuditHolder>
     </Section>
   );
 };

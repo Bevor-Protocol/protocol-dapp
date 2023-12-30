@@ -12,6 +12,11 @@ import { AuditI } from "@/utils/types";
 import SmartLink from "@/components/Link";
 import { useIsMounted } from "@/hooks/useIsMounted";
 
+export const AuditHolder = styled(Column)`
+  width: min(100%, 1000px);
+  margin: auto;
+`;
+
 export const AuditSection = styled.div`
   width: 100%;
   margin: 2rem;

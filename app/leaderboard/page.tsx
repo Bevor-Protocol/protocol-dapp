@@ -3,7 +3,6 @@
 import { useReducer } from "react";
 
 import { IconMedium } from "@/components/Icon";
-
 import { LeadData, LeadHeader, LeadGrid, Leaderboard } from "@/components/pages/Leaderboard";
 import { leaderboard } from "@/utils/constants";
 import { Section } from "@/components/Common";
