@@ -37,13 +37,13 @@ export default (): JSX.Element => {
             <Dashboard active={pathname.split("/")[1] == "user"} />
             {navItems.main.map((item, ind) => (
               <SmartLink external={false} href={item.url} key={ind}>
-                <NavItem $active={pathname === item.url} $hover="bg">
+                <NavItem $active={pathname === item.url}>
                   <Span>{item.text}</Span>
                 </NavItem>
               </SmartLink>
             ))}
             <MenuHolder ref={ref}>
-              <NavItem onClick={setShow} $active={show} $hover="bg">
+              <NavItem onClick={setShow} $active={show}>
                 <Ellipsis />
               </NavItem>
               {show && (
@@ -57,7 +57,6 @@ export default (): JSX.Element => {
                             $justify="flex-start"
                             $gap="xs"
                             $active={false}
-                            $hover="bg"
                             $pad="5px 10px"
                           >
                             <Span>{item.text}</Span>
@@ -69,35 +68,17 @@ export default (): JSX.Element => {
                     <HR $width="auto" $margin="0 10px" />
                     <Row $gap="xs" $padding="0 3px" $justify="flex-start">
                       <SmartLink href="https://twitter.com/BevorProtocol" external={true}>
-                        <NavItem
-                          $pad="7px"
-                          $border="100%"
-                          $active={false}
-                          $hover="bg"
-                          $height="fit-content"
-                        >
+                        <NavItem $pad="7px" $border="100%" $active={false} $height="fit-content">
                           <Twitter height="0.9rem" width="0.9rem" fill="white" />
                         </NavItem>
                       </SmartLink>
                       <SmartLink href="https://github.com/Bevor-Protocol" external={true}>
-                        <NavItem
-                          $pad="7px"
-                          $border="100%"
-                          $active={false}
-                          $hover="bg"
-                          $height="fit-content"
-                        >
+                        <NavItem $pad="7px" $border="100%" $active={false} $height="fit-content">
                           <Github height="0.9rem" width="0.9rem" fill="white" />
                         </NavItem>
                       </SmartLink>
                       <SmartLink href="https://discord.gg/MDfNgatN" external={true}>
-                        <NavItem
-                          $pad="7px"
-                          $border="100%"
-                          $active={false}
-                          $hover="bg"
-                          $height="fit-content"
-                        >
+                        <NavItem $pad="7px" $border="100%" $active={false} $height="fit-content">
                           <Discord height="0.9rem" width="0.9rem" fill="white" />
                         </NavItem>
                       </SmartLink>

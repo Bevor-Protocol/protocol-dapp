@@ -1,9 +1,9 @@
 "use client";
 
-import styled, { CSSProp } from "styled-components";
+import styled from "styled-components";
 
 import { Row } from "@/components/Box";
-import { CommonPad, hoverBg, hoverBorder, hoverBrighten, focusBorder } from "@/components/Common";
+import { CommonPad, hoverBg, focusBorder } from "@/components/Common";
 
 export const Nav = styled(Row)`
   ${CommonPad}
@@ -31,10 +31,7 @@ export const NavItem = styled(Row)<{
     opacity: ${({ $active, theme }): number =>
       $active ? theme.opacity.enabled : theme.opacity.disable};
   }
-
-  ${({ $hover }): CSSProp => $hover === "bg" && hoverBg};
-  ${({ $hover }): CSSProp => $hover === "border" && hoverBorder};
-  ${({ $hover }): CSSProp => $hover === "bright" && hoverBrighten};
+  ${hoverBg}
 `;
 
 export const MenuHolder = styled(Row)`

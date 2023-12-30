@@ -1,25 +1,31 @@
 "use client";
 
 import styled from "styled-components";
+import { hoverBg } from "@/components/Common";
+import { Column } from "@/components/Box";
 
-export const Leaderboard = styled.div`
-  padding: 3rem 0;
+export const Leaderboard = styled(Column)`
   position: relative;
   max-height: none;
   width: min(100%, 1000px);
-  margin: auto;
 `;
 
 export const LeadHeader = styled.div`
   position: -webkit-sticky;
   position: sticky;
   top: 0;
-  padding: 5px 10px;
+  padding: 0 10px;
   background: rgba(0, 0, 0, 0);
   backdrop-filter: blur(5px);
+  z-index: 999;
+  width: 100%;
 
   & li {
     cursor: pointer;
+    padding: 10px;
+    transform: translateX(-10px);
+    border-radius: 10px;
+    ${hoverBg}
   }
 `;
 
@@ -29,7 +35,7 @@ export const LeadGrid = styled.ul`
   appearance: none;
   list-style: none;
   margin: 0;
-  padding: 10px 10px;
+  padding: 10px;
 
   &:nth-child(n + 2) {
     margin: 7px 0;
@@ -41,6 +47,8 @@ export const LeadGrid = styled.ul`
     display: flex;
     align-items: center;
     gap: 10px;
+    width: fit-content;
+    max-width: 100%;
   }
 
   & li span {
@@ -70,8 +78,9 @@ export const LeadData = styled.div`
   margin: 0 10px;
 
   & ${LeadGrid} {
-    background: ${({ theme }): string => theme.primaryMix20};
     border-radius: 10px;
-    border: 1px solid ${({ theme }): string => theme.greyBorder};
+    background-color: ${({ theme }): string => theme.bg};
+    box-shadow: ${({ theme }): string => theme.boxShadow};
+    ${hoverBg}
   }
 `;
