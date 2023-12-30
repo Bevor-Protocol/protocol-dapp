@@ -8,7 +8,7 @@ import matter from "gray-matter";
 
 import { Section } from "@/components/Common";
 import { H2 } from "@/components/Text";
-import { AuditSection, AuditHolder } from "@/components/pages/Audits";
+import { AuditHolder } from "@/components/pages/Audits";
 import { Loader } from "@/components/Common";
 import AuditDashboard from "@/components/pages/Audits/Dashboard";
 
@@ -48,12 +48,10 @@ export default async ({
   return (
     <Section $fillHeight $padCommon $centerH $centerV>
       <AuditHolder $gap="rem2">
-        <AuditSection>
-          <H2>Audit Dashboard {params.slug}</H2>
-          <Suspense fallback={<Loader $size="50px" />}>
-            <AuditDashboard data={data} content={content} display={display} />
-          </Suspense>
-        </AuditSection>
+        <H2>Audit Dashboard {params.slug}</H2>
+        <Suspense fallback={<Loader $size="50px" />}>
+          <AuditDashboard data={data} content={content} display={display} />
+        </Suspense>
       </AuditHolder>
     </Section>
   );

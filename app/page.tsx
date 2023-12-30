@@ -35,7 +35,7 @@ export default (): JSX.Element => {
         </HomeText>
         <HomeStats $gap="sm" $align="initial" $justify="initial">
           {stats.map((stat, ind) => (
-            <HomeStat key={ind}>
+            <HomeStat key={ind} $width="100%">
               <P>
                 <Strong $large>
                   <Span $gradient>

@@ -34,6 +34,7 @@ export const Column = styled.div<{
   $justify?: string;
   $padding?: string;
   $margin?: string;
+  $width?: string;
 }>`
   display: flex;
   flex-direction: column;
@@ -43,4 +44,5 @@ export const Column = styled.div<{
   justify-content: ${({ $justify }): string => $justify ?? "center"};
   padding: ${({ $padding }): string => $padding ?? "0"};
   margin: ${({ $margin }): string => $margin ?? "0"};
+  width: ${({ $width }): string => $width ?? "100%"};
 `;

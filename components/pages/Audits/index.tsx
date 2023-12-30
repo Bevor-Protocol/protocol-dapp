@@ -2,9 +2,9 @@
 
 import { useState, useRef } from "react";
 import { useRouter } from "next/navigation";
-import styled from "styled-components";
+import styled, { CSSProp } from "styled-components";
 
-import { H2, H3, P, Span, Strong } from "@/components/Text";
+import { H3, P, Span, Strong } from "@/components/Text";
 import { hoverBg } from "@/components/Common";
 import { Column, Row } from "@/components/Box";
 import { IconLarge, IconSmall } from "@/components/Icon";
@@ -18,25 +18,40 @@ export const AuditHolder = styled(Column)`
   width: min(100%, 1000px);
 `;
 
-export const AuditSection = styled.div`
-  width: 100%;
-
-  & ${H2} {
-    margin-bottom: 1rem;
-  }
-`;
-
-export const Audit = styled(Column)<{ $cursor?: string }>`
+export const Audit = styled(Column)<{ $cursor?: string; $hover?: boolean }>`
   background: ${({ theme }): string => theme.bg};
   border-radius: 10px;
   box-shadow: ${({ theme }): string => theme.boxShadow};
   width: 100%;
   cursor: ${({ $cursor }): string => $cursor ?? "default"};
 
-  ${hoverBg}
+  ${({ $hover }): CSSProp => $hover && hoverBg}
 
   & > a {
     width: 100%;
+  }
+`;
+
+export const AuditNav = styled.div<{ $active: boolean }>`
+  font-size: 0.8rem;
+  cursor: pointer;
+  position: relative;
+  opacity: ${({ theme, $active }): number => ($active ? 1 : theme.opacity.disable)};
+  transition: opacity ${({ theme }): string => theme.transitions.speed.md}
+    ${({ theme }): string => theme.transitions.ease};
+
+  &:hover {
+    opacity: ${({ theme, $active }): number => !$active && theme.opacity.hover};
+  }
+
+  &::after {
+    content: "";
+    position: absolute;
+    bottom: -5px;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background-color: ${({ $active }): string => ($active ? "currentcolor" : "transparent")};
   }
 `;
 
@@ -117,31 +132,27 @@ export default ({ arr, current }: { arr: AuditI[]; current: string }): JSX.Eleme
     setCont("");
   };
 
+  const fetchAudits = (event: React.MouseEvent<HTMLDivElement>): void => {
+    const { name } = event.currentTarget.dataset;
+    router.replace(`/audits?status=${name}`);
+  };
+
   return (
-    <Column $gap="rem1">
-      <div style={{ display: "flex", flexDirection: "row", gap: "1rem" }}>
-        <div
-          style={{ color: current == "open" ? "white" : "grey" }}
-          onClick={() => router.replace("/audits?status=open")}
-        >
+    <Column $gap="rem2">
+      <Row $gap="rem1">
+        <AuditNav $active={current == "open"} data-name="open" onClick={fetchAudits}>
           open
-        </div>
-        <div
-          style={{ color: current == "pending" ? "white" : "grey" }}
-          onClick={() => router.replace("/audits?status=pending")}
-        >
+        </AuditNav>
+        <AuditNav $active={current == "pending"} data-name="pending" onClick={fetchAudits}>
           pending
-        </div>
-        <div
-          style={{ color: current == "closed" ? "white" : "grey" }}
-          onClick={() => router.replace("/audits?status=closed")}
-        >
+        </AuditNav>
+        <AuditNav $active={current == "closed"} data-name="closed" onClick={fetchAudits}>
           closed
-        </div>
-      </div>
+        </AuditNav>
+      </Row>
       <Column $gap="rem1">
         {arr.map((audit, ind) => (
-          <Audit key={ind}>
+          <Audit key={ind} $hover>
             <AuditContent $align="flex-start" $justify="flex-start" $gap="rem2">
               <IconLarge>
                 <JazziconClient

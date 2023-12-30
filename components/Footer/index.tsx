@@ -42,7 +42,7 @@ const FooterItems = styled(Row)`
 export default (): JSX.Element => {
   return (
     <footer>
-      <Footer $gap="rem1">
+      <Footer $gap="rem1" $width="100%">
         <P>de-risk. incentivize. audit. decentralize.</P>
         <FooterItems $gap="rem2">
           <SmartLink href="https://twitter.com/BevorProtocol" external={true}>

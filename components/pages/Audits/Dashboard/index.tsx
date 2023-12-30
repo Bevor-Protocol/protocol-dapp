@@ -13,7 +13,7 @@ import { ButtonLight } from "@/components/Button";
 import { useAccount } from "wagmi";
 import { useIsMounted } from "@/hooks/useIsMounted";
 import { Markdown } from "@/components/Markdown";
-import { Audit, AuditContent, AuditFooter, Auditor, AuditorWrapper } from "..";
+import { Audit, AuditContent, AuditFooter, Auditor, AuditorWrapper, AuditNav } from "..";
 
 const AuditDescription = styled(Column)`
   padding: 1rem;
@@ -21,20 +21,6 @@ const AuditDescription = styled(Column)`
 
   & pre {
     white-space: pre-line;
-  }
-`;
-
-const NavItem = styled.div<{ $active: boolean }>`
-  position: relative;
-  opacity: ${({ $active, theme }): number =>
-    $active ? theme.opacity.enabled : theme.opacity.disable};
-  cursor: pointer;
-
-  border-bottom: 2px solid ${({ $active }): string => ($active ? "white" : "transparent")};
-
-  &:hover {
-    opacity: ${({ theme }): number => theme.opacity.enabled};
-    transition: opacity 0.25s ease-in-out;
   }
 `;
 
@@ -110,19 +96,19 @@ export default ({ data, content, display }: Props): JSX.Element => {
         </AuditContent>
         <ProgressBar />
         <AuditDescription $align="flex-start" $gap="lg">
-          <Row $gap="lg" $justify="flex-start" $padding="0 1rem">
-            <NavItem
+          <Row $gap="rem1" $justify="flex-start">
+            <AuditNav
               onClick={(): void => handleMarkdownChange("details")}
               $active={display === "details"}
             >
               Details
-            </NavItem>
-            <NavItem
+            </AuditNav>
+            <AuditNav
               onClick={(): void => handleMarkdownChange("audit")}
               $active={display === "audit"}
             >
               Audit
-            </NavItem>
+            </AuditNav>
           </Row>
           <Markdown dangerouslySetInnerHTML={{ __html: content }} />
         </AuditDescription>

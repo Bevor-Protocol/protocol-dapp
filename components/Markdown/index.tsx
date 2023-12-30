@@ -27,4 +27,8 @@ export const Markdown = styled.div`
     padding: 2px 4px;
     border: 1px solid ${({ theme }): string => theme.greyBorder};
   }
+
+  & a {
+    color: ${({ theme }): string => theme.primary70};
+  }
 `;

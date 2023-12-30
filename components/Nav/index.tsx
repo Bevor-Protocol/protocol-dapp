@@ -49,7 +49,7 @@ export default (): JSX.Element => {
               {show && (
                 <DropDown $top="100%">
                   <Column $gap="sm" $padding="5px 10px" $align="initial">
-                    <Column $align="stretch" $gap="sm" style={{ width: "100%" }}>
+                    <Column $align="stretch" $gap="sm">
                       {navItems.dropdown.map((item, ind) => (
                         <SmartLink external={true} href={item.url} key={ind}>
                           <NavItem

@@ -1,6 +1,6 @@
 import { redirect } from "next/navigation";
 
-import Audit, { AuditSection, AuditHolder } from "@/components/pages/Audits";
+import Audit, { AuditHolder } from "@/components/pages/Audits";
 import { audits } from "@/utils/constants";
 import { Section } from "@/components/Common";
 import { H2 } from "@/components/Text";
@@ -26,11 +26,9 @@ export default async ({
   const { auditShow } = getData(status);
   return (
     <Section $fillHeight $padCommon $centerH>
-      <AuditHolder $gap="rem3" $padding="2rem 0">
-        <AuditSection>
-          <H2>{status.charAt(0).toUpperCase() + status.substring(1).toLowerCase()} Audits</H2>
-          <Audit arr={auditShow} current={status} />
-        </AuditSection>
+      <AuditHolder $gap="rem1" $padding="2rem 0">
+        <H2>{status.charAt(0).toUpperCase() + status.substring(1).toLowerCase()} Audits</H2>
+        <Audit arr={auditShow} current={status} />
       </AuditHolder>
     </Section>
   );
