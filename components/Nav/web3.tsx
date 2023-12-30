@@ -94,7 +94,7 @@ export default (): JSX.Element => {
           connect
         </ButtonLight>
       )}
-      <DropDown ref={ref} $top="105%" style={{ display: "none", left: 0, right: "unset" }}>
+      <DropDown ref={ref} style={{ display: "none" }}>
         <Row $padding="10px 15px">
           This is an unsupported network. Switch it to use the protocol.
         </Row>

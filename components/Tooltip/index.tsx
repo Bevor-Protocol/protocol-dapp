@@ -1,6 +1,7 @@
 "use client";
 
-import styled from "styled-components";
+import styled, { css, CSSProp } from "styled-components";
+import { getBreakpoint } from "@/theme";
 
 export const ToolTip = styled.div`
   position: absolute;
@@ -15,7 +16,7 @@ export const ToolTip = styled.div`
   border: 1px solid ${({ theme }): string => theme.greyBorder};
 `;
 
-export const DropDown = styled.div<{ $top?: string }>`
+export const DropDown = styled.div<{ $top?: string; $flipMobile?: boolean }>`
   position: absolute;
   top: ${({ $top }): string => $top ?? "100%"};
   right: 0;
@@ -26,4 +27,18 @@ export const DropDown = styled.div<{ $top?: string }>`
   cursor: default;
   font-size: 0.8rem;
   min-width: 200px;
+
+  ${({ $flipMobile }): CSSProp =>
+    $flipMobile &&
+    getBreakpoint(
+      "md",
+      css`
+        font-size: 1rem;
+        top: unset;
+        right: -20px;
+        bottom: 100%;
+        width: 100vw;
+        border-radius: 10px 10px 0 0;
+      `,
+    )}
 `;

@@ -46,7 +46,7 @@ export default (): JSX.Element => {
                 <Ellipsis />
               </NavItem>
               {show && (
-                <DropDown $top="100%">
+                <DropDown $flipMobile>
                   <Column $gap="sm" $padding="5px 10px" $align="initial">
                     <Column $align="stretch" $gap="sm">
                       {navItems.dropdown.map((item, ind) => (
@@ -68,17 +68,17 @@ export default (): JSX.Element => {
                     <Row $gap="xs" $padding="0 3px" $justify="flex-start">
                       <SmartLink href="https://twitter.com/BevorProtocol" external={true}>
                         <NavItem $pad="7px" $border="100%" $active={false} $height="fit-content">
-                          <Twitter height="0.9rem" width="0.9rem" fill="white" />
+                          <Twitter height="1rem" width="1rem" fill="white" />
                         </NavItem>
                       </SmartLink>
                       <SmartLink href="https://github.com/Bevor-Protocol" external={true}>
                         <NavItem $pad="7px" $border="100%" $active={false} $height="fit-content">
-                          <Github height="0.9rem" width="0.9rem" fill="white" />
+                          <Github height="1rem" width="1rem" fill="white" />
                         </NavItem>
                       </SmartLink>
                       <SmartLink href="https://discord.gg/MDfNgatN" external={true}>
                         <NavItem $pad="7px" $border="100%" $active={false} $height="fit-content">
-                          <Discord height="0.9rem" width="0.9rem" fill="white" />
+                          <Discord height="1rem" width="1rem" fill="white" />
                         </NavItem>
                       </SmartLink>
                     </Row>

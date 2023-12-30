@@ -26,11 +26,15 @@ export const NavItems = styled(Row)`
     css`
       position: fixed;
       bottom: 0;
-      width: 100%;
       left: 0;
+      width: 100%;
       background-color: ${({ theme }): string => theme.bg};
       z-index: 999;
       border-radius: 10px 10px 0 0;
+      justify-content: space-between;
+      gap: 0;
+      padding-left: 20px;
+      padding-right: 20px;
       box-shadow: ${({ theme }): string => theme.boxShadow};
     `,
   )}
