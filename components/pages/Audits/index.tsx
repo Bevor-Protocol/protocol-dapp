@@ -3,7 +3,7 @@
 import { useState, useRef } from "react";
 import styled from "styled-components";
 
-import { H2, H3, P, Span } from "@/components/Text";
+import { H2, H3, P, Span, Strong } from "@/components/Text";
 import { Column, Row } from "@/components/Box";
 import { IconLarge, IconSmall } from "@/components/Icon";
 import { ToolTip } from "@/components/Tooltip";
@@ -123,15 +123,17 @@ export default ({ arr }: { arr: AuditI[] }): JSX.Element => {
               />
             </IconLarge>
             <div className="text">
-              <H3>{audit.auditee}</H3>
+              <P>
+                <Strong $large>{audit.auditee}</Strong>
+              </P>
               <P>{audit.description}</P>
             </div>
             <div>${audit.money.toLocaleString()}</div>
           </AuditContent>
           <AuditFooter $disabled={audit.status !== "closed"} $justify="flex-start" $gap="rem2">
-            <Span>{audit.status}</Span>
+            <Span $secondary>{audit.status}</Span>
             <AuditorWrapper>
-              <Span>auditors:</Span>
+              <Span $secondary>auditors:</Span>
               {audit.status !== "soon" ? (
                 audit.auditors.map((auditor, ind2) => (
                   <Auditor $offset={`-${ind2 * 12.5}px`} key={ind2}>

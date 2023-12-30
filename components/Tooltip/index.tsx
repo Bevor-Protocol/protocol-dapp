@@ -19,7 +19,7 @@ export const DropDown = styled.div<{ $top?: string }>`
   position: absolute;
   top: ${({ $top }): string => $top ?? "100%"};
   right: 0;
-  background: ${({ theme }): string => theme.cardBg};
+  background: ${({ theme }): string => theme.bg};
   border: 1px solid ${({ theme }): string => theme.greyBorder};
   border-radius: 10px;
   z-index: 1000;

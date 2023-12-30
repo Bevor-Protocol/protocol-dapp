@@ -57,7 +57,7 @@ export default (): JSX.Element => {
                             $justify="flex-start"
                             $gap="xs"
                             $active={false}
-                            $hover="bright"
+                            $hover="bg"
                             $pad="5px 10px"
                           >
                             <Span>{item.text}</Span>
@@ -73,7 +73,7 @@ export default (): JSX.Element => {
                           $pad="7px"
                           $border="100%"
                           $active={false}
-                          $hover="bright"
+                          $hover="bg"
                           $height="fit-content"
                         >
                           <Twitter height="0.9rem" width="0.9rem" fill="white" />
@@ -84,7 +84,7 @@ export default (): JSX.Element => {
                           $pad="7px"
                           $border="100%"
                           $active={false}
-                          $hover="bright"
+                          $hover="bg"
                           $height="fit-content"
                         >
                           <Github height="0.9rem" width="0.9rem" fill="white" />
@@ -95,7 +95,7 @@ export default (): JSX.Element => {
                           $pad="7px"
                           $border="100%"
                           $active={false}
-                          $hover="bright"
+                          $hover="bg"
                           $height="fit-content"
                         >
                           <Discord height="0.9rem" width="0.9rem" fill="white" />

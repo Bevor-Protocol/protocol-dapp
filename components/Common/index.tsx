@@ -2,7 +2,6 @@
 
 import styled, { css, CSSProp, keyframes } from "styled-components";
 import { getBreakpoint } from "@/theme";
-import { EllipsesDot, EllipsesHolder } from "./styled";
 
 export const CommonPad = css`
   padding: ${({ theme }): string => theme.mainPadLarge};
@@ -90,6 +89,21 @@ export const HR = styled.div<{ $width?: string; $margin?: string }>`
   margin: ${({ $margin }): string => $margin ?? "0"};
   height: 1px;
   background: ${({ theme }): string => theme.greyBorder};
+`;
+
+const EllipsesHolder = styled.div<{ $gap?: string }>`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: ${({ $gap }): string => $gap ?? "7px"};
+`;
+
+const EllipsesDot = styled.div<{ $size?: string }>`
+  height: ${({ $size }): string => $size ?? "5px"};
+  width: ${({ $size }): string => $size ?? "5px"};
+  background-color: currentColor;
+  border-radius: 100%;
+  position: relative;
 `;
 
 export const Ellipsis = ({ size, gap }: { size?: string; gap?: string }): JSX.Element => {

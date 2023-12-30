@@ -33,7 +33,7 @@ export const H1 = styled.h1`
 `;
 
 export const H2 = styled.h2`
-  font-size: 1.5rem;
+  font-size: 2rem;
   font-weight: 900;
   ${TextGradLight}
 `;
@@ -45,10 +45,11 @@ export const H3 = styled.h3`
   ${TextGradLight}
 `;
 
-export const P = styled.p`
+export const P = styled.p<{ $secondary?: boolean }>`
   font-size: 1rem;
   line-height: 1.5rem;
   font-weight: 500;
+  color: ${({ $secondary, theme }): string => $secondary && theme.textSecondary};
 `;
 
 export const Strong = styled.strong<{ $large?: boolean }>`
@@ -57,7 +58,8 @@ export const Strong = styled.strong<{ $large?: boolean }>`
   font-weight: 800;
 `;
 
-export const Span = styled.span<{ $gradient?: boolean }>`
+export const Span = styled.span<{ $gradient?: boolean; $secondary?: boolean }>`
+  color: ${({ $secondary, theme }): string => $secondary && theme.textSecondary};
   ${({ $gradient }): CSSProp => $gradient && TextGradLight}
   transition: opacity ${({ theme }): string => theme.transitions.speed.md}
     ${({ theme }): string => theme.transitions.ease};
