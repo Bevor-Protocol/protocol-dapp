@@ -75,11 +75,13 @@ export default (): JSX.Element => {
               />
             </IconMedium>
           )}
-          {isConnected && mounted
-            ? address?.substring(0, 6) +
-              "..." +
-              address?.substring(address.length - 3, address.length)
-            : "connect"}
+          <span>
+            {isConnected && mounted
+              ? address?.substring(0, 6) +
+                "..." +
+                address?.substring(address.length - 3, address.length)
+              : "connect"}
+          </span>
         </WalletHolder>
       )}
       {!isConnected && mounted && (

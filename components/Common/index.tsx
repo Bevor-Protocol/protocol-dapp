@@ -4,12 +4,14 @@ import styled, { css, CSSProp, keyframes } from "styled-components";
 import { getBreakpoint } from "@/theme";
 
 export const CommonPad = css`
-  padding: ${({ theme }): string => theme.mainPadLarge};
+  padding-left: ${({ theme }): string => theme.mainPadLarge};
+  padding-right: ${({ theme }): string => theme.mainPadLarge};
 
   ${getBreakpoint(
     "xs",
     css`
-      padding: ${({ theme }): string => theme.mainPadSmall};
+      padding-left: ${({ theme }): string => theme.mainPadSmall};
+      padding-right: ${({ theme }): string => theme.mainPadSmall};
     `,
   )}
 `;

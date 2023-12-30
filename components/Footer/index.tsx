@@ -1,9 +1,9 @@
 "use client";
 
-import styled from "styled-components";
+import styled, { css } from "styled-components";
 
+import { getBreakpoint } from "@/theme";
 import { Twitter, Discord, Gitbook, Github } from "@/assets";
-
 import SmartLink from "@/components/Link";
 import { Column, Row } from "@/components/Box";
 import { CommonPad } from "@/components/Common";
@@ -26,6 +26,12 @@ const Footer = styled(Column)`
     line-height: 0.85em;
     opacity: ${({ theme }): number => theme.opacity.disable};
   }
+  ${getBreakpoint(
+    "md",
+    css`
+      padding-bottom: calc(30px + 3rem);
+    `,
+  )}
 `;
 
 const FooterItems = styled(Row)`

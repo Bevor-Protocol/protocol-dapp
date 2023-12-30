@@ -1,15 +1,45 @@
 "use client";
 
-import styled from "styled-components";
+import styled, { css } from "styled-components";
 
 import { Row } from "@/components/Box";
 import { CommonPad, hoverBg, focusBorder } from "@/components/Common";
+import { getBreakpoint } from "@/theme";
 
 export const Nav = styled(Row)`
   ${CommonPad}
   padding-top: 30px;
   padding-bottom: 30px;
   width: 100%;
+  ${getBreakpoint(
+    "xs",
+    css`
+      padding-top: 15px;
+      padding-bottom: 15px;
+    `,
+  )}
+`;
+
+export const NavItems = styled(Row)`
+  ${getBreakpoint(
+    "md",
+    css`
+      position: fixed;
+      bottom: 0;
+      width: 100%;
+      left: 0;
+      background-color: ${({ theme }): string => theme.bg};
+      z-index: 999;
+      border-radius: 10px 10px 0 0;
+      box-shadow: ${({ theme }): string => theme.boxShadow};
+    `,
+  )}
+  ${getBreakpoint(
+    "sm",
+    css`
+      font-size: 0.9rem;
+    `,
+  )}
 `;
 
 export const NavItem = styled(Row)<{
@@ -45,9 +75,18 @@ export const WalletHolder = styled(Row)`
   background-color: transparent;
   color: ${({ theme }): string => theme.textPrimary};
   border-radius: 10px;
-  font-size: 0.9rem;
+  font-size: 0.8rem;
   cursor: pointer;
 
   ${hoverBg}
   ${focusBorder}
+
+  ${getBreakpoint(
+    "xl",
+    css`
+      & > span {
+        display: none;
+      }
+    `,
+  )}
 `;

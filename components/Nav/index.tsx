@@ -6,14 +6,13 @@ import { usePathname } from "next/navigation";
 
 import { Arrow, Twitter, Discord, Github } from "@/assets";
 import { navItems } from "@/utils/constants";
-
 import { Span } from "@/components/Text";
 import SmartLink from "@/components/Link";
 import { LogoIcon } from "@/components/Icon";
 import { Row, Column } from "@/components/Box";
 import { Ellipsis, HR } from "@/components/Common";
 import { DropDown } from "@/components/Tooltip";
-import { Nav, NavItem, MenuHolder } from "./styled";
+import { Nav, NavItem, NavItems, MenuHolder } from "./styled";
 import { useClickOutside } from "@/hooks/useClickOutside";
 import Connector from "./web3";
 import Dashboard from "./dashboard";
@@ -33,7 +32,7 @@ export default (): JSX.Element => {
               <Image src="/logo.png" alt="brand logo" fill={true} sizes="any" />
             </LogoIcon>
           </SmartLink>
-          <Row $gap="sm">
+          <NavItems $gap="sm">
             <Dashboard active={pathname.split("/")[1] == "user"} />
             {navItems.main.map((item, ind) => (
               <SmartLink external={false} href={item.url} key={ind}>
@@ -87,7 +86,7 @@ export default (): JSX.Element => {
                 </DropDown>
               )}
             </MenuHolder>
-          </Row>
+          </NavItems>
         </Row>
         <Connector />
       </Nav>

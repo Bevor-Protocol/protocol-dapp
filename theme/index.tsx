@@ -47,8 +47,8 @@ const GAPS = {
 export const getTheme = (): any => {
   return {
     ...mainTheme,
-    mainPadLarge: "0 max(50px, calc((100vw - 1440px + 50px)/2))",
-    mainPadSmall: "0 20px",
+    mainPadLarge: "max(50px, calc((100vw - 1440px + 50px)/2))",
+    mainPadSmall: "20px",
     gaps: GAPS,
     fontsize: FONTSIZE,
     opacity: OPACITIES,
