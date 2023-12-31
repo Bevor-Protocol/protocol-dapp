@@ -5,30 +5,6 @@ import { hoverBg } from "@/components/Common";
 import { Column } from "@/components/Box";
 import { getBreakpoint } from "@/theme";
 
-export const Leaderboard = styled(Column)`
-  position: relative;
-  max-height: none;
-  width: min(100%, 1000px);
-`;
-
-export const LeadHeader = styled.div`
-  position: -webkit-sticky;
-  position: sticky;
-  top: 0;
-  padding: 0 10px;
-  background: ${({ theme }): string => theme.bg};
-  z-index: 999;
-  width: 100%;
-
-  & li {
-    cursor: pointer;
-    padding: 10px;
-    transform: translateX(-10px);
-    border-radius: 10px;
-    ${hoverBg}
-  }
-`;
-
 export const LeadGrid = styled.ul`
   display: grid;
   grid-template-columns: repeat(12, 1fr);
@@ -58,10 +34,10 @@ export const LeadGrid = styled.ul`
   }
 
   & > :nth-child(1) {
-    grid-column: 1 / 4;
+    grid-column: 1 / 5;
   }
   & > :nth-child(2) {
-    grid-column: 4 / 7;
+    grid-column: 5 / 7;
   }
   & > :nth-child(3) {
     grid-column: 7 / 9;
@@ -74,28 +50,79 @@ export const LeadGrid = styled.ul`
   }
 `;
 
-export const LeadData = styled.div`
-  margin: 0 10px;
+export const Leaderboard = styled(Column)`
+  position: relative;
+  max-height: none;
+  width: min(100%, 1000px);
+  padding: 2rem 0;
 
-  & ${LeadGrid} {
+  &::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+  }
+
+  &::-webkit-scrollbar-track {
+    background-color: ${({ theme }): string => theme.primaryMix10};
     border-radius: 10px;
-    background-color: ${({ theme }): string => theme.bg};
-    box-shadow: inset ${({ theme }): string => theme.boxShadow};
-    ${hoverBg}
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background-color: ${({ theme }): string => theme.primary10};
+    border-radius: 10px;
   }
 
   ${getBreakpoint(
     "xl",
     css`
-      max-height: calc(100vh - (3rem + 60px) - 2rem - (20px + 1.27rem + 20px) - 4px);
+      max-height: calc(100vh - (3rem + 60px));
       overflow-y: scroll;
+      padding: 0;
+      display: block;
+      margin-top: 2rem;
+    `,
+  )}
+
+  ${getBreakpoint(
+    "lg",
+    css`
+      overflow-x: scroll;
+
+      & > div {
+        min-width: 622px;
+      }
     `,
   )}
 
   ${getBreakpoint(
     "md",
     css`
-      max-height: calc(100vh - (3rem + 60px + 3rem) - 2rem - (20px + 1.27rem + 20px) - 4px);
+      max-height: calc(100vh - (3rem + 60px + 3rem));
     `,
   )}
+`;
+
+export const LeadHeader = styled.div`
+  position: -webkit-sticky;
+  position: sticky;
+  top: 0;
+  background: ${({ theme }): string => theme.bg};
+  z-index: 999;
+  width: 100%;
+
+  & li {
+    cursor: pointer;
+    padding: 10px;
+    transform: translateX(-10px);
+    border-radius: 10px;
+    ${hoverBg}
+  }
+`;
+
+export const LeadData = styled.div`
+  & ${LeadGrid} {
+    border-radius: 10px;
+    background-color: ${({ theme }): string => theme.bg};
+    box-shadow: inset ${({ theme }): string => theme.boxShadow};
+    ${hoverBg}
+  }
 `;

@@ -27,7 +27,7 @@ export default (): JSX.Element => {
 
   return (
     <Section $padCommon $centerH>
-      <Leaderboard $padding="2rem 0" $gap="xs">
+      <Leaderboard $gap="xs">
         <LeadHeader>
           <LeadGrid>
             {headers.map((header, ind) => (
