@@ -4,7 +4,7 @@ import { useState, useRef } from "react";
 import styled from "styled-components";
 import { useRouter, usePathname } from "next/navigation";
 
-import { H3, P, Span } from "@/components/Text";
+import { P, Span, Strong } from "@/components/Text";
 import { Column, Row } from "@/components/Box";
 import { IconLarge, IconSmall, JazziconClient } from "@/components/Icon";
 import { ToolTip } from "@/components/Tooltip";
@@ -13,7 +13,7 @@ import { ButtonLight } from "@/components/Button";
 import { useAccount } from "wagmi";
 import { useIsMounted } from "@/hooks/useIsMounted";
 import { Markdown } from "@/components/Markdown";
-import { Audit, AuditContent, AuditFooter, Auditor, AuditorWrapper, AuditNav } from "..";
+import { Audit, AuditFooter, Auditor, AuditorWrapper, AuditNav } from "..";
 
 const AuditDescription = styled(Column)`
   padding: 1rem;
@@ -78,7 +78,7 @@ export default ({ data, content, display }: Props): JSX.Element => {
   return (
     <Column $gap="md">
       <Audit>
-        <AuditContent $align="flex-start" $justify="flex-start" $gap="rem2">
+        <Row $align="flex-start" $justify="flex-start" $gap="rem2" $padding="1rem" $width="100%">
           <IconLarge>
             <JazziconClient
               mounted={mounted}
@@ -87,13 +87,17 @@ export default ({ data, content, display }: Props): JSX.Element => {
               diameter={75}
             />
           </IconLarge>
-          <div className="text">
-            <H3>{data.auditee}</H3>
+          <Column $justify="flex-start" $align="flex-start">
+            <Row $justify="space-between" $width="100%">
+              <P>
+                <Strong $large>{data.auditee}</Strong>
+              </P>
+              <div>${data.amount.toLocaleString()}</div>
+            </Row>
             <P>{data.duration}</P>
             <P>{new Date(data.date).toLocaleDateString()}</P>
-          </div>
-          <div>${data.amount.toLocaleString()}</div>
-        </AuditContent>
+          </Column>
+        </Row>
         <ProgressBar />
         <AuditDescription $align="flex-start" $gap="lg">
           <Row $gap="rem1" $justify="flex-start">
