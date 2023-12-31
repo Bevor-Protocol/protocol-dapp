@@ -63,11 +63,11 @@ export const Layout = styled.div`
 export const Section = styled.div<{
   $centerV?: boolean;
   $centerH?: boolean;
-  $fillHeight?: boolean;
   $padCommon?: boolean;
 }>`
   display: flex;
   flex-direction: column;
+  height: 100%;
   ${({ $centerV }): CSSProp =>
     $centerV &&
     css`
@@ -77,11 +77,6 @@ export const Section = styled.div<{
     $centerH &&
     css`
       align-items: center;
-    `}
-  ${({ $fillHeight }): CSSProp =>
-    $fillHeight &&
-    css`
-      min-height: 100vh;
     `}
   ${({ $padCommon }): CSSProp => $padCommon && CommonPad}
 `;

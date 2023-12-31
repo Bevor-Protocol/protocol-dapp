@@ -13,17 +13,16 @@ const Footer = styled(Column)`
   padding-bottom: 30px;
   text-align: center;
   position: relative;
-  & p {
-    font-size: 0.85em;
-    line-height: 1em;
+  font-size: 0.85rem;
+  line-height: 1rem;
+
+  & p,
+  & span {
+    font-size: inherit;
+    line-height: inherit;
     opacity: ${({ theme }): number => theme.opacity.disable};
   }
 
-  & span {
-    font-size: 0.8em;
-    line-height: 0.85em;
-    opacity: ${({ theme }): number => theme.opacity.disable};
-  }
   ${getBreakpoint(
     "md",
     css`

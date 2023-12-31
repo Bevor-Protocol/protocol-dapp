@@ -72,13 +72,16 @@ export const ThemedGlobalStyle = createGlobalStyle`
     box-sizing: border-box;
   }
 
+  html {
+    font-size: ${({ theme }): string => theme.fontsize.xl};
+    color: ${({ theme }): string => theme.textPrimary};
+    background: ${({ theme }): string => theme.bg};
+  }
+
   html,
   body {
     padding: 0;
     margin: 0;
-    font-size: ${({ theme }): string => theme.fontsize.xl};
-    color: ${({ theme }): string => theme.textPrimary};
-    background: ${({ theme }): string => theme.bg};
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
   }

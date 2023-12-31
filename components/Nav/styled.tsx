@@ -12,7 +12,7 @@ export const Nav = styled(Row)`
   padding-bottom: 30px;
   width: 100%;
   ${getBreakpoint(
-    "xs",
+    "md",
     css`
       padding-top: 15px;
       padding-bottom: 15px;

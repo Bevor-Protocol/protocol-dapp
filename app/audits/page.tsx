@@ -25,7 +25,7 @@ export default async ({
   status = status || "open";
   const { auditShow } = getData(status);
   return (
-    <Section $fillHeight $padCommon $centerH>
+    <Section $padCommon $centerH>
       <AuditHolder $gap="rem1" $padding="2rem 0">
         <H2>{status.charAt(0).toUpperCase() + status.substring(1).toLowerCase()} Audits</H2>
         <Audit arr={auditShow} current={status} />

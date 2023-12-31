@@ -46,3 +46,17 @@ export const Column = styled.div<{
   margin: ${({ $margin }): string => $margin ?? "0"};
   width: ${({ $width }): string => $width ?? "100%"};
 `;
+
+export const LiElement = styled.li`
+  display: flex;
+  align-items: center;
+  gap: ${({ theme }): string => theme.gaps.sm};
+  padding-right: 10px;
+
+  & span {
+    text-overflow: ellipsis;
+    overflow: hidden;
+    display: block;
+    line-height: 1.27rem;
+  }
+`;
