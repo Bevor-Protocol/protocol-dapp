@@ -4,7 +4,7 @@ import { useState, useRef } from "react";
 import { useRouter } from "next/navigation";
 import styled, { CSSProp } from "styled-components";
 
-import { H3, P, Span, Strong } from "@/components/Text";
+import { P, Span, Strong } from "@/components/Text";
 import { hoverBg } from "@/components/Common";
 import { Column, Row } from "@/components/Box";
 import { IconLarge, IconSmall } from "@/components/Icon";
@@ -52,23 +52,6 @@ export const AuditNav = styled.div<{ $active: boolean }>`
     right: 0;
     height: 1px;
     background-color: ${({ $active }): string => ($active ? "currentcolor" : "transparent")};
-  }
-`;
-
-export const AuditContent = styled(Row)`
-  padding: 1rem;
-  width: 100%;
-
-  & :last-child {
-    margin-left: auto;
-  }
-
-  & .text {
-    max-width: 40%;
-
-    & ${H3} {
-      margin-bottom: 0.5rem;
-    }
   }
 `;
 
@@ -153,7 +136,7 @@ export default ({ arr, current }: { arr: AuditI[]; current: string }): JSX.Eleme
       <Column $gap="rem1">
         {arr.map((audit, ind) => (
           <Audit key={ind} $hover>
-            <AuditContent $align="flex-start" $justify="flex-start" $gap="rem2">
+            <Row $align="stretch" $justify="flex-start" $gap="rem2" $padding="1rem" $width="100%">
               <IconLarge>
                 <JazziconClient
                   mounted={mounted}
@@ -165,16 +148,17 @@ export default ({ arr, current }: { arr: AuditI[]; current: string }): JSX.Eleme
                   }}
                 />
               </IconLarge>
-              <div className="text">
-                <P>
-                  <Strong $large>{audit.auditee}</Strong>
-                </P>
+              <Column $justify="flex-start" $align="flex-start">
+                <Row $justify="space-between" $width="100%">
+                  <P>
+                    <Strong $large>{audit.auditee}</Strong>
+                  </P>
+                  <div>${audit.money.toLocaleString()}</div>
+                </Row>
                 <P>{audit.description}</P>
-              </div>
-              <div>${audit.money.toLocaleString()}</div>
-            </AuditContent>
+              </Column>
+            </Row>
             <AuditFooter $disabled={audit.status !== "closed"} $justify="flex-start" $gap="rem2">
-              <Span $secondary>{audit.status}</Span>
               <AuditorWrapper>
                 <Span $secondary>auditors:</Span>
                 {audit.status !== "soon" ? (

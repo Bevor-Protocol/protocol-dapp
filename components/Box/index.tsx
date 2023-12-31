@@ -16,6 +16,7 @@ export const Row = styled.div<{
   $justify?: string;
   $padding?: string;
   $margin?: string;
+  $width?: string;
 }>`
   display: flex;
   flex-direction: row;
@@ -25,6 +26,7 @@ export const Row = styled.div<{
   justify-content: ${({ $justify }): string => $justify ?? "center"};
   padding: ${({ $padding }): string => $padding ?? "0"};
   margin: ${({ $margin }): string => $margin ?? "0"};
+  width: ${({ $width }): string => $width ?? "fit-content"};
 `;
 
 export const Column = styled.div<{
