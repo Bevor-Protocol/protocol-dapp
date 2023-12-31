@@ -16,6 +16,7 @@ import { useIsMounted } from "@/hooks/useIsMounted";
 
 export const AuditHolder = styled(Column)`
   width: min(100%, 1000px);
+  height: 100%;
 `;
 
 export const Audit = styled(Column)<{ $cursor?: string; $hover?: boolean }>`

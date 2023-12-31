@@ -54,6 +54,8 @@ export const LiElement = styled.li`
   align-items: center;
   gap: ${({ theme }): string => theme.gaps.sm};
   padding-right: 10px;
+  white-space: nowrap;
+  max-width: 100%;
 
   & span {
     text-overflow: ellipsis;

@@ -17,22 +17,6 @@ export const LeadGrid = styled.ul`
     margin: 7px 0;
   }
 
-  & li {
-    white-space: nowrap;
-    overflow: hidden;
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    width: fit-content;
-    max-width: 100%;
-  }
-
-  & li span {
-    text-overflow: ellipsis;
-    overflow: hidden;
-    display: block;
-  }
-
   & > :nth-child(1) {
     grid-column: 1 / 5;
   }
@@ -75,6 +59,7 @@ export const Leaderboard = styled(Column)`
     "xl",
     css`
       max-height: calc(100vh - (3rem + 60px));
+      max-height: calc(100dvh - (3rem + 60px));
       overflow-y: scroll;
       padding: 0;
       display: block;
@@ -97,6 +82,7 @@ export const Leaderboard = styled(Column)`
     "md",
     css`
       max-height: calc(100vh - (3rem + 60px + 3rem));
+      max-height: calc(100dvh - (3rem + 60px + 3rem));
     `,
   )}
 `;
@@ -114,6 +100,7 @@ export const LeadHeader = styled.div`
     padding: 10px;
     transform: translateX(-10px);
     border-radius: 10px;
+    width: fit-content;
     ${hoverBg}
   }
 `;

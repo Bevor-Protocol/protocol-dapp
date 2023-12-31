@@ -56,6 +56,7 @@ export const focusBorder = css`
 
 export const Layout = styled.div`
   min-height: 100vh;
+  min-height: 100svh;
   display: flex;
   flex-direction: column;
 `;
