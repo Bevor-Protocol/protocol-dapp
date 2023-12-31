@@ -46,7 +46,7 @@ export default async ({
   const display = searchParams.display ?? "details";
   const { content, data } = await getMarkdown(display);
   return (
-    <Section $fillHeight $padCommon $centerH $centerV>
+    <Section $padCommon $centerH $centerV>
       <AuditHolder $gap="rem2">
         <H2>Audit Dashboard {params.slug}</H2>
         <Suspense fallback={<Loader $size="50px" />}>
