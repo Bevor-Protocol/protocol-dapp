@@ -158,8 +158,11 @@ export default ({ arr, current }: { arr: AuditI[]; current: string }): JSX.Eleme
                 <JazziconClient
                   mounted={mounted}
                   randVal={ind / arr.length}
-                  paperStyles={{ minWidth: "75px", minHeight: "75px" }}
                   diameter={75}
+                  paperStyles={{
+                    height: "100%",
+                    width: "100%",
+                  }}
                 />
               </IconLarge>
               <div className="text">

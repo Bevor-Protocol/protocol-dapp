@@ -56,7 +56,11 @@ export default (): JSX.Element => {
                       <JazziconClient
                         mounted={mounted}
                         randVal={ind / state.arr.length}
-                        paperStyles={{ minWidth: "30px", minHeight: "30px" }}
+                        diameter={30}
+                        paperStyles={{
+                          height: "100%",
+                          width: "100%",
+                        }}
                       />
                     </IconMedium>
                   )}
