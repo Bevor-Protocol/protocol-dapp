@@ -100,7 +100,6 @@ Videos of the codebase walkthrough can be found at the following links:
 The MultiRewardDistributor contains logic that is modified and heavily inspired by Compound Flywheel. Verifying the user rewards are properly calculated and this system cannot brick the rest of the instance is of utmost importance.
 
 ## Scoping Details 
-```
 - If you have a public code repo, please share it here:  
 - How many contracts are in scope?:   12
 - Total SLoC for these contracts?:  4802
@@ -118,7 +117,6 @@ The MultiRewardDistributor contains logic that is modified and heavily inspired 
 - Is this either a fork of or an alternate implementation of another project?:   True; Compound with MRD
 - Does it use a side-chain?: False
 - Describe any specific areas you would like addressed: Would like to see people try to break the MRD logic, the temporal governor, the weth router, and take a deep look at the deployment script for any possible misconfigurations of the system. also any issues with calls to MRD from other parts of the system enabling theft of rewards or claiming of rewards that users aren't entitled to
-```
 
 
 

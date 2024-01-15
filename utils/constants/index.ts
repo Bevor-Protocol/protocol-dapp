@@ -170,14 +170,6 @@ export const audits = [
     status: "open",
   },
   {
-    auditee: "Protocol 2",
-    auditors: [],
-    money: 20_000,
-    description:
-      "this is an example description, submitted by the auditee of what their protocol is.",
-    status: "soon",
-  },
-  {
     auditee: "Protocol 3",
     auditors: ["user 2", "user 3"],
     money: 10_000,
@@ -199,7 +191,7 @@ export const audits = [
     money: 50_000,
     description:
       "this is an example description, submitted by the auditee of what their protocol is.",
-    status: "soon",
+    status: "pending",
   },
   {
     auditee: "Protocol 6",

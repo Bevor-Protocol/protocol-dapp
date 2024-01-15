@@ -3,6 +3,8 @@
 import styled, { css } from "styled-components";
 import Jazzicon from "react-jazzicon";
 
+import { getBreakpoint } from "@/theme";
+
 const Icon = css`
   position: relative;
   margin-right: 0px;
@@ -11,26 +13,43 @@ const Icon = css`
 `;
 
 export const IconSmall = styled.div`
-  height: 25px;
-  width: 25px;
-  min-width: 25px;
+  --size: 25px;
+  height: var(--size);
+  width: var(--size);
+  min-width: var(--size);
   ${Icon}
 `;
 
 export const IconMedium = styled.div`
-  height: 30px;
-  width: 30px;
-  min-width: 30px;
+  --size: 30px;
+  height: var(--size);
+  width: var(--size);
+  min-width: var(--size);
   background: white;
   ${Icon}
+
+  ${getBreakpoint(
+    "md",
+    css`
+      --size: 25px;
+    `,
+  )}
 `;
 
 export const IconLarge = styled.div`
-  height: 75px;
-  width: 75px;
-  min-width: 75px;
+  --size: 75px;
+  height: var(--size);
+  width: var(--size);
+  min-width: var(--size);
   background: white;
   ${Icon}
+
+  ${getBreakpoint(
+    "md",
+    css`
+      --size: 60px;
+    `,
+  )}
 `;
 
 export const LogoName = styled.div<{ $height: string }>`

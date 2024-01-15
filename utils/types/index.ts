@@ -23,9 +23,7 @@ export type AuditI = {
 };
 
 export type AuditSSRI = {
-  open: AuditI[];
-  soon: AuditI[];
-  closed: AuditI[];
+  auditShow: AuditI[];
 };
 
 export type AuditDashI = {

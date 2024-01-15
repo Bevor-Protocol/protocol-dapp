@@ -1,41 +1,35 @@
-import Audit, { AuditSection } from "@/components/pages/Audits";
-import { audits } from "@/utils/constants";
+import { redirect } from "next/navigation";
 
+import Audit, { AuditHolder } from "@/components/pages/Audits";
+import { audits } from "@/utils/constants";
 import { Section } from "@/components/Common";
-import { Column } from "@/components/Box";
 import { H2 } from "@/components/Text";
 import { AuditSSRI } from "@/utils/types";
 
-const getData = (): AuditSSRI => {
-  const open = audits.filter((audit) => audit.status === "open");
-  const soon = audits.filter((audit) => audit.status === "soon");
-  const closed = audits.filter((audit) => audit.status === "closed");
-
+const getData = (status: string): AuditSSRI => {
+  if (!["open", "pending", "closed"].includes(status)) {
+    redirect("/audits?status=open");
+  }
+  const auditShow = audits.filter((audit) => audit.status == status);
   return {
-    open,
-    soon,
-    closed,
+    auditShow,
   };
 };
 
-export default async (): Promise<JSX.Element> => {
-  const { open, soon, closed } = getData();
+export default async ({
+  searchParams,
+}: {
+  searchParams: { [key: string]: string | undefined };
+}): Promise<JSX.Element> => {
+  let { status } = searchParams;
+  status = status || "open";
+  const { auditShow } = getData(status);
   return (
-    <Section $fillHeight $padCommon $centerH $centerV>
-      <Column $gap="rem2">
-        <AuditSection>
-          <H2>Pending Audits</H2>
-          <Audit arr={soon} />
-        </AuditSection>
-        <AuditSection>
-          <H2>Open Audits</H2>
-          <Audit arr={open} />
-        </AuditSection>
-        <AuditSection>
-          <H2>Closed Audits</H2>
-          <Audit arr={closed} />
-        </AuditSection>
-      </Column>
+    <Section $padCommon $centerH>
+      <AuditHolder $gap="rem1" $padding="2rem 0" $justify="flex-start">
+        <H2>{status.charAt(0).toUpperCase() + status.substring(1).toLowerCase()} Audits</H2>
+        <Audit arr={auditShow} current={status} />
+      </AuditHolder>
     </Section>
   );
 };

@@ -10,7 +10,7 @@ export default ({ active }: { active: boolean }): JSX.Element => {
 
   return (
     <SmartLink external={false} href={mounted && address ? `/user/${address}` : "/"}>
-      <NavItem $active={active} $hover="bg">
+      <NavItem $active={active}>
         <Span>dashboard</Span>
       </NavItem>
     </SmartLink>

@@ -75,11 +75,13 @@ export default (): JSX.Element => {
               />
             </IconMedium>
           )}
-          {isConnected && mounted
-            ? address?.substring(0, 6) +
-              "..." +
-              address?.substring(address.length - 3, address.length)
-            : "connect"}
+          <span>
+            {isConnected && mounted
+              ? address?.substring(0, 6) +
+                "..." +
+                address?.substring(address.length - 3, address.length)
+              : "connect"}
+          </span>
         </WalletHolder>
       )}
       {!isConnected && mounted && (
@@ -92,7 +94,7 @@ export default (): JSX.Element => {
           connect
         </ButtonLight>
       )}
-      <DropDown ref={ref} $top="105%" style={{ display: "none", left: 0, right: "unset" }}>
+      <DropDown ref={ref} style={{ display: "none" }}>
         <Row $padding="10px 15px">
           This is an unsupported network. Switch it to use the protocol.
         </Row>

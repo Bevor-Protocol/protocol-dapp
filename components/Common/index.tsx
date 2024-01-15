@@ -2,15 +2,16 @@
 
 import styled, { css, CSSProp, keyframes } from "styled-components";
 import { getBreakpoint } from "@/theme";
-import { EllipsesDot, EllipsesHolder } from "./styled";
 
 export const CommonPad = css`
-  padding: ${({ theme }): string => theme.mainPadLarge};
+  padding-left: ${({ theme }): string => theme.mainPadLarge};
+  padding-right: ${({ theme }): string => theme.mainPadLarge};
 
   ${getBreakpoint(
     "xs",
     css`
-      padding: ${({ theme }): string => theme.mainPadSmall};
+      padding-left: ${({ theme }): string => theme.mainPadSmall};
+      padding-right: ${({ theme }): string => theme.mainPadSmall};
     `,
   )}
 `;
@@ -20,7 +21,7 @@ export const hoverBg = css`
     ${({ theme }): string => theme.transitions.ease};
 
   &:hover {
-    background-color: ${({ theme }): string => theme.cardBgHover};
+    background-color: ${({ theme }): string => theme.primaryMix50};
   }
 `;
 
@@ -35,7 +36,6 @@ export const hoverBorder = css`
 `;
 
 export const hoverBrighten = css`
-  background: ${({ theme }): string => theme.cardBg};
   transition: filter ${({ theme }): string => theme.transitions.speed.md}
     ${({ theme }): string => theme.transitions.ease};
 
@@ -56,6 +56,7 @@ export const focusBorder = css`
 
 export const Layout = styled.div`
   min-height: 100vh;
+  min-height: 100svh;
   display: flex;
   flex-direction: column;
 `;
@@ -63,11 +64,11 @@ export const Layout = styled.div`
 export const Section = styled.div<{
   $centerV?: boolean;
   $centerH?: boolean;
-  $fillHeight?: boolean;
   $padCommon?: boolean;
 }>`
   display: flex;
   flex-direction: column;
+  height: 100%;
   ${({ $centerV }): CSSProp =>
     $centerV &&
     css`
@@ -78,11 +79,6 @@ export const Section = styled.div<{
     css`
       align-items: center;
     `}
-  ${({ $fillHeight }): CSSProp =>
-    $fillHeight &&
-    css`
-      min-height: 100vh;
-    `}
   ${({ $padCommon }): CSSProp => $padCommon && CommonPad}
 `;
 
@@ -91,6 +87,21 @@ export const HR = styled.div<{ $width?: string; $margin?: string }>`
   margin: ${({ $margin }): string => $margin ?? "0"};
   height: 1px;
   background: ${({ theme }): string => theme.greyBorder};
+`;
+
+const EllipsesHolder = styled.div<{ $gap?: string }>`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: ${({ $gap }): string => $gap ?? "7px"};
+`;
+
+const EllipsesDot = styled.div<{ $size?: string }>`
+  height: ${({ $size }): string => $size ?? "5px"};
+  width: ${({ $size }): string => $size ?? "5px"};
+  background-color: currentColor;
+  border-radius: 100%;
+  position: relative;
 `;
 
 export const Ellipsis = ({ size, gap }: { size?: string; gap?: string }): JSX.Element => {

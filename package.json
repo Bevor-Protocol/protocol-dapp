@@ -25,6 +25,7 @@
     "react-dom": "18.2.0",
     "react-jazzicon": "^1.0.4",
     "remark": "^15.0.1",
+    "remark-gfm": "^4.0.0",
     "remark-html": "^16.0.1",
     "styled-components": "^6.0.3",
     "typescript": "5.1.3",

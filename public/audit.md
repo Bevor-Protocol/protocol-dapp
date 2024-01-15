@@ -89,7 +89,6 @@ Compound Flywheel. Verifying the user rewards are properly calculated and this s
 cannot brick the rest of the instance is of utmost importance.
 
 ## Scoping Details 
-\`\`\`
 - If you have a public code repo, please share it here:  
 - How many contracts are in scope?:   12
 - Total SLoC for these contracts?:  4802
@@ -118,7 +117,6 @@ to break the MRD logic, the temporal governor, the weth router, and take a deep 
 the deployment script for any possible misconfigurations of the system. also any issues \
 with calls to MRD from other parts of the system enabling theft of rewards or claiming \
 of rewards that users aren't entitled to
-\`\`\`
 
 
 

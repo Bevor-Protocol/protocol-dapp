@@ -6,14 +6,13 @@ import { usePathname } from "next/navigation";
 
 import { Arrow, Twitter, Discord, Github } from "@/assets";
 import { navItems } from "@/utils/constants";
-
 import { Span } from "@/components/Text";
 import SmartLink from "@/components/Link";
 import { LogoIcon } from "@/components/Icon";
 import { Row, Column } from "@/components/Box";
 import { Ellipsis, HR } from "@/components/Common";
 import { DropDown } from "@/components/Tooltip";
-import { Nav, NavItem, MenuHolder } from "./styled";
+import { Nav, NavItem, NavItems, MenuHolder } from "./styled";
 import { useClickOutside } from "@/hooks/useClickOutside";
 import Connector from "./web3";
 import Dashboard from "./dashboard";
@@ -33,23 +32,23 @@ export default (): JSX.Element => {
               <Image src="/logo.png" alt="brand logo" fill={true} sizes="any" />
             </LogoIcon>
           </SmartLink>
-          <Row $gap="sm">
+          <NavItems $gap="sm">
             <Dashboard active={pathname.split("/")[1] == "user"} />
             {navItems.main.map((item, ind) => (
               <SmartLink external={false} href={item.url} key={ind}>
-                <NavItem $active={pathname === item.url} $hover="bg">
+                <NavItem $active={pathname === item.url}>
                   <Span>{item.text}</Span>
                 </NavItem>
               </SmartLink>
             ))}
             <MenuHolder ref={ref}>
-              <NavItem onClick={setShow} $active={show} $hover="bg">
+              <NavItem onClick={setShow} $active={show}>
                 <Ellipsis />
               </NavItem>
               {show && (
-                <DropDown $top="100%">
+                <DropDown $flipMobile>
                   <Column $gap="sm" $padding="5px 10px" $align="initial">
-                    <Column $align="stretch" $gap="sm" style={{ width: "100%" }}>
+                    <Column $align="stretch" $gap="sm">
                       {navItems.dropdown.map((item, ind) => (
                         <SmartLink external={true} href={item.url} key={ind}>
                           <NavItem
@@ -57,7 +56,6 @@ export default (): JSX.Element => {
                             $justify="flex-start"
                             $gap="xs"
                             $active={false}
-                            $hover="bright"
                             $pad="5px 10px"
                           >
                             <Span>{item.text}</Span>
@@ -69,36 +67,18 @@ export default (): JSX.Element => {
                     <HR $width="auto" $margin="0 10px" />
                     <Row $gap="xs" $padding="0 3px" $justify="flex-start">
                       <SmartLink href="https://twitter.com/BevorProtocol" external={true}>
-                        <NavItem
-                          $pad="7px"
-                          $border="100%"
-                          $active={false}
-                          $hover="bright"
-                          $height="fit-content"
-                        >
-                          <Twitter height="0.9rem" width="0.9rem" fill="white" />
+                        <NavItem $pad="7px" $border="100%" $active={false} $height="fit-content">
+                          <Twitter height="1rem" width="1rem" fill="white" />
                         </NavItem>
                       </SmartLink>
                       <SmartLink href="https://github.com/Bevor-Protocol" external={true}>
-                        <NavItem
-                          $pad="7px"
-                          $border="100%"
-                          $active={false}
-                          $hover="bright"
-                          $height="fit-content"
-                        >
-                          <Github height="0.9rem" width="0.9rem" fill="white" />
+                        <NavItem $pad="7px" $border="100%" $active={false} $height="fit-content">
+                          <Github height="1rem" width="1rem" fill="white" />
                         </NavItem>
                       </SmartLink>
                       <SmartLink href="https://discord.gg/MDfNgatN" external={true}>
-                        <NavItem
-                          $pad="7px"
-                          $border="100%"
-                          $active={false}
-                          $hover="bright"
-                          $height="fit-content"
-                        >
-                          <Discord height="0.9rem" width="0.9rem" fill="white" />
+                        <NavItem $pad="7px" $border="100%" $active={false} $height="fit-content">
+                          <Discord height="1rem" width="1rem" fill="white" />
                         </NavItem>
                       </SmartLink>
                     </Row>
@@ -106,7 +86,7 @@ export default (): JSX.Element => {
                 </DropDown>
               )}
             </MenuHolder>
-          </Row>
+          </NavItems>
         </Row>
         <Connector />
       </Nav>

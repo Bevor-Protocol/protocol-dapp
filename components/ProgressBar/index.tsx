@@ -23,7 +23,7 @@ const Container = styled(Column)`
 const ContainerStyles = styled.div`
   height: 20px;
   width: 100%;
-  background: ${({ theme }): string => theme.cardBg};
+  background: ${({ theme }): string => theme.primaryMix20};
   border-radius: 10px;
   border: 2px solid ${({ theme }): string => theme.greyBorder};
 `;

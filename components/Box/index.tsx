@@ -16,6 +16,7 @@ export const Row = styled.div<{
   $justify?: string;
   $padding?: string;
   $margin?: string;
+  $width?: string;
 }>`
   display: flex;
   flex-direction: row;
@@ -25,6 +26,7 @@ export const Row = styled.div<{
   justify-content: ${({ $justify }): string => $justify ?? "center"};
   padding: ${({ $padding }): string => $padding ?? "0"};
   margin: ${({ $margin }): string => $margin ?? "0"};
+  width: ${({ $width }): string => $width ?? "fit-content"};
 `;
 
 export const Column = styled.div<{
@@ -34,6 +36,7 @@ export const Column = styled.div<{
   $justify?: string;
   $padding?: string;
   $margin?: string;
+  $width?: string;
 }>`
   display: flex;
   flex-direction: column;
@@ -43,4 +46,21 @@ export const Column = styled.div<{
   justify-content: ${({ $justify }): string => $justify ?? "center"};
   padding: ${({ $padding }): string => $padding ?? "0"};
   margin: ${({ $margin }): string => $margin ?? "0"};
+  width: ${({ $width }): string => $width ?? "100%"};
+`;
+
+export const LiElement = styled.li`
+  display: flex;
+  align-items: center;
+  gap: ${({ theme }): string => theme.gaps.sm};
+  padding-right: 10px;
+  white-space: nowrap;
+  max-width: 100%;
+
+  & span {
+    text-overflow: ellipsis;
+    overflow: hidden;
+    display: block;
+    line-height: 1.27rem;
+  }
 `;

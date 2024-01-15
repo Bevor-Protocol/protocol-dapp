@@ -47,8 +47,8 @@ const GAPS = {
 export const getTheme = (): any => {
   return {
     ...mainTheme,
-    mainPadLarge: "0 max(50px, calc((100vw - 1440px + 50px)/2))",
-    mainPadSmall: "0 20px",
+    mainPadLarge: "max(50px, calc((100vw - 1440px + 50px)/2))",
+    mainPadSmall: "20px",
     gaps: GAPS,
     fontsize: FONTSIZE,
     opacity: OPACITIES,
@@ -72,22 +72,22 @@ export const ThemedGlobalStyle = createGlobalStyle`
     box-sizing: border-box;
   }
 
+  html {
+    font-size: ${({ theme }): string => theme.fontsize.xl};
+    color: ${({ theme }): string => theme.textPrimary};
+    background: ${({ theme }): string => theme.bg};
+  }
+
   html,
   body {
     padding: 0;
     margin: 0;
-    font-size: ${({ theme }): string => theme.fontsize.xl};
-    color: ${({ theme }): string => theme.textPrimary};
-    background: ${({ theme }): string => theme.bg};
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
   }
 
   main {
     flex: 1 0 0;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
   }
 
   button {
