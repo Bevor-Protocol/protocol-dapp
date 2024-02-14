@@ -1,5 +1,6 @@
 // import "./globals.css";
 import { Analytics } from "@vercel/analytics/react";
+import { SpeedInsights } from "@vercel/speed-insights/next";
 import { Metadata } from "next";
 import WalletProvider from "@/providers/wallet";
 import StyledComponentRegistry from "@/providers/ssr_styled";
@@ -87,6 +88,7 @@ export default ({ children }: { children: React.ReactNode }): JSX.Element => {
           </StyledComponentRegistry>
         </WalletProvider>
         <Analytics />
+        <SpeedInsights />
       </body>
     </html>
   );
