@@ -24,8 +24,9 @@ const getMarkdown = async (display: string): Promise<MarkdownI> => {
   if (!["details", "audit"].includes(display)) {
     display = "details";
   }
-  const fullPath = path.join("./public", `${display}.md`);
-  const fileContents = fs.readFileSync(fullPath, "utf8");
+
+  const filePath = path.join(process.cwd(), "public", `${display}.md`);
+  const fileContents = fs.readFileSync(filePath, "utf8");
 
   const { data, content } = matter(fileContents);
   const processedContent = (await remark().use(html).use(remarkGfm).process(content)).toString();
