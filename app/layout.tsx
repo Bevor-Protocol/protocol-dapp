@@ -12,7 +12,7 @@ import Nav from "@/components/Nav";
 import { jakarta } from "@/theme/fonts";
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://bevor.io"),
+  metadataBase: new URL("https://app.bevor.io"),
   title: "Bevor Protocol",
   description: "Bevor Protocol + DAO | dApp",
   keywords: ["web3", "NextJS", "DAO", "ReactJS", "dApp"],

@@ -25,7 +25,12 @@ const getMarkdown = async (display: string): Promise<MarkdownI> => {
     display = "details";
   }
 
-  const filePath = path.resolve("./public", display + ".md");
+  let filePath: string;
+  if (process.env.NODE_ENV === "development") {
+    filePath = path.resolve("public", display + ".md");
+  } else {
+    filePath = display + ".md";
+  }
   const fileContents = fs.readFileSync(filePath, "utf8");
 
   const { data, content } = matter(fileContents);
