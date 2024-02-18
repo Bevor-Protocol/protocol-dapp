@@ -26,14 +26,11 @@ const getMarkdown = async (display: string): Promise<MarkdownI> => {
   }
 
   let filePath: string;
-  console.log(process.env.NODE_ENV);
-  console.log(process.cwd());
-  console.log(__dirname);
-  console.log(path.resolve("public", display + ".md"));
+  console.log(path.resolve("./public", display + ".md"));
   if (process.env.NODE_ENV === "development") {
     filePath = path.resolve("public", display + ".md");
   } else {
-    filePath = path.resolve("/public", display + ".md");
+    filePath = path.resolve("./public", display + ".md");
   }
   const fileContents = fs.readFileSync(filePath, "utf8");
 
