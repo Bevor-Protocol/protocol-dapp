@@ -44,7 +44,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: "Bevor Protocol",
     description: "Bevor Protocol + DAO | dApp",
-    url: "https://www.bevor.io",
+    url: "https://app.bevor.io",
     images: [
       {
         width: 1200,
