@@ -1,7 +1,7 @@
 import { CSSProp, createGlobalStyle, css } from "styled-components";
 import { mainTheme } from "./colors";
 
-const BREAKPOINTS = {
+const BREAKPOINTS: Record<string, number> = {
   xs: 450,
   sm: 497,
   md: 730,
@@ -17,21 +17,21 @@ const TRANSITIONS = {
   ease: "ease-in-out",
 };
 
-const FONTSIZE = {
+const FONTSIZE: Record<string, string> = {
   sm: "14px",
   md: "15px",
   lg: "16px",
   xl: "18px",
 };
 
-const OPACITIES = {
+const OPACITIES: Record<string, number> = {
   hover: 0.75,
   disable: 0.5,
   click: 0.4,
   enabled: 1,
 };
 
-const GAPS = {
+const GAPS: Record<string, string> = {
   xs: "4px",
   sm: "8px",
   md: "12px",
@@ -59,7 +59,7 @@ export const getTheme = (): any => {
 
 export const getBreakpoint = (size: string, innerCSS: CSSProp): CSSProp => {
   return css`
-    @media screen and (max-width: ${BREAKPOINTS[size as keyof typeof BREAKPOINTS]}px) {
+    @media screen and (max-width: ${BREAKPOINTS[size]}px) {
       ${innerCSS}
     }
   `;
