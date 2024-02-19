@@ -6,8 +6,10 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
+    "postinstall": "husky init",
     "lint": "next lint && prettier --check \"{app,assets,components,hooks,providers,theme,utils}/**/*.{ts,tsx,js,jsx}\" && tsc --noEmit",
-    "format": "prettier --write \"{app,assets,components,hooks,providers,theme,utils}/**/*.{ts,tsx,js,jsx}\""
+    "format": "prettier --write \"{app,assets,components,hooks,providers,theme,utils}/**/*.{ts,tsx,js,jsx}\"",
+    "prepare": "husky"
   },
   "dependencies": {
     "@types/node": "20.2.5",
@@ -41,10 +43,12 @@
     "@next/eslint-plugin-next": "^13.4.4",
     "@typescript-eslint/eslint-plugin": "^5.59.7",
     "@typescript-eslint/parser": "^5.59.7",
+    "drizzle-kit": "^0.20.14",
     "eslint-config-airbnb-typescript": "^17.0.0",
     "eslint-config-prettier": "^8.8.0",
     "eslint-plugin-import": "^2.27.5",
     "eslint-plugin-prettier": "^4.2.1",
+    "husky": "^9.0.11",
     "prettier": "^2.8.8"
   }
 }
