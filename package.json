@@ -8,8 +8,8 @@
     "build": "yarn beforebuild && next build",
     "start": "next start",
     "postinstall": "husky init",
-    "lint": "next lint && prettier --check \"{app,assets,components,hooks,providers,theme,utils}/**/*.{ts,tsx,js,jsx}\" && tsc --noEmit",
-    "format": "prettier --write \"{app,assets,components,hooks,providers,theme,utils}/**/*.{ts,tsx,js,jsx}\"",
+    "lint": "next lint && prettier --check \"{prisma,app,assets,components,hooks,lib,providers,theme}/**/*.{ts,tsx,js,jsx}\" && tsc --noEmit",
+    "format": "prettier --write \"{prisma,app,assets,components,hooks,lib,providers,theme}/**/*.{ts,tsx,js,jsx}\"",
     "prepare": "husky init",
     "db:studio": "dotenv -e .env.local -- prisma studio",
     "db:migrate": "dotenv -e .env.local -- npx prisma migrate dev",
@@ -21,8 +21,8 @@
     "seed": "tsx prisma/seed.ts"
   },
   "lint-staged": {
-    "*.{ts,tsx,js,jsx}": [
-      "yarn lint"
+    "{prisma,app,assets,components,hooks,lib,providers,theme}/**/*.{ts,tsx,js,jsx}": [
+      "prettier --check"
     ]
   },
   "dependencies": {

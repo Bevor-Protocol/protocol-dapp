@@ -1,11 +1,9 @@
--- CreateEnum
-CREATE TYPE "Role" AS ENUM ('AUDITOR', 'AUDITEE');
-
 -- CreateTable
 CREATE TABLE "User" (
     "id" TEXT NOT NULL,
     "address" TEXT NOT NULL,
-    "role" "Role"[],
+    "auditeeRole" BOOLEAN NOT NULL DEFAULT false,
+    "auditorRole" BOOLEAN NOT NULL DEFAULT false,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
     CONSTRAINT "User_pkey" PRIMARY KEY ("id")
@@ -16,13 +14,16 @@ CREATE TABLE "Profile" (
     "userId" TEXT NOT NULL,
     "name" TEXT,
     "image" TEXT,
-    "available" BOOLEAN NOT NULL DEFAULT false
+    "available" BOOLEAN NOT NULL DEFAULT false,
+    "updatedAt" TIMESTAMP(3) NOT NULL
 );
 
 -- CreateTable
 CREATE TABLE "Audit" (
     "id" TEXT NOT NULL,
-    "auditeeId" TEXT,
+    "auditeeId" TEXT NOT NULL,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
 
     CONSTRAINT "Audit_pkey" PRIMARY KEY ("id")
 );
@@ -63,7 +64,7 @@ CREATE INDEX "_UserAuditor_B_index" ON "_UserAuditor"("B");
 ALTER TABLE "Profile" ADD CONSTRAINT "Profile_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "Audit" ADD CONSTRAINT "Audit_auditeeId_fkey" FOREIGN KEY ("auditeeId") REFERENCES "User"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+ALTER TABLE "Audit" ADD CONSTRAINT "Audit_auditeeId_fkey" FOREIGN KEY ("auditeeId") REFERENCES "User"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "Terms" ADD CONSTRAINT "Terms_auditId_fkey" FOREIGN KEY ("auditId") REFERENCES "Audit"("id") ON DELETE RESTRICT ON UPDATE CASCADE;

@@ -10,6 +10,8 @@ First we need to generate the prisma client (ONLY IN DEVELOPMENT):
 We can reset the DB, which will drop the DB/schema if possible, then create a new one while applying all migrations, and also run the seed script (ONLY IN DEVELOPMENT):
 `yarn run db:reset`
 
+Seeding occurs whenever you manually tell it to `yarn run db:seed`, or automatically when running `yarn run db:migrate` (when there are history conflicts / DB schema drift) and `yarn run db:reset`
+
 If changes are made to the schema, we can run this to generate new migrations, apply changes to the DB and generate a new prisma client
 `yarn run db:migrate`
 
