@@ -10,7 +10,7 @@ import { Column, Row } from "@/components/Box";
 import { IconLarge, IconSmall } from "@/components/Icon";
 import { ToolTip } from "@/components/Tooltip";
 import { JazziconClient } from "@/components/Icon";
-import { AuditI } from "@/utils/types";
+import { AuditI } from "@/lib/types";
 import SmartLink from "@/components/Link";
 import { useIsMounted } from "@/hooks/useIsMounted";
 

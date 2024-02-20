@@ -1,5 +1,5 @@
 import { Arrow } from "@/assets";
-import { stats } from "@/utils/constants";
+import { stats } from "@/lib/constants";
 import { Section } from "@/components/Common";
 import { H1, P, Span, Strong } from "@/components/Text";
 import { Row } from "@/components/Box";

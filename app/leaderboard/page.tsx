@@ -4,13 +4,13 @@ import { useReducer } from "react";
 
 import { IconMedium } from "@/components/Icon";
 import { LeadData, LeadHeader, LeadGrid, Leaderboard } from "@/components/pages/Leaderboard";
-import { leaderboard } from "@/utils/constants";
+import { leaderboard } from "@/lib/constants";
 import { Section } from "@/components/Common";
 import { LiElement } from "@/components/Box";
 import { Arrow } from "@/assets";
 import { JazziconClient } from "@/components/Icon";
-import { sortLeaderboardReducer } from "@/utils/reducers";
-import { LeaderboardI } from "@/utils/types";
+import { sortLeaderboardReducer } from "@/lib/reducers";
+import { LeaderboardI } from "@/lib/types";
 import { useIsMounted } from "@/hooks/useIsMounted";
 
 const headers = ["name", "money", "active", "completed", "available"];
