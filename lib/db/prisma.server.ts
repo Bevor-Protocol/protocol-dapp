@@ -1,27 +1,14 @@
 import { PrismaClient } from "@prisma/client";
-// import { Pool, neonConfig } from "@neondatabase/serverless";
-// import { PrismaNeon } from "@prisma/adapter-neon";
-// import ws from "ws";
 
-declare global {
-  let prisma: PrismaClient;
+const globalForPrisma = globalThis as unknown as { prisma: PrismaClient };
+
+export const prisma = globalForPrisma.prisma || new PrismaClient({ log: ["query", "info"] });
+
+// We handle this as a global variable so we can cache the prisma instance
+// and prevent multiple unwanted connections during local development.
+// This prevents hot reloading from creating new unwanted PrismaClient in dev env.
+
+// Could update this for Neon's serverless driver.
+if (process.env.NODE_ENV !== "development") {
+  globalForPrisma.prisma = prisma;
 }
-
-type GlobalThis = typeof globalThis & {
-  prisma: PrismaClient;
-};
-
-if (!(global as GlobalThis).prisma) {
-  // neonConfig.webSocketConstructor = ws;
-  // const connectionString = process.env.DB_URL;
-  // const connectionString = "postgres://petersimone@localhost:5432/bevor";
-  // const pool = new Pool({ connectionString });
-  // const adapter = new PrismaNeon(pool);
-  // (global as GlobalThis).prisma = new PrismaClient({ adapter });
-  (global as GlobalThis).prisma = new PrismaClient();
-  // (global as GlobalThis).prisma.$use(async (params, next) => {
-
-  // })
-}
-
-export const prisma = (global as GlobalThis).prisma;
