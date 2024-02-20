@@ -5,12 +5,12 @@
   "scripts": {
     "dev": "next dev",
     "beforebuild": "npx prisma generate",
-    "build": "yarn run beforebuild && next build",
+    "build": "yarn beforebuild && next build",
     "start": "next start",
     "postinstall": "husky init",
     "lint": "next lint && prettier --check \"{app,assets,components,hooks,providers,theme,utils}/**/*.{ts,tsx,js,jsx}\" && tsc --noEmit",
     "format": "prettier --write \"{app,assets,components,hooks,providers,theme,utils}/**/*.{ts,tsx,js,jsx}\"",
-    "prepare": "husky",
+    "prepare": "husky init",
     "db:studio": "dotenv -e .env.local -- prisma studio",
     "db:migrate": "dotenv -e .env.local -- npx prisma migrate dev",
     "db:seed": "dotenv -e .env.local -- npx prisma db seed",
@@ -19,6 +19,11 @@
   },
   "prisma": {
     "seed": "tsx prisma/seed.ts"
+  },
+  "lint-staged": {
+    "*.{ts,tsx,js,jsx}": [
+      "yarn lint"
+    ]
   },
   "dependencies": {
     "@neondatabase/serverless": "^0.8.1",
@@ -64,6 +69,7 @@
     "eslint-plugin-import": "^2.27.5",
     "eslint-plugin-prettier": "^4.2.1",
     "husky": "^9.0.11",
+    "lint-staged": "^15.2.2",
     "prettier": "^2.8.8",
     "tsx": "^4.7.1"
   }
