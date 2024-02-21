@@ -16,7 +16,7 @@ export const protocolDataFunds = async (): Promise<number> => {
         price: true,
       },
     })
-    .then((result) => result._sum.price || 0);
+    .then((result: { _sum: { price: number | null } }) => result._sum.price || 0);
 };
 
 export const protocolDataVulnerabilities = async (): Promise<number> => {
