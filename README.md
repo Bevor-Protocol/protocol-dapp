@@ -2,7 +2,7 @@
 
 `yarn install`
 
-The project is configured to use Husky + lint-staging for pre-commit hooks, which rely on prettier, eslint, and prisma for formatting the schema file.
+The project is configured to use Husky + lint-staging for pre-commit hooks, which rely on prettier, eslint, and prisma for formatting the schema file. We use a postgres DB.
 
 `cp .env.example .env.local`
 
@@ -28,6 +28,20 @@ If changes are made to the schema, we can run this to generate new migrations, a
 
 Again, whenever you update the Prisma schema, you'll need to run `yarn run db:push` or `yarn run db:migrate` to updated the DB. It keeps the DB schema in sync with the Prisma schema, and both will generate the Prisma Client.
 
+# Connecting to the Local DB
+
+You can use `psql` to observe the DB locally. Running `psql -l` will show your databases.
+
+There are 2 ways to connect to the DB instance:
+
+`psql -U <username> -d <dbname>`
+
+`psql "postgresql://<username>@localhost:5432/<dbname>"`
+
+You can also use the prisma studio `yarn db:studio` to connect to a GUI on localhost:5555 to interact with the data.
+
+NEON will generate a new DB branch for each Vercel branch. Vercel's env config will update to reflect the new connection string for each DB branch.
+
 # Notes
 
-When deploying Prisma to Vercel, Vercel automatically caches dependencies on deployment. This might result in an outdated version of the Prisma Client when the Prisma schema updates. To be safe, we add a `beforebuild` script to the package.json file to explicitly call `prisma generate` before the `next build` occurs.
+When deploying Prisma to Vercel, Vercel automatically caches dependencies on deployment. This might result in an outdated version of the Prisma Client when the Prisma schema updates. To be safe, we add a `beforebuild` script to the package.json file to explicitly call `prisma generate` before the `next build` occurs. The build is followed by a `predeploy` script, which runs `prisma migrate deploy`.

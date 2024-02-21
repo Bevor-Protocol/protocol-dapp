@@ -52,3 +52,9 @@ export type AuditDashI = {
   // address of the ERC721 audit NFT
   tokenId: number;
 };
+
+export type HomeStatI = {
+  action: () => Promise<number>;
+  symbol?: string;
+  text: string;
+};
