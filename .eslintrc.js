@@ -10,30 +10,30 @@ module.exports = {
     sourceType: "module",
   },
   extends: [
+    "next",
+    "prettier",
     "eslint:recommended",
     "airbnb-typescript/base",
     "plugin:@typescript-eslint/eslint-recommended",
     "plugin:@typescript-eslint/recommended",
-    "prettier",
     "plugin:prettier/recommended",
-    "plugin:@next/next/recommended",
   ],
   plugins: ["import", "prettier"],
   rules: {
     "no-underscore-dangle": "off",
     "no-extra-semi": OFF,
+    "no-unescaped-entities": OFF,
     "no-restricted-syntax": [ERROR, "WithStatement"],
     "@typescript-eslint/quotes": [ERROR, "double"],
-    "import/export": 0,
+    "import/export": OFF,
     quotes: [ERROR, "double"],
     "no-console": OFF,
     "@typescript-eslint/explicit-function-return-type": OFF,
-    "@typescript-eslint/no-var-requires": 1,
+    "@typescript-eslint/no-var-requires": WARN,
     "max-len": [
       ERROR,
-      110, // airbnb's default is 100 but we give some additional space for edge cases where prettier is not that strict
-      ERROR,
       {
+        code: 110,
         ignoreUrls: true,
         ignoreComments: false,
       },
@@ -46,7 +46,7 @@ module.exports = {
     "@typescript-eslint/prefer-optional-chain": WARN,
     "import/extensions": OFF,
     "prettier/prettier": [
-      "error",
+      ERROR,
       {
         endOfLine: "auto",
       },

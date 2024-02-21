@@ -6,7 +6,7 @@ type PropsI = {
   [key: string]: any;
 };
 
-export default ({ children, ...props }: PropsI): JSX.Element => {
+const DynamicLink = ({ children, ...props }: PropsI): JSX.Element => {
   const { href, external, disabled, ...rest } = props;
 
   if (external) {
@@ -29,3 +29,5 @@ export default ({ children, ...props }: PropsI): JSX.Element => {
     </StyledNextLink>
   );
 };
+
+export default DynamicLink;

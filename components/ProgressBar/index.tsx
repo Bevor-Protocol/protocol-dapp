@@ -36,7 +36,7 @@ const FillerStyles = styled.div`
   text-align: right;
 `;
 
-export default (): JSX.Element => {
+const ProgressBar = (): JSX.Element => {
   return (
     <Container $gap="md" $padding="20px 0">
       <P>Vesting Progress</P>
@@ -47,3 +47,5 @@ export default (): JSX.Element => {
     </Container>
   );
 };
+
+export default ProgressBar;

@@ -1,10 +1,10 @@
 import { redirect } from "next/navigation";
 
 import Audit, { AuditHolder } from "@/components/pages/Audits";
-import { audits } from "@/utils/constants";
+import { audits } from "@/lib/constants";
 import { Section } from "@/components/Common";
 import { H2 } from "@/components/Text";
-import { AuditSSRI } from "@/utils/types";
+import { AuditSSRI } from "@/lib/types";
 
 const getData = (status: string): AuditSSRI => {
   if (!["open", "pending", "closed"].includes(status)) {
@@ -16,7 +16,7 @@ const getData = (status: string): AuditSSRI => {
   };
 };
 
-export default async ({
+const Audits = async ({
   searchParams,
 }: {
   searchParams: { [key: string]: string | undefined };
@@ -33,3 +33,5 @@ export default async ({
     </Section>
   );
 };
+
+export default Audits;

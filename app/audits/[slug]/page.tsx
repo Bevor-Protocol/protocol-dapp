@@ -43,7 +43,7 @@ const getMarkdown = async (display: string): Promise<MarkdownI> => {
   };
 };
 
-export default async ({
+const Audit = async ({
   params,
   searchParams,
 }: {
@@ -63,3 +63,5 @@ export default async ({
     </Section>
   );
 };
+
+export default Audit;

@@ -11,9 +11,9 @@ import { JazziconClient, IconMedium, IconSmall } from "@/components/Icon";
 import { ButtonLight } from "@/components/Button";
 import { DropDown } from "@/components/Tooltip";
 // import { Loader } from "@/components/Common";
-import { ChainPresets } from "@/utils/constants/chains";
+import { ChainPresets } from "@/lib/constants/chains";
 
-export default (): JSX.Element => {
+const Web3Holder = (): JSX.Element => {
   const { open } = useWeb3Modal();
   const { chain } = useNetwork();
   const { address, isConnected } = useAccount();
@@ -102,3 +102,5 @@ export default (): JSX.Element => {
     </Row>
   );
 };
+
+export default Web3Holder;

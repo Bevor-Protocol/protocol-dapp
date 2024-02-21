@@ -1,0 +1,51 @@
+generator client {
+  provider        = "prisma-client-js"
+  previewFeatures = ["driverAdapters"]
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+  // directUrl = env("DIRECT_URL")
+}
+
+model User {
+  id          String   @id @default(cuid())
+  address     String   @unique
+  auditeeRole Boolean  @default(false)
+  auditorRole Boolean  @default(false)
+  profile     Profile?
+  auditee     Audit[]  @relation("UserAuditee")
+  auditor     Audit[]  @relation("UserAuditor")
+  createdAt   DateTime @default(now())
+}
+
+model Profile {
+  userId    String   @unique
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  name      String?
+  image     String?
+  available Boolean  @default(false)
+  updatedAt DateTime @updatedAt
+}
+
+model Audit {
+  id        String   @id @default(cuid())
+  terms     Terms?
+  auditee   User     @relation("UserAuditee", fields: [auditeeId], references: [id])
+  auditeeId String
+  auditors  User[]   @relation("UserAuditor")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Terms {
+  auditId   String   @unique
+  audit     Audit    @relation(fields: [auditId], references: [id])
+  markdown  String? // reference to an S3 storage key
+  price     Int      @default(0)
+  duration  Int      @default(6) // duration in months
+  isFinal   Boolean  @default(false)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}

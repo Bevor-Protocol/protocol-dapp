@@ -1,4 +1,4 @@
-export default (props: any): JSX.Element => {
+const Chevron = (props: any): JSX.Element => {
   return (
     <svg
       {...props}
@@ -16,3 +16,5 @@ export default (props: any): JSX.Element => {
     </svg>
   );
 };
+
+export default Chevron;

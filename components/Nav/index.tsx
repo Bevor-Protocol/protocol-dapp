@@ -5,7 +5,7 @@ import { useRef, useReducer } from "react";
 import { usePathname } from "next/navigation";
 
 import { Arrow, Twitter, Discord, Github } from "@/assets";
-import { navItems } from "@/utils/constants";
+import { navItems } from "@/lib/constants";
 import { Span } from "@/components/Text";
 import SmartLink from "@/components/Link";
 import { LogoIcon } from "@/components/Icon";
@@ -17,7 +17,7 @@ import { useClickOutside } from "@/hooks/useClickOutside";
 import Connector from "./web3";
 import Dashboard from "./dashboard";
 
-export default (): JSX.Element => {
+const NavHolder = (): JSX.Element => {
   const pathname = usePathname();
   const [show, setShow] = useReducer((s) => !s, false);
   const ref = useRef<HTMLDivElement>(null);
@@ -93,3 +93,5 @@ export default (): JSX.Element => {
     </nav>
   );
 };
+
+export default NavHolder;

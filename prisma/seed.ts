@@ -1,0 +1,84 @@
+// import { Role, Prisma } from "@prisma/client";
+import { prisma } from "@/lib/db/prisma.server";
+
+const seed = async (): Promise<void> => {
+  // In practice, users will only be created once they've gotten a role
+  // asigned. Anyone can visit the application, but we won't need a dashboard
+  // page for these users.
+  const userData = [
+    {
+      address: "0xc0ffee254729296a45a3885639AC7E10F9d54979",
+      auditeeRole: true,
+      auditorRole: true,
+    },
+    { address: "0x999999cf1046e68e36E1aA2E0E07105eDDD1f08E", auditeeRole: true },
+    { address: "0x73F4aC126bF12DCe39080457FABdce9a43Bd1f70", auditorRole: true },
+  ];
+
+  // I want to create an empty profile relation upon creating a user.
+  // I'll just do this in a transaction.
+  await prisma.$transaction(
+    userData.map((user) =>
+      prisma.user.create({
+        data: {
+          ...user,
+          profile: {
+            create: {},
+          },
+        },
+      }),
+    ),
+  );
+
+  // create a newly generated audit. Will always have an auditee, since they're the
+  // one that initiated it, but auditors could be empty.
+  await prisma.audit.create({
+    data: {
+      auditee: {
+        connect: {
+          address: "0x999999cf1046e68e36E1aA2E0E07105eDDD1f08E",
+        },
+      },
+      terms: {
+        create: {
+          price: 1_000,
+          duration: 6,
+        },
+      },
+    },
+  });
+
+  // create an audit that already has auditors.
+  await prisma.audit.create({
+    data: {
+      auditee: {
+        connect: {
+          address: "0xc0ffee254729296a45a3885639AC7E10F9d54979",
+        },
+      },
+      auditors: {
+        connect: [
+          {
+            address: "0x73F4aC126bF12DCe39080457FABdce9a43Bd1f70",
+          },
+        ],
+      },
+      terms: {
+        create: {
+          price: 10_000,
+          duration: 3,
+        },
+      },
+    },
+  });
+};
+
+seed()
+  .then(async () => {
+    await prisma.$disconnect();
+  })
+  .catch(async (e) => {
+    console.error(e);
+    await prisma.$disconnect();
+    process.exit(1);
+  });

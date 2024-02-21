@@ -1,12 +1,15 @@
+import { Suspense } from "react";
+
 import { Arrow } from "@/assets";
-import { stats } from "@/utils/constants";
 import { Section } from "@/components/Common";
-import { H1, P, Span, Strong } from "@/components/Text";
+import { H1, P, Span } from "@/components/Text";
 import { Row } from "@/components/Box";
 import { ButtonLight } from "@/components/Button";
-import { Home, HomeText, HomeStat, HomeStats } from "@/components/pages/Home";
+import { HomeStat, HomeStatSkeleton } from "@/components/pages/Home";
+import { Home, HomeText, HomeStatsGrid } from "@/components/pages/Home/styled";
+import * as Actions from "@/lib/actions/protocolData";
 
-export default (): JSX.Element => {
+const Page = (): JSX.Element => {
   return (
     <Section $padCommon $centerV $centerH>
       <Home $gap="lg">
@@ -33,22 +36,26 @@ export default (): JSX.Element => {
             </ButtonLight>
           </Row>
         </HomeText>
-        <HomeStats $gap="sm" $align="initial" $justify="initial">
-          {stats.map((stat, ind) => (
-            <HomeStat key={ind} $width="100%">
-              <P>
-                <Strong $large>
-                  <Span $gradient>
-                    {stat.symbol}
-                    {stat.stat.toLocaleString()}
-                  </Span>
-                </Strong>
-              </P>
-              <P>{stat.text}</P>
-            </HomeStat>
-          ))}
-        </HomeStats>
+        <HomeStatsGrid $gap="sm" $align="initial" $justify="initial">
+          <Suspense fallback={<HomeStatSkeleton />}>
+            <HomeStat action={Actions.protocolDataAudits} text="audits conducted" />
+          </Suspense>
+          <Suspense fallback={<HomeStatSkeleton />}>
+            <HomeStat
+              action={Actions.protocolDataVulnerabilities}
+              text="vulnerabilities uncovered"
+            />
+          </Suspense>
+          <Suspense fallback={<HomeStatSkeleton />}>
+            <HomeStat action={Actions.protocolDataFunds} symbol="$" text="funds facilitated" />
+          </Suspense>
+          <Suspense fallback={<HomeStatSkeleton />}>
+            <HomeStat action={Actions.protocolDataAuditors} text="registered auditors" />
+          </Suspense>
+        </HomeStatsGrid>
       </Home>
     </Section>
   );
 };
+
+export default Page;
