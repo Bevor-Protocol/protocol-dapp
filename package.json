@@ -5,12 +5,14 @@
   "scripts": {
     "dev": "next dev",
     "beforebuild": "npx prisma generate",
-    "build": "yarn beforebuild && next build",
+    "build": "yarn beforebuild && next build && yarn predeploy",
+    "predeploy": "prisma migrate deploy",
     "start": "next start",
     "prepare": "husky install",
     "lint": "next lint && prettier --check \"**/*.{ts,tsx,js,jsx,md,json}\" && prisma validate && tsc --noEmit",
     "format": "prettier --write \"**/*.{ts,tsx,js,jsx,md,json}\" && eslint && prisma format",
-    "db:studio": "dotenv -e .env.local -- prisma studio",
+    "db:studio": "dotenv -e .env.local -- npx prisma studio",
+    "db:push": "dotenv -e .env.local -- npx prisma db push",
     "db:migrate": "dotenv -e .env.local -- npx prisma migrate dev",
     "db:seed": "dotenv -e .env.local -- npx prisma db seed",
     "db:reset": "dotenv -e .env.local -- npx prisma migrate reset",
@@ -27,7 +29,7 @@
     "**/*.{md,json}": [
       "prettier --write"
     ],
-    "**/*.{prisma}": [
+    "**/*.prisma": [
       "prisma format"
     ]
   },
