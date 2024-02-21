@@ -21,7 +21,7 @@ const wagmiConfig = createConfig({
 });
 const ethereumClient = new EthereumClient(wagmiConfig, chains);
 
-export default ({ children }: { children: React.ReactNode }): JSX.Element => {
+const WalletProvider = ({ children }: { children: React.ReactNode }): JSX.Element => {
   return (
     <>
       <WagmiConfig config={wagmiConfig}>{children}</WagmiConfig>
@@ -38,3 +38,5 @@ export default ({ children }: { children: React.ReactNode }): JSX.Element => {
     </>
   );
 };
+
+export default WalletProvider;

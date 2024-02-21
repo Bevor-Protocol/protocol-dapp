@@ -3,7 +3,7 @@
 import { ThemeProvider } from "styled-components";
 import { getTheme, ThemedGlobalStyle } from "@/theme";
 
-export default ({ children }: { children: React.ReactNode }): JSX.Element => {
+const Theme = ({ children }: { children: React.ReactNode }): JSX.Element => {
   return (
     <ThemeProvider theme={getTheme()}>
       <ThemedGlobalStyle />
@@ -11,3 +11,5 @@ export default ({ children }: { children: React.ReactNode }): JSX.Element => {
     </ThemeProvider>
   );
 };
+
+export default Theme;
