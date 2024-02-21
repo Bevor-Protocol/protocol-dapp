@@ -20,9 +20,14 @@
     "seed": "tsx prisma/seed.ts"
   },
   "lint-staged": {
-    "**/*.{ts,tsx,js,jsx,md,json}": [
+    "**/*.{ts,tsx,js,jsx}": [
       "prettier --write",
-      "eslint --fix",
+      "eslint --fix"
+    ],
+    "**/*.{md,json}": [
+      "prettier --write"
+    ],
+    "**/*.{prisma}": [
       "prisma format"
     ]
   },
