@@ -7,10 +7,9 @@
     "beforebuild": "npx prisma generate",
     "build": "yarn beforebuild && next build",
     "start": "next start",
-    "postinstall": "husky init",
-    "prepare": "husky init",
-    "lint": "next lint && prettier --check \"**/*.{ts,tsx,js,jsx,md,json}\" --ignore-path .gitignore && prisma validate && tsc --noEmit",
-    "format": "prettier --write \"**/*.{ts,tsx,js,jsx,md,json}\" --ignore-path .gitignore && prisma format",
+    "prepare": "husky install",
+    "lint": "next lint && prettier --check \"**/*.{ts,tsx,js,jsx,md,json}\" && prisma validate && tsc --noEmit",
+    "format": "prettier --write \"**/*.{ts,tsx,js,jsx,md,json}\" && eslint && prisma format",
     "db:studio": "dotenv -e .env.local -- prisma studio",
     "db:migrate": "dotenv -e .env.local -- npx prisma migrate dev",
     "db:seed": "dotenv -e .env.local -- npx prisma db seed",
@@ -20,14 +19,11 @@
   "prisma": {
     "seed": "tsx prisma/seed.ts"
   },
-  "husky": {
-    "hooks": {
-      "pre-commit": "lint-staged"
-    }
-  },
   "lint-staged": {
-    "*.{ts,tsx,js,jsx,md,json}": [
-      "prettier --check"
+    "**/*.{ts,tsx,js,jsx,md,json}": [
+      "prettier --write",
+      "eslint --fix",
+      "prisma format"
     ]
   },
   "dependencies": {
@@ -73,7 +69,7 @@
     "eslint-config-prettier": "^8.8.0",
     "eslint-plugin-import": "^2.27.5",
     "eslint-plugin-prettier": "^4.2.1",
-    "husky": "^9.0.11",
+    "husky": "8.0.0",
     "lint-staged": "^15.2.2",
     "prettier": "^2.8.8",
     "tsx": "^4.7.1"
