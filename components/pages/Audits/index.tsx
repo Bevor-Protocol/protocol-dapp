@@ -92,7 +92,7 @@ export const AuditorWrapper = styled(Row)`
   }
 `;
 
-export default ({ arr, current }: { arr: AuditI[]; current: string }): JSX.Element => {
+const Audits = ({ arr, current }: { arr: AuditI[]; current: string }): JSX.Element => {
   const [cont, setCont] = useState("");
   const mounted = useIsMounted();
   const tooltip = useRef<HTMLDivElement>(null);
@@ -194,3 +194,5 @@ export default ({ arr, current }: { arr: AuditI[]; current: string }): JSX.Eleme
     </Column>
   );
 };
+
+export default Audits;

@@ -33,7 +33,7 @@ type Props = {
   display: string;
 };
 
-export default ({ data, content, display }: Props): JSX.Element => {
+const AuditDashboard = ({ data, content, display }: Props): JSX.Element => {
   const [cont, setCont] = useState("");
   const mounted = useIsMounted();
   const tooltip = useRef<HTMLDivElement>(null);
@@ -140,3 +140,5 @@ export default ({ data, content, display }: Props): JSX.Element => {
     </Column>
   );
 };
+
+export default AuditDashboard;

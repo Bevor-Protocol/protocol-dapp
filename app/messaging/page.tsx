@@ -1,6 +1,6 @@
 import Messaging from "@/components/pages/Messaging";
 
-export default (): JSX.Element => {
+const MessagePage = (): JSX.Element => {
   return (
     <main>
       <div className="content fill-height pad-common center-v center-h">
@@ -9,3 +9,5 @@ export default (): JSX.Element => {
     </main>
   );
 };
+
+export default MessagePage;

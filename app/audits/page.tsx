@@ -16,7 +16,7 @@ const getData = (status: string): AuditSSRI => {
   };
 };
 
-export default async ({
+const Audits = async ({
   searchParams,
 }: {
   searchParams: { [key: string]: string | undefined };
@@ -33,3 +33,5 @@ export default async ({
     </Section>
   );
 };
+
+export default Audits;

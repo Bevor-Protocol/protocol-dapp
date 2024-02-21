@@ -15,7 +15,7 @@ import { useIsMounted } from "@/hooks/useIsMounted";
 
 const headers = ["name", "money", "active", "completed", "available"];
 
-export default (): JSX.Element => {
+const LeaderboardPage = (): JSX.Element => {
   const initState = {
     key: "name",
     decrease: true,
@@ -74,3 +74,5 @@ export default (): JSX.Element => {
     </Section>
   );
 };
+
+export default LeaderboardPage;

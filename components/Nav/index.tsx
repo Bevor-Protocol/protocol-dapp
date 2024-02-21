@@ -17,7 +17,7 @@ import { useClickOutside } from "@/hooks/useClickOutside";
 import Connector from "./web3";
 import Dashboard from "./dashboard";
 
-export default (): JSX.Element => {
+const NavHolder = (): JSX.Element => {
   const pathname = usePathname();
   const [show, setShow] = useReducer((s) => !s, false);
   const ref = useRef<HTMLDivElement>(null);
@@ -93,3 +93,5 @@ export default (): JSX.Element => {
     </nav>
   );
 };
+
+export default NavHolder;

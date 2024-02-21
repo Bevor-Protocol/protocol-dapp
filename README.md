@@ -14,4 +14,3 @@ Seeding occurs whenever you manually tell it to `yarn run db:seed`, or automatic
 
 If changes are made to the schema, we can run this to generate new migrations, apply changes to the DB and generate a new prisma client
 `yarn run db:migrate`
-

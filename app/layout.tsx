@@ -72,7 +72,7 @@ export const metadata: Metadata = {
   },
 };
 
-export default ({ children }: { children: React.ReactNode }): JSX.Element => {
+const Page = ({ children }: { children: React.ReactNode }): JSX.Element => {
   return (
     <html lang="en">
       <body className={jakarta.className}>
@@ -93,3 +93,5 @@ export default ({ children }: { children: React.ReactNode }): JSX.Element => {
     </html>
   );
 };
+
+export default Page;

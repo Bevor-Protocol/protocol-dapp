@@ -4,7 +4,7 @@ import SmartLink from "@/components/Link";
 import { NavItem } from "./styled";
 import { useAccount } from "wagmi";
 
-export default ({ active }: { active: boolean }): JSX.Element => {
+const DashboardNav = ({ active }: { active: boolean }): JSX.Element => {
   const mounted = useIsMounted();
   const { address } = useAccount();
 
@@ -16,3 +16,5 @@ export default ({ active }: { active: boolean }): JSX.Element => {
     </SmartLink>
   );
 };
+
+export default DashboardNav;

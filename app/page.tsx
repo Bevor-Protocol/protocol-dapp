@@ -6,7 +6,7 @@ import { Row } from "@/components/Box";
 import { ButtonLight } from "@/components/Button";
 import { Home, HomeText, HomeStat, HomeStats } from "@/components/pages/Home";
 
-export default (): JSX.Element => {
+const Page = (): JSX.Element => {
   return (
     <Section $padCommon $centerV $centerH>
       <Home $gap="lg">
@@ -52,3 +52,5 @@ export default (): JSX.Element => {
     </Section>
   );
 };
+
+export default Page;

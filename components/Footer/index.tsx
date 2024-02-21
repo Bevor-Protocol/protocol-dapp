@@ -7,7 +7,7 @@ import { Column } from "@/components/Box";
 import { CommonPad } from "@/components/Common";
 import { P, Span } from "@/components/Text";
 
-const Footer = styled(Column)`
+const FooterEl = styled(Column)`
   ${CommonPad}
   padding-top: 30px;
   padding-bottom: 30px;
@@ -31,13 +31,15 @@ const Footer = styled(Column)`
   )}
 `;
 
-export default (): JSX.Element => {
+const Footer = (): JSX.Element => {
   return (
     <footer>
-      <Footer $gap="rem1" $width="100%">
+      <FooterEl $gap="rem1" $width="100%">
         <P>de-risk. incentivize. audit. decentralize.</P>
         <Span>Bevor &copy; {`${new Date().getFullYear()}`}</Span>
-      </Footer>
+      </FooterEl>
     </footer>
   );
 };
+
+export default Footer;
