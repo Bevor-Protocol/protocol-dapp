@@ -2,8 +2,8 @@ import Image from "next/image";
 import { useRef } from "react";
 
 import { Row } from "@/components/Box";
-import { useWeb3Modal } from "@web3modal/react";
-import { useAccount, useNetwork } from "wagmi";
+import { useWeb3Modal } from "@web3modal/wagmi/react";
+import { useAccount } from "wagmi";
 import { useIsMounted } from "@/hooks/useIsMounted";
 import { Chevron } from "@/assets";
 import { WalletHolder } from "./styled";
@@ -14,15 +14,13 @@ import { ChainPresets } from "@/lib/constants/chains";
 
 const Web3Holder = (): JSX.Element => {
   const { open } = useWeb3Modal();
-  const { chain } = useNetwork();
-  const { address, isConnected } = useAccount();
+  const { address, isConnected, chain } = useAccount();
   const mounted = useIsMounted();
   const ref = useRef<HTMLDivElement>(null);
 
   const handleToolTip = (): void => {
     if (!ref.current) return;
-    if (!chain) return;
-    if (mounted && chain.unsupported) {
+    if (mounted && !chain) {
       ref.current.style.display = "block";
     }
   };
@@ -32,8 +30,8 @@ const Web3Holder = (): JSX.Element => {
     ref.current.style.display = "none";
   };
 
-  const handleOpenW3M = (route?: string): void => {
-    open({ route });
+  const handleOpenW3M = (view: "Account" | "Connect" | "Networks"): void => {
+    open({ view });
   };
 
   let imgSrc = 99999;
@@ -46,7 +44,7 @@ const Web3Holder = (): JSX.Element => {
       {isConnected && mounted && (
         <WalletHolder
           as="button"
-          onClick={(): void => handleOpenW3M("SelectNetwork")}
+          onClick={(): void => handleOpenW3M("Networks")}
           onMouseOver={handleToolTip}
           onMouseOut={clearToolTip}
         >
@@ -64,7 +62,7 @@ const Web3Holder = (): JSX.Element => {
         </WalletHolder>
       )}
       {isConnected && mounted && (
-        <WalletHolder as="button" $gap="sm" onClick={(): void => handleOpenW3M()}>
+        <WalletHolder as="button" $gap="sm" onClick={(): void => handleOpenW3M("Account")}>
           {!!address && mounted && <Avatar $size="md" $seed={address} />}
           <span>
             {isConnected && mounted
@@ -80,7 +78,7 @@ const Web3Holder = (): JSX.Element => {
           $pad="7px 10px"
           $hover="dim"
           $border="1px solid transparent"
-          onClick={(): void => handleOpenW3M()}
+          onClick={(): void => handleOpenW3M("Connect")}
         >
           connect
         </ButtonLight>
