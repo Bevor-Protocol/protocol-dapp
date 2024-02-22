@@ -1,61 +1,51 @@
 "use client";
 
 import styled, { css } from "styled-components";
-import Jazzicon from "react-jazzicon";
-
 import { getBreakpoint } from "@/theme";
 
-const Icon = css`
+const IconCSS = css`
   position: relative;
   margin-right: 0px;
   border-radius: 100%;
   transition: all 0.25s ease-in-out;
 `;
 
-export const IconSmall = styled.div`
-  --size: 25px;
-  height: var(--size);
-  width: var(--size);
-  min-width: var(--size);
-  ${Icon}
-`;
+const sizeMapper: Record<string, Record<string, string>> = {
+  sm: {
+    standard: "25px",
+    break: "25px",
+  },
+  md: {
+    standard: "30px",
+    break: "25px",
+  },
+  lg: {
+    standard: "75px",
+    break: "60px",
+  },
+};
 
-export const IconMedium = styled.div`
-  --size: 30px;
+export const Icon = styled.div<{ $size: string }>`
+  --size: ${({ $size }): string => sizeMapper[$size].standard};
   height: var(--size);
   width: var(--size);
   min-width: var(--size);
-  background: white;
-  ${Icon}
 
   ${getBreakpoint(
     "md",
-    css`
-      --size: 25px;
+    (props: { $size: string }) => css`
+      --size: ${sizeMapper[props.$size].break};
     `,
-  )}
+  )};
+
+  ${IconCSS}
 `;
 
-export const IconLarge = styled.div`
-  --size: 75px;
-  height: var(--size);
-  width: var(--size);
-  min-width: var(--size);
-  background: white;
-  ${Icon}
-
-  ${getBreakpoint(
-    "md",
-    css`
-      --size: 60px;
-    `,
-  )}
-`;
-
-export const LogoName = styled.div<{ $height: string }>`
-  height: ${({ $height }): string => $height};
-  aspect-ratio: 2135 / 401;
-  position: relative;
+export const Avatar = styled(Icon)<{ $seed: string }>`
+  background-image: ${({ $seed }): string => `url(https://avatar.vercel.sh/${$seed})`};
+  background-position: center;
+  background-size: contain;
+  background-repeat: no-repeat;
 `;
 
 export const LogoIcon = styled.div<{ $height: string }>`
@@ -63,20 +53,3 @@ export const LogoIcon = styled.div<{ $height: string }>`
   aspect-ratio: 1091 / 1685;
   position: relative;
 `;
-
-export const JazziconClient = ({
-  mounted,
-  randVal,
-  ...rest
-}: {
-  mounted: boolean;
-  randVal: number;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  [key: string]: any;
-}): JSX.Element => {
-  if (!mounted) {
-    return <></>;
-  }
-
-  return <Jazzicon seed={Math.round(randVal * 10000000)} {...rest} />;
-};

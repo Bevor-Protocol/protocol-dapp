@@ -1,6 +1,6 @@
 import { redirect } from "next/navigation";
 
-import Audit, { AuditHolder } from "@/components/pages/Audits";
+import AuditWrapper, { AuditHolder } from "@/components/pages/Audits";
 import { audits } from "@/lib/constants";
 import { Section } from "@/components/Common";
 import { H2 } from "@/components/Text";
@@ -28,7 +28,7 @@ const Audits = async ({
     <Section $padCommon $centerH>
       <AuditHolder $gap="rem1" $padding="2rem 0" $justify="flex-start">
         <H2>{status.charAt(0).toUpperCase() + status.substring(1).toLowerCase()} Audits</H2>
-        <Audit arr={auditShow} current={status} />
+        <AuditWrapper arr={auditShow} current={status} />
       </AuditHolder>
     </Section>
   );

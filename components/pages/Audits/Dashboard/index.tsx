@@ -5,15 +5,14 @@ import styled from "styled-components";
 import { useRouter, usePathname } from "next/navigation";
 
 import { P, Span, Strong } from "@/components/Text";
-import { Column, Row } from "@/components/Box";
-import { IconLarge, IconSmall, JazziconClient } from "@/components/Icon";
+import { Column, Row, Card } from "@/components/Box";
+import { Avatar } from "@/components/Icon";
 import { ToolTip } from "@/components/Tooltip";
 import ProgressBar from "@/components/ProgressBar";
 import { ButtonLight } from "@/components/Button";
 import { useAccount } from "wagmi";
-import { useIsMounted } from "@/hooks/useIsMounted";
 import { Markdown } from "@/components/Markdown";
-import { Audit, AuditFooter, Auditor, AuditorWrapper, AuditNav } from "..";
+import { AuditFooter, Auditor, AuditorWrapper, AuditNav } from "..";
 
 const AuditDescription = styled(Column)`
   padding: 1rem;
@@ -35,7 +34,6 @@ type Props = {
 
 const AuditDashboard = ({ data, content, display }: Props): JSX.Element => {
   const [cont, setCont] = useState("");
-  const mounted = useIsMounted();
   const tooltip = useRef<HTMLDivElement>(null);
   const account = useAccount();
   const router = useRouter();
@@ -77,16 +75,9 @@ const AuditDashboard = ({ data, content, display }: Props): JSX.Element => {
 
   return (
     <Column $gap="md">
-      <Audit>
+      <Card $width="100%" $padding="0px">
         <Row $align="flex-start" $justify="flex-start" $gap="rem2" $padding="1rem" $width="100%">
-          <IconLarge>
-            <JazziconClient
-              mounted={mounted}
-              randVal={Math.round(10000000)}
-              paperStyles={{ minWidth: "75px", minHeight: "75px" }}
-              diameter={75}
-            />
-          </IconLarge>
+          <Avatar $size="lg" $seed={data.auditee.replace(/\s/g, "")} />
           <Column $justify="flex-start" $align="flex-start">
             <Row $justify="space-between" $width="100%">
               <P>
@@ -116,18 +107,18 @@ const AuditDashboard = ({ data, content, display }: Props): JSX.Element => {
           </Row>
           <Markdown dangerouslySetInnerHTML={{ __html: content }} />
         </AuditDescription>
-        <AuditFooter $disabled={true} $justify="flex-start" $gap="rem2">
+        <AuditFooter $justify="space-between" $gap="rem2" $padding="0.5rem 1rem" $width="100%">
           <AuditorWrapper>
             <Span>auditors:</Span>
             {data.auditors.map((auditor: string, ind: number) => (
               <Auditor $offset={`-${ind * 12.5}px`} key={ind}>
-                <IconSmall
+                <Avatar
                   data-auditor={auditor}
+                  $size="sm"
+                  $seed={auditor.replace(/\s/g, "")}
                   onMouseOver={handleToolTip}
                   onMouseOut={clearToolTip}
-                >
-                  <JazziconClient mounted={mounted} randVal={ind / data.auditors.length} />
-                </IconSmall>
+                />
               </Auditor>
             ))}
           </AuditorWrapper>
@@ -136,7 +127,7 @@ const AuditDashboard = ({ data, content, display }: Props): JSX.Element => {
             {buttonLabel()}
           </ButtonLight>
         </AuditFooter>
-      </Audit>
+      </Card>
     </Column>
   );
 };

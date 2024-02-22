@@ -2,16 +2,14 @@
 
 import { useReducer } from "react";
 
-import { IconMedium } from "@/components/Icon";
+import { Avatar } from "@/components/Icon";
 import { LeadData, LeadHeader, LeadGrid, Leaderboard } from "@/components/pages/Leaderboard";
 import { leaderboard } from "@/lib/constants";
 import { Section } from "@/components/Common";
 import { LiElement } from "@/components/Box";
 import { Arrow } from "@/assets";
-import { JazziconClient } from "@/components/Icon";
 import { sortLeaderboardReducer } from "@/lib/reducers";
 import { LeaderboardI } from "@/lib/types";
-import { useIsMounted } from "@/hooks/useIsMounted";
 
 const headers = ["name", "money", "active", "completed", "available"];
 
@@ -22,7 +20,6 @@ const LeaderboardPage = (): JSX.Element => {
     arr: [...leaderboard],
   };
 
-  const mounted = useIsMounted();
   const [state, dispatch] = useReducer(sortLeaderboardReducer, initState);
 
   return (
@@ -51,19 +48,7 @@ const LeaderboardPage = (): JSX.Element => {
             <LeadGrid key={ind}>
               {headers.map((header, ind2) => (
                 <LiElement key={ind2}>
-                  {header === "name" && (
-                    <IconMedium>
-                      <JazziconClient
-                        mounted={mounted}
-                        randVal={ind / state.arr.length}
-                        diameter={30}
-                        paperStyles={{
-                          height: "100%",
-                          width: "100%",
-                        }}
-                      />
-                    </IconMedium>
-                  )}
+                  {header === "name" && <Avatar $size="md" $seed={header.replace(/\s/g, "")} />}
                   <span>{item[header as keyof LeaderboardI].toLocaleString()}</span>
                 </LiElement>
               ))}

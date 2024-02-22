@@ -7,10 +7,9 @@ import { useAccount, useNetwork } from "wagmi";
 import { useIsMounted } from "@/hooks/useIsMounted";
 import { Chevron } from "@/assets";
 import { WalletHolder } from "./styled";
-import { JazziconClient, IconMedium, IconSmall } from "@/components/Icon";
+import { Avatar, Icon } from "@/components/Icon";
 import { ButtonLight } from "@/components/Button";
 import { DropDown } from "@/components/Tooltip";
-// import { Loader } from "@/components/Common";
 import { ChainPresets } from "@/lib/constants/chains";
 
 const Web3Holder = (): JSX.Element => {
@@ -52,29 +51,21 @@ const Web3Holder = (): JSX.Element => {
           onMouseOut={clearToolTip}
         >
           <Row $gap="sm">
-            <IconSmall>
+            <Icon $size="sm">
               <Image
                 src={ChainPresets[imgSrc as keyof typeof ChainPresets]}
                 alt="chain logo"
                 sizes="any"
                 fill={true}
               />
-            </IconSmall>
+            </Icon>
             <Chevron />
           </Row>
         </WalletHolder>
       )}
       {isConnected && mounted && (
         <WalletHolder as="button" $gap="sm" onClick={(): void => handleOpenW3M()}>
-          {!!address && mounted && (
-            <IconMedium>
-              <JazziconClient
-                mounted={mounted}
-                randVal={parseInt(address?.slice(2, 10), 16)}
-                paperStyles={{ minWidth: "30px", minHeight: "30px" }}
-              />
-            </IconMedium>
-          )}
+          {!!address && mounted && <Avatar $size="md" $seed={address} />}
           <span>
             {isConnected && mounted
               ? address?.substring(0, 6) +

@@ -7,7 +7,7 @@ import { usePathname } from "next/navigation";
 import { Arrow, Twitter, Discord, Github } from "@/assets";
 import { navItems } from "@/lib/constants";
 import { Span } from "@/components/Text";
-import SmartLink from "@/components/Link";
+import DynamicLink from "@/components/Link";
 import { LogoIcon } from "@/components/Icon";
 import { Row, Column } from "@/components/Box";
 import { Ellipsis, HR } from "@/components/Common";
@@ -27,19 +27,19 @@ const NavHolder = (): JSX.Element => {
     <nav>
       <Nav $justify="space-between">
         <Row $gap="lg">
-          <SmartLink external={false} href="/">
+          <DynamicLink href="/">
             <LogoIcon $height="65px">
               <Image src="/logo.png" alt="brand logo" fill={true} sizes="any" />
             </LogoIcon>
-          </SmartLink>
+          </DynamicLink>
           <NavItems $gap="sm">
             <Dashboard active={pathname.split("/")[1] == "user"} />
             {navItems.main.map((item, ind) => (
-              <SmartLink external={false} href={item.url} key={ind}>
+              <DynamicLink href={item.url} key={ind}>
                 <NavItem $active={pathname === item.url}>
                   <Span>{item.text}</Span>
                 </NavItem>
-              </SmartLink>
+              </DynamicLink>
             ))}
             <MenuHolder ref={ref}>
               <NavItem onClick={setShow} $active={show}>
@@ -50,7 +50,7 @@ const NavHolder = (): JSX.Element => {
                   <Column $gap="sm" $padding="5px 10px" $align="initial">
                     <Column $align="stretch" $gap="sm">
                       {navItems.dropdown.map((item, ind) => (
-                        <SmartLink external={true} href={item.url} key={ind}>
+                        <DynamicLink href={item.url} key={ind}>
                           <NavItem
                             $height="fit-content"
                             $justify="flex-start"
@@ -61,26 +61,26 @@ const NavHolder = (): JSX.Element => {
                             <Span>{item.text}</Span>
                             <Arrow fill="white" height={10} width={10} />
                           </NavItem>
-                        </SmartLink>
+                        </DynamicLink>
                       ))}
                     </Column>
                     <HR $width="auto" $margin="0 10px" />
                     <Row $gap="xs" $padding="0 3px" $justify="flex-start">
-                      <SmartLink href="https://twitter.com/BevorProtocol" external={true}>
+                      <DynamicLink href="https://twitter.com/BevorProtocol">
                         <NavItem $pad="7px" $border="100%" $active={false} $height="fit-content">
                           <Twitter height="1rem" width="1rem" fill="white" />
                         </NavItem>
-                      </SmartLink>
-                      <SmartLink href="https://github.com/Bevor-Protocol" external={true}>
+                      </DynamicLink>
+                      <DynamicLink href="https://github.com/Bevor-Protocol">
                         <NavItem $pad="7px" $border="100%" $active={false} $height="fit-content">
                           <Github height="1rem" width="1rem" fill="white" />
                         </NavItem>
-                      </SmartLink>
-                      <SmartLink href="https://discord.gg/MDfNgatN" external={true}>
+                      </DynamicLink>
+                      <DynamicLink href="https://discord.gg/MDfNgatN">
                         <NavItem $pad="7px" $border="100%" $active={false} $height="fit-content">
                           <Discord height="1rem" width="1rem" fill="white" />
                         </NavItem>
-                      </SmartLink>
+                      </DynamicLink>
                     </Row>
                   </Column>
                 </DropDown>

@@ -21,7 +21,7 @@ export const hoverBg = css`
     ${({ theme }): string => theme.transitions.ease};
 
   &:hover {
-    background-color: ${({ theme }): string => theme.primaryMix50};
+    background-color: ${({ theme }): string => theme.primaryMix20};
   }
 `;
 
