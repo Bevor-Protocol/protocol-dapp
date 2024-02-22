@@ -13,6 +13,10 @@ const metadata = {
   icons: ["https://www.bevor.io/apple-icon.png"],
 };
 
+// Rather than using the web3modal defaultWagmiConfig(), I elect to use the custom
+// wagmi createConfig(). We lose some metadata, description and url become unused,
+// so maybe come back to this. I think the web3modal config was the cause of some
+// server vs. client side errors.
 const config = createConfig({
   chains: [goerli, polygonMumbai],
   ssr: true,

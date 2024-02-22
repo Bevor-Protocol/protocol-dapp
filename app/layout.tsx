@@ -77,6 +77,10 @@ export const metadata: Metadata = {
 };
 
 const Page = ({ children }: { children: React.ReactNode }): JSX.Element => {
+  // docs say to use headers().get('cookie'), but I get issues with doing this.
+  // specifically, it says can't run connections.get, I think because the
+  // cookieToInitialState outputs an array of Map, which doesn't work... I might
+  // need to come back to this.
   const initialState = cookieToInitialState(config, cookies().get("wagmi.store")?.value);
   return (
     <html lang="en">

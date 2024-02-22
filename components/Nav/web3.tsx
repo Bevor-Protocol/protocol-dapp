@@ -13,7 +13,7 @@ import { DropDown } from "@/components/Tooltip";
 import { ChainPresets } from "@/lib/constants/chains";
 
 const Web3Holder = (): JSX.Element => {
-  const { open } = useWeb3Modal();
+  const modal = useWeb3Modal();
   const { address, isConnected, chain } = useAccount();
   const mounted = useIsMounted();
   const ref = useRef<HTMLDivElement>(null);
@@ -30,10 +30,6 @@ const Web3Holder = (): JSX.Element => {
     ref.current.style.display = "none";
   };
 
-  const handleOpenW3M = (view: "Account" | "Connect" | "Networks"): void => {
-    open({ view });
-  };
-
   let imgSrc = 99999;
   if (chain && chain.id in ChainPresets) {
     imgSrc = chain.id;
@@ -44,7 +40,7 @@ const Web3Holder = (): JSX.Element => {
       {isConnected && mounted && (
         <WalletHolder
           as="button"
-          onClick={(): void => handleOpenW3M("Networks")}
+          onClick={(): Promise<void> => modal.open({ view: "Networks" })}
           onMouseOver={handleToolTip}
           onMouseOut={clearToolTip}
         >
@@ -62,7 +58,11 @@ const Web3Holder = (): JSX.Element => {
         </WalletHolder>
       )}
       {isConnected && mounted && (
-        <WalletHolder as="button" $gap="sm" onClick={(): void => handleOpenW3M("Account")}>
+        <WalletHolder
+          as="button"
+          $gap="sm"
+          onClick={(): Promise<void> => modal.open({ view: "Account" })}
+        >
           {!!address && mounted && <Avatar $size="md" $seed={address} />}
           <span>
             {isConnected && mounted
@@ -78,7 +78,7 @@ const Web3Holder = (): JSX.Element => {
           $pad="7px 10px"
           $hover="dim"
           $border="1px solid transparent"
-          onClick={(): void => handleOpenW3M("Connect")}
+          onClick={(): Promise<void> => modal.open({ view: "Connect" })}
         >
           connect
         </ButtonLight>
