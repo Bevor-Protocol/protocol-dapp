@@ -6,7 +6,7 @@
     "dev": "next dev",
     "beforebuild": "npx prisma generate",
     "build": "yarn beforebuild && next build && yarn predeploy",
-    "predeploy": "prisma migrate deploy",
+    "predeploy": "npx prisma migrate deploy",
     "start": "next start",
     "prepare": "husky install",
     "lint": "next lint && prettier --check \"**/*.{ts,tsx,js,jsx,md,json}\" && prisma validate && tsc --noEmit",
