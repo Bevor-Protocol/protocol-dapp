@@ -51,10 +51,9 @@ export const NavItem = styled(Row)<{
   $hover?: string;
   $border?: string;
   $height?: string;
-  $pad?: string;
 }>`
   height: ${({ $height }): string => $height ?? "3rem"};
-  padding: ${({ $pad }): string => $pad ?? "0 10px"};
+  padding: ${({ $padding }): string => $padding ?? "0 10px"};
   background-color: transparent;
   border: 1px solid transparent;
   width: 100%;

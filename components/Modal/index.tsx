@@ -8,13 +8,7 @@ export const ModalWrapper = styled.dialog`
   background: none;
   border: none;
   z-index: 9999;
-  display: flex;
-  flex-direction: column;
-  flex-wrap: nowrap;
-  align-items: center;
-  justify-content: center;
   color: inherit;
-  padding: 5px;
 
   &::backdrop {
     background-color: rgba(0, 0, 0, 0.1);

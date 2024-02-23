@@ -13,8 +13,10 @@ import { DropDown } from "@/components/Tooltip";
 import { ChainPresets } from "@/lib/constants/chains";
 import Wallets from "@/components/Web3/wallets";
 import Networks from "@/components/Web3/networks";
+import Profile from "@/components/Web3/profile";
 import { NavItem, MenuHolder } from "./styled";
 import { useClickOutside } from "@/hooks/useClickOutside";
+import { trimAddress } from "@/lib/utils";
 
 const Web3Holder = (): JSX.Element => {
   const { address, isConnected, chain } = useAccount();
@@ -39,8 +41,13 @@ const Web3Holder = (): JSX.Element => {
     ref.current.style.display = "none";
   };
 
-  const handleModal = (): void => {
+  const handleWalletModal = (): void => {
     setContent(<Wallets />);
+    toggleOpen();
+  };
+
+  const handleProfileModal = (): void => {
+    setContent(<Profile />);
     toggleOpen();
   };
 
@@ -61,19 +68,13 @@ const Web3Holder = (): JSX.Element => {
               <Chevron />
             </Row>
           </NavItem>
-          {show && <Networks />}
+          {show && <Networks close={setShow} />}
         </MenuHolder>
       )}
       {isConnected && mounted && (
-        <WalletHolder as="button" $gap="sm" onClick={(): void => console.log("trigger profile")}>
+        <WalletHolder as="button" $gap="sm" onClick={handleProfileModal}>
           {!!address && mounted && <Avatar $size="md" $seed={address} />}
-          <span>
-            {isConnected && mounted
-              ? address?.substring(0, 6) +
-                "..." +
-                address?.substring(address.length - 3, address.length)
-              : "connect"}
-          </span>
+          <span>{isConnected && mounted ? trimAddress(address) : "connect"}</span>
         </WalletHolder>
       )}
       {!isConnected && mounted && (
@@ -81,7 +82,7 @@ const Web3Holder = (): JSX.Element => {
           $pad="7px 10px"
           $hover="dim"
           $border="1px solid transparent"
-          onClick={handleModal}
+          onClick={handleWalletModal}
         >
           connect
         </ButtonLight>

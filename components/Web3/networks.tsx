@@ -8,12 +8,10 @@ import { Span } from "@/components/Text";
 import { Icon } from "@/components/Icon";
 import { ChainPresets } from "@/lib/constants/chains";
 
-const Wallets = (): JSX.Element => {
+const Wallets = ({ close }: { close: () => void }): JSX.Element => {
   const { chains, switchChain } = useSwitchChain({
     mutation: {
-      onSettled: () => {
-        console.log("chain called");
-      },
+      onSettled: close,
     },
   });
 

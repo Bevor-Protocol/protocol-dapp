@@ -23,6 +23,10 @@ const sizeMapper: Record<string, Record<string, string>> = {
     standard: "75px",
     break: "60px",
   },
+  xl: {
+    standard: "90px",
+    break: "75px",
+  },
 };
 
 export const Icon = styled.div<{ $size: string }>`
