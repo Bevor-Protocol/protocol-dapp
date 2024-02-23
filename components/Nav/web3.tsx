@@ -2,20 +2,21 @@ import Image from "next/image";
 import { useRef } from "react";
 
 import { Row } from "@/components/Box";
-import { useWeb3Modal } from "@web3modal/wagmi/react";
 import { useAccount } from "wagmi";
 import { useIsMounted } from "@/hooks/useIsMounted";
+import { useModal } from "@/hooks/contexts";
 import { Chevron } from "@/assets";
 import { WalletHolder } from "./styled";
 import { Avatar, Icon } from "@/components/Icon";
 import { ButtonLight } from "@/components/Button";
 import { DropDown } from "@/components/Tooltip";
 import { ChainPresets } from "@/lib/constants/chains";
+import Wallets from "@/components/Web3/wallets";
 
 const Web3Holder = (): JSX.Element => {
-  const modal = useWeb3Modal();
   const { address, isConnected, chain } = useAccount();
   const mounted = useIsMounted();
+  const { setContent, toggleOpen } = useModal();
   const ref = useRef<HTMLDivElement>(null);
 
   const handleToolTip = (): void => {
@@ -30,6 +31,11 @@ const Web3Holder = (): JSX.Element => {
     ref.current.style.display = "none";
   };
 
+  const handleModal = (): void => {
+    setContent(<Wallets />);
+    toggleOpen();
+  };
+
   let imgSrc = 99999;
   if (chain && chain.id in ChainPresets) {
     imgSrc = chain.id;
@@ -40,7 +46,7 @@ const Web3Holder = (): JSX.Element => {
       {isConnected && mounted && (
         <WalletHolder
           as="button"
-          onClick={(): Promise<void> => modal.open({ view: "Networks" })}
+          onClick={(): void => console.log("trigger network change")}
           onMouseOver={handleToolTip}
           onMouseOut={clearToolTip}
         >
@@ -58,11 +64,7 @@ const Web3Holder = (): JSX.Element => {
         </WalletHolder>
       )}
       {isConnected && mounted && (
-        <WalletHolder
-          as="button"
-          $gap="sm"
-          onClick={(): Promise<void> => modal.open({ view: "Account" })}
-        >
+        <WalletHolder as="button" $gap="sm" onClick={(): void => console.log("trigger profile")}>
           {!!address && mounted && <Avatar $size="md" $seed={address} />}
           <span>
             {isConnected && mounted
@@ -78,7 +80,7 @@ const Web3Holder = (): JSX.Element => {
           $pad="7px 10px"
           $hover="dim"
           $border="1px solid transparent"
-          onClick={(): Promise<void> => modal.open({ view: "Connect" })}
+          onClick={handleModal}
         >
           connect
         </ButtonLight>
