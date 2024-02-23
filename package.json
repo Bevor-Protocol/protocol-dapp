@@ -4,9 +4,8 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "beforebuild": "npx prisma generate",
-    "build": "yarn beforebuild && next build && yarn predeploy",
-    "predeploy": "npx prisma migrate deploy",
+    "build": "next build",
+    "vercel-build": "prisma generate && prisma migrate deploy && next build",
     "start": "next start",
     "prepare": "husky install",
     "lint": "next lint && prettier --check \"**/*.{ts,tsx,js,jsx,md,json}\" && prisma validate && tsc --noEmit",
