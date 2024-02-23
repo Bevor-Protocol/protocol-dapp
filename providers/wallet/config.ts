@@ -33,6 +33,7 @@ const config = createConfig({
     coinbaseWallet({
       appName: metadata.name,
       appLogoUrl: metadata.icons[0],
+      headlessMode: true,
     }),
   ],
 });
