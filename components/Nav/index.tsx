@@ -56,7 +56,7 @@ const NavHolder = (): JSX.Element => {
                             $justify="flex-start"
                             $gap="xs"
                             $active={false}
-                            $pad="5px 10px"
+                            $padding="5px 10px"
                           >
                             <Span>{item.text}</Span>
                             <Arrow fill="white" height={10} width={10} />
@@ -67,17 +67,32 @@ const NavHolder = (): JSX.Element => {
                     <HR $width="auto" $margin="0 10px" />
                     <Row $gap="xs" $padding="0 3px" $justify="flex-start">
                       <DynamicLink href="https://twitter.com/BevorProtocol">
-                        <NavItem $pad="7px" $border="100%" $active={false} $height="fit-content">
+                        <NavItem
+                          $padding="7px"
+                          $border="100%"
+                          $active={false}
+                          $height="fit-content"
+                        >
                           <Twitter height="1rem" width="1rem" fill="white" />
                         </NavItem>
                       </DynamicLink>
                       <DynamicLink href="https://github.com/Bevor-Protocol">
-                        <NavItem $pad="7px" $border="100%" $active={false} $height="fit-content">
+                        <NavItem
+                          $padding="7px"
+                          $border="100%"
+                          $active={false}
+                          $height="fit-content"
+                        >
                           <Github height="1rem" width="1rem" fill="white" />
                         </NavItem>
                       </DynamicLink>
                       <DynamicLink href="https://discord.gg/MDfNgatN">
-                        <NavItem $pad="7px" $border="100%" $active={false} $height="fit-content">
+                        <NavItem
+                          $padding="7px"
+                          $border="100%"
+                          $active={false}
+                          $height="fit-content"
+                        >
                           <Discord height="1rem" width="1rem" fill="white" />
                         </NavItem>
                       </DynamicLink>

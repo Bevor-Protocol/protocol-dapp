@@ -26,7 +26,7 @@ const Wallets = ({ close }: { close: () => void }): JSX.Element => {
             $justify="flex-start"
             $gap="sm"
             $active={false}
-            $pad="5px 10px"
+            $padding="5px 10px"
             style={{ cursor: "pointer" }}
           >
             <Icon $size="sm">
