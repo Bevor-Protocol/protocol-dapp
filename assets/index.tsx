@@ -4,5 +4,7 @@ import Discord from "./discord";
 import Github from "./github";
 import Arrow from "./arrow";
 import Chevron from "./chevron";
+import Copy from "./copy";
+import Logout from "./logout";
 
-export { Gitbook, Twitter, Discord, Github, Arrow, Chevron };
+export { Gitbook, Twitter, Discord, Github, Arrow, Chevron, Copy, Logout };

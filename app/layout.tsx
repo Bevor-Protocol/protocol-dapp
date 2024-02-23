@@ -2,8 +2,13 @@
 import { Analytics } from "@vercel/analytics/react";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import { Metadata } from "next";
+import { cookies } from "next/headers";
+import { cookieToInitialState } from "wagmi";
+
 import WalletProvider from "@/providers/wallet";
-import StyledComponentRegistry from "@/providers/ssr_styled";
+import ModalProvider from "@/providers/modal";
+import { config } from "@/providers/wallet/config";
+import StyledComponentRegistry from "@/providers/styleSheet";
 import ThemeProvider from "@/providers/theme";
 
 import Footer from "@/components/Footer";
@@ -73,17 +78,24 @@ export const metadata: Metadata = {
 };
 
 const Page = ({ children }: { children: React.ReactNode }): JSX.Element => {
+  // docs say to use headers().get('cookie'), but I get issues with doing this.
+  // specifically, it says can't run connections.get, I think because the
+  // cookieToInitialState outputs an array of Map, which doesn't work... I might
+  // need to come back to this.
+  const initialState = cookieToInitialState(config, cookies().get("wagmi.store")?.value);
   return (
     <html lang="en">
       <body className={jakarta.className}>
-        <WalletProvider>
+        <WalletProvider initialState={initialState}>
           <StyledComponentRegistry>
             <ThemeProvider>
-              <Layout>
-                <Nav />
-                <main>{children}</main>
-                <Footer />
-              </Layout>
+              <ModalProvider>
+                <Layout>
+                  <Nav />
+                  <main>{children}</main>
+                  <Footer />
+                </Layout>
+              </ModalProvider>
             </ThemeProvider>
           </StyledComponentRegistry>
         </WalletProvider>

@@ -89,6 +89,15 @@ export const HR = styled.div<{ $width?: string; $margin?: string }>`
   background: ${({ theme }): string => theme.greyBorder};
 `;
 
+export const Tag = styled.div`
+  background-color: ${({ theme }): string => theme.tagBg};
+  color: ${({ theme }): string => theme.tagText};
+  border-radius: 10px;
+  font-size: 0.6rem;
+  padding: 3px 7px;
+  opacity: 1;
+`;
+
 const EllipsesHolder = styled.div<{ $gap?: string }>`
   display: flex;
   align-items: center;

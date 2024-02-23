@@ -64,6 +64,8 @@ export const mainTheme = {
   dark50: "color-mix(in oklab, #121212, #FFFFFF 20%)",
   dark60: "color-mix(in oklab, #121212, #FFFFFF 25%)",
   dark70: "color-mix(in oklab, #121212, #FFFFFF 30%)",
+  tagBg: opacify("#0d6efd", 0.5),
+  tagText: "#0d6efd",
   greyBorder: opacify(colors.grey, 0.2),
   boxShadow: "0 0 0 1px rgba(255, 255, 255, 0.145), 0px 1px 2px rgba(0,0,0,.16)",
   textGradDark: `linear-gradient(180deg, ${colors.boldBlue} 0%, ${colors.darkBlue} 100%)`,
