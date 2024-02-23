@@ -81,6 +81,7 @@ export const WalletHolder = styled(Row)`
   border-radius: 10px;
   font-size: 0.8rem;
   cursor: pointer;
+  position: relative;
 
   ${hoverBg}
   ${focusBorder}

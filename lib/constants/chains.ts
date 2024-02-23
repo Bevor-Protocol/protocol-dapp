@@ -1,4 +1,4 @@
-export const ChainPresets = {
+export const ChainPresets: Record<number, string> = {
   // Ethereum
   5: "/images/eth.png",
   // Polygon
