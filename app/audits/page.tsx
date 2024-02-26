@@ -11,8 +11,6 @@ const Audits = async ({
   const status = searchParams.status ?? "open";
   const audits = await getAudits(status);
 
-  console.log(audits[0]);
-
   return (
     <Section $padCommon $centerH>
       <AuditHolder $gap="rem1" $padding="2rem 0" $justify="flex-start">
