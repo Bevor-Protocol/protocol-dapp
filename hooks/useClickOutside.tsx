@@ -3,7 +3,6 @@ import { useEffect, useRef } from "react";
 export const useClickOutside = (
   node: React.RefObject<HTMLElement | undefined>,
   handler: undefined | (() => void),
-  ignoredNodes: Array<React.RefObject<HTMLElement | undefined>> = [],
 ): void => {
   const handlerRef = useRef<undefined | (() => void)>(handler);
 
@@ -13,21 +12,13 @@ export const useClickOutside = (
 
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent): void => {
-      const nodeClicked = node.current?.contains(e.target as Node);
-      const ignoredNodeClicked = ignoredNodes.reduce(
-        (reducer, val) => reducer || !!val.current?.contains(e.target as Node),
-        false,
-      );
-
-      if ((nodeClicked || ignoredNodeClicked) ?? false) {
-        return;
+      if (node.current && !node.current.contains(e.target as Node)) {
+        if (handlerRef.current) handlerRef.current();
       }
-
-      if (handlerRef.current) handlerRef.current();
     };
 
     document.addEventListener("mousedown", handleClickOutside);
 
     return (): void => document.removeEventListener("mousedown", handleClickOutside);
-  }, [node, ignoredNodes]);
+  }, [node]);
 };

@@ -1,4 +1,4 @@
-import { Address } from "wagmi";
+import { Address } from "viem";
 
 export type LeaderboardI = {
   name: string;
@@ -57,4 +57,10 @@ export type HomeStatI = {
   action: () => Promise<number>;
   symbol?: string;
   text: string;
+};
+
+export type ModalStateI = {
+  isOpen: boolean;
+  toggleOpen: () => void;
+  setContent: (content: React.ReactNode) => void;
 };

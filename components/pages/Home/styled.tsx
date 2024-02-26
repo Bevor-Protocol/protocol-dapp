@@ -69,20 +69,6 @@ export const HomeStatsGrid = styled(Grid)`
   }
 `;
 
-export const HomeStatContainer = styled(Column)`
-  background-color: ${({ theme }): string => theme.bg};
-  box-shadow: ${({ theme }): string => theme.boxShadow};
-  padding: 1.5rem;
-  border-radius: 10px;
-  text-align: center;
-  transition: background-color ${({ theme }): string => theme.transitions.speed.md}
-    ${({ theme }): string => theme.transitions.ease};
-
-  &:hover {
-    background-color: ${({ theme }): string => theme.primaryMix20};
-  }
-`;
-
 export const HomeStatSkeletonDiv = styled(Column)`
   height: 3rem;
   width: 100%;

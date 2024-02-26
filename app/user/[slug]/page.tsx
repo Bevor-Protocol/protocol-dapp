@@ -19,6 +19,7 @@ const UserPage = (): JSX.Element => {
       {!mounted && <Loader $size="50px" />}
       {mounted && isOwner && <h2>You own this address, you can see everything.</h2>}
       {mounted && !isOwner && <h2>You don`t own this address, what you see is limited.</h2>}
+      {mounted && <p>requesting to view {address}</p>}
     </Section>
   );
 };

@@ -1,6 +1,7 @@
 "use client";
 
-import styled from "styled-components";
+import styled, { CSSProp } from "styled-components";
+import { hoverBg } from "../Common";
 
 export const Grid = styled.div<{ $gap?: string; $align?: string; $justify?: string }>`
   display: grid;
@@ -47,6 +48,14 @@ export const Column = styled.div<{
   padding: ${({ $padding }): string => $padding ?? "0"};
   margin: ${({ $margin }): string => $margin ?? "0"};
   width: ${({ $width }): string => $width ?? "100%"};
+`;
+
+export const Card = styled(Column)<{ $hover?: boolean; $padding?: string }>`
+  background-color: ${({ theme }): string => theme.bg};
+  box-shadow: ${({ theme }): string => theme.boxShadow};
+  padding: ${({ $padding }): string => $padding ?? "1.5rem"};
+  border-radius: 10px;
+  ${({ $hover }): CSSProp => $hover && hoverBg}
 `;
 
 export const LiElement = styled.li`

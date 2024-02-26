@@ -1,36 +1,20 @@
 "use client";
 
-import { useState, useRef } from "react";
 import { useRouter } from "next/navigation";
-import styled, { CSSProp } from "styled-components";
+import { useState, useRef } from "react";
+import styled from "styled-components";
+import { Audit, User, Profile } from "@prisma/client";
 
 import { P, Span, Strong } from "@/components/Text";
-import { hoverBg } from "@/components/Common";
-import { Column, Row } from "@/components/Box";
-import { IconLarge, IconSmall } from "@/components/Icon";
+import { Column, Row, Card } from "@/components/Box";
 import { ToolTip } from "@/components/Tooltip";
-import { JazziconClient } from "@/components/Icon";
-import { AuditI } from "@/lib/types";
-import SmartLink from "@/components/Link";
-import { useIsMounted } from "@/hooks/useIsMounted";
+import { Avatar } from "@/components/Icon";
+import DynamicLink from "@/components/Link";
+import { trimAddress } from "@/lib/utils";
 
 export const AuditHolder = styled(Column)`
   width: min(100%, 1000px);
   height: 100%;
-`;
-
-export const Audit = styled(Column)<{ $cursor?: string; $hover?: boolean }>`
-  background: ${({ theme }): string => theme.bg};
-  border-radius: 10px;
-  box-shadow: ${({ theme }): string => theme.boxShadow};
-  width: 100%;
-  cursor: ${({ $cursor }): string => $cursor ?? "default"};
-
-  ${({ $hover }): CSSProp => $hover && hoverBg}
-
-  & > a {
-    width: 100%;
-  }
 `;
 
 export const AuditNav = styled.div<{ $active: boolean }>`
@@ -56,22 +40,8 @@ export const AuditNav = styled.div<{ $active: boolean }>`
   }
 `;
 
-export const AuditFooter = styled(Row)<{ $disabled: boolean }>`
+export const AuditFooter = styled(Row)`
   border-top: 1px solid ${({ theme }): string => theme.greyBorder};
-  padding: 0.5rem 1rem;
-  width: 100%;
-
-  & :last-child {
-    margin-left: auto;
-  }
-
-  & .competition {
-    opacity: ${({ theme, $disabled }): number => ($disabled ? theme.opacity.disable : 1)};
-  }
-
-  & .competition:hover {
-    opacity: ${({ theme, $disabled }): number => !$disabled && theme.opacity.hover};
-  }
 `;
 
 export const Auditor = styled.div<{ $offset: string }>`
@@ -92,9 +62,18 @@ export const AuditorWrapper = styled(Row)`
   }
 `;
 
-const Audits = ({ arr, current }: { arr: AuditI[]; current: string }): JSX.Element => {
+interface AuditRelation extends Audit {
+  auditee: User & {
+    profile: Profile | null;
+  };
+  auditors: User[];
+  terms: {
+    price: number;
+  } | null;
+}
+
+const Audits = ({ arr, current }: { arr: AuditRelation[]; current: string }): JSX.Element => {
   const [cont, setCont] = useState("");
-  const mounted = useIsMounted();
   const tooltip = useRef<HTMLDivElement>(null);
   const router = useRouter();
 
@@ -135,44 +114,36 @@ const Audits = ({ arr, current }: { arr: AuditI[]; current: string }): JSX.Eleme
         </AuditNav>
       </Row>
       <Column $gap="rem1">
+        {arr.length == 0 && <P>Currently no {current} audits</P>}
         {arr.map((audit, ind) => (
-          <Audit key={ind} $hover>
+          <Card key={ind} $hover $width="100%" $padding="0px">
             <Row $align="stretch" $justify="flex-start" $gap="rem2" $padding="1rem" $width="100%">
-              <IconLarge>
-                <JazziconClient
-                  mounted={mounted}
-                  randVal={ind / arr.length}
-                  diameter={75}
-                  paperStyles={{
-                    height: "100%",
-                    width: "100%",
-                  }}
-                />
-              </IconLarge>
+              <Avatar $size="lg" $seed={audit.auditeeId.replace(/\s/g, "")} />
               <Column $justify="flex-start" $align="flex-start">
                 <Row $justify="space-between" $width="100%">
                   <P>
-                    <Strong $large>{audit.auditee}</Strong>
+                    <Strong $large>
+                      {audit.auditee.profile?.name || trimAddress(audit.auditee.address)}
+                    </Strong>
                   </P>
-                  <div>${audit.money.toLocaleString()}</div>
+                  <div>${audit.terms?.price.toLocaleString() || 0}</div>
                 </Row>
-                <P>{audit.description}</P>
+                <P>{"This is a placeholder audit description which I'll get back to."}</P>
               </Column>
             </Row>
-            <AuditFooter $disabled={audit.status !== "closed"} $justify="flex-start" $gap="rem2">
+            <AuditFooter $justify="space-between" $gap="rem2" $padding="0.5rem 1rem" $width="100%">
               <AuditorWrapper>
                 <Span $secondary>auditors:</Span>
-                {audit.status !== "soon" ? (
+                {audit.auditors.length > 0 ? (
                   audit.auditors.map((auditor, ind2) => (
                     <Auditor $offset={`-${ind2 * 12.5}px`} key={ind2}>
-                      <IconSmall
-                        data-auditor={auditor}
-                        key={ind2}
+                      <Avatar
+                        data-auditor={auditor.address}
+                        $size="sm"
+                        $seed={auditor.address.replace(/\s/g, "")}
                         onMouseOver={handleToolTip}
                         onMouseOut={clearToolTip}
-                      >
-                        <JazziconClient mounted={mounted} randVal={ind2 / arr.length} />
-                      </IconSmall>
+                      />
                     </Auditor>
                   ))
                 ) : (
@@ -180,15 +151,11 @@ const Audits = ({ arr, current }: { arr: AuditI[]; current: string }): JSX.Eleme
                 )}
               </AuditorWrapper>
               <ToolTip ref={tooltip}>{cont}</ToolTip>
-              <SmartLink
-                external={false}
-                href={`/audits/${ind}`}
-                disabled={audit.status !== "closed"}
-              >
-                <Span className="competition">View Audit</Span>
-              </SmartLink>
+              <DynamicLink href={`/audits/${ind}`} disabled={current !== "closed"}>
+                <Span>View Audit</Span>
+              </DynamicLink>
             </AuditFooter>
-          </Audit>
+          </Card>
         ))}
       </Column>
     </Column>
