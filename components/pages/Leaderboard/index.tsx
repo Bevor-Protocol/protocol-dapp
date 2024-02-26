@@ -1,6 +1,6 @@
 "use client";
 
-import { useRouter, usePathname } from "next/navigation";
+import { useRouter } from "next/navigation";
 
 import styled, { css } from "styled-components";
 import { hoverBg } from "@/components/Common";
@@ -130,15 +130,14 @@ export const LeaderboardNav = ({
   order: string;
 }): JSX.Element => {
   const router = useRouter();
-  const pathname = usePathname();
 
   const handleSearch = (header: string): void => {
     let path: string;
     if (header === filter) {
       const newOrder = order === "asc" ? "desc" : "asc";
-      path = `${pathname}?filter=${filter}&order=${newOrder}`;
+      path = `/leaderboard?filter=${filter}&order=${newOrder}`;
     } else {
-      path = `${pathname}?filter=${header}&order=asc`;
+      path = `/leaderboard?filter=${header}&order=asc`;
     }
     router.replace(path);
   };

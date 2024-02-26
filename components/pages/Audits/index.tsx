@@ -1,15 +1,16 @@
 "use client";
 
-import { useState, useRef } from "react";
 import { useRouter } from "next/navigation";
+import { useState, useRef } from "react";
 import styled from "styled-components";
+import { Audit, User, Profile } from "@prisma/client";
 
 import { P, Span, Strong } from "@/components/Text";
 import { Column, Row, Card } from "@/components/Box";
 import { ToolTip } from "@/components/Tooltip";
 import { Avatar } from "@/components/Icon";
-import { AuditI } from "@/lib/types";
 import DynamicLink from "@/components/Link";
+import { trimAddress } from "@/lib/utils";
 
 export const AuditHolder = styled(Column)`
   width: min(100%, 1000px);
@@ -61,7 +62,17 @@ export const AuditorWrapper = styled(Row)`
   }
 `;
 
-const Audits = ({ arr, current }: { arr: AuditI[]; current: string }): JSX.Element => {
+interface AuditRelation extends Audit {
+  auditee: User & {
+    profile: Profile | null;
+  };
+  auditors: User[];
+  terms: {
+    price: number;
+  } | null;
+}
+
+const Audits = ({ arr, current }: { arr: AuditRelation[]; current: string }): JSX.Element => {
   const [cont, setCont] = useState("");
   const tooltip = useRef<HTMLDivElement>(null);
   const router = useRouter();
@@ -103,30 +114,33 @@ const Audits = ({ arr, current }: { arr: AuditI[]; current: string }): JSX.Eleme
         </AuditNav>
       </Row>
       <Column $gap="rem1">
+        {arr.length == 0 && <P>Currently no {current} audits</P>}
         {arr.map((audit, ind) => (
           <Card key={ind} $hover $width="100%" $padding="0px">
             <Row $align="stretch" $justify="flex-start" $gap="rem2" $padding="1rem" $width="100%">
-              <Avatar $size="lg" $seed={audit.auditee.replace(/\s/g, "")} />
+              <Avatar $size="lg" $seed={audit.auditeeId.replace(/\s/g, "")} />
               <Column $justify="flex-start" $align="flex-start">
                 <Row $justify="space-between" $width="100%">
                   <P>
-                    <Strong $large>{audit.auditee}</Strong>
+                    <Strong $large>
+                      {audit.auditee.profile?.name || trimAddress(audit.auditee.address)}
+                    </Strong>
                   </P>
-                  <div>${audit.money.toLocaleString()}</div>
+                  <div>${audit.terms?.price.toLocaleString() || 0}</div>
                 </Row>
-                <P>{audit.description}</P>
+                <P>{"This is a placeholder audit description which I'll get back to."}</P>
               </Column>
             </Row>
             <AuditFooter $justify="space-between" $gap="rem2" $padding="0.5rem 1rem" $width="100%">
               <AuditorWrapper>
                 <Span $secondary>auditors:</Span>
-                {audit.status !== "soon" ? (
+                {audit.auditors.length > 0 ? (
                   audit.auditors.map((auditor, ind2) => (
                     <Auditor $offset={`-${ind2 * 12.5}px`} key={ind2}>
                       <Avatar
-                        data-auditor={auditor}
+                        data-auditor={auditor.address}
                         $size="sm"
-                        $seed={auditor.replace(/\s/g, "")}
+                        $seed={auditor.address.replace(/\s/g, "")}
                         onMouseOver={handleToolTip}
                         onMouseOut={clearToolTip}
                       />
@@ -137,8 +151,8 @@ const Audits = ({ arr, current }: { arr: AuditI[]; current: string }): JSX.Eleme
                 )}
               </AuditorWrapper>
               <ToolTip ref={tooltip}>{cont}</ToolTip>
-              <DynamicLink href={`/audits/${ind}`} disabled={audit.status !== "closed"}>
-                <Span className="competition">View Audit</Span>
+              <DynamicLink href={`/audits/${ind}`} disabled={current !== "closed"}>
+                <Span>View Audit</Span>
               </DynamicLink>
             </AuditFooter>
           </Card>
