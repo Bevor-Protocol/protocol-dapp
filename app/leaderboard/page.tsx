@@ -1,57 +1,50 @@
-"use client";
-
-import { useReducer } from "react";
-
 import { Avatar } from "@/components/Icon";
-import { LeadData, LeadHeader, LeadGrid, Leaderboard } from "@/components/pages/Leaderboard";
-import { leaderboard } from "@/lib/constants";
+import { LeadData, LeadGrid, Leaderboard } from "@/components/pages/Leaderboard";
 import { Section } from "@/components/Common";
 import { LiElement } from "@/components/Box";
-import { Arrow } from "@/assets";
-import { sortLeaderboardReducer } from "@/lib/reducers";
-import { LeaderboardI } from "@/lib/types";
+import { getLeaderboard } from "@/lib/actions/users";
+import { LeaderboardNav } from "@/components/pages/Leaderboard";
+import { trimAddress } from "@/lib/utils";
 
 const headers = ["name", "money", "active", "completed", "available"];
 
-const LeaderboardPage = (): JSX.Element => {
-  const initState = {
-    key: "name",
-    decrease: true,
-    arr: [...leaderboard],
-  };
+type SearchI = {
+  filter?: string;
+  order?: string;
+};
 
-  const [state, dispatch] = useReducer(sortLeaderboardReducer, initState);
+const LeaderboardPage = async ({
+  searchParams,
+}: {
+  searchParams: SearchI;
+}): Promise<JSX.Element> => {
+  const filter = searchParams.filter ?? "name";
+  const order = searchParams.order ?? "asc";
+  const data = await getLeaderboard(filter, order);
 
   return (
     <Section $padCommon $centerH>
       <Leaderboard $gap="xs">
-        <LeadHeader>
-          <LeadGrid>
-            {headers.map((header, ind) => (
-              <LiElement key={ind} onClick={(): void => dispatch({ key: header })}>
-                <span>{header}</span>
-                {header === state.key && (
-                  <Arrow
-                    fill="white"
-                    height="0.6rem"
-                    style={{
-                      transform: state.decrease ? "rotate(135deg)" : "rotate(-45deg)",
-                    }}
-                  />
-                )}
-              </LiElement>
-            ))}
-          </LeadGrid>
-        </LeadHeader>
+        <LeaderboardNav headers={headers} filter={filter} order={order} />
         <LeadData>
-          {state.arr.map((item, ind) => (
+          {data.map((item, ind) => (
             <LeadGrid key={ind}>
-              {headers.map((header, ind2) => (
-                <LiElement key={ind2}>
-                  {header === "name" && <Avatar $size="md" $seed={header.replace(/\s/g, "")} />}
-                  <span>{item[header as keyof LeaderboardI].toLocaleString()}</span>
-                </LiElement>
-              ))}
+              <LiElement>
+                <Avatar $size="md" $seed={item.address} />
+                <span>{item.profile?.name || trimAddress(item.address)}</span>
+              </LiElement>
+              <LiElement>
+                <span>{item.totalValue.toLocaleString()}</span>
+              </LiElement>
+              <LiElement>
+                <span>{item.totalActive.toLocaleString()}</span>
+              </LiElement>
+              <LiElement>
+                <span>{item.totalComplete.toLocaleString()}</span>
+              </LiElement>
+              <LiElement>
+                <span>{String(item.profile?.available)}</span>
+              </LiElement>
             </LeadGrid>
           ))}
         </LeadData>

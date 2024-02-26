@@ -1,9 +1,13 @@
 "use client";
 
+import { useRouter, usePathname } from "next/navigation";
+
 import styled, { css } from "styled-components";
 import { hoverBg } from "@/components/Common";
 import { Column } from "@/components/Box";
 import { getBreakpoint } from "@/theme";
+import { LiElement } from "@/components/Box";
+import { Arrow } from "@/assets";
 
 export const LeadGrid = styled.ul`
   display: grid;
@@ -106,10 +110,57 @@ export const LeadHeader = styled.div`
 `;
 
 export const LeadData = styled.div`
+  width: 100%;
   & ${LeadGrid} {
     border-radius: 10px;
     background-color: ${({ theme }): string => theme.bg};
     box-shadow: inset ${({ theme }): string => theme.boxShadow};
+    cursor: pointer;
     ${hoverBg}
   }
 `;
+
+export const LeaderboardNav = ({
+  headers,
+  filter,
+  order,
+}: {
+  headers: string[];
+  filter: string;
+  order: string;
+}): JSX.Element => {
+  const router = useRouter();
+  const pathname = usePathname();
+
+  const handleSearch = (header: string): void => {
+    let path: string;
+    if (header === filter) {
+      const newOrder = order === "asc" ? "desc" : "asc";
+      path = `${pathname}?filter=${filter}&order=${newOrder}`;
+    } else {
+      path = `${pathname}?filter=${header}&order=asc`;
+    }
+    router.replace(path);
+  };
+
+  return (
+    <LeadHeader>
+      <LeadGrid>
+        {headers.map((header, ind) => (
+          <LiElement key={ind} onClick={(): void => handleSearch(header)}>
+            <span>{header}</span>
+            {header === filter && (
+              <Arrow
+                fill="white"
+                height="0.6rem"
+                style={{
+                  transform: order === "desc" ? "rotate(135deg)" : "rotate(-45deg)",
+                }}
+              />
+            )}
+          </LiElement>
+        ))}
+      </LeadGrid>
+    </LeadHeader>
+  );
+};
