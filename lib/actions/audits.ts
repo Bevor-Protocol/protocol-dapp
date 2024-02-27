@@ -5,7 +5,9 @@ interface AuditRelation extends Audit {
   auditee: User & {
     profile: Profile | null;
   };
-  auditors: User[];
+  auditors: (User & {
+    profile: Profile | null;
+  })[];
   terms: {
     price: number;
   } | null;
@@ -48,7 +50,11 @@ export const getAudits = (status?: string): Promise<AuditRelation[]> => {
           profile: true,
         },
       },
-      auditors: true,
+      auditors: {
+        include: {
+          profile: true,
+        },
+      },
       terms: {
         select: {
           price: true,

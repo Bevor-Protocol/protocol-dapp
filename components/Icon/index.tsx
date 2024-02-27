@@ -7,6 +7,7 @@ const IconCSS = css`
   position: relative;
   margin-right: 0px;
   border-radius: 100%;
+  overflow: hidden;
   transition: all 0.25s ease-in-out;
 `;
 

@@ -60,12 +60,6 @@ const seed = async (): Promise<void> => {
           address: "0x999999cf1046e68e36E1aA2E0E07105eDDD1f08E",
         },
       },
-      terms: {
-        create: {
-          price: 1_000,
-          duration: 6,
-        },
-      },
     },
   });
 
