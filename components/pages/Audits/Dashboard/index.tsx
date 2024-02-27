@@ -3,6 +3,7 @@
 import { useState, useRef } from "react";
 import styled from "styled-components";
 import { useRouter, usePathname } from "next/navigation";
+import { Audit, Profile, Terms, User } from "@prisma/client";
 
 import { P, Span, Strong } from "@/components/Text";
 import { Column, Row, Card } from "@/components/Box";
@@ -23,19 +24,26 @@ const AuditDescription = styled(Column)`
   }
 `;
 
-type Props = {
-  data: {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    [key: string]: any;
+interface AuditRelation extends Audit {
+  auditors: (User & {
+    profile: Profile | null;
+  })[];
+  auditee: User & {
+    profile: Profile | null;
   };
+  terms: Terms | null;
+}
+
+type Props = {
+  audit: AuditRelation;
   content: string;
   display: string;
 };
 
-const AuditDashboard = ({ data, content, display }: Props): JSX.Element => {
+const AuditDashboard = ({ audit, content, display }: Props): JSX.Element => {
   const [cont, setCont] = useState("");
   const tooltip = useRef<HTMLDivElement>(null);
-  const account = useAccount();
+  const { address } = useAccount();
   const router = useRouter();
   const pathname = usePathname();
 
@@ -58,7 +66,8 @@ const AuditDashboard = ({ data, content, display }: Props): JSX.Element => {
   };
 
   const buttonLabel = (): string => {
-    if (data.auditors.includes(account.toString())) {
+    const auditors = audit.auditors.map((auditor) => auditor.address);
+    if (auditors.includes(address?.toString() || "")) {
       return "Withdraw";
       // } else if (data.auditee.toString() === account.toLocaleString()) {
       //   return "Challenge Validity";
@@ -77,16 +86,17 @@ const AuditDashboard = ({ data, content, display }: Props): JSX.Element => {
     <Column $gap="md">
       <Card $width="100%" $padding="0px">
         <Row $align="flex-start" $justify="flex-start" $gap="rem2" $padding="1rem" $width="100%">
-          <Avatar $size="lg" $seed={data.auditee.replace(/\s/g, "")} />
+          <Avatar $size="lg" $seed={audit.auditee.address.replace(/\s/g, "")} />
           <Column $justify="flex-start" $align="flex-start">
             <Row $justify="space-between" $width="100%">
               <P>
-                <Strong $large>{data.auditee}</Strong>
+                <Strong $large>{audit.title}</Strong>
               </P>
-              <div>${data.amount.toLocaleString()}</div>
+              <div>${audit.terms?.price.toLocaleString()}</div>
             </Row>
-            <P>{data.duration}</P>
-            <P>{new Date(data.date).toLocaleDateString()}</P>
+            <P>{audit.description}</P>
+            <P>Months: {audit.terms?.duration}</P>
+            <P>Created: {new Date(audit.createdAt).toLocaleDateString()}</P>
           </Column>
         </Row>
         <ProgressBar />
@@ -110,12 +120,12 @@ const AuditDashboard = ({ data, content, display }: Props): JSX.Element => {
         <AuditFooter $justify="space-between" $gap="rem2" $padding="0.5rem 1rem" $width="100%">
           <AuditorWrapper>
             <Span>auditors:</Span>
-            {data.auditors.map((auditor: string, ind: number) => (
+            {audit.auditors.map((auditor, ind: number) => (
               <Auditor $offset={`-${ind * 12.5}px`} key={ind}>
                 <Avatar
-                  data-auditor={auditor}
+                  data-auditor={auditor.address}
                   $size="sm"
-                  $seed={auditor.replace(/\s/g, "")}
+                  $seed={auditor.address.replace(/\s/g, "")}
                   onMouseOver={handleToolTip}
                   onMouseOut={clearToolTip}
                 />

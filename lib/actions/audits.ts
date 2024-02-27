@@ -1,7 +1,7 @@
 import { prisma } from "@/lib/db/prisma.server";
-import { Audit, User, Profile } from "@prisma/client";
+import { Audit, User, Profile, Terms, PrismaPromise } from "@prisma/client";
 
-interface AuditRelation extends Audit {
+interface AuditsRelation extends Audit {
   auditee: User & {
     profile: Profile | null;
   };
@@ -13,7 +13,7 @@ interface AuditRelation extends Audit {
   } | null;
 }
 
-export const getAudits = (status?: string): Promise<AuditRelation[]> => {
+export const getAudits = (status?: string): Promise<AuditsRelation[]> => {
   let filter;
   switch (status) {
     case "open":
@@ -58,6 +58,37 @@ export const getAudits = (status?: string): Promise<AuditRelation[]> => {
       terms: {
         select: {
           price: true,
+        },
+      },
+    },
+  });
+};
+
+interface AuditRelation extends Audit {
+  auditors: (User & {
+    profile: Profile | null;
+  })[];
+  auditee: User & {
+    profile: Profile | null;
+  };
+  terms: Terms | null;
+}
+
+export const getAudit = (id: string): PrismaPromise<AuditRelation> => {
+  return prisma.audit.findUniqueOrThrow({
+    where: {
+      id,
+    },
+    include: {
+      terms: true,
+      auditors: {
+        include: {
+          profile: true,
+        },
+      },
+      auditee: {
+        include: {
+          profile: true,
         },
       },
     },
