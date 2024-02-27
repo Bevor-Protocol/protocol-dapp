@@ -11,12 +11,9 @@ import { H2 } from "@/components/Text";
 import { AuditHolder } from "@/components/pages/Audits";
 import { Loader } from "@/components/Common";
 import AuditDashboard from "@/components/pages/Audits/Dashboard";
+import { getAudit } from "@/lib/actions/audits";
 
 type MarkdownI = {
-  data: {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    [key: string]: any;
-  };
   content: string;
 };
 
@@ -34,11 +31,10 @@ const getMarkdown = async (display: string): Promise<MarkdownI> => {
   }
   const fileContents = fs.readFileSync(filePath, "utf8");
 
-  const { data, content } = matter(fileContents);
+  const { content } = matter(fileContents);
   const processedContent = (await remark().use(html).use(remarkGfm).process(content)).toString();
 
   return {
-    data,
     content: processedContent,
   };
 };
@@ -51,13 +47,15 @@ const Audit = async ({
   searchParams: { [key: string]: string | undefined };
 }): Promise<JSX.Element> => {
   const display = searchParams.display ?? "details";
-  const { content, data } = await getMarkdown(display);
+  const { content } = await getMarkdown(display);
+  const audit = await getAudit(params.slug);
+
   return (
     <Section $padCommon $centerH $centerV>
       <AuditHolder $gap="rem2">
         <H2>Audit Dashboard {params.slug}</H2>
         <Suspense fallback={<Loader $size="50px" />}>
-          <AuditDashboard data={data} content={content} display={display} />
+          <AuditDashboard audit={audit} content={content} display={display} />
         </Suspense>
       </AuditHolder>
     </Section>

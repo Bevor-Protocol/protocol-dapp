@@ -10,9 +10,31 @@ const seed = async (): Promise<void> => {
       address: "0xc0ffee254729296a45a3885639AC7E10F9d54979",
       auditeeRole: true,
       auditorRole: true,
+      profile: {
+        create: {},
+      },
     },
-    { address: "0x999999cf1046e68e36E1aA2E0E07105eDDD1f08E", auditeeRole: true },
-    { address: "0x73F4aC126bF12DCe39080457FABdce9a43Bd1f70", auditorRole: true },
+    {
+      address: "0x999999cf1046e68e36E1aA2E0E07105eDDD1f08E",
+      auditeeRole: true,
+      profile: {
+        create: {
+          name: "Test User 1",
+          available: true,
+        },
+      },
+    },
+    {
+      address: "0x73F4aC126bF12DCe39080457FABdce9a43Bd1f70",
+      auditorRole: true,
+      profile: {
+        create: {
+          name: "Test User 2",
+          image:
+            "https://img.freepik.com/premium-vector/flat-dog-avatar-illustration-cute-dog_677161-59.jpg",
+        },
+      },
+    },
   ];
 
   // I want to create an empty profile relation upon creating a user.
@@ -22,9 +44,6 @@ const seed = async (): Promise<void> => {
       prisma.user.create({
         data: {
           ...user,
-          profile: {
-            create: {},
-          },
         },
       }),
     ),
@@ -34,15 +53,11 @@ const seed = async (): Promise<void> => {
   // one that initiated it, but auditors could be empty.
   await prisma.audit.create({
     data: {
+      title: "Newly initiated audit",
+      description: "This audit was created but doesn't have any designated auditors yet.",
       auditee: {
         connect: {
           address: "0x999999cf1046e68e36E1aA2E0E07105eDDD1f08E",
-        },
-      },
-      terms: {
-        create: {
-          price: 1_000,
-          duration: 6,
         },
       },
     },
@@ -51,6 +66,8 @@ const seed = async (): Promise<void> => {
   // create an audit that already has auditors.
   await prisma.audit.create({
     data: {
+      title: "Contains an auditor",
+      description: "This audit was created and already has an auditor",
       auditee: {
         connect: {
           address: "0xc0ffee254729296a45a3885639AC7E10F9d54979",
@@ -67,6 +84,32 @@ const seed = async (): Promise<void> => {
         create: {
           price: 10_000,
           duration: 3,
+        },
+      },
+    },
+  });
+
+  await prisma.audit.create({
+    data: {
+      title: "Completed audit",
+      description: "This audit is closed and will be viewable",
+      auditee: {
+        connect: {
+          address: "0x999999cf1046e68e36E1aA2E0E07105eDDD1f08E",
+        },
+      },
+      auditors: {
+        connect: [
+          {
+            address: "0xc0ffee254729296a45a3885639AC7E10F9d54979",
+          },
+        ],
+      },
+      terms: {
+        create: {
+          price: 2_000,
+          duration: 5,
+          isFinal: true,
         },
       },
     },

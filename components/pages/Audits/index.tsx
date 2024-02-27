@@ -1,3 +1,4 @@
+/* eslint-disable @next/next/no-img-element */
 "use client";
 
 import { useRouter } from "next/navigation";
@@ -8,9 +9,8 @@ import { Audit, User, Profile } from "@prisma/client";
 import { P, Span, Strong } from "@/components/Text";
 import { Column, Row, Card } from "@/components/Box";
 import { ToolTip } from "@/components/Tooltip";
-import { Avatar } from "@/components/Icon";
+import { Avatar, Icon } from "@/components/Icon";
 import DynamicLink from "@/components/Link";
-import { trimAddress } from "@/lib/utils";
 
 export const AuditHolder = styled(Column)`
   width: min(100%, 1000px);
@@ -66,7 +66,9 @@ interface AuditRelation extends Audit {
   auditee: User & {
     profile: Profile | null;
   };
-  auditors: User[];
+  auditors: (User & {
+    profile: Profile | null;
+  })[];
   terms: {
     price: number;
   } | null;
@@ -118,17 +120,21 @@ const Audits = ({ arr, current }: { arr: AuditRelation[]; current: string }): JS
         {arr.map((audit, ind) => (
           <Card key={ind} $hover $width="100%" $padding="0px">
             <Row $align="stretch" $justify="flex-start" $gap="rem2" $padding="1rem" $width="100%">
-              <Avatar $size="lg" $seed={audit.auditeeId.replace(/\s/g, "")} />
+              {audit.auditee.profile?.image ? (
+                <Icon $size="lg">
+                  <img src={audit.auditee.profile.image} alt="user icon" />
+                </Icon>
+              ) : (
+                <Avatar $size="lg" $seed={audit.auditee.address.replace(/\s/g, "")} />
+              )}
               <Column $justify="flex-start" $align="flex-start">
                 <Row $justify="space-between" $width="100%">
                   <P>
-                    <Strong $large>
-                      {audit.auditee.profile?.name || trimAddress(audit.auditee.address)}
-                    </Strong>
+                    <Strong $large>{audit.title}</Strong>
                   </P>
                   <div>${audit.terms?.price.toLocaleString() || 0}</div>
                 </Row>
-                <P>{"This is a placeholder audit description which I'll get back to."}</P>
+                <P>{audit.description}</P>
               </Column>
             </Row>
             <AuditFooter $justify="space-between" $gap="rem2" $padding="0.5rem 1rem" $width="100%">
@@ -137,13 +143,26 @@ const Audits = ({ arr, current }: { arr: AuditRelation[]; current: string }): JS
                 {audit.auditors.length > 0 ? (
                   audit.auditors.map((auditor, ind2) => (
                     <Auditor $offset={`-${ind2 * 12.5}px`} key={ind2}>
-                      <Avatar
-                        data-auditor={auditor.address}
-                        $size="sm"
-                        $seed={auditor.address.replace(/\s/g, "")}
-                        onMouseOver={handleToolTip}
-                        onMouseOut={clearToolTip}
-                      />
+                      {auditor.profile?.image ? (
+                        <Icon $size="sm">
+                          <img
+                            src={auditor.profile.image}
+                            alt="user icon"
+                            style={{ height: "100%", width: "100%" }}
+                            data-auditor={auditor.address}
+                            onMouseOver={handleToolTip}
+                            onMouseOut={clearToolTip}
+                          />
+                        </Icon>
+                      ) : (
+                        <Avatar
+                          data-auditor={auditor.address}
+                          $size="sm"
+                          $seed={auditor.address.replace(/\s/g, "")}
+                          onMouseOver={handleToolTip}
+                          onMouseOut={clearToolTip}
+                        />
+                      )}
                     </Auditor>
                   ))
                 ) : (
@@ -151,7 +170,7 @@ const Audits = ({ arr, current }: { arr: AuditRelation[]; current: string }): JS
                 )}
               </AuditorWrapper>
               <ToolTip ref={tooltip}>{cont}</ToolTip>
-              <DynamicLink href={`/audits/${ind}`} disabled={current !== "closed"}>
+              <DynamicLink href={`/audits/${audit.id}`} disabled={current !== "closed"}>
                 <Span>View Audit</Span>
               </DynamicLink>
             </AuditFooter>

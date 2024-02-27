@@ -31,15 +31,6 @@ export const getLeaderboard = (key?: string, order?: string): Promise<UserWithCo
         ],
       };
       break;
-    case "completed":
-      orderClause = {
-        orderBy: {
-          auditor: {
-            _count: order ?? "asc",
-          },
-        },
-      };
-      break;
     case "available":
       orderClause = {
         orderBy: {
@@ -87,6 +78,11 @@ export const getLeaderboard = (key?: string, order?: string): Promise<UserWithCo
           totalComplete,
         };
       });
+      if (key == "completed") {
+        return toReturn.sort(
+          (a, b) => (a.totalComplete - b.totalComplete) * (2 * Number(order == "asc") - 1),
+        );
+      }
       if (key == "money") {
         return toReturn.sort(
           (a, b) => (a.totalValue - b.totalValue) * (2 * Number(order == "asc") - 1),

@@ -30,13 +30,15 @@ model Profile {
 }
 
 model Audit {
-  id        String   @id @default(cuid())
-  terms     Terms?
-  auditee   User     @relation("UserAuditee", fields: [auditeeId], references: [id])
-  auditeeId String
-  auditors  User[]   @relation("UserAuditor")
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id          String   @id @default(cuid())
+  terms       Terms?
+  auditee     User     @relation("UserAuditee", fields: [auditeeId], references: [id])
+  auditeeId   String
+  auditors    User[]   @relation("UserAuditor")
+  title       String
+  description String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 }
 
 model Terms {
