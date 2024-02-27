@@ -1,0 +1,27 @@
+name: Close PR Action
+
+on:
+  pull_request:
+    types: [closed]
+    branches-ignore:
+      - 'main'
+      - 'prod'
+
+jobs:
+  close_pr_job:
+    if: github.event.pull_request.merged == true
+    runs-on: ubuntu-latest
+    steps:
+    - name: Extract branch name
+      id: extract_branch
+      run: echo "::set-output name=branch_name::${{ github.event.pull_request.head.ref }}"
+
+    - name: Delete Branch on Neon
+      uses: neondatabase/delete-branch-action@v3
+      env:
+        NEON_PROJECT_ID: ${{ secrets.NEON_PROJECT_ID }}
+        NEON_API_KEY: ${{ secrets.NEON_API_KEY }}
+      with:
+        project_id: $NEON_PROJECT_ID
+        branch: ${{ steps.extract_branch.outputs.branch_name }}
+        api_key: $NEON_API_KEY
