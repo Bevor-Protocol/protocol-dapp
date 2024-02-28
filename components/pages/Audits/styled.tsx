@@ -54,3 +54,12 @@ export const AuditorWrapper = styled(Row)`
     transform: translateX(0);
   }
 `;
+
+export const AuditDescription = styled(Column)`
+  padding: 1rem;
+  width: 100%;
+
+  & pre {
+    white-space: pre-line;
+  }
+`;

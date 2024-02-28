@@ -1,14 +1,16 @@
 /* eslint-disable @next/next/no-img-element */
 "use client";
 
-import { useRouter } from "next/navigation";
+import { useRouter, usePathname } from "next/navigation";
 import { useState, useRef } from "react";
 import { User, Profile } from "@prisma/client";
+import { useAccount } from "wagmi";
 
 import { Row } from "@/components/Box";
 import { AuditNav, Auditor } from "../styled";
 import { ToolTip } from "@/components/Tooltip";
 import { Icon, Avatar } from "@/components/Icon";
+import { ButtonLight } from "@/components/Button";
 
 export const AuditHeader = ({ current }: { current: string }): JSX.Element => {
   const router = useRouter();
@@ -28,6 +30,31 @@ export const AuditHeader = ({ current }: { current: string }): JSX.Element => {
       </AuditNav>
       <AuditNav $active={current == "closed"} data-name="closed" onClick={fetchAudits}>
         closed
+      </AuditNav>
+    </Row>
+  );
+};
+
+export const AuditDashboardHeader = ({ display }: { display: string }): JSX.Element => {
+  const router = useRouter();
+  const pathname = usePathname();
+
+  const handleMarkdownChange = (displayType: string): void => {
+    if (display == displayType) return;
+    const path = `${pathname}?display=${displayType}`;
+    router.replace(path);
+  };
+
+  return (
+    <Row $gap="rem1" $justify="flex-start">
+      <AuditNav
+        onClick={(): void => handleMarkdownChange("details")}
+        $active={display === "details"}
+      >
+        Details
+      </AuditNav>
+      <AuditNav onClick={(): void => handleMarkdownChange("audit")} $active={display === "audit"}>
+        Audit
       </AuditNav>
     </Row>
   );
@@ -84,5 +111,31 @@ export const AuditAuditor = ({
       )}
       <ToolTip ref={tooltip}>{cont}</ToolTip>
     </Auditor>
+  );
+};
+
+export const AuditDashboardBtn = ({
+  auditors,
+}: {
+  auditors: (User & {
+    profile: Profile | null;
+  })[];
+}): JSX.Element => {
+  const { address } = useAccount();
+
+  const buttonLabel = (): string => {
+    const auditorsAddresses = auditors.map((auditor) => auditor.address);
+    if (auditorsAddresses.includes(address?.toString() || "")) {
+      return "Withdraw";
+      // } else if (data.auditee.toString() === account.toLocaleString()) {
+      //   return "Challenge Validity";
+    } else {
+      return "Disabled";
+    }
+  };
+  return (
+    <ButtonLight $hover="dim" disabled={true}>
+      {buttonLabel()}
+    </ButtonLight>
   );
 };

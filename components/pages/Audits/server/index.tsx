@@ -4,9 +4,11 @@ import { Column, Row, Card } from "@/components/Box";
 import { Loader } from "@/components/Common";
 import { Avatar, Icon } from "@/components/Icon";
 import DynamicLink from "@/components/Link";
-import { AuditFooter, AuditorWrapper } from "../styled";
-import { AuditAuditor } from "../client";
-import { getAudits } from "@/lib/actions/audits";
+import ProgressBar from "@/components/ProgressBar";
+import { Markdown } from "@/components/Markdown";
+import { AuditFooter, AuditorWrapper, AuditDescription } from "../styled";
+import { AuditAuditor, AuditDashboardBtn, AuditDashboardHeader } from "../client";
+import { getAudits, getAudit, getMarkdown } from "@/lib/actions/audits";
 
 export const Audits = async ({ current }: { current: string }): Promise<JSX.Element> => {
   const audits = await getAudits(current);
@@ -51,6 +53,51 @@ export const Audits = async ({ current }: { current: string }): Promise<JSX.Elem
           </AuditFooter>
         </Card>
       ))}
+    </Column>
+  );
+};
+
+export const AuditDashboard = async ({
+  auditId,
+  display,
+}: {
+  auditId: string;
+  display: string;
+}): Promise<JSX.Element> => {
+  const audit = await getAudit(auditId);
+  const content = await getMarkdown(display);
+  return (
+    <Column $gap="md">
+      <Card $width="100%" $padding="0px">
+        <Row $align="flex-start" $justify="flex-start" $gap="rem2" $padding="1rem" $width="100%">
+          <Avatar $size="lg" $seed={audit.auditee.address.replace(/\s/g, "")} />
+          <Column $justify="flex-start" $align="flex-start">
+            <Row $justify="space-between" $width="100%">
+              <P>
+                <Strong $large>{audit.title}</Strong>
+              </P>
+              <div>${audit.terms?.price.toLocaleString()}</div>
+            </Row>
+            <P>{audit.description}</P>
+            <P>Months: {audit.terms?.duration}</P>
+            <P>Created: {new Date(audit.createdAt).toLocaleDateString()}</P>
+          </Column>
+        </Row>
+        <ProgressBar />
+        <AuditDescription $align="flex-start" $gap="lg">
+          <AuditDashboardHeader display={display} />
+          <Markdown dangerouslySetInnerHTML={{ __html: content }} />
+        </AuditDescription>
+        <AuditFooter $justify="space-between" $gap="rem2" $padding="0.5rem 1rem" $width="100%">
+          <AuditorWrapper>
+            <Span>auditors:</Span>
+            {audit.auditors.map((auditor, ind: number) => (
+              <AuditAuditor position={`-${ind * 12.5}px`} key={ind} auditor={auditor} />
+            ))}
+          </AuditorWrapper>
+          <AuditDashboardBtn auditors={audit.auditors} />
+        </AuditFooter>
+      </Card>
     </Column>
   );
 };
