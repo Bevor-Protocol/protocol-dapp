@@ -8,7 +8,7 @@ import matter from "gray-matter";
 
 import { Section } from "@/components/Common";
 import { H2 } from "@/components/Text";
-import { AuditHolder } from "@/components/pages/Audits";
+import { AuditHolder } from "@/components/pages/Audits/styled";
 import { Loader } from "@/components/Common";
 import AuditDashboard from "@/components/pages/Audits/Dashboard";
 import { getAudit } from "@/lib/actions/audits";

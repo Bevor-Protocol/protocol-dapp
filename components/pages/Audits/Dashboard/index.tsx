@@ -13,7 +13,7 @@ import ProgressBar from "@/components/ProgressBar";
 import { ButtonLight } from "@/components/Button";
 import { useAccount } from "wagmi";
 import { Markdown } from "@/components/Markdown";
-import { AuditFooter, Auditor, AuditorWrapper, AuditNav } from "..";
+import { AuditFooter, Auditor, AuditorWrapper, AuditNav } from "../styled";
 
 const AuditDescription = styled(Column)`
   padding: 1rem;
