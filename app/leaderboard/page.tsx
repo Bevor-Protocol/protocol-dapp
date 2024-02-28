@@ -1,10 +1,9 @@
-import { Avatar } from "@/components/Icon";
-import { LeadData, LeadGrid, Leaderboard } from "@/components/pages/Leaderboard";
+import { Suspense } from "react";
+
 import { Section } from "@/components/Common";
-import { LiElement } from "@/components/Box";
-import { getLeaderboard } from "@/lib/actions/users";
-import { LeaderboardNav } from "@/components/pages/Leaderboard";
-import { trimAddress } from "@/lib/utils";
+import { Leaderboard } from "@/components/pages/Leaderboard/styled";
+import { LeaderboardNav } from "@/components/pages/Leaderboard/client";
+import { LeaderboardData, LeaderboardSkeleton } from "@/components/pages/Leaderboard/server";
 
 const headers = ["name", "money", "active", "completed", "available"];
 
@@ -13,41 +12,18 @@ type SearchI = {
   order?: string;
 };
 
-const LeaderboardPage = async ({
-  searchParams,
-}: {
-  searchParams: SearchI;
-}): Promise<JSX.Element> => {
+const LeaderboardPage = ({ searchParams }: { searchParams: SearchI }): JSX.Element => {
   const filter = searchParams.filter ?? "name";
   const order = searchParams.order ?? "asc";
-  const data = await getLeaderboard(filter, order);
 
   return (
     <Section $padCommon $centerH>
       <Leaderboard $gap="xs">
         <LeaderboardNav headers={headers} filter={filter} order={order} />
-        <LeadData>
-          {data.map((item, ind) => (
-            <LeadGrid key={ind}>
-              <LiElement>
-                <Avatar $size="md" $seed={item.address} />
-                <span>{item.profile?.name || trimAddress(item.address)}</span>
-              </LiElement>
-              <LiElement>
-                <span>{item.totalValue.toLocaleString()}</span>
-              </LiElement>
-              <LiElement>
-                <span>{item.totalActive.toLocaleString()}</span>
-              </LiElement>
-              <LiElement>
-                <span>{item.totalComplete.toLocaleString()}</span>
-              </LiElement>
-              <LiElement>
-                <span>{String(item.profile?.available)}</span>
-              </LiElement>
-            </LeadGrid>
-          ))}
-        </LeadData>
+        {/* must add the key here to get suspense boundary on each new route */}
+        <Suspense fallback={<LeaderboardSkeleton />} key={JSON.stringify(searchParams)}>
+          <LeaderboardData filter={filter} order={order} />
+        </Suspense>
       </Leaderboard>
     </Section>
   );

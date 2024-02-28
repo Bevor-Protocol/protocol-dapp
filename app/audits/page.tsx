@@ -1,26 +1,28 @@
-import AuditWrapper, { AuditHolder } from "@/components/pages/Audits";
+import { AuditHolder } from "@/components/pages/Audits/styled";
+import { AuditHeader } from "@/components/pages/Audits/client";
+import { Audits, AuditsSkeleton } from "@/components/pages/Audits/server";
 import { Section } from "@/components/Common";
 import { H2 } from "@/components/Text";
-import { getAudits } from "@/lib/actions/audits";
+import { Suspense } from "react";
 
-const Audits = async ({
+const Audit = ({
   searchParams,
 }: {
   searchParams: { [key: string]: string | undefined };
-}): Promise<JSX.Element> => {
+}): JSX.Element => {
   const status = searchParams.status ?? "open";
-  const audits = await getAudits(status);
-
-  console.log(audits[0].auditors);
 
   return (
     <Section $padCommon $centerH>
       <AuditHolder $gap="rem1" $padding="2rem 0" $justify="flex-start">
         <H2>{status.charAt(0).toUpperCase() + status.substring(1).toLowerCase()} Audits</H2>
-        <AuditWrapper arr={audits} current={status} />
+        <AuditHeader current={status} />
+        <Suspense fallback={<AuditsSkeleton />} key={JSON.stringify(searchParams)}>
+          <Audits current={status} />
+        </Suspense>
       </AuditHolder>
     </Section>
   );
 };
 
-export default Audits;
+export default Audit;
