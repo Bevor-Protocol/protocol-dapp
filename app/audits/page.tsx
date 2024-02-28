@@ -17,7 +17,7 @@ const Audit = ({
       <AuditHolder $gap="rem1" $padding="2rem 0" $justify="flex-start">
         <H2>{status.charAt(0).toUpperCase() + status.substring(1).toLowerCase()} Audits</H2>
         <AuditHeader current={status} />
-        <Suspense fallback={<AuditsSkeleton />}>
+        <Suspense fallback={<AuditsSkeleton />} key={JSON.stringify(searchParams)}>
           <Audits current={status} />
         </Suspense>
       </AuditHolder>

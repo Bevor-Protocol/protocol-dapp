@@ -17,7 +17,7 @@ const AuditDashboardPage = async ({
 
   return (
     <Section $padCommon $centerH $centerV>
-      <AuditHolder $gap="rem2">
+      <AuditHolder $gap="rem2" $padding="2rem 0" $justify="flex-start">
         <H2>Audit Dashboard</H2>
         <Suspense fallback={<Loader $size="50px" />}>
           <AuditDashboard auditId={params.slug} display={display} />
