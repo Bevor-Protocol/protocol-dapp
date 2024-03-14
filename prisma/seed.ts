@@ -43,9 +43,15 @@ const seed = async (): Promise<void> => {
       profile: {
         create: {
           name: "Test User 2",
-          image:
-            "https://img.freepik.com/premium-vector/flat-dog-avatar-illustration-cute-dog_677161-59.jpg",
+          image: "https://cdn-images-1.medium.com/max/1200/1*Ty6tR7qRtx6yo3dM_drJBg.png",
         },
+      },
+    },
+    {
+      address: "0x3A1D14c5B007f2aC5a5e174663Eb3e69C78ADbB5",
+      auditorRole: true,
+      profile: {
+        create: {},
       },
     },
   ];
@@ -127,6 +133,9 @@ const seed = async (): Promise<void> => {
         connect: [
           {
             address: "0xc0ffee254729296a45a3885639AC7E10F9d54979",
+          },
+          {
+            address: "0x3A1D14c5B007f2aC5a5e174663Eb3e69C78ADbB5",
           },
         ],
       },
