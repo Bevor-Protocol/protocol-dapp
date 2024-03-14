@@ -14,32 +14,45 @@ interface UserWithProfile extends User {
   profile?: Profile | null;
 }
 
-export const UserIsOwner = ({ user }: { user: UserWithProfile }): JSX.Element => {
+const UserProfile = ({
+  user,
+  isOwner,
+}: {
+  user: UserWithProfile;
+  isOwner: boolean;
+}): JSX.Element => {
   return (
-    <Row>
-      {user.profile?.image ? (
-        <Icon $size="lg">
-          <img src={user.profile.image} alt="user icon" />
-        </Icon>
-      ) : (
-        <Avatar $size="lg" $seed={user.address.replace(/\s/g, "")} />
-      )}
-      <Column>
-        <P>
-          <Span>{user.profile?.name}</Span>
-          <Span> | </Span>
-          <Span>{user.address}</Span>
-        </P>
-        <P>
-          Member Since:
-          <Span>{user.createdAt.toDateString()}</Span>
-        </P>
-      </Column>
-    </Row>
+    <form>
+      {isOwner && <h2>My Account</h2>}
+      <Row $gap="rem2">
+        {user.profile?.image ? (
+          <Icon $size="lg">
+            <img src={user.profile.image} alt="user icon" />
+          </Icon>
+        ) : (
+          <Avatar $size="lg" $seed={user.address.replace(/\s/g, "")} />
+        )}
+        <Column $align="flex-start">
+          <P>
+            <Span>{user.profile?.name}</Span>
+            <Span> | </Span>
+            <Span>{user.address}</Span>
+          </P>
+          <P>
+            Member Since:
+            <Span>{user.createdAt.toDateString()}</Span>
+          </P>
+          <P>
+            Last Profile Update:
+            <Span>{user.profile?.updatedAt.toDateString()}</Span>
+          </P>
+        </Column>
+      </Row>
+    </form>
   );
 };
 
-export const UseClient = ({ user }: { user: UserWithProfile }): JSX.Element => {
+export const UserClient = ({ user }: { user: UserWithProfile }): JSX.Element => {
   const mounted = useIsMounted();
   const { address } = useAccount();
 
@@ -51,9 +64,5 @@ export const UseClient = ({ user }: { user: UserWithProfile }): JSX.Element => {
     return <Loader $size="50px" />;
   }
 
-  if (isOwner) {
-    return <UserIsOwner user={user} />;
-  }
-
-  return <h2>You don`t own this address, what you see is limited.</h2>;
+  return <UserProfile user={user} isOwner={isOwner} />;
 };
