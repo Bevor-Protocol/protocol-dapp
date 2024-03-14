@@ -11,6 +11,7 @@ import { AuditNav, Auditor } from "../styled";
 import { ToolTip } from "@/components/Tooltip";
 import { FallbackIcon } from "@/components/Icon";
 import { ButtonLight } from "@/components/Button";
+import { UnstyledNextLink } from "@/components/Link";
 
 export const AuditHeader = ({ current }: { current: string }): JSX.Element => {
   const router = useRouter();
@@ -89,14 +90,16 @@ export const AuditAuditor = ({
   };
   return (
     <Auditor $offset={position}>
-      <FallbackIcon
-        image={auditor.profile?.image}
-        size="md"
-        address={auditor.address}
-        data-auditoradd={auditor.address}
-        onMouseOver={handleToolTip}
-        onMouseOut={clearToolTip}
-      />
+      <UnstyledNextLink href={`/user/${auditor.address}`}>
+        <FallbackIcon
+          image={auditor.profile?.image}
+          size="md"
+          address={auditor.address}
+          data-auditoradd={auditor.address}
+          onMouseOver={handleToolTip}
+          onMouseOut={clearToolTip}
+        />
+      </UnstyledNextLink>
       <ToolTip ref={tooltip}>{cont}</ToolTip>
     </Auditor>
   );

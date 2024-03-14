@@ -2,8 +2,8 @@
 import { P, Span, Strong } from "@/components/Text";
 import { Column, Row, Card } from "@/components/Box";
 import { Loader } from "@/components/Common";
-import { Avatar, Icon } from "@/components/Icon";
-import DynamicLink from "@/components/Link";
+import { FallbackIcon } from "@/components/Icon";
+import DynamicLink, { UnstyledNextLink } from "@/components/Link";
 import ProgressBar from "@/components/ProgressBar";
 import { Markdown } from "@/components/Markdown";
 import { AuditFooter, AuditorWrapper, AuditDescription } from "../styled";
@@ -19,13 +19,13 @@ export const Audits = async ({ current }: { current: string }): Promise<JSX.Elem
       {audits.map((audit, ind) => (
         <Card key={ind} $hover $width="100%" $padding="0px">
           <Row $align="stretch" $justify="flex-start" $gap="rem2" $padding="1rem" $width="100%">
-            {audit.auditee.profile?.image ? (
-              <Icon $size="lg">
-                <img src={audit.auditee.profile.image} alt="user icon" />
-              </Icon>
-            ) : (
-              <Avatar $size="lg" $seed={audit.auditee.address.replace(/\s/g, "")} />
-            )}
+            <UnstyledNextLink href={`/user/${audit.auditee.address}`}>
+              <FallbackIcon
+                image={audit.auditee.profile?.image}
+                address={audit.auditee.address}
+                size="lg"
+              />
+            </UnstyledNextLink>
             <Column $justify="flex-start" $align="flex-start">
               <Row $justify="space-between" $width="100%">
                 <P>
@@ -70,7 +70,11 @@ export const AuditDashboard = async ({
     <Column $gap="md">
       <Card $width="100%" $padding="0px">
         <Row $align="flex-start" $justify="flex-start" $gap="rem2" $padding="1rem" $width="100%">
-          <Avatar $size="lg" $seed={audit.auditee.address.replace(/\s/g, "")} />
+          <FallbackIcon
+            image={audit.auditee.profile?.image}
+            address={audit.auditee.address}
+            size="lg"
+          />
           <Column $justify="flex-start" $align="flex-start">
             <Row $justify="space-between" $width="100%">
               <P>
