@@ -1,7 +1,9 @@
+/* eslint-disable @next/next/no-img-element */
 "use client";
 
 import styled, { css } from "styled-components";
 import { getBreakpoint } from "@/theme";
+import React from "react";
 
 const IconCSS = css`
   position: relative;
@@ -58,3 +60,20 @@ export const LogoIcon = styled.div<{ $height: string }>`
   aspect-ratio: 1091 / 1685;
   position: relative;
 `;
+
+interface Props extends React.HTMLAttributes<HTMLElement> {
+  image?: string | null;
+  address: string;
+  size: string;
+}
+
+export const FallbackIcon = ({ image, address, size, ...rest }: Props): JSX.Element => {
+  if (image) {
+    return (
+      <Icon $size={size}>
+        <img src={image} alt="user icon" style={{ height: "100%", width: "100%" }} {...rest} />
+      </Icon>
+    );
+  }
+  return <Avatar $size={size} $seed={address.replace(/\s/g, "")} {...rest} />;
+};

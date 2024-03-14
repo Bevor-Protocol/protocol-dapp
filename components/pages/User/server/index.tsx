@@ -1,4 +1,3 @@
-/* eslint-disable @next/next/no-img-element */
 import { UserClient } from "../client";
 import { getUserProfile } from "@/lib/actions/users";
 

@@ -27,7 +27,11 @@ const UserProfile = ({
       <Row $gap="rem2">
         {user.profile?.image ? (
           <Icon $size="lg">
-            <img src={user.profile.image} alt="user icon" />
+            <img
+              src={user.profile.image}
+              alt="user icon"
+              style={{ height: "100%", width: "100%" }}
+            />
           </Icon>
         ) : (
           <Avatar $size="lg" $seed={user.address.replace(/\s/g, "")} />

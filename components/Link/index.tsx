@@ -5,6 +5,22 @@ import styled from "styled-components";
 
 import { focusBorder } from "@/components/Common";
 
+export const UnstyledNextLink = styled(Link)`
+  appearance: none;
+  color: inherit;
+  text-decoration: none;
+  font-family: inherit !important;
+  border: 1px solid transparent;
+  border-radius: 10px;
+  cursor: pointer;
+  pointer-events: all;
+  display: block;
+  margin: 0;
+  padding: 0;
+
+  ${focusBorder};
+`;
+
 export const StyledNextLink = styled(Link)<{ $disabled?: boolean }>`
   appearance: none;
   color: inherit;

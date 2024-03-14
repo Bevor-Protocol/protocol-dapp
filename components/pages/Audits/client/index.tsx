@@ -9,7 +9,7 @@ import { useAccount } from "wagmi";
 import { Row } from "@/components/Box";
 import { AuditNav, Auditor } from "../styled";
 import { ToolTip } from "@/components/Tooltip";
-import { Icon, Avatar } from "@/components/Icon";
+import { FallbackIcon } from "@/components/Icon";
 import { ButtonLight } from "@/components/Button";
 
 export const AuditHeader = ({ current }: { current: string }): JSX.Element => {
@@ -89,26 +89,14 @@ export const AuditAuditor = ({
   };
   return (
     <Auditor $offset={position}>
-      {auditor.profile?.image ? (
-        <Icon $size="sm">
-          <img
-            src={auditor.profile.image}
-            alt="user icon"
-            style={{ height: "100%", width: "100%" }}
-            data-auditoradd={auditor.address}
-            onMouseOver={handleToolTip}
-            onMouseOut={clearToolTip}
-          />
-        </Icon>
-      ) : (
-        <Avatar
-          data-auditoradd={auditor.address}
-          $size="sm"
-          $seed={auditor.address.replace(/\s/g, "")}
-          onMouseOver={handleToolTip}
-          onMouseOut={clearToolTip}
-        />
-      )}
+      <FallbackIcon
+        image={auditor.profile?.image}
+        size="md"
+        address={auditor.address}
+        data-auditoradd={auditor.address}
+        onMouseOver={handleToolTip}
+        onMouseOut={clearToolTip}
+      />
       <ToolTip ref={tooltip}>{cont}</ToolTip>
     </Auditor>
   );
