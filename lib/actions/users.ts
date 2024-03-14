@@ -1,5 +1,5 @@
 import { prisma } from "@/lib/db/prisma.server";
-import { User } from "@prisma/client";
+import { User, Profile } from "@prisma/client";
 
 interface UserWithCount extends User {
   profile?: {
@@ -10,6 +10,10 @@ interface UserWithCount extends User {
   totalValue: number;
   totalActive: number;
   totalComplete: number;
+}
+
+interface UserFull extends User {
+  profile?: Profile | null;
 }
 
 export const getLeaderboard = (key?: string, order?: string): Promise<UserWithCount[]> => {
@@ -95,4 +99,28 @@ export const getLeaderboard = (key?: string, order?: string): Promise<UserWithCo
       }
       return toReturn;
     });
+};
+
+export const getUserProfile = (address: string): Promise<UserFull | null> => {
+  return prisma.user.findUnique({
+    where: {
+      address,
+    },
+    include: {
+      profile: true,
+      auditee: true,
+      auditor: true,
+    },
+  });
+};
+
+export const updateProfile = (id: string, profileData: Profile): Promise<Profile> => {
+  return prisma.profile.update({
+    where: {
+      userId: id,
+    },
+    data: {
+      ...profileData,
+    },
+  });
 };
