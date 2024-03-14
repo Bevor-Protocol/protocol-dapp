@@ -41,7 +41,7 @@ const NavHolder = (): JSX.Element => {
                 </NavItem>
               </DynamicLink>
             ))}
-            <MenuHolder ref={ref}>
+            <MenuHolder ref={ref} tabIndex={0}>
               <NavItem onClick={setShow} $active={show}>
                 <Ellipsis />
               </NavItem>

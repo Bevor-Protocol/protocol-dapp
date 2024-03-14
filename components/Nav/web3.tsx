@@ -59,7 +59,7 @@ const Web3Holder = (): JSX.Element => {
   return (
     <Row $gap="sm" $align="stretch" style={{ position: "relative" }}>
       {isConnected && mounted && (
-        <MenuHolder ref={refNetwork}>
+        <MenuHolder ref={refNetwork} tabIndex={0}>
           <NavItem onClick={setShow} $active={true}>
             <Row $gap="sm" onMouseOver={handleToolTip} onMouseOut={clearToolTip}>
               <Icon $size="sm">
