@@ -9,19 +9,25 @@ import { Row, Column, Card } from "@/components/Box";
 import { P, Span, Strong, H3 } from "@/components/Text";
 import { useIsMounted } from "@/hooks/useIsMounted";
 import { Loader } from "@/components/Common";
-import DynamicLink from "@/components/Link";
+import DynamicLink, { UnstyledNextLink } from "@/components/Link";
 import { AuditFooter, AuditorWrapper } from "@/components/pages/Audits/styled";
 import { AuditAuditor } from "@/components/pages/Audits/client";
 
 interface UserFull extends User {
   profile?: Profile | null;
   auditee?: (Audit & {
+    auditee: User & {
+      profile: Profile | null;
+    };
     terms?: Terms | null;
     auditors?: (User & {
       profile: Profile | null;
     })[];
   })[];
   auditor?: (Audit & {
+    auditee: User & {
+      profile: Profile | null;
+    };
     terms?: Terms | null;
     auditors?: (User & {
       profile: Profile | null;
@@ -106,7 +112,13 @@ export const UserClient = ({ user }: { user: UserFull }): JSX.Element => {
       {user.auditor?.map((audit, ind) => (
         <Card key={ind} $hover $width="100%" $padding="0px">
           <Row $align="stretch" $justify="flex-start" $gap="rem2" $padding="1rem" $width="100%">
-            <FallbackIcon image={user.profile?.image} address={user.address} size="lg" />
+            <UnstyledNextLink href={`/user/${audit.auditee.address}`}>
+              <FallbackIcon
+                image={audit.auditee.profile?.image}
+                address={audit.auditee.address}
+                size="lg"
+              />
+            </UnstyledNextLink>
             <Column $justify="flex-start" $align="flex-start">
               <Row $justify="space-between" $width="100%">
                 <P>
