@@ -37,6 +37,10 @@ const Page = (): JSX.Element => {
           </Row>
         </HomeText>
         <HomeStatsGrid $gap="sm" $align="initial" $justify="initial">
+          {/* <HomeStat action={Actions.protocolDataAudits} text="audits conducted" />
+          <HomeStat action={Actions.protocolDataVulnerabilities} text="vulnerabilities uncovered" />
+          <HomeStat action={Actions.protocolDataFunds} symbol="$" text="funds facilitated" />
+          <HomeStat action={Actions.protocolDataAuditors} text="registered auditors" /> */}
           <Suspense fallback={<HomeStatSkeleton />}>
             <HomeStat action={Actions.protocolDataAudits} text="audits conducted" />
           </Suspense>

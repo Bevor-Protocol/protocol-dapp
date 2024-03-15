@@ -35,7 +35,9 @@ const NavHolder = (): JSX.Element => {
             </LogoIcon>
           </DynamicLink>
           <NavItems $gap="sm">
-            <Dashboard active={pathname.split("/")[2] == address} />
+            <Dashboard
+              active={pathname.split("/")[1] == "user" && pathname.split("/")[2] == address}
+            />
             {navItems.main.map((item, ind) => (
               <DynamicLink href={item.url} key={ind}>
                 <NavItem $active={pathname === item.url}>

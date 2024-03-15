@@ -24,7 +24,7 @@ export const protocolDataVulnerabilities = async (): Promise<number> => {
   return new Promise((resolve) => {
     setTimeout(() => {
       resolve(10_000);
-    }, 2_000);
+    }, 5_000);
   });
 };
 
