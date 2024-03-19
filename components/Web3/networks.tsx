@@ -1,5 +1,5 @@
 import Image from "next/image";
-import { useSwitchChain } from "wagmi";
+import { useSwitchChain, Register } from "wagmi";
 
 import { DropDown } from "@/components/Tooltip";
 import { Column } from "@/components/Box";
@@ -21,7 +21,9 @@ const Wallets = ({ close }: { close: () => void }): JSX.Element => {
         {chains.map((chain) => (
           <NavItem
             key={chain.id}
-            onClick={(): void => switchChain({ chainId: chain.id })}
+            onClick={(): void =>
+              switchChain({ chainId: chain.id as Register["config"]["chains"][number]["id"] })
+            }
             $height="fit-content"
             $justify="flex-start"
             $gap="sm"
