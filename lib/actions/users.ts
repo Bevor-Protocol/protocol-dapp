@@ -1,42 +1,9 @@
 import { prisma } from "@/lib/db/prisma.server";
-import { User, Profile, Audit, Terms } from "@prisma/client";
+import { Profile } from "@prisma/client";
 
-interface UserWithCount extends User {
-  profile?: {
-    name?: string | null;
-    image?: string | null;
-    available: boolean;
-  } | null;
-  totalValue: number;
-  totalActive: number;
-  totalComplete: number;
-}
-
-interface UserFull extends User {
-  profile?: Profile | null;
-  auditee?: (Audit & {
-    auditee: User & {
-      profile: Profile | null;
-    };
-    terms?: Terms | null;
-    auditors?: (User & {
-      profile: Profile | null;
-    })[];
-  })[];
-  auditor?: (Audit & {
-    auditee: User & {
-      profile: Profile | null;
-    };
-    terms?: Terms | null;
-    auditors?: (User & {
-      profile: Profile | null;
-    })[];
-  })[];
-}
+import type { UserProfile, UserWithCount, AuditFull } from "@/lib/types/actions";
 
 type UserStats = {
-  auditorCount: number;
-  auditeeCount: number;
   moneyPaid: number;
   moneyEarned: number;
 };
@@ -78,13 +45,7 @@ export const getLeaderboard = (key?: string, order?: string): Promise<UserWithCo
         auditorRole: true,
       },
       include: {
-        profile: {
-          select: {
-            name: true,
-            image: true,
-            available: true,
-          },
-        },
+        profile: true,
         auditor: {
           include: {
             terms: true,
@@ -126,49 +87,42 @@ export const getLeaderboard = (key?: string, order?: string): Promise<UserWithCo
     });
 };
 
-export const getUserProfile = (address: string): Promise<UserFull | null> => {
+export const getUserProfile = (address: string): Promise<UserProfile | null> => {
   return prisma.user.findUnique({
     where: {
       address,
     },
     include: {
       profile: true,
+    },
+  });
+};
+
+export const getUserAuditsAuditee = (address: string): Promise<AuditFull[]> => {
+  return prisma.audit.findMany({
+    where: {
+      auditee: {
+        address,
+      },
+    },
+    include: {
       auditee: {
         include: {
-          auditee: {
-            include: {
-              profile: true,
-            },
-          },
-          terms: true,
-          auditors: {
-            include: {
-              profile: true,
-            },
-          },
+          profile: true,
         },
       },
-      auditor: {
+      terms: true,
+      auditors: {
         include: {
-          auditee: {
-            include: {
-              profile: true,
-            },
-          },
-          terms: true,
-          auditors: {
-            include: {
-              profile: true,
-            },
-          },
+          profile: true,
         },
       },
     },
   });
 };
 
-const getUserAuditorCount = (address: string): Promise<number> => {
-  return prisma.audit.count({
+export const getUserAuditsAuditor = (address: string): Promise<AuditFull[]> => {
+  return prisma.audit.findMany({
     where: {
       auditors: {
         some: {
@@ -176,14 +130,17 @@ const getUserAuditorCount = (address: string): Promise<number> => {
         },
       },
     },
-  });
-};
-
-const getUserAuditeeCount = (address: string): Promise<number> => {
-  return prisma.audit.count({
-    where: {
+    include: {
       auditee: {
-        address,
+        include: {
+          profile: true,
+        },
+      },
+      terms: true,
+      auditors: {
+        include: {
+          profile: true,
+        },
       },
     },
   });
@@ -240,14 +197,10 @@ const getUserMoneyEarned = (address: string): Promise<number> => {
 };
 
 export const getUserStats = async (address: string): Promise<UserStats> => {
-  const auditorCount = await getUserAuditorCount(address);
-  const auditeeCount = await getUserAuditeeCount(address);
   const moneyPaid = await getUserMoneyPaid(address);
   const moneyEarned = await getUserMoneyEarned(address);
 
   return {
-    auditorCount,
-    auditeeCount,
     moneyPaid,
     moneyEarned,
   };
