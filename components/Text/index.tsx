@@ -45,11 +45,19 @@ export const H3 = styled.h3`
   ${TextGradLight}
 `;
 
-export const P = styled.p<{ $secondary?: boolean }>`
+export const P = styled.p<{ $secondary?: boolean; $trim?: boolean }>`
   font-size: 1rem;
   line-height: 1.5rem;
   font-weight: 500;
   color: ${({ $secondary, theme }): string => $secondary && theme.textSecondary};
+  ${({ $trim }): CSSProp =>
+    $trim &&
+    `
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    width: 100%;
+  `}
 `;
 
 export const Strong = styled.strong<{ $large?: boolean }>`
