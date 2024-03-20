@@ -1,3 +1,4 @@
+"use server";
 import { prisma } from "@/lib/db/prisma.server";
 import { PrismaPromise } from "@prisma/client";
 import fs from "fs";

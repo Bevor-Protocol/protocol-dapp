@@ -1,5 +1,5 @@
 import { Column, Row } from "@/components/Box";
-import { UserProfile } from "../client";
+import { UserProfileData } from "../client";
 import {
   getUserProfile,
   getUserAuditsAuditee,
@@ -113,7 +113,7 @@ export const UserContent = async ({ address }: { address: string }): Promise<JSX
 
   return (
     <Column $gap="rem2" $align="flex-start">
-      <UserProfile user={user} />
+      <UserProfileData user={user} />
       <HR />
       <Suspense fallback={<Loader $size="50px" />}>
         <UserData address={address} />

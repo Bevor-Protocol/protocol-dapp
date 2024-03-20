@@ -1,3 +1,4 @@
+"use server";
 import { prisma } from "@/lib/db/prisma.server";
 import { Profile } from "@prisma/client";
 
@@ -206,13 +207,16 @@ export const getUserStats = async (address: string): Promise<UserStats> => {
   };
 };
 
-export const updateProfile = (id: string, profileData: Profile): Promise<Profile> => {
-  return prisma.profile.update({
+export const updateProfile = async (id: string, profileData: FormData): Promise<Profile> => {
+  const data = Object.fromEntries(profileData);
+  const updated = await prisma.profile.update({
     where: {
       userId: id,
     },
     data: {
-      ...profileData,
+      ...data,
+      available: data.available == "true", // add zod validation
     },
   });
+  return updated;
 };
