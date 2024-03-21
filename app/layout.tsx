@@ -84,7 +84,6 @@ const Page = ({ children }: { children: React.ReactNode }): JSX.Element => {
   // need to come back to this.
   const initialState = cookieToInitialState(config, cookies().get("wagmi.store")?.value);
   // const initialState = cookieToInitialState(config, headers().get("cookie"));
-  console.log(initialState);
   return (
     <html lang="en">
       <body className={jakarta.className}>
