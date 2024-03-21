@@ -65,11 +65,17 @@ export const NavItem = styled(Row)<{
       $active ? theme.opacity.enabled : theme.opacity.disable};
   }
   ${hoverBg}
+  transition: all ${({ theme }): string => theme.transitions.speed.md}
+    ${({ theme }): string => theme.transitions.ease};
 `;
 
-export const MenuHolder = styled(Row)`
+export const MenuHolder = styled(Row)<{ $border?: string }>`
   position: relative;
   cursor: pointer;
+  border: 1px solid transparent;
+  border-radius: ${({ $border }): string => $border ?? "10px"};
+
+  ${focusBorder}
 `;
 
 export const WalletHolder = styled(Row)`

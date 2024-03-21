@@ -1,5 +1,6 @@
+"use server";
 import { prisma } from "@/lib/db/prisma.server";
-import { Audit, User, Profile, Terms, PrismaPromise } from "@prisma/client";
+import { PrismaPromise } from "@prisma/client";
 import fs from "fs";
 import path from "path";
 import { remark } from "remark";
@@ -7,19 +8,9 @@ import html from "remark-html";
 import remarkGfm from "remark-gfm";
 import matter from "gray-matter";
 
-interface AuditsRelation extends Audit {
-  auditee: User & {
-    profile: Profile | null;
-  };
-  auditors: (User & {
-    profile: Profile | null;
-  })[];
-  terms: {
-    price: number;
-  } | null;
-}
+import { AuditFull } from "@/lib/types/actions";
 
-export const getAudits = (status?: string): Promise<AuditsRelation[]> => {
+export const getAudits = (status?: string): Promise<AuditFull[]> => {
   let filter;
   switch (status) {
     case "open":
@@ -61,26 +52,12 @@ export const getAudits = (status?: string): Promise<AuditsRelation[]> => {
           profile: true,
         },
       },
-      terms: {
-        select: {
-          price: true,
-        },
-      },
+      terms: true,
     },
   });
 };
 
-interface AuditRelation extends Audit {
-  auditors: (User & {
-    profile: Profile | null;
-  })[];
-  auditee: User & {
-    profile: Profile | null;
-  };
-  terms: Terms | null;
-}
-
-export const getAudit = (id: string): PrismaPromise<AuditRelation> => {
+export const getAudit = (id: string): PrismaPromise<AuditFull> => {
   return prisma.audit.findUniqueOrThrow({
     where: {
       id,

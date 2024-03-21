@@ -6,5 +6,6 @@ import Arrow from "./arrow";
 import Chevron from "./chevron";
 import Copy from "./copy";
 import Logout from "./logout";
+import Pencil from "./pencil";
 
-export { Gitbook, Twitter, Discord, Github, Arrow, Chevron, Copy, Logout };
+export { Gitbook, Twitter, Discord, Github, Arrow, Chevron, Copy, Logout, Pencil };

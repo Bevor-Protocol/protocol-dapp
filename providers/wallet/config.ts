@@ -21,10 +21,6 @@ if (!projectId) throw new Error("Project ID is not defined");
 // server vs. client side errors.
 const config = createConfig({
   chains: [goerli, polygonMumbai],
-  ssr: true,
-  storage: createStorage({
-    storage: cookieStorage,
-  }),
   transports: {
     [goerli.id]: http(),
     [polygonMumbai.id]: http(),
@@ -38,6 +34,16 @@ const config = createConfig({
     //   headlessMode: true,
     // }),
   ],
+  ssr: true,
+  storage: createStorage({
+    storage: cookieStorage,
+  }),
 });
+
+declare module "wagmi" {
+  interface Register {
+    config: typeof config;
+  }
+}
 
 export { config, projectId };

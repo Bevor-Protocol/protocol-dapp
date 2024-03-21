@@ -83,6 +83,8 @@ const Page = ({ children }: { children: React.ReactNode }): JSX.Element => {
   // cookieToInitialState outputs an array of Map, which doesn't work... I might
   // need to come back to this.
   const initialState = cookieToInitialState(config, cookies().get("wagmi.store")?.value);
+  // const initialState = cookieToInitialState(config, headers().get("cookie"));
+  console.log(initialState);
   return (
     <html lang="en">
       <body className={jakarta.className}>

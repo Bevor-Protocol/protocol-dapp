@@ -5,7 +5,20 @@ const seed = async (): Promise<void> => {
   // In practice, users will only be created once they've gotten a role
   // asigned. Anyone can visit the application, but we won't need a dashboard
   // page for these users.
+
+  // Can update this to be your dev wallet.
+  const MY_WALLET = "0x239D3Ce2E15744C7EE6A76325c119C79BDa7aD7D";
+
   const userData = [
+    {
+      address: MY_WALLET,
+      auditeeRole: true,
+      profile: {
+        create: {
+          name: "My dev wallet",
+        },
+      },
+    },
     {
       address: "0xc0ffee254729296a45a3885639AC7E10F9d54979",
       auditeeRole: true,
@@ -30,9 +43,15 @@ const seed = async (): Promise<void> => {
       profile: {
         create: {
           name: "Test User 2",
-          image:
-            "https://img.freepik.com/premium-vector/flat-dog-avatar-illustration-cute-dog_677161-59.jpg",
+          image: "https://cdn-images-1.medium.com/max/1200/1*Ty6tR7qRtx6yo3dM_drJBg.png",
         },
+      },
+    },
+    {
+      address: "0x3A1D14c5B007f2aC5a5e174663Eb3e69C78ADbB5",
+      auditorRole: true,
+      profile: {
+        create: {},
       },
     },
   ];
@@ -51,6 +70,18 @@ const seed = async (): Promise<void> => {
 
   // create a newly generated audit. Will always have an auditee, since they're the
   // one that initiated it, but auditors could be empty.
+  await prisma.audit.create({
+    data: {
+      title: "My created audit",
+      description: "This is for my dev wallet, but has no auditors yet.",
+      auditee: {
+        connect: {
+          address: MY_WALLET,
+        },
+      },
+    },
+  });
+
   await prisma.audit.create({
     data: {
       title: "Newly initiated audit",
@@ -102,6 +133,9 @@ const seed = async (): Promise<void> => {
         connect: [
           {
             address: "0xc0ffee254729296a45a3885639AC7E10F9d54979",
+          },
+          {
+            address: "0x3A1D14c5B007f2aC5a5e174663Eb3e69C78ADbB5",
           },
         ],
       },

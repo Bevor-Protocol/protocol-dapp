@@ -3,6 +3,7 @@
 import Image from "next/image";
 import { useRef, useReducer } from "react";
 import { usePathname } from "next/navigation";
+import { useAccount } from "wagmi";
 
 import { Arrow, Twitter, Discord, Github } from "@/assets";
 import { navItems } from "@/lib/constants";
@@ -19,6 +20,7 @@ import Dashboard from "./dashboard";
 
 const NavHolder = (): JSX.Element => {
   const pathname = usePathname();
+  const { address } = useAccount();
   const [show, setShow] = useReducer((s) => !s, false);
   const ref = useRef<HTMLDivElement>(null);
   useClickOutside(ref, show ? setShow : undefined);
@@ -33,7 +35,9 @@ const NavHolder = (): JSX.Element => {
             </LogoIcon>
           </DynamicLink>
           <NavItems $gap="sm">
-            <Dashboard active={pathname.split("/")[1] == "user"} />
+            <Dashboard
+              active={pathname.split("/")[1] == "user" && pathname.split("/")[2] == address}
+            />
             {navItems.main.map((item, ind) => (
               <DynamicLink href={item.url} key={ind}>
                 <NavItem $active={pathname === item.url}>
@@ -41,7 +45,7 @@ const NavHolder = (): JSX.Element => {
                 </NavItem>
               </DynamicLink>
             ))}
-            <MenuHolder ref={ref}>
+            <MenuHolder ref={ref} tabIndex={0}>
               <NavItem onClick={setShow} $active={show}>
                 <Ellipsis />
               </NavItem>

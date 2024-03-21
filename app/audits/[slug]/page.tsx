@@ -6,13 +6,13 @@ import { AuditHolder } from "@/components/pages/Audits/styled";
 import { Loader } from "@/components/Common";
 import { AuditDashboard } from "@/components/pages/Audits/server";
 
-const AuditDashboardPage = async ({
+const AuditDashboardPage = ({
   params,
   searchParams,
 }: {
   params: { slug: string };
   searchParams: { [key: string]: string | undefined };
-}): Promise<JSX.Element> => {
+}): JSX.Element => {
   const display = searchParams.display ?? "details";
 
   return (

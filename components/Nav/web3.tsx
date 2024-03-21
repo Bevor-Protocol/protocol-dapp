@@ -1,3 +1,4 @@
+"use client";
 import Image from "next/image";
 import { useRef, useReducer } from "react";
 
@@ -19,7 +20,7 @@ import { useClickOutside } from "@/hooks/useClickOutside";
 import { trimAddress } from "@/lib/utils";
 
 const Web3Holder = (): JSX.Element => {
-  const { address, isConnected, chain } = useAccount();
+  const { address, isConnected, chain, chainId, status } = useAccount();
   const mounted = useIsMounted();
   const { setContent, toggleOpen } = useModal();
 
@@ -56,10 +57,12 @@ const Web3Holder = (): JSX.Element => {
     imgSrc = chain.id;
   }
 
+  console.log(isConnected, status, address, chain, chainId);
+
   return (
     <Row $gap="sm" $align="stretch" style={{ position: "relative" }}>
       {isConnected && mounted && (
-        <MenuHolder ref={refNetwork}>
+        <MenuHolder ref={refNetwork} tabIndex={0}>
           <NavItem onClick={setShow} $active={true}>
             <Row $gap="sm" onMouseOver={handleToolTip} onMouseOut={clearToolTip}>
               <Icon $size="sm">
