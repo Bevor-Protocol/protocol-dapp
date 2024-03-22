@@ -1,43 +1,17 @@
-"use client";
-
-import styled, { css } from "styled-components";
-
-import { getBreakpoint } from "@/theme";
-import { Column } from "@/components/Box";
-import { CommonPad } from "@/components/Common";
-import { P, Span } from "@/components/Text";
-
-const FooterEl = styled(Column)`
-  ${CommonPad}
-  padding-top: 30px;
-  padding-bottom: 30px;
-  text-align: center;
-  position: relative;
-  font-size: 0.85rem;
-  line-height: 1rem;
-
-  & p,
-  & span {
-    font-size: inherit;
-    line-height: inherit;
-    opacity: ${({ theme }): number => theme.opacity.disable};
-  }
-
-  ${getBreakpoint(
-    "md",
-    css`
-      display: none;
-    `,
-  )}
-`;
-
 const Footer = (): JSX.Element => {
   return (
     <footer>
-      <FooterEl $gap="rem1" $width="100%">
-        <P>de-risk. incentivize. audit. decentralize.</P>
-        <Span>Bevor &copy; {`${new Date().getFullYear()}`}</Span>
-      </FooterEl>
+      <div
+        className="flex flex-col justify-center items-center gap-4 w-full p-screen py-[30px] 
+      text-center relative text-[0.85rem] leading-4 md:hidden"
+      >
+        <p className=" text-inherit leading-[inherit] opacity-disable">
+          de-risk. incentivize. audit. decentralize.
+        </p>
+        <span className=" text-inherit leading-[inherit] opacity-disable">
+          Bevor &copy; {`${new Date().getFullYear()}`}
+        </span>
+      </div>
     </footer>
   );
 };
