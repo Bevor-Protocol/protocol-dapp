@@ -1,42 +1,49 @@
 import { Suspense } from "react";
 
 import { Arrow } from "@/assets";
-import { Section } from "@/components/Common";
-import { H1, P, Span } from "@/components/Text";
-import { Row } from "@/components/Box";
-import { ButtonLight } from "@/components/Button";
 import { HomeStat, HomeStatSkeleton } from "@/components/pages/Home";
-import { Home, HomeText, HomeStatsGrid } from "@/components/pages/Home/styled";
 import * as Actions from "@/lib/actions/protocolData";
 
 const Page = (): JSX.Element => {
   return (
-    <Section $padCommon $centerV $centerH>
-      <Home $gap="lg">
-        <HomeText $gap="xl" $align="flex-start">
-          <H1>
-            Ensuring <br /> quality audits
-          </H1>
-          <P>
+    <section className="flex flex-col h-full justify-center items-center px-screen">
+      <div className="grid grid-cols-1 w-full md:grid-cols-2 gap-6 items-center justify-center">
+        <div className="flex flex-col items-center gap-8 text-center md:text-left md:items-start">
+          <div className="grad-light text-grad-light">
+            <h1 className="text-5xl font-bold md:text-6xl leading-[normal] md:leading-[normal]">
+              Ensuring <br /> quality audits
+            </h1>
+          </div>
+          <p className="text-base font-medium">
             On-chain solution for establishing terms and carrying out smart contract audits.
             Register as an auditee, auditor, or DAO participant.
-          </P>
-          <Row $gap="sm">
-            <ButtonLight $hover="dim">
-              <Row $gap="xs" $align="flex-start">
-                <Span>Get Audited</Span>
+          </p>
+          <div className="flex flex-row flex-nowrap align-middle justify-center gap-2">
+            <button
+              className="outline-none border-none font-bold rounded-md 
+            grad-light py-2 px-5 dim disabled:opacity-disable"
+            >
+              <div className="flex flex-row align-middle gap-1 text-dark text-sm">
+                <span>Get Audited</span>
                 <Arrow height="0.75rem" width="0.75rem" />
-              </Row>
-            </ButtonLight>
-            <ButtonLight $hover="dim">
-              <Row $gap="xs" $align="flex-start">
-                <Span>Conduct Audit</Span>
+              </div>
+            </button>
+            <button
+              className="outline-none border-none font-bold rounded-md 
+            grad-light py-2 px-5 dim disabled:opacity-disable"
+            >
+              <div className="flex flex-row align-middle gap-1 text-dark text-sm">
+                <span>Conduct Audit</span>
                 <Arrow height="0.75rem" width="0.75rem" />
-              </Row>
-            </ButtonLight>
-          </Row>
-        </HomeText>
-        <HomeStatsGrid $gap="sm" $align="initial" $justify="initial">
+              </div>
+            </button>
+          </div>
+        </div>
+        <div
+          className="grid grid-cols-2 grid-rows-2 relative z-[1] gap-2
+        before:flex before:absolute before:inset-0 before:scale-110 
+        before:blur-[50px] before:bg-dark-primary-50 before:-z-20"
+        >
           {/* <HomeStat action={Actions.protocolDataAudits} text="audits conducted" />
           <HomeStat action={Actions.protocolDataVulnerabilities} text="vulnerabilities uncovered" />
           <HomeStat action={Actions.protocolDataFunds} symbol="$" text="funds facilitated" />
@@ -56,9 +63,9 @@ const Page = (): JSX.Element => {
           <Suspense fallback={<HomeStatSkeleton />}>
             <HomeStat action={Actions.protocolDataAuditors} text="registered auditors" />
           </Suspense>
-        </HomeStatsGrid>
-      </Home>
-    </Section>
+        </div>
+      </div>
+    </section>
   );
 };
 

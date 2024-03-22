@@ -9,13 +9,32 @@
     --text-light: linear-gradient(180deg, #f4f5f7 6.58%, #c8d0e7 81.58%);
     --text-dark: linear-gradient(180deg, #001062 0%, #000626 100%);
     --btn-dark: #00041b;
-    --padding-screen: 0 max(50px, calc((100vw - 1440px + 50px) / 2));
+    --padding-screen: 20px;
   }
 
   @media screen(xs) {
     :root {
-      --padding-screen: 0 20px;
+      --padding-screen: max(50px, calc((100vw - 1440px + 50px) / 2));
     }
+  }
+}
+
+@layer utilities {
+  .grad-light {
+    background: linear-gradient(180deg, theme("colors.off-white") 6.58%, theme("colors.dark-white") 81.58%);
+  }
+  .text-grad-light {
+    background-clip: text;
+    -webkit-background-clip: text;
+    color: transparent;
+  }
+  .dim {
+    @apply transition-opacity
+  }
+  .dim:not(:disabled):hover,
+  .dim:not(:disabled):focus-visible,
+  .dim:not(:disabled):active {
+    @apply opacity-hover
   }
 }
 

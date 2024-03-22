@@ -12,8 +12,13 @@ module.exports = {
         click: 0.4,
         enabled: 1,
       },
+      spacing: {
+        screen: "var(--padding-screen)",
+      },
       colors: {
         dark: "#121212",
+        "off-white": "#F4F5F7",
+        "dark-white": "#C8D0E7",
         primary: "#004080",
         "primary-light": {
           15: "color-mix(in oklab, #004080, #FFFFFF 15%)",
