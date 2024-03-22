@@ -1,12 +1,11 @@
 /* eslint-disable @next/next/no-img-element */
-import { P, Span, Strong } from "@/components/Text";
-import { Column, Row, Card } from "@/components/Box";
+import { Column } from "@/components/Box";
+import { Card } from "@/components/Card";
 import { Loader } from "@/components/Common";
 import { FallbackIcon } from "@/components/Icon";
 import DynamicLink, { UnstyledNextLink } from "@/components/Link";
 import ProgressBar from "@/components/ProgressBar";
 import { Markdown } from "@/components/Markdown";
-import { AuditFooter, AuditorWrapper, AuditDescription } from "../styled";
 import { AuditAuditor, AuditDashboardBtn, AuditDashboardHeader } from "../client";
 import { getAudits, getAudit, getMarkdown } from "@/lib/actions/audits";
 import { AuditFull } from "@/lib/types/actions";
@@ -14,15 +13,13 @@ import { AuditFull } from "@/lib/types/actions";
 export const AuditCard = ({
   audit,
   disabled,
-  trimWidth = false,
 }: {
   audit: AuditFull;
   disabled: boolean;
-  trimWidth?: boolean;
 }): JSX.Element => {
   return (
-    <Card $hover $width="100%" $padding="0px" style={{ flex: `${trimWidth && "1 0 50%"}` }}>
-      <Row $align="stretch" $justify="flex-start" $gap="rem2" $padding="1rem" $width="100%">
+    <Card hover className="divide-y divide-gray-200/20 w-full">
+      <div className="flex flex-row items-stretch justify-start gap-8 p-4 w-full">
         <UnstyledNextLink href={`/user/${audit.auditee.address}`}>
           <FallbackIcon
             image={audit.auditee.profile?.image}
@@ -30,31 +27,33 @@ export const AuditCard = ({
             size="lg"
           />
         </UnstyledNextLink>
-        <Column $justify="flex-start" $align="flex-start" style={{ overflow: "hidden" }}>
-          <Row $justify="space-between" $width="100%">
-            <P>
-              <Strong $large>{audit.title}</Strong>
-            </P>
-            <div>${audit.terms?.price.toLocaleString() || 0}</div>
-          </Row>
-          <P $trim={trimWidth}>{audit.description}</P>
-        </Column>
-      </Row>
-      <AuditFooter $justify="space-between" $gap="rem2" $padding="0.5rem 1rem" $width="100%">
-        <AuditorWrapper>
-          <Span $secondary>auditors:</Span>
+        <div className="flex flex-col justify-start items-start overflow-hidden w-full">
+          <div className="flex flex-row justify-between w-full">
+            <p className="text-lg">
+              <strong>{audit.title}</strong>
+            </p>
+            <p>${audit.terms?.price.toLocaleString() || 0}</p>
+          </div>
+          <p className=" whitespace-nowrap text-ellipsis overflow-hidden w-full">
+            {audit.description}
+          </p>
+        </div>
+      </div>
+      <div className="flex flex-row justify-between items-center p-2">
+        <div className="flex flex-row justify-center items-center">
+          <span className="text-white/60">auditors:</span>
           {audit.auditors.length > 0 ? (
             audit.auditors.map((auditor, ind2) => (
               <AuditAuditor position={`-${ind2 * 12.5}px`} key={ind2} auditor={auditor} />
             ))
           ) : (
-            <Span>TBD</Span>
+            <span className="text-white/60">TBD</span>
           )}
-        </AuditorWrapper>
+        </div>
         <DynamicLink href={`/audits/${audit.id}`} disabled={disabled}>
-          <Span>View Audit</Span>
+          <span>View Audit</span>
         </DynamicLink>
-      </AuditFooter>
+      </div>
     </Card>
   );
 };
@@ -63,12 +62,12 @@ export const Audits = async ({ current }: { current: string }): Promise<JSX.Elem
   const audits = await getAudits(current);
 
   return (
-    <Column $gap="rem1">
-      {audits.length == 0 && <P>Currently no {current} audits</P>}
+    <div className="flex flex-col gap-4 justify-center items-center w-full">
+      {audits.length == 0 && <p>Currently no {current} audits</p>}
       {audits.map((audit, ind) => (
         <AuditCard audit={audit} key={ind} disabled={current !== "closed"} />
       ))}
-    </Column>
+    </div>
   );
 };
 
@@ -82,42 +81,46 @@ export const AuditDashboard = async ({
   const audit = await getAudit(auditId);
   const content = await getMarkdown(display);
   return (
-    <Column $gap="md">
-      <Card $width="100%" $padding="0px">
-        <Row $align="flex-start" $justify="flex-start" $gap="rem2" $padding="1rem" $width="100%">
+    <div className="flex flex-col gap-3">
+      <Card>
+        <div className="flex flex-row justify-start items-start gap-8 p-4 w-full">
           <FallbackIcon
             image={audit.auditee.profile?.image}
             address={audit.auditee.address}
             size="lg"
           />
-          <Column $justify="flex-start" $align="flex-start">
-            <Row $justify="space-between" $width="100%">
-              <P>
-                <Strong $large>{audit.title}</Strong>
-              </P>
-              <div>${audit.terms?.price.toLocaleString()}</div>
-            </Row>
-            <P>{audit.description}</P>
-            <P>Months: {audit.terms?.duration}</P>
-            <P>Created: {new Date(audit.createdAt).toLocaleDateString()}</P>
-          </Column>
-        </Row>
+          <div className="flex flex-col justify-start items-start">
+            <div className="flex flex-row justify-between w-full">
+              <p className="text-lg">
+                <strong>{audit.title}</strong>
+              </p>
+              <p>${audit.terms?.price.toLocaleString() || 0}</p>
+            </div>
+            <p>{audit.description}</p>
+            <p>Months: {audit.terms?.duration}</p>
+            <p>Created: {new Date(audit.createdAt).toLocaleDateString()}</p>
+          </div>
+        </div>
         <ProgressBar />
-        <AuditDescription $align="flex-start" $gap="lg">
+        <div className="flex flex-col items-start gap-6">
           <AuditDashboardHeader display={display} />
           <Markdown dangerouslySetInnerHTML={{ __html: content }} />
-        </AuditDescription>
-        <AuditFooter $justify="space-between" $gap="rem2" $padding="0.5rem 1rem" $width="100%">
-          <AuditorWrapper>
-            <Span>auditors:</Span>
-            {audit.auditors.map((auditor, ind: number) => (
-              <AuditAuditor position={`-${ind * 12.5}px`} key={ind} auditor={auditor} />
-            ))}
-          </AuditorWrapper>
+        </div>
+        <div className="flex flex-row justify-between items-center border-t-gray-200 px-2 py-4">
+          <div className="flex flex-row justify-center items-center">
+            <span className="text-white/60">auditors:</span>
+            {audit.auditors.length > 0 ? (
+              audit.auditors.map((auditor, ind2) => (
+                <AuditAuditor position={`-${ind2 * 12.5}px`} key={ind2} auditor={auditor} />
+              ))
+            ) : (
+              <span className="text-white/60">TBD</span>
+            )}
+          </div>
           <AuditDashboardBtn auditors={audit.auditors} />
-        </AuditFooter>
+        </div>
       </Card>
-    </Column>
+    </div>
   );
 };
 
