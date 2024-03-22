@@ -3,12 +3,12 @@ module.exports = {
   content: ["./app/**/*.{js,ts,jsx,tsx,mdx}", "./components/**/*.{js,ts,jsx,tsx,mdx}"],
   theme: {
     screens: {
-      xs: { max: "450px" },
-      sm: { max: "640px" },
-      md: { max: "768px" },
-      lg: { max: "1024px" },
-      xl: { max: "1280px" },
       "2xl": { max: "1536px" },
+      xl: { max: "1280px" },
+      lg: { max: "1024px" },
+      md: { max: "768px" },
+      sm: { max: "640px" },
+      xs: { max: "450px" },
     },
     extend: {
       opacity: {
