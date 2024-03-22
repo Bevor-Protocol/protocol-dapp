@@ -1,15 +1,15 @@
 import { Suspense } from "react";
 
-import { Section, Loader } from "@/components/Common";
+import { Loader } from "@/components/Common";
 import { UserContent } from "@/components/pages/User/server";
 
 const UserPage = ({ params }: { params: { slug: string } }): JSX.Element => {
   return (
-    <Section $padCommon $centerH>
+    <section className="flex flex-col h-full items-center px-screen">
       <Suspense fallback={<Loader $size="50px" />}>
         <UserContent address={params.slug} />
       </Suspense>
-    </Section>
+    </section>
   );
 };
 
