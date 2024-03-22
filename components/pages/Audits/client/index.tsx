@@ -7,9 +7,8 @@ import { User, Profile } from "@prisma/client";
 import { useAccount } from "wagmi";
 import clsx from "clsx";
 
-import { Row } from "@/components/Box";
 import { ToolTip } from "@/components/Tooltip";
-import { FallbackIcon } from "@/components/Icon";
+import { Icon } from "@/components/Icon";
 import { UnstyledNextLink } from "@/components/Link";
 
 export const AuditHeader = ({ current }: { current: string }): JSX.Element => {
@@ -82,7 +81,7 @@ export const AuditDashboardHeader = ({ display }: { display: string }): JSX.Elem
   };
 
   return (
-    <Row $gap="rem1" $justify="flex-start">
+    <div className="flex flex-row gap-4 justify-start">
       <div
         className={clsx(
           "text-xs cursor-pointer relative transition-opacity",
@@ -111,7 +110,7 @@ export const AuditDashboardHeader = ({ display }: { display: string }): JSX.Elem
       >
         Audit
       </div>
-    </Row>
+    </div>
   );
 };
 
@@ -145,10 +144,10 @@ export const AuditAuditor = ({
   return (
     <div className="h-fit w-fit relative" style={{ transform: `translateX(${position})` }}>
       <UnstyledNextLink href={`/user/${auditor.address}`}>
-        <FallbackIcon
+        <Icon
           image={auditor.profile?.image}
           size="md"
-          address={auditor.address}
+          seed={auditor.address}
           data-auditoradd={auditor.address}
           onMouseOver={handleToolTip}
           onMouseOut={clearToolTip}

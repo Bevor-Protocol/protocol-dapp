@@ -2,7 +2,7 @@
 import { getLeaderboard } from "@/lib/actions/users";
 import { Column } from "@/components/Box";
 import { trimAddress } from "@/lib/utils";
-import { FallbackIcon } from "@/components/Icon";
+import { Icon } from "@/components/Icon";
 import { Loader } from "@/components/Common";
 import { UnstyledNextLink } from "@/components/Link";
 
@@ -27,7 +27,7 @@ export const LeaderboardData = async ({
             w-fit flex items-center 
             gap-2 whitespace-nowrap max-w-full"
             >
-              <FallbackIcon image={item.profile?.image} size="md" address={item.address} />
+              <Icon image={item.profile?.image} size="md" seed={item.address} />
               <span>{item.profile?.name || trimAddress(item.address)}</span>
             </li>
             <li
@@ -72,7 +72,7 @@ export const LeaderboardData = async ({
             w-fit flex items-center 
             gap-2 whitespace-nowrap max-w-full"
             >
-              <FallbackIcon image={item.profile?.image} size="md" address={item.address} />
+              <Icon image={item.profile?.image} size="md" seed={item.address} />
               <span>{item.profile?.name || trimAddress(item.address)}</span>
             </li>
             <li
@@ -117,7 +117,7 @@ export const LeaderboardData = async ({
             w-fit flex items-center 
             gap-2 whitespace-nowrap max-w-full"
             >
-              <FallbackIcon image={item.profile?.image} size="md" address={item.address} />
+              <Icon image={item.profile?.image} size="md" seed={item.address} />
               <span>{item.profile?.name || trimAddress(item.address)}</span>
             </li>
             <li
@@ -162,7 +162,7 @@ export const LeaderboardData = async ({
             w-fit flex items-center 
             gap-2 whitespace-nowrap max-w-full"
             >
-              <FallbackIcon image={item.profile?.image} size="md" address={item.address} />
+              <Icon image={item.profile?.image} size="md" seed={item.address} />
               <span>{item.profile?.name || trimAddress(item.address)}</span>
             </li>
             <li
@@ -207,7 +207,7 @@ export const LeaderboardData = async ({
             w-fit flex items-center 
             gap-2 whitespace-nowrap max-w-full"
             >
-              <FallbackIcon image={item.profile?.image} size="md" address={item.address} />
+              <Icon image={item.profile?.image} size="md" seed={item.address} />
               <span>{item.profile?.name || trimAddress(item.address)}</span>
             </li>
             <li

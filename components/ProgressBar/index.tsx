@@ -38,7 +38,7 @@ const FillerStyles = styled.div`
 
 const ProgressBar = (): JSX.Element => {
   return (
-    <Container $gap="md" $padding="20px 0">
+    <Container $gap="md" $padding="20px 0" $margin="auto">
       <P>Vesting Progress</P>
       <ContainerStyles>
         <FillerStyles>{/*<LabelStyles>{`${completed}%`}</LabelStyles>*/}</FillerStyles>

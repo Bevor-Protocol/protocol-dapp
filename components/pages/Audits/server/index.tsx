@@ -2,7 +2,7 @@
 import { Column } from "@/components/Box";
 import { Card } from "@/components/Card";
 import { Loader } from "@/components/Common";
-import { FallbackIcon } from "@/components/Icon";
+import { Icon } from "@/components/Icon";
 import DynamicLink, { UnstyledNextLink } from "@/components/Link";
 import ProgressBar from "@/components/ProgressBar";
 import { Markdown } from "@/components/Markdown";
@@ -21,11 +21,7 @@ export const AuditCard = ({
     <Card hover className="divide-y divide-gray-200/20 w-full">
       <div className="flex flex-row items-stretch justify-start gap-8 p-4 w-full">
         <UnstyledNextLink href={`/user/${audit.auditee.address}`}>
-          <FallbackIcon
-            image={audit.auditee.profile?.image}
-            address={audit.auditee.address}
-            size="lg"
-          />
+          <Icon image={audit.auditee.profile?.image} seed={audit.auditee.address} size="lg" />
         </UnstyledNextLink>
         <div className="flex flex-col justify-start items-start overflow-hidden w-full">
           <div className="flex flex-row justify-between w-full">
@@ -81,46 +77,42 @@ export const AuditDashboard = async ({
   const audit = await getAudit(auditId);
   const content = await getMarkdown(display);
   return (
-    <div className="flex flex-col gap-3">
-      <Card>
-        <div className="flex flex-row justify-start items-start gap-8 p-4 w-full">
-          <FallbackIcon
-            image={audit.auditee.profile?.image}
-            address={audit.auditee.address}
-            size="lg"
-          />
-          <div className="flex flex-col justify-start items-start">
-            <div className="flex flex-row justify-between w-full">
-              <p className="text-lg">
-                <strong>{audit.title}</strong>
-              </p>
-              <p>${audit.terms?.price.toLocaleString() || 0}</p>
-            </div>
-            <p>{audit.description}</p>
-            <p>Months: {audit.terms?.duration}</p>
-            <p>Created: {new Date(audit.createdAt).toLocaleDateString()}</p>
+    <Card hover className="divide-y divide-gray-200/20 w-full">
+      <div className="flex flex-row justify-start items-stretch gap-8 p-4 w-full">
+        <Icon image={audit.auditee.profile?.image} seed={audit.auditee.address} size="lg" />
+        <div className="flex flex-col justify-start items-start overflow-hidden w-full">
+          <div className="flex flex-row justify-between w-full">
+            <p className="text-lg">
+              <strong>{audit.title}</strong>
+            </p>
+            <p>${audit.terms?.price.toLocaleString() || 0}</p>
           </div>
+          <p>{audit.description}</p>
+          <p>Months: {audit.terms?.duration}</p>
+          <p>Created: {new Date(audit.createdAt).toLocaleDateString()}</p>
         </div>
+      </div>
+      <div className="w-full">
         <ProgressBar />
-        <div className="flex flex-col items-start gap-6">
-          <AuditDashboardHeader display={display} />
-          <Markdown dangerouslySetInnerHTML={{ __html: content }} />
+      </div>
+      <div className="flex flex-col items-start gap-6 p-4">
+        <AuditDashboardHeader display={display} />
+        <Markdown dangerouslySetInnerHTML={{ __html: content }} />
+      </div>
+      <div className="flex flex-row justify-between items-center border-t-gray-200 px-2 py-4">
+        <div className="flex flex-row justify-center items-center">
+          <span className="text-white/60">auditors:</span>
+          {audit.auditors.length > 0 ? (
+            audit.auditors.map((auditor, ind2) => (
+              <AuditAuditor position={`-${ind2 * 12.5}px`} key={ind2} auditor={auditor} />
+            ))
+          ) : (
+            <span className="text-white/60">TBD</span>
+          )}
         </div>
-        <div className="flex flex-row justify-between items-center border-t-gray-200 px-2 py-4">
-          <div className="flex flex-row justify-center items-center">
-            <span className="text-white/60">auditors:</span>
-            {audit.auditors.length > 0 ? (
-              audit.auditors.map((auditor, ind2) => (
-                <AuditAuditor position={`-${ind2 * 12.5}px`} key={ind2} auditor={auditor} />
-              ))
-            ) : (
-              <span className="text-white/60">TBD</span>
-            )}
-          </div>
-          <AuditDashboardBtn auditors={audit.auditors} />
-        </div>
-      </Card>
-    </div>
+        <AuditDashboardBtn auditors={audit.auditors} />
+      </div>
+    </Card>
   );
 };
 

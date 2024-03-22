@@ -9,7 +9,6 @@ import { Arrow, Twitter, Discord, Github } from "@/assets";
 import { navItems } from "@/lib/constants";
 import { Span } from "@/components/Text";
 import DynamicLink from "@/components/Link";
-import { LogoIcon } from "@/components/Icon";
 import { Row, Column } from "@/components/Box";
 import { Ellipsis, HR } from "@/components/Common";
 import { DropDown } from "@/components/Tooltip";
@@ -30,9 +29,9 @@ const NavHolder = (): JSX.Element => {
       <Nav $justify="space-between">
         <Row $gap="lg">
           <DynamicLink href="/">
-            <LogoIcon $height="65px">
+            <div className="aspect-[1091 / 1685] relative h-16">
               <Image src="/logo.png" alt="brand logo" fill={true} sizes="any" />
-            </LogoIcon>
+            </div>
           </DynamicLink>
           <NavItems $gap="sm">
             <Dashboard

@@ -3,7 +3,7 @@
 import { useMemo, useState, useTransition } from "react";
 import { useAccount } from "wagmi";
 
-import { FallbackIcon } from "@/components/Icon";
+import { Icon } from "@/components/Icon";
 import { Row, Column } from "@/components/Box";
 import { P, Span } from "@/components/Text";
 import { useIsMounted } from "@/hooks/useIsMounted";
@@ -51,7 +51,7 @@ export const UserProfileData = ({ user }: { user: UserProfile }): JSX.Element =>
       <Column $align="flex-start" $gap="rem1">
         <P $secondary={true}>{user.address}</P>
         <Row $gap="rem2" $align="flex-start">
-          <FallbackIcon size="xl" image={user.profile?.image} address={user.address} />
+          <Icon size="xl" image={user.profile?.image} seed={user.address} />
           <Column $align="flex-start">
             <Row $gap="rem1">
               <Form.Text

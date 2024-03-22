@@ -1,5 +1,4 @@
 "use client";
-import Image from "next/image";
 import { useRef, useReducer } from "react";
 
 import { Row } from "@/components/Box";
@@ -8,7 +7,7 @@ import { useIsMounted } from "@/hooks/useIsMounted";
 import { useModal } from "@/hooks/contexts";
 import { Chevron } from "@/assets";
 import { WalletHolder } from "./styled";
-import { Avatar, Icon } from "@/components/Icon";
+import { Icon } from "@/components/Icon";
 import { ButtonLight } from "@/components/Button";
 import { DropDown } from "@/components/Tooltip";
 import { ChainPresets } from "@/lib/constants/chains";
@@ -20,7 +19,7 @@ import { useClickOutside } from "@/hooks/useClickOutside";
 import { trimAddress } from "@/lib/utils";
 
 const Web3Holder = (): JSX.Element => {
-  const { address, isConnected, chain, chainId, status } = useAccount();
+  const { address, isConnected, chain } = useAccount();
   const mounted = useIsMounted();
   const { setContent, toggleOpen } = useModal();
 
@@ -57,7 +56,7 @@ const Web3Holder = (): JSX.Element => {
     imgSrc = chain.id;
   }
 
-  console.log(isConnected, status, address, chain, chainId);
+  // console.log(isConnected, status, address, chain, chainId);
 
   return (
     <Row $gap="sm" $align="stretch" style={{ position: "relative" }}>
@@ -65,9 +64,7 @@ const Web3Holder = (): JSX.Element => {
         <MenuHolder ref={refNetwork} tabIndex={0}>
           <NavItem onClick={setShow} $active={true}>
             <Row $gap="sm" onMouseOver={handleToolTip} onMouseOut={clearToolTip}>
-              <Icon $size="sm">
-                <Image src={ChainPresets[imgSrc]} alt="chain logo" sizes="any" fill={true} />
-              </Icon>
+              <Icon size="sm" image={ChainPresets[imgSrc]} />
               <Chevron />
             </Row>
           </NavItem>
@@ -76,7 +73,7 @@ const Web3Holder = (): JSX.Element => {
       )}
       {isConnected && mounted && (
         <WalletHolder as="button" $gap="sm" onClick={handleProfileModal}>
-          {!!address && mounted && <Avatar $size="md" $seed={address} />}
+          {!!address && mounted && <Icon size="md" seed={address} />}
           <span>{isConnected && mounted ? trimAddress(address) : "connect"}</span>
         </WalletHolder>
       )}

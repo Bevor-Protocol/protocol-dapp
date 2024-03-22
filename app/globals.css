@@ -76,6 +76,19 @@
   }
 }
 
+@layer components {
+  .avatar {
+    height: var(--height-desktop);
+    @apply rounded-full mr-0 overflow-hidden transition-all aspect-square bg-no-repeat bg-contain bg-center
+  }
+
+  @media screen(md) {
+    .avatar {
+      height: var(--height-mobile);
+    }
+  }
+}
+
 @layer utilities {
   .grad-light {
     background: linear-gradient(180deg, theme("colors.off-white") 6.58%, theme("colors.dark-white") 81.58%);

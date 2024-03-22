@@ -1,4 +1,3 @@
-import Image from "next/image";
 import { useSwitchChain, Register } from "wagmi";
 
 import { DropDown } from "@/components/Tooltip";
@@ -31,14 +30,10 @@ const Wallets = ({ close }: { close: () => void }): JSX.Element => {
             $padding="5px 10px"
             style={{ cursor: "pointer" }}
           >
-            <Icon $size="sm">
-              <Image
-                src={ChainPresets[chain && chain.id in ChainPresets ? chain.id : 99999]}
-                alt="chain logo"
-                sizes="any"
-                fill={true}
-              />
-            </Icon>
+            <Icon
+              size="sm"
+              image={ChainPresets[chain && chain.id in ChainPresets ? chain.id : 99999]}
+            />
             <Span>{chain.name}</Span>
           </NavItem>
         ))}

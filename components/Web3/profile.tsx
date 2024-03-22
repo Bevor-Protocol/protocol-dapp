@@ -4,7 +4,7 @@ import { useAccount } from "wagmi";
 import { useDisconnect } from "wagmi";
 
 import { useModal } from "@/hooks/contexts";
-import { Avatar } from "@/components/Icon";
+import { Icon } from "@/components/Icon";
 import { trimAddress } from "@/lib/utils";
 import { Column, Card, Row } from "@/components/Box";
 import { NavItem } from "../Nav/styled";
@@ -30,7 +30,7 @@ const Profile = (): JSX.Element => {
 
   return (
     <Column $gap="lg">
-      {!!address && <Avatar $size="xl" $seed={address} />}
+      {!!address && <Icon size="xl" seed={address} />}
       <Row
         $gap="md"
         style={{ position: "relative", cursor: "pointer" }}
