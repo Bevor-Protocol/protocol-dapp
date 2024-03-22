@@ -2,6 +2,9 @@
 module.exports = {
   content: ["./app/**/*.{js,ts,jsx,tsx,mdx}", "./components/**/*.{js,ts,jsx,tsx,mdx}"],
   theme: {
+    boxShadow: {
+      DEFAULT: "0 0 0 1px rgba(255, 255, 255, 0.145), 0px 1px 2px rgba(0,0,0,.16)",
+    },
     screens: {
       "2xl": { max: "1536px" },
       xl: { max: "1280px" },

@@ -1,10 +1,8 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-
-import { LeadHeader, LeadGrid } from "../styled";
-import { LiElement } from "@/components/Box";
 import { Arrow } from "@/assets";
+import clsx from "clsx";
 
 export const LeaderboardNav = ({
   headers,
@@ -29,11 +27,22 @@ export const LeaderboardNav = ({
   };
 
   return (
-    <LeadHeader>
-      <LeadGrid>
+    <div className="sticky -top-[1px] bg-dark z-50 w-full">
+      <ul className="grid grid-cols-12 list-none m-0 p-2">
         {headers.map((header, ind) => (
-          <LiElement key={ind} onClick={(): void => handleSearch(header)}>
-            <span>{header}</span>
+          <li
+            key={ind}
+            onClick={(): void => handleSearch(header)}
+            className={clsx(
+              "grid-child cursor-pointer p-2 -translate-x-2 rounded-lg \
+            w-fit transition-colors hover:bg-dark-primary-20 flex items-center \
+            gap-2 whitespace-nowrap max-w-full",
+              {
+                "translate-x-[30px]": header === "name",
+              },
+            )}
+          >
+            <span className=" text-ellipsis overflow-hidden block leading-[1.27rem]">{header}</span>
             {header === filter && (
               <Arrow
                 fill="white"
@@ -43,9 +52,9 @@ export const LeaderboardNav = ({
                 }}
               />
             )}
-          </LiElement>
+          </li>
         ))}
-      </LeadGrid>
-    </LeadHeader>
+      </ul>
+    </div>
   );
 };

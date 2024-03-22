@@ -1,7 +1,6 @@
 /* eslint-disable @next/next/no-img-element */
 import { getLeaderboard } from "@/lib/actions/users";
-import { LeadData, LeadGrid } from "../styled";
-import { LiElement, Column } from "@/components/Box";
+import { Column } from "@/components/Box";
 import { trimAddress } from "@/lib/utils";
 import { FallbackIcon } from "@/components/Icon";
 import { Loader } from "@/components/Common";
@@ -16,140 +15,233 @@ export const LeaderboardData = async ({
 }): Promise<JSX.Element> => {
   const data = await getLeaderboard(filter, order);
   return (
-    <LeadData>
+    <div className="w-full flex flex-col gap-1">
       {data.map((item, ind) => (
         <UnstyledNextLink key={ind} href={`/user/${item.address}`}>
-          <LeadGrid>
-            <LiElement>
+          <ul
+            className="grid grid-cols-12 list-none m-0 p-2 rounded-md 
+          shadow bg-dark cursor-pointer transition-colors hover:bg-dark-primary-20"
+          >
+            <li
+              className="grid-child cursor-pointer rounded-lg 
+            w-fit flex items-center 
+            gap-2 whitespace-nowrap max-w-full"
+            >
               <FallbackIcon image={item.profile?.image} size="md" address={item.address} />
               <span>{item.profile?.name || trimAddress(item.address)}</span>
-            </LiElement>
-            <LiElement>
+            </li>
+            <li
+              className="grid-child cursor-pointer rounded-lg 
+            w-fit flex items-center 
+            gap-2 whitespace-nowrap max-w-full"
+            >
               <span>{item.totalValue.toLocaleString()}</span>
-            </LiElement>
-            <LiElement>
+            </li>
+            <li
+              className="grid-child cursor-pointer rounded-lg 
+            w-fit flex items-center 
+            gap-2 whitespace-nowrap max-w-full"
+            >
               <span>{item.totalActive.toLocaleString()}</span>
-            </LiElement>
-            <LiElement>
+            </li>
+            <li
+              className="grid-child cursor-pointer rounded-lg 
+            w-fit flex items-center 
+            gap-2 whitespace-nowrap max-w-full"
+            >
               <span>{item.totalComplete.toLocaleString()}</span>
-            </LiElement>
-            <LiElement>
+            </li>
+            <li
+              className="grid-child cursor-pointer rounded-lg 
+            w-fit flex items-center 
+            gap-2 whitespace-nowrap max-w-full"
+            >
               <span>{String(item.profile?.available)}</span>
-            </LiElement>
-          </LeadGrid>
+            </li>
+          </ul>
         </UnstyledNextLink>
       ))}
       {data.map((item, ind) => (
         <UnstyledNextLink key={ind} href={`/user/${item.address}`}>
-          <LeadGrid>
-            <LiElement>
+          <ul
+            className="grid grid-cols-12 list-none m-0 p-2 rounded-md 
+          shadow bg-dark cursor-pointer transition-colors hover:bg-dark-primary-20"
+          >
+            <li
+              className="grid-child cursor-pointer rounded-lg 
+            w-fit flex items-center 
+            gap-2 whitespace-nowrap max-w-full"
+            >
               <FallbackIcon image={item.profile?.image} size="md" address={item.address} />
               <span>{item.profile?.name || trimAddress(item.address)}</span>
-            </LiElement>
-            <LiElement>
+            </li>
+            <li
+              className="grid-child cursor-pointer rounded-lg 
+            w-fit flex items-center 
+            gap-2 whitespace-nowrap max-w-full"
+            >
               <span>{item.totalValue.toLocaleString()}</span>
-            </LiElement>
-            <LiElement>
+            </li>
+            <li
+              className="grid-child cursor-pointer rounded-lg 
+            w-fit flex items-center 
+            gap-2 whitespace-nowrap max-w-full"
+            >
               <span>{item.totalActive.toLocaleString()}</span>
-            </LiElement>
-            <LiElement>
+            </li>
+            <li
+              className="grid-child cursor-pointer rounded-lg 
+            w-fit flex items-center 
+            gap-2 whitespace-nowrap max-w-full"
+            >
               <span>{item.totalComplete.toLocaleString()}</span>
-            </LiElement>
-            <LiElement>
+            </li>
+            <li
+              className="grid-child cursor-pointer rounded-lg 
+            w-fit flex items-center 
+            gap-2 whitespace-nowrap max-w-full"
+            >
               <span>{String(item.profile?.available)}</span>
-            </LiElement>
-          </LeadGrid>
+            </li>
+          </ul>
         </UnstyledNextLink>
       ))}
       {data.map((item, ind) => (
         <UnstyledNextLink key={ind} href={`/user/${item.address}`}>
-          <LeadGrid>
-            <LiElement>
+          <ul
+            className="grid grid-cols-12 list-none m-0 p-2 rounded-md 
+          shadow bg-dark cursor-pointer transition-colors hover:bg-dark-primary-20"
+          >
+            <li
+              className="grid-child cursor-pointer rounded-lg 
+            w-fit flex items-center 
+            gap-2 whitespace-nowrap max-w-full"
+            >
               <FallbackIcon image={item.profile?.image} size="md" address={item.address} />
               <span>{item.profile?.name || trimAddress(item.address)}</span>
-            </LiElement>
-            <LiElement>
+            </li>
+            <li
+              className="grid-child cursor-pointer rounded-lg 
+            w-fit flex items-center 
+            gap-2 whitespace-nowrap max-w-full"
+            >
               <span>{item.totalValue.toLocaleString()}</span>
-            </LiElement>
-            <LiElement>
+            </li>
+            <li
+              className="grid-child cursor-pointer rounded-lg 
+            w-fit flex items-center 
+            gap-2 whitespace-nowrap max-w-full"
+            >
               <span>{item.totalActive.toLocaleString()}</span>
-            </LiElement>
-            <LiElement>
+            </li>
+            <li
+              className="grid-child cursor-pointer rounded-lg 
+            w-fit flex items-center 
+            gap-2 whitespace-nowrap max-w-full"
+            >
               <span>{item.totalComplete.toLocaleString()}</span>
-            </LiElement>
-            <LiElement>
+            </li>
+            <li
+              className="grid-child cursor-pointer rounded-lg 
+            w-fit flex items-center 
+            gap-2 whitespace-nowrap max-w-full"
+            >
               <span>{String(item.profile?.available)}</span>
-            </LiElement>
-          </LeadGrid>
+            </li>
+          </ul>
         </UnstyledNextLink>
       ))}
       {data.map((item, ind) => (
         <UnstyledNextLink key={ind} href={`/user/${item.address}`}>
-          <LeadGrid>
-            <LiElement>
+          <ul
+            className="grid grid-cols-12 list-none m-0 p-2 rounded-md 
+          shadow bg-dark cursor-pointer transition-colors hover:bg-dark-primary-20"
+          >
+            <li
+              className="grid-child cursor-pointer rounded-lg 
+            w-fit flex items-center 
+            gap-2 whitespace-nowrap max-w-full"
+            >
               <FallbackIcon image={item.profile?.image} size="md" address={item.address} />
               <span>{item.profile?.name || trimAddress(item.address)}</span>
-            </LiElement>
-            <LiElement>
+            </li>
+            <li
+              className="grid-child cursor-pointer rounded-lg 
+            w-fit flex items-center 
+            gap-2 whitespace-nowrap max-w-full"
+            >
               <span>{item.totalValue.toLocaleString()}</span>
-            </LiElement>
-            <LiElement>
+            </li>
+            <li
+              className="grid-child cursor-pointer rounded-lg 
+            w-fit flex items-center 
+            gap-2 whitespace-nowrap max-w-full"
+            >
               <span>{item.totalActive.toLocaleString()}</span>
-            </LiElement>
-            <LiElement>
+            </li>
+            <li
+              className="grid-child cursor-pointer rounded-lg 
+            w-fit flex items-center 
+            gap-2 whitespace-nowrap max-w-full"
+            >
               <span>{item.totalComplete.toLocaleString()}</span>
-            </LiElement>
-            <LiElement>
+            </li>
+            <li
+              className="grid-child cursor-pointer rounded-lg 
+            w-fit flex items-center 
+            gap-2 whitespace-nowrap max-w-full"
+            >
               <span>{String(item.profile?.available)}</span>
-            </LiElement>
-          </LeadGrid>
+            </li>
+          </ul>
         </UnstyledNextLink>
       ))}
       {data.map((item, ind) => (
         <UnstyledNextLink key={ind} href={`/user/${item.address}`}>
-          <LeadGrid>
-            <LiElement>
+          <ul
+            className="grid grid-cols-12 list-none m-0 p-2 rounded-md 
+          shadow bg-dark cursor-pointer transition-colors hover:bg-dark-primary-20"
+          >
+            <li
+              className="grid-child cursor-pointer rounded-lg 
+            w-fit flex items-center 
+            gap-2 whitespace-nowrap max-w-full"
+            >
               <FallbackIcon image={item.profile?.image} size="md" address={item.address} />
               <span>{item.profile?.name || trimAddress(item.address)}</span>
-            </LiElement>
-            <LiElement>
+            </li>
+            <li
+              className="grid-child cursor-pointer rounded-lg 
+            w-fit flex items-center 
+            gap-2 whitespace-nowrap max-w-full"
+            >
               <span>{item.totalValue.toLocaleString()}</span>
-            </LiElement>
-            <LiElement>
+            </li>
+            <li
+              className="grid-child cursor-pointer rounded-lg 
+            w-fit flex items-center 
+            gap-2 whitespace-nowrap max-w-full"
+            >
               <span>{item.totalActive.toLocaleString()}</span>
-            </LiElement>
-            <LiElement>
+            </li>
+            <li
+              className="grid-child cursor-pointer rounded-lg 
+            w-fit flex items-center 
+            gap-2 whitespace-nowrap max-w-full"
+            >
               <span>{item.totalComplete.toLocaleString()}</span>
-            </LiElement>
-            <LiElement>
+            </li>
+            <li
+              className="grid-child cursor-pointer rounded-lg 
+            w-fit flex items-center 
+            gap-2 whitespace-nowrap max-w-full"
+            >
               <span>{String(item.profile?.available)}</span>
-            </LiElement>
-          </LeadGrid>
+            </li>
+          </ul>
         </UnstyledNextLink>
       ))}
-      {data.map((item, ind) => (
-        <UnstyledNextLink key={ind} href={`/user/${item.address}`}>
-          <LeadGrid>
-            <LiElement>
-              <FallbackIcon image={item.profile?.image} size="md" address={item.address} />
-              <span>{item.profile?.name || trimAddress(item.address)}</span>
-            </LiElement>
-            <LiElement>
-              <span>{item.totalValue.toLocaleString()}</span>
-            </LiElement>
-            <LiElement>
-              <span>{item.totalActive.toLocaleString()}</span>
-            </LiElement>
-            <LiElement>
-              <span>{item.totalComplete.toLocaleString()}</span>
-            </LiElement>
-            <LiElement>
-              <span>{String(item.profile?.available)}</span>
-            </LiElement>
-          </LeadGrid>
-        </UnstyledNextLink>
-      ))}
-    </LeadData>
+    </div>
   );
 };
 
