@@ -1,9 +1,9 @@
 /* eslint-disable @next/next/no-img-element */
 import { Column } from "@/components/Box";
 import { Card } from "@/components/Card";
-import { Loader } from "@/components/Common";
+import { Loader } from "@/components/Loader";
 import { Icon } from "@/components/Icon";
-import DynamicLink, { UnstyledNextLink } from "@/components/Link";
+import DynamicLink from "@/components/Link";
 import ProgressBar from "@/components/ProgressBar";
 import { Markdown } from "@/components/Markdown";
 import { AuditAuditor, AuditDashboardBtn, AuditDashboardHeader } from "../client";
@@ -20,9 +20,9 @@ export const AuditCard = ({
   return (
     <Card hover className="divide-y divide-gray-200/20 w-full">
       <div className="flex flex-row items-stretch justify-start gap-8 p-4 w-full">
-        <UnstyledNextLink href={`/user/${audit.auditee.address}`}>
+        <DynamicLink href={`/user/${audit.auditee.address}`}>
           <Icon image={audit.auditee.profile?.image} seed={audit.auditee.address} size="lg" />
-        </UnstyledNextLink>
+        </DynamicLink>
         <div className="flex flex-col justify-start items-start overflow-hidden w-full">
           <div className="flex flex-row justify-between w-full">
             <p className="text-lg">
@@ -46,8 +46,8 @@ export const AuditCard = ({
             <span className="text-white/60">TBD</span>
           )}
         </div>
-        <DynamicLink href={`/audits/${audit.id}`} disabled={disabled}>
-          <span>View Audit</span>
+        <DynamicLink href={`/audits/${audit.id}`} disabled={disabled} transition>
+          <span className="block p-1">View Audit</span>
         </DynamicLink>
       </div>
     </Card>
@@ -77,7 +77,7 @@ export const AuditDashboard = async ({
   const audit = await getAudit(auditId);
   const content = await getMarkdown(display);
   return (
-    <Card hover className="divide-y divide-gray-200/20 w-full">
+    <Card className="divide-y divide-gray-200/20 w-full">
       <div className="flex flex-row justify-start items-stretch gap-8 p-4 w-full">
         <Icon image={audit.auditee.profile?.image} seed={audit.auditee.address} size="lg" />
         <div className="flex flex-col justify-start items-start overflow-hidden w-full">
@@ -119,7 +119,7 @@ export const AuditDashboard = async ({
 export const AuditsSkeleton = (): JSX.Element => {
   return (
     <Column $padding="4rem">
-      <Loader $size="40px" />
+      <Loader className="h-12" />
     </Column>
   );
 };

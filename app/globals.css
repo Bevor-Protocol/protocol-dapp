@@ -79,7 +79,7 @@
 @layer components {
   .avatar {
     height: var(--height-desktop);
-    @apply rounded-full mr-0 overflow-hidden transition-all aspect-square bg-no-repeat bg-contain bg-center
+    @apply rounded-full transition-all aspect-square bg-no-repeat bg-contain bg-center
   }
 
   @media screen(md) {
@@ -105,6 +105,23 @@
   .dim:not(:disabled):focus-visible,
   .dim:not(:disabled):active {
     @apply opacity-hover
+  }
+}
+
+@layer utilities {
+  .conic {
+    background: conic-gradient(theme("colors.white"), theme("colors.transparent"));
+    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    @apply aspect-square z-0 p-[3px] rounded-full
+  }
+}
+
+@layer utilities {
+  .focus-border {
+    @apply border-solid border border-transparent transition-all focus-visible:border-gray-200/20 focus-visible:outline-none
   }
 }
 

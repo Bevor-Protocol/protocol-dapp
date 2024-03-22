@@ -29,7 +29,7 @@ const NavHolder = (): JSX.Element => {
       <Nav $justify="space-between">
         <Row $gap="lg">
           <DynamicLink href="/">
-            <div className="aspect-[1091 / 1685] relative h-16">
+            <div className="aspect-[1091/1685] relative h-16">
               <Image src="/logo.png" alt="brand logo" fill={true} sizes="any" />
             </div>
           </DynamicLink>
@@ -38,7 +38,7 @@ const NavHolder = (): JSX.Element => {
               active={pathname.split("/")[1] == "user" && pathname.split("/")[2] == address}
             />
             {navItems.main.map((item, ind) => (
-              <DynamicLink href={item.url} key={ind}>
+              <DynamicLink href={item.url} key={ind} transition>
                 <NavItem $active={pathname === item.url}>
                   <Span>{item.text}</Span>
                 </NavItem>
@@ -53,7 +53,7 @@ const NavHolder = (): JSX.Element => {
                   <Column $gap="sm" $padding="5px 10px" $align="initial">
                     <Column $align="stretch" $gap="sm">
                       {navItems.dropdown.map((item, ind) => (
-                        <DynamicLink href={item.url} key={ind}>
+                        <DynamicLink href={item.url} key={ind} transition>
                           <NavItem
                             $height="fit-content"
                             $justify="flex-start"
@@ -69,7 +69,7 @@ const NavHolder = (): JSX.Element => {
                     </Column>
                     <HR $width="auto" $margin="0 10px" />
                     <Row $gap="xs" $padding="0 3px" $justify="flex-start">
-                      <DynamicLink href="https://twitter.com/BevorProtocol">
+                      <DynamicLink href="https://twitter.com/BevorProtocol" transition>
                         <NavItem
                           $padding="7px"
                           $border="100%"
@@ -79,7 +79,7 @@ const NavHolder = (): JSX.Element => {
                           <Twitter height="1rem" width="1rem" fill="white" />
                         </NavItem>
                       </DynamicLink>
-                      <DynamicLink href="https://github.com/Bevor-Protocol">
+                      <DynamicLink href="https://github.com/Bevor-Protocol" transition>
                         <NavItem
                           $padding="7px"
                           $border="100%"
@@ -89,7 +89,7 @@ const NavHolder = (): JSX.Element => {
                           <Github height="1rem" width="1rem" fill="white" />
                         </NavItem>
                       </DynamicLink>
-                      <DynamicLink href="https://discord.gg/MDfNgatN">
+                      <DynamicLink href="https://discord.gg/MDfNgatN" transition>
                         <NavItem
                           $padding="7px"
                           $border="100%"

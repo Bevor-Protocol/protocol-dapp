@@ -1,10 +1,8 @@
-import { Section } from "@/components/Common";
-
 const NotFound = (): JSX.Element => {
   return (
-    <Section $padCommon $centerV $centerH>
+    <section className="flex flex-col h-full justify-center items-center px-screen">
       <h2>Could not find requested resource</h2>
-    </Section>
+    </section>
   );
 };
 

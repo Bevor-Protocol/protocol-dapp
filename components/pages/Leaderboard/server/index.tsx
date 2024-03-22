@@ -3,8 +3,8 @@ import { getLeaderboard } from "@/lib/actions/users";
 import { Column } from "@/components/Box";
 import { trimAddress } from "@/lib/utils";
 import { Icon } from "@/components/Icon";
-import { Loader } from "@/components/Common";
-import { UnstyledNextLink } from "@/components/Link";
+import { Loader } from "@/components/Loader";
+import DynamicLink from "@/components/Link";
 
 export const LeaderboardData = async ({
   filter,
@@ -17,7 +17,7 @@ export const LeaderboardData = async ({
   return (
     <div className="w-full flex flex-col gap-1">
       {data.map((item, ind) => (
-        <UnstyledNextLink key={ind} href={`/user/${item.address}`}>
+        <DynamicLink key={ind} href={`/user/${item.address}`}>
           <ul
             className="grid grid-cols-12 list-none m-0 p-2 rounded-md 
           shadow bg-dark cursor-pointer transition-colors hover:bg-dark-primary-20"
@@ -59,10 +59,10 @@ export const LeaderboardData = async ({
               <span>{String(item.profile?.available)}</span>
             </li>
           </ul>
-        </UnstyledNextLink>
+        </DynamicLink>
       ))}
       {data.map((item, ind) => (
-        <UnstyledNextLink key={ind} href={`/user/${item.address}`}>
+        <DynamicLink key={ind} href={`/user/${item.address}`}>
           <ul
             className="grid grid-cols-12 list-none m-0 p-2 rounded-md 
           shadow bg-dark cursor-pointer transition-colors hover:bg-dark-primary-20"
@@ -104,10 +104,10 @@ export const LeaderboardData = async ({
               <span>{String(item.profile?.available)}</span>
             </li>
           </ul>
-        </UnstyledNextLink>
+        </DynamicLink>
       ))}
       {data.map((item, ind) => (
-        <UnstyledNextLink key={ind} href={`/user/${item.address}`}>
+        <DynamicLink key={ind} href={`/user/${item.address}`}>
           <ul
             className="grid grid-cols-12 list-none m-0 p-2 rounded-md 
           shadow bg-dark cursor-pointer transition-colors hover:bg-dark-primary-20"
@@ -149,10 +149,10 @@ export const LeaderboardData = async ({
               <span>{String(item.profile?.available)}</span>
             </li>
           </ul>
-        </UnstyledNextLink>
+        </DynamicLink>
       ))}
       {data.map((item, ind) => (
-        <UnstyledNextLink key={ind} href={`/user/${item.address}`}>
+        <DynamicLink key={ind} href={`/user/${item.address}`}>
           <ul
             className="grid grid-cols-12 list-none m-0 p-2 rounded-md 
           shadow bg-dark cursor-pointer transition-colors hover:bg-dark-primary-20"
@@ -194,10 +194,10 @@ export const LeaderboardData = async ({
               <span>{String(item.profile?.available)}</span>
             </li>
           </ul>
-        </UnstyledNextLink>
+        </DynamicLink>
       ))}
       {data.map((item, ind) => (
-        <UnstyledNextLink key={ind} href={`/user/${item.address}`}>
+        <DynamicLink key={ind} href={`/user/${item.address}`}>
           <ul
             className="grid grid-cols-12 list-none m-0 p-2 rounded-md 
           shadow bg-dark cursor-pointer transition-colors hover:bg-dark-primary-20"
@@ -239,7 +239,7 @@ export const LeaderboardData = async ({
               <span>{String(item.profile?.available)}</span>
             </li>
           </ul>
-        </UnstyledNextLink>
+        </DynamicLink>
       ))}
     </div>
   );
@@ -248,7 +248,7 @@ export const LeaderboardData = async ({
 export const LeaderboardSkeleton = (): JSX.Element => {
   return (
     <Column $padding="4rem">
-      <Loader $size="40px" />
+      <Loader className="h-12" />
     </Column>
   );
 };

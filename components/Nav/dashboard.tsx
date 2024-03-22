@@ -9,7 +9,7 @@ const DashboardNav = ({ active }: { active: boolean }): JSX.Element => {
   const { address } = useAccount();
 
   return (
-    <DynamicLink href={mounted && address ? `/user/${address}` : "/"}>
+    <DynamicLink href={mounted && address ? `/user/${address}` : "/"} transition>
       <NavItem $active={active}>
         <Span>dashboard</Span>
       </NavItem>

@@ -4,7 +4,7 @@
 import { HomeStatSkeletonDiv } from "./styled";
 import { Card } from "@/components/Card";
 import { HomeStatI } from "@/lib/types";
-import { Loader } from "@/components/Common";
+import { Loader } from "@/components/Loader";
 
 export const HomeStat = async ({ action, symbol, text }: HomeStatI): Promise<JSX.Element> => {
   // const [data, setData] = useState<number | null>();
@@ -32,7 +32,7 @@ export const HomeStatSkeleton = (): JSX.Element => {
   return (
     <Card className="text-center p-6 items-center justify-center">
       <HomeStatSkeletonDiv>
-        <Loader $size="2rem" />
+        <Loader className="h-8" />
       </HomeStatSkeletonDiv>
     </Card>
   );

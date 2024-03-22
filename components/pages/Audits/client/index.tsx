@@ -9,7 +9,7 @@ import clsx from "clsx";
 
 import { ToolTip } from "@/components/Tooltip";
 import { Icon } from "@/components/Icon";
-import { UnstyledNextLink } from "@/components/Link";
+import DynamicLink from "@/components/Link";
 
 export const AuditHeader = ({ current }: { current: string }): JSX.Element => {
   const router = useRouter();
@@ -143,7 +143,7 @@ export const AuditAuditor = ({
   };
   return (
     <div className="h-fit w-fit relative" style={{ transform: `translateX(${position})` }}>
-      <UnstyledNextLink href={`/user/${auditor.address}`}>
+      <DynamicLink href={`/user/${auditor.address}`}>
         <Icon
           image={auditor.profile?.image}
           size="md"
@@ -152,7 +152,7 @@ export const AuditAuditor = ({
           onMouseOver={handleToolTip}
           onMouseOut={clearToolTip}
         />
-      </UnstyledNextLink>
+      </DynamicLink>
       <ToolTip ref={tooltip}>{cont}</ToolTip>
     </div>
   );

@@ -8,7 +8,8 @@ import {
 } from "@/lib/actions/users";
 import { AuditCard } from "@/components/pages/Audits/server";
 import { H2, P, Span } from "@/components/Text";
-import { HR, Loader } from "@/components/Common";
+import { HR } from "@/components/Common";
+import { Loader } from "@/components/Loader";
 import { Suspense } from "react";
 
 const UserData = async ({ address }: { address: string }): Promise<JSX.Element> => {
@@ -43,7 +44,7 @@ const UserData = async ({ address }: { address: string }): Promise<JSX.Element> 
           <P>Open:</P>
           <Row $width="100%" $justify="flex-start">
             {auditsAuditeeOpen.map((audit, ind) => (
-              <AuditCard key={ind} audit={audit} disabled={false} trimWidth={true} />
+              <AuditCard key={ind} audit={audit} disabled={false} />
             ))}
           </Row>
         </Column>
@@ -53,7 +54,7 @@ const UserData = async ({ address }: { address: string }): Promise<JSX.Element> 
           <P>Pending:</P>
           <Row $width="100%" $justify="flex-start">
             {auditsAuditeePending.map((audit, ind) => (
-              <AuditCard key={ind} audit={audit} disabled={false} trimWidth={true} />
+              <AuditCard key={ind} audit={audit} disabled={false} />
             ))}
           </Row>
         </Column>
@@ -63,7 +64,7 @@ const UserData = async ({ address }: { address: string }): Promise<JSX.Element> 
           <P>Closed:</P>
           <Row $width="100%" $justify="flex-start">
             {auditsAuditeeClosed.map((audit, ind) => (
-              <AuditCard key={ind} audit={audit} disabled={false} trimWidth={true} />
+              <AuditCard key={ind} audit={audit} disabled={false} />
             ))}
           </Row>
         </Column>
@@ -74,7 +75,7 @@ const UserData = async ({ address }: { address: string }): Promise<JSX.Element> 
           <P>Open:</P>
           <Row $width="100%" $justify="flex-start">
             {auditsAuditorOpen.map((audit, ind) => (
-              <AuditCard key={ind} audit={audit} disabled={false} trimWidth={true} />
+              <AuditCard key={ind} audit={audit} disabled={false} />
             ))}
           </Row>
         </Column>
@@ -84,7 +85,7 @@ const UserData = async ({ address }: { address: string }): Promise<JSX.Element> 
           <P>Pending:</P>
           <Row $width="100%" $justify="flex-start">
             {auditsAuditorPending.map((audit, ind) => (
-              <AuditCard key={ind} audit={audit} disabled={false} trimWidth={true} />
+              <AuditCard key={ind} audit={audit} disabled={false} />
             ))}
           </Row>
         </Column>
@@ -94,7 +95,7 @@ const UserData = async ({ address }: { address: string }): Promise<JSX.Element> 
           <P>Closed:</P>
           <Row $width="100%" $justify="flex-start">
             {auditsAuditorClosed.map((audit, ind) => (
-              <AuditCard key={ind} audit={audit} disabled={false} trimWidth={true} />
+              <AuditCard key={ind} audit={audit} disabled={false} />
             ))}
           </Row>
         </Column>
@@ -115,7 +116,7 @@ export const UserContent = async ({ address }: { address: string }): Promise<JSX
     <Column $gap="rem2" $align="flex-start">
       <UserProfileData user={user} />
       <HR />
-      <Suspense fallback={<Loader $size="50px" />}>
+      <Suspense fallback={<Loader className="h-12" />}>
         <UserData address={address} />
       </Suspense>
     </Column>

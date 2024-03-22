@@ -7,7 +7,7 @@ import { Icon } from "@/components/Icon";
 import { Row, Column } from "@/components/Box";
 import { P, Span } from "@/components/Text";
 import { useIsMounted } from "@/hooks/useIsMounted";
-import { Loader } from "@/components/Common";
+import { Loader } from "@/components/Loader";
 import { UserProfile } from "@/lib/types/actions";
 import * as Form from "@/components/Form";
 import { Button } from "@/components/Button";
@@ -25,7 +25,7 @@ export const UserProfileData = ({ user }: { user: UserProfile }): JSX.Element =>
   }, [address, user.address]);
 
   if (!mounted) {
-    return <Loader $size="50px" />;
+    return <Loader className="h-12" />;
   }
 
   const handleEdit = (): void => {

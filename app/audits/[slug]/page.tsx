@@ -1,9 +1,6 @@
 import { Suspense } from "react";
 
-import { Section } from "@/components/Common";
-import { H2 } from "@/components/Text";
-import { AuditHolder } from "@/components/pages/Audits/styled";
-import { Loader } from "@/components/Common";
+import { Loader } from "@/components/Loader";
 import { AuditDashboard } from "@/components/pages/Audits/server";
 
 const AuditDashboardPage = ({
@@ -16,14 +13,14 @@ const AuditDashboardPage = ({
   const display = searchParams.display ?? "details";
 
   return (
-    <Section $padCommon $centerH $centerV>
-      <AuditHolder $gap="rem2" $padding="2rem 0" $justify="flex-start">
-        <H2>Audit Dashboard</H2>
-        <Suspense fallback={<Loader $size="50px" />}>
+    <section className="flex flex-col h-full items-center px-screen">
+      <div className="flex flex-col w-full max-w-[1000px] gap-8 py-8 justify-start items-center h-full">
+        <h2 className="text-4xl font-extrabold leading-[normal]">Audit Dashboard</h2>
+        <Suspense fallback={<Loader className="h-12" />}>
           <AuditDashboard auditId={params.slug} display={display} />
         </Suspense>
-      </AuditHolder>
-    </Section>
+      </div>
+    </section>
   );
 };
 

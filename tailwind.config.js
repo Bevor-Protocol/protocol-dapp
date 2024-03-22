@@ -14,6 +14,12 @@ module.exports = {
       xs: { max: "450px" },
     },
     extend: {
+      transitionProperty: {
+        border: "border",
+      },
+      transitionDuration: {
+        1250: "1250ms",
+      },
       opacity: {
         hover: 0.75,
         disable: 0.5,
