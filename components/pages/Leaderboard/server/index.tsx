@@ -39,6 +39,116 @@ export const LeaderboardData = async ({
           </LeadGrid>
         </UnstyledNextLink>
       ))}
+      {data.map((item, ind) => (
+        <UnstyledNextLink key={ind} href={`/user/${item.address}`}>
+          <LeadGrid>
+            <LiElement>
+              <FallbackIcon image={item.profile?.image} size="md" address={item.address} />
+              <span>{item.profile?.name || trimAddress(item.address)}</span>
+            </LiElement>
+            <LiElement>
+              <span>{item.totalValue.toLocaleString()}</span>
+            </LiElement>
+            <LiElement>
+              <span>{item.totalActive.toLocaleString()}</span>
+            </LiElement>
+            <LiElement>
+              <span>{item.totalComplete.toLocaleString()}</span>
+            </LiElement>
+            <LiElement>
+              <span>{String(item.profile?.available)}</span>
+            </LiElement>
+          </LeadGrid>
+        </UnstyledNextLink>
+      ))}
+      {data.map((item, ind) => (
+        <UnstyledNextLink key={ind} href={`/user/${item.address}`}>
+          <LeadGrid>
+            <LiElement>
+              <FallbackIcon image={item.profile?.image} size="md" address={item.address} />
+              <span>{item.profile?.name || trimAddress(item.address)}</span>
+            </LiElement>
+            <LiElement>
+              <span>{item.totalValue.toLocaleString()}</span>
+            </LiElement>
+            <LiElement>
+              <span>{item.totalActive.toLocaleString()}</span>
+            </LiElement>
+            <LiElement>
+              <span>{item.totalComplete.toLocaleString()}</span>
+            </LiElement>
+            <LiElement>
+              <span>{String(item.profile?.available)}</span>
+            </LiElement>
+          </LeadGrid>
+        </UnstyledNextLink>
+      ))}
+      {data.map((item, ind) => (
+        <UnstyledNextLink key={ind} href={`/user/${item.address}`}>
+          <LeadGrid>
+            <LiElement>
+              <FallbackIcon image={item.profile?.image} size="md" address={item.address} />
+              <span>{item.profile?.name || trimAddress(item.address)}</span>
+            </LiElement>
+            <LiElement>
+              <span>{item.totalValue.toLocaleString()}</span>
+            </LiElement>
+            <LiElement>
+              <span>{item.totalActive.toLocaleString()}</span>
+            </LiElement>
+            <LiElement>
+              <span>{item.totalComplete.toLocaleString()}</span>
+            </LiElement>
+            <LiElement>
+              <span>{String(item.profile?.available)}</span>
+            </LiElement>
+          </LeadGrid>
+        </UnstyledNextLink>
+      ))}
+      {data.map((item, ind) => (
+        <UnstyledNextLink key={ind} href={`/user/${item.address}`}>
+          <LeadGrid>
+            <LiElement>
+              <FallbackIcon image={item.profile?.image} size="md" address={item.address} />
+              <span>{item.profile?.name || trimAddress(item.address)}</span>
+            </LiElement>
+            <LiElement>
+              <span>{item.totalValue.toLocaleString()}</span>
+            </LiElement>
+            <LiElement>
+              <span>{item.totalActive.toLocaleString()}</span>
+            </LiElement>
+            <LiElement>
+              <span>{item.totalComplete.toLocaleString()}</span>
+            </LiElement>
+            <LiElement>
+              <span>{String(item.profile?.available)}</span>
+            </LiElement>
+          </LeadGrid>
+        </UnstyledNextLink>
+      ))}
+      {data.map((item, ind) => (
+        <UnstyledNextLink key={ind} href={`/user/${item.address}`}>
+          <LeadGrid>
+            <LiElement>
+              <FallbackIcon image={item.profile?.image} size="md" address={item.address} />
+              <span>{item.profile?.name || trimAddress(item.address)}</span>
+            </LiElement>
+            <LiElement>
+              <span>{item.totalValue.toLocaleString()}</span>
+            </LiElement>
+            <LiElement>
+              <span>{item.totalActive.toLocaleString()}</span>
+            </LiElement>
+            <LiElement>
+              <span>{item.totalComplete.toLocaleString()}</span>
+            </LiElement>
+            <LiElement>
+              <span>{String(item.profile?.available)}</span>
+            </LiElement>
+          </LeadGrid>
+        </UnstyledNextLink>
+      ))}
     </LeadData>
   );
 };

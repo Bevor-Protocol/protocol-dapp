@@ -9,7 +9,7 @@ const Page = (): JSX.Element => {
     <section className="flex flex-col h-full justify-center items-center px-screen">
       <div className="grid grid-cols-1 w-full md:grid-cols-2 gap-6 items-center justify-center">
         <div className="flex flex-col items-center gap-8 text-center md:text-left md:items-start">
-          <div className="grad-light text-grad-light">
+          <div className="grad-light text-grad">
             <h1 className="text-5xl font-bold md:text-6xl leading-[normal] md:leading-[normal]">
               Ensuring <br /> quality audits
             </h1>

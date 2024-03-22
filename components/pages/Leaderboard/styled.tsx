@@ -90,7 +90,7 @@ export const Leaderboard = styled(Column)`
 export const LeadHeader = styled.div`
   position: -webkit-sticky;
   position: sticky;
-  top: 0;
+  top: -1px;
   background: ${({ theme }): string => theme.bg};
   z-index: 999;
   width: 100%;

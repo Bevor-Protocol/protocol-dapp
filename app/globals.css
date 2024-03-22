@@ -9,12 +9,51 @@
     --text-light: linear-gradient(180deg, #f4f5f7 6.58%, #c8d0e7 81.58%);
     --text-dark: linear-gradient(180deg, #001062 0%, #000626 100%);
     --btn-dark: #00041b;
-    --padding-screen: 20px;
+    --padding-screen: max(50px, calc((100vw - 1440px + 50px) / 2));
   }
 
-  @media screen(xs) {
+  @media screen(sm) {
     :root {
-      --padding-screen: max(50px, calc((100vw - 1440px + 50px) / 2));
+      --padding-screen: 20px;
+    }
+  }
+}
+
+@layer components {
+  .scroll-table {
+    @apply relative max-h-none py-0 mt-8 mb-8 w-full max-w-[1000px]
+  }
+  .scroll-table::-webkit-scrollbar {
+    @apply w-[10px] h-[10px]
+  }
+  .scroll-table::-webkit-scrollbar-track {
+    @apply rounded-lg bg-dark-primary-15
+  }
+  .scroll-table::-webkit-scrollbar-thumb {
+    @apply rounded-lg bg-primary-light-15
+  }
+
+  @media screen(xl) {
+    .scroll-table {
+      @apply block overflow-y-scroll mb-0;
+      max-height: calc(100vh - (3rem + 60px));
+      max-height: calc(100dvh - (3rem + 60px));
+    }
+  }
+
+  @media screen(lg) {
+    .scroll-table {
+      @apply overflow-x-scroll
+    }
+    .scroll-table > div {
+      @apply min-w-[622px]
+    }
+  }
+
+  @media screen(md) {
+    .scroll-table {
+      max-height: calc(100vh - (3rem + 60px + 3rem));
+      max-height: calc(100dvh - (3rem + 60px + 3rem));
     }
   }
 }
@@ -23,7 +62,7 @@
   .grad-light {
     background: linear-gradient(180deg, theme("colors.off-white") 6.58%, theme("colors.dark-white") 81.58%);
   }
-  .text-grad-light {
+  .text-grad {
     background-clip: text;
     -webkit-background-clip: text;
     color: transparent;

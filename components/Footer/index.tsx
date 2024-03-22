@@ -26,7 +26,7 @@ const FooterEl = styled(Column)`
   ${getBreakpoint(
     "md",
     css`
-      padding-bottom: calc(30px + 3rem);
+      display: none;
     `,
   )}
 `;

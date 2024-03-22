@@ -1,7 +1,5 @@
 import { Suspense } from "react";
 
-import { Section } from "@/components/Common";
-import { Leaderboard } from "@/components/pages/Leaderboard/styled";
 import { LeaderboardNav } from "@/components/pages/Leaderboard/client";
 import { LeaderboardData, LeaderboardSkeleton } from "@/components/pages/Leaderboard/server";
 
@@ -17,15 +15,15 @@ const LeaderboardPage = ({ searchParams }: { searchParams: SearchI }): JSX.Eleme
   const order = searchParams.order ?? "asc";
 
   return (
-    <Section $padCommon $centerH>
-      <Leaderboard $gap="xs">
+    <section className="flex flex-col h-full items-center px-screen">
+      <div className="flex flex-col gap-2 scroll-table">
         <LeaderboardNav headers={headers} filter={filter} order={order} />
         {/* must add the key here to get suspense boundary on each new route */}
         <Suspense fallback={<LeaderboardSkeleton />} key={JSON.stringify(searchParams)}>
           <LeaderboardData filter={filter} order={order} />
         </Suspense>
-      </Leaderboard>
-    </Section>
+      </div>
+    </section>
   );
 };
 
