@@ -7,7 +7,6 @@ import { User, Profile } from "@prisma/client";
 import { useAccount } from "wagmi";
 import clsx from "clsx";
 
-import { ToolTip } from "@/components/Tooltip";
 import { Icon } from "@/components/Icon";
 import DynamicLink from "@/components/Link";
 
@@ -131,7 +130,7 @@ export const AuditAuditor = ({
     const { auditoradd } = event.currentTarget.dataset;
 
     tooltip.current.style.bottom = "110%";
-    tooltip.current.style.left = "0px";
+    tooltip.current.style.left = "50%";
     tooltip.current.style.display = "block";
     setCont(auditoradd || "");
   };
@@ -153,7 +152,15 @@ export const AuditAuditor = ({
           onMouseOut={clearToolTip}
         />
       </DynamicLink>
-      <ToolTip ref={tooltip}>{cont}</ToolTip>
+      <div
+        className={clsx(
+          "absolute hidden text-sm max-w-28 overflow-hidden text-ellipsis bg-dark-primary-20",
+          "px-2 py-1 -translate-x-1/2 border border-gray-200/20",
+        )}
+        ref={tooltip}
+      >
+        {cont}
+      </div>
     </div>
   );
 };

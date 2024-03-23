@@ -59,6 +59,12 @@
 }
 
 @layer components {
+  .nav-fixed-bottom {
+    @apply fixed bottom-0 left-0 w-full bg-dark z-[999] rounded-t-lg justify-between px-5 shadow shadow-gray-200/20
+  }
+}
+
+@layer components {
   .grid-child:nth-child(1) {
     grid-column: 1 / 5;
   }
@@ -121,7 +127,7 @@
 
 @layer utilities {
   .focus-border {
-    @apply border-solid border border-transparent transition-all focus-visible:border-gray-200/20 focus-visible:outline-none
+    @apply border border-transparent outline-none transition-all focus-visible:border-gray-200/20 focus-visible:outline-none
   }
 }
 

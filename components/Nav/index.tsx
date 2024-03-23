@@ -7,107 +7,148 @@ import { useAccount } from "wagmi";
 
 import { Arrow, Twitter, Discord, Github } from "@/assets";
 import { navItems } from "@/lib/constants";
-import { Span } from "@/components/Text";
 import DynamicLink from "@/components/Link";
-import { Row, Column } from "@/components/Box";
-import { Ellipsis, HR } from "@/components/Common";
-import { DropDown } from "@/components/Tooltip";
-import { Nav, NavItem, NavItems, MenuHolder } from "./styled";
+import { Ellipsis } from "@/components/Common";
 import { useClickOutside } from "@/hooks/useClickOutside";
+import { useIsMounted } from "@/hooks/useIsMounted";
 import Connector from "./web3";
-import Dashboard from "./dashboard";
+import clsx from "clsx";
 
 const NavHolder = (): JSX.Element => {
   const pathname = usePathname();
   const { address } = useAccount();
+  const mounted = useIsMounted();
   const [show, setShow] = useReducer((s) => !s, false);
   const ref = useRef<HTMLDivElement>(null);
   useClickOutside(ref, show ? setShow : undefined);
 
   return (
-    <nav>
-      <Nav $justify="space-between">
-        <Row $gap="lg">
-          <DynamicLink href="/">
-            <div className="aspect-[1091/1685] relative h-16">
-              <Image src="/logo.png" alt="brand logo" fill={true} sizes="any" />
+    <nav className="px-screen py-6 w-full flex flex-row justify-between items-center md:py-4">
+      <div className="flex flex-row gap-6">
+        <DynamicLink href="/">
+          <div className="aspect-[1091/1685] relative h-16">
+            <Image src="/logo.png" alt="brand logo" fill={true} sizes="any" />
+          </div>
+        </DynamicLink>
+        <div className="flex flex-row gap-2 items-center sm:nav-fixed-bottom sm:text-sm">
+          <DynamicLink href={mounted && address ? `/user/${address}` : "/"}>
+            <div
+              className="flex flex-row justify-center items-center relative h-12 rounded-lg
+              px-2 transition-colors hover:bg-dark-primary-30"
+            >
+              <span
+                className={clsx({
+                  "opacity-disable":
+                    pathname.split("/")[1] != "user" || pathname.split("/")[2] != address,
+                })}
+              >
+                dashboard
+              </span>
             </div>
           </DynamicLink>
-          <NavItems $gap="sm">
-            <Dashboard
-              active={pathname.split("/")[1] == "user" && pathname.split("/")[2] == address}
-            />
-            {navItems.main.map((item, ind) => (
-              <DynamicLink href={item.url} key={ind} transition>
-                <NavItem $active={pathname === item.url}>
-                  <Span>{item.text}</Span>
-                </NavItem>
-              </DynamicLink>
-            ))}
-            <MenuHolder ref={ref} tabIndex={0}>
-              <NavItem onClick={setShow} $active={show}>
-                <Ellipsis />
-              </NavItem>
-              {show && (
-                <DropDown $flipMobile>
-                  <Column $gap="sm" $padding="5px 10px" $align="initial">
-                    <Column $align="stretch" $gap="sm">
-                      {navItems.dropdown.map((item, ind) => (
-                        <DynamicLink href={item.url} key={ind} transition>
-                          <NavItem
-                            $height="fit-content"
-                            $justify="flex-start"
-                            $gap="xs"
-                            $active={false}
-                            $padding="5px 10px"
-                          >
-                            <Span>{item.text}</Span>
-                            <Arrow fill="white" height={10} width={10} />
-                          </NavItem>
-                        </DynamicLink>
-                      ))}
-                    </Column>
-                    <HR $width="auto" $margin="0 10px" />
-                    <Row $gap="xs" $padding="0 3px" $justify="flex-start">
-                      <DynamicLink href="https://twitter.com/BevorProtocol" transition>
-                        <NavItem
-                          $padding="7px"
-                          $border="100%"
-                          $active={false}
-                          $height="fit-content"
+          {navItems.main.map((item, ind) => (
+            <DynamicLink href={item.url} key={ind}>
+              <div
+                className="flex flex-row justify-center items-center relative h-12 rounded-lg
+              px-2 transition-colors hover:bg-dark-primary-30"
+              >
+                <span
+                  className={clsx({
+                    "opacity-disable": pathname !== item.url,
+                  })}
+                >
+                  {item.text}
+                </span>
+              </div>
+            </DynamicLink>
+          ))}
+          <div
+            className={clsx(
+              "flex flex-row relative cursor-pointer rounded-lg focus-border",
+              "justify-center items-center h-12 hover:bg-dark-primary-30",
+            )}
+            ref={ref}
+            tabIndex={0}
+          >
+            <div
+              className={clsx("flex px-2 items-center justify-center h-full w-full", {
+                "*:opacity-disable": !show,
+              })}
+              onClick={setShow}
+            >
+              <Ellipsis />
+            </div>
+            {show && (
+              <div
+                className={clsx(
+                  "absolute top-full right-0 bg-dark border border-gray-200/20 rounded-lg z-[999]",
+                  "cursor-default text-xs min-w-52",
+                  "md:text-base md:top-[unset] md:-right-5 md:bottom-full md:w-svw md:rouned-t-lg",
+                )}
+              >
+                <div className="flex flex-col px-2 py-2 gap-2">
+                  <div className="flex flex-col items-stretch gap-1">
+                    {navItems.dropdown.map((item, ind) => (
+                      <DynamicLink href={item.url} key={ind}>
+                        <div
+                          className="flex flex-row justify-start items-center relative rounded-lg
+              px-2 py-1 gap-1 border border-transparent transition-colors hover:bg-dark-primary-30"
                         >
-                          <Twitter height="1rem" width="1rem" fill="white" />
-                        </NavItem>
+                          <span className="opacity-disable">{item.text}</span>
+                          <Arrow fill="white" height={10} width={10} className="opacity-disable" />
+                        </div>
                       </DynamicLink>
-                      <DynamicLink href="https://github.com/Bevor-Protocol" transition>
-                        <NavItem
-                          $padding="7px"
-                          $border="100%"
-                          $active={false}
-                          $height="fit-content"
-                        >
-                          <Github height="1rem" width="1rem" fill="white" />
-                        </NavItem>
-                      </DynamicLink>
-                      <DynamicLink href="https://discord.gg/MDfNgatN" transition>
-                        <NavItem
-                          $padding="7px"
-                          $border="100%"
-                          $active={false}
-                          $height="fit-content"
-                        >
-                          <Discord height="1rem" width="1rem" fill="white" />
-                        </NavItem>
-                      </DynamicLink>
-                    </Row>
-                  </Column>
-                </DropDown>
-              )}
-            </MenuHolder>
-          </NavItems>
-        </Row>
-        <Connector />
-      </Nav>
+                    ))}
+                  </div>
+                  <hr className="w-auto h-[1px] border-gray-200/20" />
+                  <div className="flex flex-row gap-1 pl-1">
+                    <DynamicLink href="https://twitter.com/BevorProtocol">
+                      <div
+                        className="flex justify-center items-center relative rounded-full
+              p-1 border border-transparent transition-colors hover:bg-dark-primary-30"
+                      >
+                        <Twitter
+                          height="1rem"
+                          width="1rem"
+                          fill="white"
+                          className="opacity-disable"
+                        />
+                      </div>
+                    </DynamicLink>
+                    <DynamicLink href="https://github.com/Bevor-Protocol">
+                      <div
+                        className="flex justify-center items-center relative rounded-full
+              p-1 border border-transparent transition-colors hover:bg-dark-primary-30"
+                      >
+                        <Github
+                          height="1rem"
+                          width="1rem"
+                          fill="white"
+                          className="opacity-disable"
+                        />
+                      </div>
+                    </DynamicLink>
+                    <DynamicLink href="https://discord.gg/MDfNgatN">
+                      <div
+                        className="flex justify-center items-center relative rounded-full
+              p-1 border border-transparent transition-colors hover:bg-dark-primary-30"
+                      >
+                        <Discord
+                          height="1rem"
+                          width="1rem"
+                          fill="white"
+                          className="opacity-disable"
+                        />
+                      </div>
+                    </DynamicLink>
+                  </div>
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+      <Connector />
     </nav>
   );
 };

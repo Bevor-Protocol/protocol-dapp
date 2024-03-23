@@ -1,5 +1,4 @@
 /* eslint-disable @next/next/no-img-element */
-import { Column } from "@/components/Box";
 import { Card } from "@/components/Card";
 import { Loader } from "@/components/Loader";
 import { Icon } from "@/components/Icon";
@@ -118,8 +117,8 @@ export const AuditDashboard = async ({
 
 export const AuditsSkeleton = (): JSX.Element => {
   return (
-    <Column $padding="4rem">
+    <div className="flex flex-col p-16 justify-center items-center">
       <Loader className="h-12" />
-    </Column>
+    </div>
   );
 };
