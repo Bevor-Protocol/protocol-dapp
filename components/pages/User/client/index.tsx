@@ -4,13 +4,10 @@ import { useMemo, useState, useTransition } from "react";
 import { useAccount } from "wagmi";
 
 import { Icon } from "@/components/Icon";
-import { Row, Column } from "@/components/Box";
-import { P, Span } from "@/components/Text";
 import { useIsMounted } from "@/hooks/useIsMounted";
 import { Loader } from "@/components/Loader";
 import { UserProfile } from "@/lib/types/actions";
 import * as Form from "@/components/Form";
-import { Button } from "@/components/Button";
 import { Pencil } from "@/assets";
 import { updateProfile } from "@/lib/actions/users";
 
@@ -47,15 +44,14 @@ export const UserProfileData = ({ user }: { user: UserProfile }): JSX.Element =>
   };
 
   return (
-    <form onSubmit={handleSubmit} id="profile" style={{ width: "100%" }}>
-      <Column $align="flex-start" $gap="rem1">
-        <P $secondary={true}>{user.address}</P>
-        <Row $gap="rem2" $align="flex-start">
+    <form onSubmit={handleSubmit} id="profile" className="w-full">
+      <div className="flex flex-col items-start gap-4">
+        <p className="text-white/60">{user.address}</p>
+        <div className="flex flex-row gap-8 items-start">
           <Icon size="xl" image={user.profile?.image} seed={user.address} />
-          <Column $align="flex-start">
-            <Row $gap="rem1">
+          <div className="flex flex-col items-start">
+            <div className="flex flex-col gap-4">
               <Form.Text
-                type="text"
                 name="name"
                 disabled={!isEditing || isPending}
                 defaultValue={user.profile ? user.profile.name || "" : ""}
@@ -67,35 +63,47 @@ export const UserProfileData = ({ user }: { user: UserProfile }): JSX.Element =>
                 disabled={!isEditing || isPending}
                 aria-disabled={!isEditing || isPending}
               />
-            </Row>
-            <div style={{ paddingLeft: "3px" }}>
-              <P $secondary={true}>
-                Member Since:
-                <Span> {user.createdAt.toLocaleDateString()}</Span>
-              </P>
-              <P $secondary={true}>
-                Last Profile Update:
-                <Span> {user.profile?.updatedAt.toLocaleDateString()}</Span>
-              </P>
             </div>
-          </Column>
+            <div style={{ paddingLeft: "3px" }}>
+              <p className="text-white/60">
+                Member Since:
+                <span> {user.createdAt.toLocaleDateString()}</span>
+              </p>
+              <p className="text-white/60">
+                Last Profile Update:
+                <span> {user.profile?.updatedAt.toLocaleDateString()}</span>
+              </p>
+            </div>
+          </div>
           {isOwner && (
-            <Form.Edit onClick={handleEdit}>
+            <div className="cursor-pointer text-base" onClick={handleEdit}>
               {isEditing ? <div>&#10005;</div> : <Pencil fill="white" height="15px" width="15px" />}
-            </Form.Edit>
+            </div>
           )}
-        </Row>
+        </div>
         {isOwner && isEditing && (
-          <Row $gap="rem1">
-            <Button type="submit" $pad="6px 8px" $hover="dim">
-              Submit
-            </Button>
-            <Button type="reset" $pad="6px 8px" $hover="dim">
-              Reset
-            </Button>
-          </Row>
+          <div className="flex flex-row gap-4">
+            <button
+              className="outline-none border-none font-bold rounded-md 
+            grad-light py-2 px-3 dim disabled:opacity-disable"
+              type="submit"
+            >
+              <div className="flex flex-row align-middle gap-1 text-dark text-sm">
+                <span>Submit</span>
+              </div>
+            </button>
+            <button
+              className="outline-none border-none font-bold rounded-md 
+            grad-light py-2 px-3 dim disabled:opacity-disable"
+              type="reset"
+            >
+              <div className="flex flex-row align-middle gap-1 text-dark text-sm">
+                <span>Reset</span>
+              </div>
+            </button>
+          </div>
         )}
-      </Column>
+      </div>
     </form>
   );
 };

@@ -3,8 +3,6 @@ import { Card } from "@/components/Card";
 import { Loader } from "@/components/Loader";
 import { Icon } from "@/components/Icon";
 import DynamicLink from "@/components/Link";
-import ProgressBar from "@/components/ProgressBar";
-import { Markdown } from "@/components/Markdown";
 import { AuditAuditor, AuditDashboardBtn, AuditDashboardHeader } from "../client";
 import { getAudits, getAudit, getMarkdown } from "@/lib/actions/audits";
 import { AuditFull } from "@/lib/types/actions";
@@ -91,12 +89,16 @@ export const AuditDashboard = async ({
           <p>Created: {new Date(audit.createdAt).toLocaleDateString()}</p>
         </div>
       </div>
-      <div className="w-full">
-        <ProgressBar />
+      <div className="flex flex-col w-full gap-4 py-6 items-center">
+        <p className="text-white/60">Vesting Progress</p>
+        <div className="h-5 bg-dark-primary-20 rounded-xl border-2 border-gray-200/20 w-full max-w-sm">
+          <div className="h-full w-[20%] grad-light rounded-[inherit]" />
+        </div>
+        <p className="text-white/60">200 / 1000 ETH Vested</p>
       </div>
       <div className="flex flex-col items-start gap-6 p-4">
         <AuditDashboardHeader display={display} />
-        <Markdown dangerouslySetInnerHTML={{ __html: content }} />
+        <div className="markdown" dangerouslySetInnerHTML={{ __html: content }} />
       </div>
       <div className="flex flex-row justify-between items-center border-t-gray-200 px-2 py-4">
         <div className="flex flex-row justify-center items-center">

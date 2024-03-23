@@ -4,10 +4,8 @@ import { useConnect } from "wagmi";
 import { config } from "@/providers/wallet/config";
 
 import { useModal } from "@/hooks/contexts";
-import { NavItem } from "@/components/Nav/styled";
-import { Tag } from "@/components/Common";
-import { Span } from "@/components/Text";
 import { sortWallets } from "@/lib/utils";
+import { Icon } from "@/components/Icon";
 import { CoinbaseWallet, WalletConnect } from "@/assets/wallets";
 
 const IconMapper: Record<string, React.ReactNode> = {
@@ -40,31 +38,24 @@ const Wallets = (): JSX.Element => {
   return (
     <div>
       {walletsShow.map((connector) => (
-        <NavItem
+        <div
           key={connector.uid}
           onClick={(): void => connect({ connector })}
-          $height="fit-content"
-          $align="center"
-          $justify="flex-start"
-          $gap="md"
-          $active={true}
-          $padding="5px 10px"
-          style={{ cursor: "pointer" }}
+          className="flex flex-row justify-start items-center rounded-lg gap-2
+px-2 py-1 border border-transparent transition-colors hover:bg-dark-primary-30 cursor-pointer"
         >
-          <div style={{ height: "20px", width: "20px" }}>
-            {connector.icon ? (
-              <img
-                src={connector.icon}
-                alt="wallet logo"
-                style={{ height: "100%", width: "100%" }}
-              />
-            ) : (
-              IconMapper[connector.id]
-            )}
-          </div>
-          <Span style={{ whiteSpace: "nowrap" }}>{connector.name}</Span>
-          {recentConnector == connector.id && <Tag>recent</Tag>}
-        </NavItem>
+          {connector.icon ? (
+            <Icon image={connector.icon} size="xs" />
+          ) : (
+            <div className="h-5 w-5">{IconMapper[connector.id]}</div>
+          )}
+          <span className="whitespace-nowrap text-sm">{connector.name}</span>
+          {recentConnector == connector.id && (
+            <div className="flex bg-blue-600/50 rounded-xl px-2 py-1 h-fit">
+              <span className="text-blue-600 text-xxs">recent</span>
+            </div>
+          )}
+        </div>
       ))}
     </div>
   );

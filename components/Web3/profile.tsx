@@ -6,8 +6,6 @@ import { useDisconnect } from "wagmi";
 import { useModal } from "@/hooks/contexts";
 import { Icon } from "@/components/Icon";
 import { trimAddress } from "@/lib/utils";
-import { Column, Card, Row } from "@/components/Box";
-import { NavItem } from "../Nav/styled";
 import { Copy, Logout } from "@/assets";
 
 const Profile = (): JSX.Element => {
@@ -29,24 +27,26 @@ const Profile = (): JSX.Element => {
   };
 
   return (
-    <Column $gap="lg">
+    <div className="flex flex-col gap-6 items-center w-full">
       {!!address && <Icon size="xl" seed={address} />}
-      <Row
-        $gap="md"
-        style={{ position: "relative", cursor: "pointer" }}
+      <div
+        className="flex flex-row gap-3 relative cursor-pointer w-full justify-center"
         onClick={handleClick}
-        $width="100%"
       >
         <span>{trimAddress(address)}</span>
-        <Copy stroke="white" style={{ position: "absolute", right: 0 }} copied={copied} />
-      </Row>
-      <Card $padding="0" style={{ cursor: "pointer" }} onClick={(): void => disconnect()}>
-        <NavItem $active={true} $height="2rem" $gap="md">
+        <Copy stroke="white" copied={copied} className="absolute right-0" />
+      </div>
+      <button
+        className="outline-none border-none font-bold rounded-md 
+            grad-light py-2 px-3 dim disabled:opacity-disable"
+        onClick={(): void => disconnect()}
+      >
+        <div className="flex flex-row items-center gap-1 text-dark text-sm">
           <Logout />
-          Disconnect
-        </NavItem>
-      </Card>
-    </Column>
+          <span>Disconnect</span>
+        </div>
+      </button>
+    </div>
   );
 };
 

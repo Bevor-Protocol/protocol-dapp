@@ -12,10 +12,58 @@
     --padding-screen: max(50px, calc((100vw - 1440px + 50px) / 2));
   }
 
+  html {
+    font-size: 18px;
+  }
+
+  main {
+    flex: 1 0 0;
+  }
+
+  @media screen(lg) {
+    html {
+      font-size: 16px;
+    }
+  }
+
+  @media screen(md) {
+    html {
+      font-size: 15px;
+    }
+  }
+
   @media screen(sm) {
     :root {
       --padding-screen: 20px;
     }
+  }
+
+  @media screen (xs) {
+    html {
+      font-size: 14px;
+    }
+  }
+
+  @media (prefers-color-scheme: dark) {
+    html {
+      color-scheme: dark;
+    }
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    :root {
+      scroll-behavior: smooth;
+    }
+  }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6,
+  p {
+    margin: 0;
   }
 }
 
@@ -95,6 +143,94 @@
   }
 }
 
+@layer components {
+  .markdown {
+    max-width: 100%;
+    overflow: hidden;
+  }
+  
+  .markdown > * {
+    margin: 1rem 0;
+  }
+
+  .markdown > table {
+    overflow-x: scroll;
+    max-width: 100%;
+    margin: auto;
+    border-collapse: collapse;
+  }
+
+  .markdown caption {
+    margin-bottom: 5px;
+    display: table-caption;
+  }
+
+  .markdown td,
+  .markdown th {
+    padding: 2px 4px;
+    @apply border border-gray-200/20
+  }
+
+  .markdown a {
+    color: theme("colors.primary-light.50");
+  }
+}
+
+@layer components {
+  label.toggle {
+    @apply relative inline-block w-[35px] h-[20px]
+  }
+
+  input.toggle {
+    @apply hidden appearance-none
+  }
+
+  span.toggle {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    border-radius: 20px;
+    background-color: #ccc;
+    -webkit-transition: 0.4s;
+    transition: 0.4s;
+  }
+
+  span.toggle:before {
+    position: absolute;
+    content: "";
+    height: 16px;
+    width: 16px;
+    left: 2px;
+    bottom: 2px;
+    border-radius: 100%;
+    background-color: white;
+    -webkit-transition: 0.4s;
+    transition: 0.4s;
+  }
+
+  input.toggle:disabled + span.toggle {
+    cursor: default;
+    opacity: 0.75;
+  }
+
+  input.toggle:checked + span.toggle {
+    background-color: #4cd964;
+  }
+
+  input.toggle:focus + span.toggle {
+    box-shadow: 0 0 1px #4cd964;
+  }
+
+  input.toggle:checked + span.toggle:before {
+    -webkit-transform: translateX(15px);
+    -ms-transform: translateX(15px);
+    transform: translateX(15px);
+  }
+}
+
 @layer utilities {
   .grad-light {
     background: linear-gradient(180deg, theme("colors.off-white") 6.58%, theme("colors.dark-white") 81.58%);
@@ -130,27 +266,15 @@
     @apply border border-transparent outline-none transition-all focus-visible:border-gray-200/20 focus-visible:outline-none
   }
 }
+dialog {
+  background: none;
+  border: none;
+  z-index: 9999;
+  color: inherit;
+}
 
 dialog::backdrop {
   background: rbga(0, 0, 0, 0.7);
   backdrop-filter: blur(2px);
   pointer-events: none;
-}
-
-@media (prefers-color-scheme: dark) {
-  html {
-    color-scheme: dark;
-  }
-}
-
-@media (prefers-reduced-motion: no-preference) {
-  :root {
-    scroll-behavior: smooth;
-  }
-}
-
-@media screen(xs) {
-  html {
-    font-size: 14px;
-  }
 }

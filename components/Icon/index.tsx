@@ -1,4 +1,8 @@
 const sizeMapper: Record<string, Record<string, string>> = {
+  xs: {
+    desktop: "20px",
+    mobile: "20px",
+  },
   sm: {
     desktop: "25px",
     mobile: "25px",

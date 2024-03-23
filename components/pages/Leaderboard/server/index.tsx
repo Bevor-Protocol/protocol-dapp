@@ -1,6 +1,5 @@
 /* eslint-disable @next/next/no-img-element */
 import { getLeaderboard } from "@/lib/actions/users";
-import { Column } from "@/components/Box";
 import { trimAddress } from "@/lib/utils";
 import { Icon } from "@/components/Icon";
 import { Loader } from "@/components/Loader";
@@ -247,8 +246,8 @@ export const LeaderboardData = async ({
 
 export const LeaderboardSkeleton = (): JSX.Element => {
   return (
-    <Column $padding="4rem">
+    <div className="flex flex-col p-16 justify-center items-center">
       <Loader className="h-12" />
-    </Column>
+    </div>
   );
 };

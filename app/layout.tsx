@@ -4,17 +4,14 @@ import { SpeedInsights } from "@vercel/speed-insights/next";
 import { Metadata } from "next";
 import { cookies } from "next/headers";
 import { cookieToInitialState } from "wagmi";
+import { Plus_Jakarta_Sans } from "next/font/google";
 
 import WalletProvider from "@/providers/wallet";
 import ModalProvider from "@/providers/modal";
 import { config } from "@/providers/wallet/config";
-import StyledComponentRegistry from "@/providers/styleSheet";
-import ThemeProvider from "@/providers/theme";
 
 import Footer from "@/components/Footer";
-import { Layout } from "@/components/Common";
 import Nav from "@/components/Nav";
-import { jakarta } from "@/theme/fonts";
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://app.bevor.io"),
@@ -77,6 +74,8 @@ export const metadata: Metadata = {
   },
 };
 
+const jakarta = Plus_Jakarta_Sans({ subsets: ["latin"], weight: ["500", "700", "800"] });
+
 const Page = ({ children }: { children: React.ReactNode }): JSX.Element => {
   // docs say to use headers().get('cookie'), but I get issues with doing this.
   // specifically, it says can't run connections.get, I think because the
@@ -88,17 +87,13 @@ const Page = ({ children }: { children: React.ReactNode }): JSX.Element => {
     <html lang="en">
       <body className={jakarta.className}>
         <WalletProvider initialState={initialState}>
-          <StyledComponentRegistry>
-            <ThemeProvider>
-              <ModalProvider>
-                <Layout>
-                  <Nav />
-                  <main>{children}</main>
-                  <Footer />
-                </Layout>
-              </ModalProvider>
-            </ThemeProvider>
-          </StyledComponentRegistry>
+          <ModalProvider>
+            <div className="min-h-svh flex flex-col">
+              <Nav />
+              <main>{children}</main>
+              <Footer />
+            </div>
+          </ModalProvider>
         </WalletProvider>
         <Analytics />
         <SpeedInsights />

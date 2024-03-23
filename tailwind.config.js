@@ -14,6 +14,9 @@ module.exports = {
       xs: { max: "450px" },
     },
     extend: {
+      fontSize: {
+        xxs: "0.6rem",
+      },
       transitionProperty: {
         border: "border",
       },

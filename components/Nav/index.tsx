@@ -8,7 +8,6 @@ import { useAccount } from "wagmi";
 import { Arrow, Twitter, Discord, Github } from "@/assets";
 import { navItems } from "@/lib/constants";
 import DynamicLink from "@/components/Link";
-import { Ellipsis } from "@/components/Common";
 import { useClickOutside } from "@/hooks/useClickOutside";
 import { useIsMounted } from "@/hooks/useIsMounted";
 import Connector from "./web3";
@@ -76,7 +75,11 @@ const NavHolder = (): JSX.Element => {
               })}
               onClick={setShow}
             >
-              <Ellipsis />
+              <div className="flex items-center justify-center gap-[7px]">
+                <div className="h-[5px] w-[5px] bg-current rounded-full relative"></div>
+                <div className="h-[5px] w-[5px] bg-current rounded-full relative"></div>
+                <div className="h-[5px] w-[5px] bg-current rounded-full relative"></div>
+              </div>
             </div>
             {show && (
               <div

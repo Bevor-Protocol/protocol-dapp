@@ -1,7 +1,6 @@
 // "use client";
 
 // import { useEffect, useState } from "react";
-import { HomeStatSkeletonDiv } from "./styled";
 import { Card } from "@/components/Card";
 import { HomeStatI } from "@/lib/types";
 import { Loader } from "@/components/Loader";
@@ -31,9 +30,9 @@ export const HomeStat = async ({ action, symbol, text }: HomeStatI): Promise<JSX
 export const HomeStatSkeleton = (): JSX.Element => {
   return (
     <Card className="text-center p-6 items-center justify-center">
-      <HomeStatSkeletonDiv>
+      <div className="flex flex-col h-12 w-full items-center justify-center">
         <Loader className="h-8" />
-      </HomeStatSkeletonDiv>
+      </div>
     </Card>
   );
 };
