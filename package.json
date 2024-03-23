@@ -61,7 +61,7 @@
     "styled-components": "^6.1.8",
     "typescript": "^5.3.3",
     "viem": "^2.7.12",
-    "wagmi": "^2.5.7"
+    "wagmi": "^2.5.12"
   },
   "devDependencies": {
     "@next/eslint-plugin-next": "^13.4.4",

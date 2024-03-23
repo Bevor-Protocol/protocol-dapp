@@ -7,7 +7,6 @@ import { useAccount } from "wagmi";
 const DashboardNav = ({ active }: { active: boolean }): JSX.Element => {
   const mounted = useIsMounted();
   const { address } = useAccount();
-
   return (
     <DynamicLink href={mounted && address ? `/user/${address}` : "/"} transition>
       <NavItem $active={active}>
