@@ -1,8 +1,8 @@
 import "./globals.css";
 import { Analytics } from "@vercel/analytics/react";
 import { SpeedInsights } from "@vercel/speed-insights/next";
-import { Metadata } from "next";
-import { cookies } from "next/headers";
+import { Metadata, Viewport } from "next";
+import { headers } from "next/headers";
 import { cookieToInitialState } from "wagmi";
 import { Plus_Jakarta_Sans } from "next/font/google";
 
@@ -37,12 +37,6 @@ export const metadata: Metadata = {
       "max-snippet": -1,
     },
   },
-  viewport: {
-    width: "device-width",
-    initialScale: 1,
-    maximumScale: 1,
-    userScalable: false,
-  },
   openGraph: {
     title: "Bevor Protocol",
     description: "Bevor Protocol + DAO | dApp",
@@ -74,15 +68,17 @@ export const metadata: Metadata = {
   },
 };
 
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  maximumScale: 1,
+  userScalable: false,
+};
+
 const jakarta = Plus_Jakarta_Sans({ subsets: ["latin"], weight: ["500", "700", "800"] });
 
 const Page = ({ children }: { children: React.ReactNode }): JSX.Element => {
-  // docs say to use headers().get('cookie'), but I get issues with doing this.
-  // specifically, it says can't run connections.get, I think because the
-  // cookieToInitialState outputs an array of Map, which doesn't work... I might
-  // need to come back to this.
-  const initialState = cookieToInitialState(config, cookies().get("wagmi.store")?.value);
-  // const initialState = cookieToInitialState(config, headers().get("cookie"));
+  const initialState = cookieToInitialState(config, headers().get("cookie"));
   return (
     <html lang="en">
       <body className={jakarta.className}>

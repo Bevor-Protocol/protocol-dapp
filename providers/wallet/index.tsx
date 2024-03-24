@@ -4,8 +4,6 @@ import { type State, WagmiProvider } from "wagmi";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { config } from "./config";
 
-// import { web3modalTheme } from "@/theme/web3modal";
-
 const queryClient = new QueryClient();
 
 const WalletProvider = ({

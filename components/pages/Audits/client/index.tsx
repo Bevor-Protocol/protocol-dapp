@@ -76,7 +76,7 @@ export const AuditDashboardHeader = ({ display }: { display: string }): JSX.Elem
   const handleMarkdownChange = (displayType: string): void => {
     if (display == displayType) return;
     const path = `${pathname}?display=${displayType}`;
-    router.replace(path);
+    router.replace(path, { scroll: false });
   };
 
   return (
