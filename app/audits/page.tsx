@@ -13,9 +13,7 @@ const Audit = ({
     <section className="flex flex-col h-full items-center px-screen">
       <div className="flex flex-col gap-4 py-8 justify-start items-center w-full max-w-[1000px] h-full">
         <div className="grad-light text-grad">
-          <h2 className="text-4xl font-extrabold leading-[normal]">
-            {status.charAt(0).toUpperCase() + status.substring(1).toLowerCase()} Audits
-          </h2>
+          <h2 className="text-4xl font-extrabold leading-[normal]">Audits</h2>
         </div>
         <AuditHeader current={status} />
         <Suspense fallback={<AuditsSkeleton />} key={JSON.stringify(searchParams)}>

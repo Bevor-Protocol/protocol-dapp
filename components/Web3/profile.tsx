@@ -1,7 +1,6 @@
+"use client";
 import { useState } from "react";
-
-import { useAccount } from "wagmi";
-import { useDisconnect } from "wagmi";
+import { useAccount, useDisconnect } from "wagmi";
 
 import { useModal } from "@/hooks/contexts";
 import { Icon } from "@/components/Icon";

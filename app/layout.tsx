@@ -10,8 +10,7 @@ import WalletProvider from "@/providers/wallet";
 import ModalProvider from "@/providers/modal";
 import { config } from "@/providers/wallet/config";
 
-import Footer from "@/components/Footer";
-import Nav from "@/components/Nav";
+import { Layout, Footer, Nav } from "@/components/Layout";
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://app.bevor.io"),
@@ -84,11 +83,11 @@ const Page = ({ children }: { children: React.ReactNode }): JSX.Element => {
       <body className={jakarta.className}>
         <WalletProvider initialState={initialState}>
           <ModalProvider>
-            <div className="min-h-svh flex flex-col">
+            <Layout>
               <Nav />
               <main>{children}</main>
               <Footer />
-            </div>
+            </Layout>
           </ModalProvider>
         </WalletProvider>
         <Analytics />

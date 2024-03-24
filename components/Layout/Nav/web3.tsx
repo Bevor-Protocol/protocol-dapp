@@ -15,7 +15,7 @@ import { useClickOutside } from "@/hooks/useClickOutside";
 import { trimAddress } from "@/lib/utils";
 
 const Web3Holder = (): JSX.Element => {
-  const { address, isConnected, chain, status, chainId } = useAccount();
+  const { address, isConnected, chain } = useAccount();
   const mounted = useIsMounted();
   const { setContent, toggleOpen } = useModal();
 
@@ -52,7 +52,7 @@ const Web3Holder = (): JSX.Element => {
     imgSrc = chain.id;
   }
 
-  console.log(isConnected, status, address, mounted, chainId);
+  // console.log(isConnected, status, address, mounted, chainId);
 
   return (
     <div className="flex flex-row gap-2 items-center relative">
@@ -105,7 +105,7 @@ const Web3Holder = (): JSX.Element => {
       )}
       <div
         className={clsx(
-          "absolute top-0 right-full bg-dark border border-gray-200/20 rounded-lg z-[999]",
+          "absolute top-0 right-full bg-dark shadow rounded-lg z-[999]",
           "cursor-default text-xs min-w-40 hidden",
         )}
         ref={ref}

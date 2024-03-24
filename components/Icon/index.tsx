@@ -1,3 +1,5 @@
+import React from "react";
+
 const sizeMapper: Record<string, Record<string, string>> = {
   xs: {
     desktop: "20px",
@@ -27,7 +29,7 @@ interface Props extends React.HTMLAttributes<HTMLElement> {
   seed?: string | null;
 }
 
-export const Icon = ({ size, image, seed, ...rest }: Props): JSX.Element => {
+export const Icon: React.FC<Props> = ({ size, image, seed, ...rest }): JSX.Element => {
   const { desktop, mobile } = sizeMapper[size];
 
   let urlUse = `url(https://avatar.vercel.sh/${seed?.replace(/\s/g, "")})`;
@@ -46,5 +48,16 @@ export const Icon = ({ size, image, seed, ...rest }: Props): JSX.Element => {
       }
       {...rest}
     />
+  );
+};
+
+export const Social = ({ children }: { children: React.ReactNode }): JSX.Element => {
+  return (
+    <div
+      className="flex justify-center items-center relative rounded-full
+p-1 border border-transparent transition-colors hover:bg-dark-primary-30"
+    >
+      {children}
+    </div>
   );
 };

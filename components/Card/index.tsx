@@ -12,9 +12,9 @@ export const Card = ({
   return (
     <div
       className={clsx(
-        "bg-dark shadow rounded-lg flex flex-col transition-colors",
+        "bg-dark shadow rounded-lg flex flex-col",
         {
-          "hover:bg-dark-primary-20": hover,
+          "transition-colors hover:bg-dark-primary-30": hover,
         },
         className,
       )}
