@@ -5,32 +5,38 @@ import { HomeStat, HomeStatSkeleton } from "@/components/pages/Home";
 import { Button } from "@/components/Button";
 import * as Actions from "@/lib/actions/protocolData";
 import { cn } from "@/lib/utils";
+import { Column, Row } from "@/components/Box";
+import DynamicLink from "@/components/Link";
 
 const Page = (): JSX.Element => {
   return (
     <section className="flex flex-col h-full justify-center items-center px-screen">
       <div className="grid grid-cols-2 w-full md:grid-cols-1 gap-6 items-center justify-center">
-        <div className="flex flex-col items-start gap-8 text-left md:text-center md:items-center">
+        <Column className="items-start gap-8 text-left md:text-center md:items-center">
           <div className="grad-light text-grad">
             <h1 className="text-6xl font-bold md:text-5xl leading-[normal] md:leading-[normal]">
               Ensuring <br /> quality audits
             </h1>
           </div>
-          <p className="text-base font-medium">
+          <p className="font-medium">
             On-chain solution for establishing terms and carrying out smart contract audits.
             Register as an auditee, auditor, or DAO participant.
           </p>
-          <div className="flex flex-row flex-nowrap align-middle justify-center gap-2">
-            <Button>
-              <span>Get Audited</span>
-              <Arrow height="0.75rem" width="0.75rem" />
-            </Button>
-            <Button>
-              <span>Conduct Audit</span>
-              <Arrow height="0.75rem" width="0.75rem" />
-            </Button>
-          </div>
-        </div>
+          <Row className="flex-nowrap align-middle justify-center gap-2">
+            <DynamicLink href="/leaderboard">
+              <Button>
+                <span>Get Audited</span>
+                <Arrow height="0.75rem" width="0.75rem" />
+              </Button>
+            </DynamicLink>
+            <DynamicLink href="/audits?status=open">
+              <Button>
+                <span>Conduct Audit</span>
+                <Arrow height="0.75rem" width="0.75rem" />
+              </Button>
+            </DynamicLink>
+          </Row>
+        </Column>
         <div
           className={cn(
             "grid grid-cols-2 grid-rows-2 relative z-[1] gap-2",

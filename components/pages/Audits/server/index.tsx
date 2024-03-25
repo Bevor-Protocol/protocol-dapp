@@ -113,7 +113,7 @@ export const AuditDetailed = async ({ auditId }: { auditId: string }): Promise<J
   );
 };
 
-export const AuditMarkdown = async ({ display }: { display: string }) => {
+export const AuditMarkdown = async ({ display }: { display: string }): Promise<JSX.Element> => {
   const content = await getMarkdown(display);
   return <div className="markdown" dangerouslySetInnerHTML={{ __html: content }} />;
 };

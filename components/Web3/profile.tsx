@@ -7,6 +7,7 @@ import { Icon } from "@/components/Icon";
 import { trimAddress } from "@/lib/utils";
 import { Copy, Logout } from "@/assets";
 import { Button } from "../Button";
+import { Column, Row } from "../Box";
 
 const Profile = (): JSX.Element => {
   const [copied, setCopied] = useState(false);
@@ -27,20 +28,17 @@ const Profile = (): JSX.Element => {
   };
 
   return (
-    <div className="flex flex-col gap-6 items-center w-full">
+    <Column className="gap-6 items-center w-full">
       {!!address && <Icon size="xl" seed={address} />}
-      <div
-        className="flex flex-row gap-3 relative cursor-pointer w-full justify-center"
-        onClick={handleClick}
-      >
+      <Row className="gap-3 relative cursor-pointer w-full justify-center" onClick={handleClick}>
         <span>{trimAddress(address)}</span>
         <Copy stroke="white" copied={copied} className="absolute right-0" />
-      </div>
+      </Row>
       <Button onClick={(): void => disconnect()}>
         <Logout />
         <span>Disconnect</span>
       </Button>
-    </div>
+    </Column>
   );
 };
 

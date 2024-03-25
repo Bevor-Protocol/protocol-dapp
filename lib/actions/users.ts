@@ -207,6 +207,51 @@ export const getUserStats = async (address: string): Promise<UserStats> => {
   };
 };
 
+type CreateUserI = {
+  success: boolean;
+  error?: string;
+};
+
+export const createUser = (address: string, profileData: FormData): Promise<CreateUserI> => {
+  const data = Object.fromEntries(profileData);
+  const { auditor, auditee, ...profile } = data;
+
+  if (auditor != "true" && auditee != "true") {
+    return new Promise((resolve) =>
+      resolve({
+        success: false,
+        error: "must claim an auditor or auditee role",
+      }),
+    );
+  }
+
+  return prisma.user
+    .create({
+      data: {
+        address,
+        auditorRole: auditor == "true", // add zod validation
+        auditeeRole: auditee == "true", // add zod validation
+        profile: {
+          create: {
+            ...profile,
+            available: profile.available == "true", // add zod validation
+          },
+        },
+      },
+    })
+    .then(() => {
+      return {
+        success: true,
+      };
+    })
+    .catch((error) => {
+      return {
+        success: false,
+        error: error.name,
+      };
+    });
+};
+
 export const updateProfile = async (id: string, profileData: FormData): Promise<Profile> => {
   const data = Object.fromEntries(profileData);
   const updated = await prisma.profile.update({
