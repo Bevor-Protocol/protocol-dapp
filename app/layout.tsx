@@ -1,20 +1,16 @@
-// import "./globals.css";
+import "./globals.css";
 import { Analytics } from "@vercel/analytics/react";
 import { SpeedInsights } from "@vercel/speed-insights/next";
-import { Metadata } from "next";
-import { cookies } from "next/headers";
+import { Metadata, Viewport } from "next";
+import { headers } from "next/headers";
 import { cookieToInitialState } from "wagmi";
+import { Plus_Jakarta_Sans } from "next/font/google";
 
 import WalletProvider from "@/providers/wallet";
 import ModalProvider from "@/providers/modal";
 import { config } from "@/providers/wallet/config";
-import StyledComponentRegistry from "@/providers/styleSheet";
-import ThemeProvider from "@/providers/theme";
 
-import Footer from "@/components/Footer";
-import { Layout } from "@/components/Common";
-import Nav from "@/components/Nav";
-import { jakarta } from "@/theme/fonts";
+import { Layout, Footer, Nav } from "@/components/Layout";
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://app.bevor.io"),
@@ -39,12 +35,6 @@ export const metadata: Metadata = {
       "max-image-preview": "large",
       "max-snippet": -1,
     },
-  },
-  viewport: {
-    width: "device-width",
-    initialScale: 1,
-    maximumScale: 1,
-    userScalable: false,
   },
   openGraph: {
     title: "Bevor Protocol",
@@ -77,29 +67,28 @@ export const metadata: Metadata = {
   },
 };
 
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  maximumScale: 1,
+  userScalable: false,
+};
+
+const jakarta = Plus_Jakarta_Sans({ subsets: ["latin"], weight: ["500", "600", "700", "800"] });
+
 const Page = ({ children }: { children: React.ReactNode }): JSX.Element => {
-  // docs say to use headers().get('cookie'), but I get issues with doing this.
-  // specifically, it says can't run connections.get, I think because the
-  // cookieToInitialState outputs an array of Map, which doesn't work... I might
-  // need to come back to this.
-  const initialState = cookieToInitialState(config, cookies().get("wagmi.store")?.value);
-  // const initialState = cookieToInitialState(config, headers().get("cookie"));
-  console.log(initialState);
+  const initialState = cookieToInitialState(config, headers().get("cookie"));
   return (
     <html lang="en">
       <body className={jakarta.className}>
         <WalletProvider initialState={initialState}>
-          <StyledComponentRegistry>
-            <ThemeProvider>
-              <ModalProvider>
-                <Layout>
-                  <Nav />
-                  <main>{children}</main>
-                  <Footer />
-                </Layout>
-              </ModalProvider>
-            </ThemeProvider>
-          </StyledComponentRegistry>
+          <ModalProvider>
+            <Layout>
+              <Nav />
+              <main>{children}</main>
+              <Footer />
+            </Layout>
+          </ModalProvider>
         </WalletProvider>
         <Analytics />
         <SpeedInsights />

@@ -1,4 +1,3 @@
-import { Column, Row } from "@/components/Box";
 import { UserProfileData } from "../client";
 import {
   getUserProfile,
@@ -7,8 +6,7 @@ import {
   getUserStats,
 } from "@/lib/actions/users";
 import { AuditCard } from "@/components/pages/Audits/server";
-import { H2, P, Span } from "@/components/Text";
-import { HR, Loader } from "@/components/Common";
+import { Loader } from "@/components/Loader";
 import { Suspense } from "react";
 
 const UserData = async ({ address }: { address: string }): Promise<JSX.Element> => {
@@ -27,80 +25,80 @@ const UserData = async ({ address }: { address: string }): Promise<JSX.Element> 
   const auditsAuditorClosed = auditsAuditor.filter((audit) => audit.terms);
 
   return (
-    <Column $gap="rem1" $align="flex-start">
-      <Column $gap="rem1" $align="flex-start">
-        <P>
-          Potential Payout: <Span>{userStats.moneyPaid}</Span>
-        </P>
-        <P>
-          Potential Earnings: <Span>{userStats.moneyEarned}</Span>
-        </P>
-      </Column>
-      <HR />
-      {auditsAuditee.length > 0 && <H2>Audits Created</H2>}
+    <div className="flex flex-col items-start gap-4 w-full">
+      <div className="flex flex-col items-start gap-4">
+        <p>
+          Potential Payout: <span>{userStats.moneyPaid}</span>
+        </p>
+        <p>
+          Potential Earnings: <span>{userStats.moneyEarned}</span>
+        </p>
+      </div>
+      <hr className="w-full h-[1px] border-gray-200/20" />
+      {auditsAuditee.length > 0 && <h2>Audits Created</h2>}
       {auditsAuditeeOpen.length > 0 && (
-        <Column $gap="rem1" $align="flex-start">
-          <P>Open:</P>
-          <Row $width="100%" $justify="flex-start">
+        <div className="flex flex-col items-start gap-4">
+          <p>Open:</p>
+          <div className="flex flex-row w-full justify-start">
             {auditsAuditeeOpen.map((audit, ind) => (
-              <AuditCard key={ind} audit={audit} disabled={false} trimWidth={true} />
+              <AuditCard key={ind} audit={audit} disabled={false} />
             ))}
-          </Row>
-        </Column>
+          </div>
+        </div>
       )}
       {auditsAuditeeOpen.length > 0 && (
-        <Column $gap="rem1" $align="flex-start">
-          <P>Pending:</P>
-          <Row $width="100%" $justify="flex-start">
+        <div className="flex flex-col items-start gap-4">
+          <p>Pending:</p>
+          <div className="flex flex-row w-full justify-start">
             {auditsAuditeePending.map((audit, ind) => (
-              <AuditCard key={ind} audit={audit} disabled={false} trimWidth={true} />
+              <AuditCard key={ind} audit={audit} disabled={false} />
             ))}
-          </Row>
-        </Column>
+          </div>
+        </div>
       )}
       {auditsAuditeeClosed.length > 0 && (
-        <Column $gap="rem1" $align="flex-start">
-          <P>Closed:</P>
-          <Row $width="100%" $justify="flex-start">
+        <div className="flex flex-col items-start gap-4">
+          <p>Pending:</p>
+          <div className="flex flex-row w-full justify-start">
             {auditsAuditeeClosed.map((audit, ind) => (
-              <AuditCard key={ind} audit={audit} disabled={false} trimWidth={true} />
+              <AuditCard key={ind} audit={audit} disabled={false} />
             ))}
-          </Row>
-        </Column>
+          </div>
+        </div>
       )}
-      {auditsAuditor.length > 0 && <H2>Audits Auditing</H2>}
+      {auditsAuditor.length > 0 && <h2>Audits Auditing</h2>}
       {auditsAuditorOpen.length > 0 && (
-        <Column $gap="rem1" $align="flex-start">
-          <P>Open:</P>
-          <Row $width="100%" $justify="flex-start">
+        <div className="flex flex-col items-start gap-4">
+          <p>Pending:</p>
+          <div className="flex flex-row w-full justify-start">
             {auditsAuditorOpen.map((audit, ind) => (
-              <AuditCard key={ind} audit={audit} disabled={false} trimWidth={true} />
+              <AuditCard key={ind} audit={audit} disabled={false} />
             ))}
-          </Row>
-        </Column>
+          </div>
+        </div>
       )}
       {auditsAuditorPending.length > 0 && (
-        <Column $gap="rem1" $align="flex-start">
-          <P>Pending:</P>
-          <Row $width="100%" $justify="flex-start">
+        <div className="flex flex-col items-start gap-4">
+          <p>Pending:</p>
+          <div className="flex flex-row w-full justify-start">
             {auditsAuditorPending.map((audit, ind) => (
-              <AuditCard key={ind} audit={audit} disabled={false} trimWidth={true} />
+              <AuditCard key={ind} audit={audit} disabled={false} />
             ))}
-          </Row>
-        </Column>
+          </div>
+        </div>
       )}
       {auditsAuditorClosed.length > 0 && (
-        <Column $gap="rem1" $align="flex-start">
-          <P>Closed:</P>
-          <Row $width="100%" $justify="flex-start">
+        <div className="flex flex-col items-start gap-4">
+          <p>Pending:</p>
+          <div className="flex flex-row w-full justify-start">
             {auditsAuditorClosed.map((audit, ind) => (
-              <AuditCard key={ind} audit={audit} disabled={false} trimWidth={true} />
+              <AuditCard key={ind} audit={audit} disabled={false} />
             ))}
-          </Row>
-        </Column>
+          </div>
+        </div>
       )}
-      {auditsAuditee.length + auditsAuditor.length == 0 && <H2>No Active Audits</H2>}
-    </Column>
+      {auditsAuditee.length + auditsAuditor.length == 0 && <h2>No Active Audits</h2>}
+    </div>
   );
 };
 
@@ -112,12 +110,12 @@ export const UserContent = async ({ address }: { address: string }): Promise<JSX
   }
 
   return (
-    <Column $gap="rem2" $align="flex-start">
+    <div className="flex flex-col items-start gap-8 w-full">
       <UserProfileData user={user} />
-      <HR />
-      <Suspense fallback={<Loader $size="50px" />}>
+      <hr className="w-full h-[1px] border-gray-200/20" />
+      <Suspense fallback={<Loader className="h-12" />}>
         <UserData address={address} />
       </Suspense>
-    </Column>
+    </div>
   );
 };

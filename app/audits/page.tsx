@@ -1,9 +1,9 @@
-import { AuditHolder } from "@/components/pages/Audits/styled";
-import { AuditHeader } from "@/components/pages/Audits/client";
-import { Audits, AuditsSkeleton } from "@/components/pages/Audits/server";
-import { Section } from "@/components/Common";
-import { H2 } from "@/components/Text";
+import Link from "next/link";
+import { Audits } from "@/components/pages/Audits/server";
 import { Suspense } from "react";
+import { Row } from "@/components/Box";
+import { Toggle } from "@/components/Toggle";
+import { AuditsSkeleton } from "@/components/Loader";
 
 const Audit = ({
   searchParams,
@@ -13,15 +13,27 @@ const Audit = ({
   const status = searchParams.status ?? "open";
 
   return (
-    <Section $padCommon $centerH>
-      <AuditHolder $gap="rem1" $padding="2rem 0" $justify="flex-start">
-        <H2>{status.charAt(0).toUpperCase() + status.substring(1).toLowerCase()} Audits</H2>
-        <AuditHeader current={status} />
+    <section className="flex flex-col h-full items-center px-screen">
+      <div className="flex flex-col gap-4 py-8 justify-start items-center w-full max-w-[1000px] h-full">
+        <div className="grad-light text-grad">
+          <h2 className="text-4xl font-extrabold leading-[normal]">Audits</h2>
+        </div>
+        <Row className="gap-4">
+          <Link href="/audits?status=open" className=" outline-none" scroll={false}>
+            <Toggle active={status === "open"} title={"open"} />
+          </Link>
+          <Link href="/audits?status=pending" className=" outline-none" scroll={false}>
+            <Toggle active={status === "pending"} title={"pending"} />
+          </Link>
+          <Link href="/audits?status=closed" className=" outline-none" scroll={false}>
+            <Toggle active={status === "closed"} title={"closed"} />
+          </Link>
+        </Row>
         <Suspense fallback={<AuditsSkeleton />} key={JSON.stringify(searchParams)}>
           <Audits current={status} />
         </Suspense>
-      </AuditHolder>
-    </Section>
+      </div>
+    </section>
   );
 };
 

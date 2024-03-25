@@ -1,52 +1,245 @@
 /* eslint-disable @next/next/no-img-element */
 import { getLeaderboard } from "@/lib/actions/users";
-import { LeadData, LeadGrid } from "../styled";
-import { LiElement, Column } from "@/components/Box";
 import { trimAddress } from "@/lib/utils";
-import { FallbackIcon } from "@/components/Icon";
-import { Loader } from "@/components/Common";
-import { UnstyledNextLink } from "@/components/Link";
+import { Icon } from "@/components/Icon";
+import DynamicLink from "@/components/Link";
+import { Column } from "@/components/Box";
 
 export const LeaderboardData = async ({
-  filter,
+  sort,
   order,
 }: {
-  filter: string;
+  sort: string;
   order: string;
 }): Promise<JSX.Element> => {
-  const data = await getLeaderboard(filter, order);
+  const data = await getLeaderboard(sort, order);
   return (
-    <LeadData>
+    <Column className="w-full gap-1">
       {data.map((item, ind) => (
-        <UnstyledNextLink key={ind} href={`/user/${item.address}`}>
-          <LeadGrid>
-            <LiElement>
-              <FallbackIcon image={item.profile?.image} size="md" address={item.address} />
+        <DynamicLink key={ind} href={`/user/${item.address}`}>
+          <ul
+            className="grid grid-cols-12 list-none m-0 p-2 rounded-md 
+          shadow bg-dark cursor-pointer transition-colors hover:bg-dark-primary-20"
+          >
+            <li
+              className="grid-child cursor-pointer rounded-lg 
+            w-fit flex items-center 
+            gap-2 whitespace-nowrap max-w-full"
+            >
+              <Icon image={item.profile?.image} size="md" seed={item.address} />
               <span>{item.profile?.name || trimAddress(item.address)}</span>
-            </LiElement>
-            <LiElement>
+            </li>
+            <li
+              className="grid-child cursor-pointer rounded-lg 
+            w-fit flex items-center 
+            gap-2 whitespace-nowrap max-w-full"
+            >
               <span>{item.totalValue.toLocaleString()}</span>
-            </LiElement>
-            <LiElement>
+            </li>
+            <li
+              className="grid-child cursor-pointer rounded-lg 
+            w-fit flex items-center 
+            gap-2 whitespace-nowrap max-w-full"
+            >
               <span>{item.totalActive.toLocaleString()}</span>
-            </LiElement>
-            <LiElement>
+            </li>
+            <li
+              className="grid-child cursor-pointer rounded-lg 
+            w-fit flex items-center 
+            gap-2 whitespace-nowrap max-w-full"
+            >
               <span>{item.totalComplete.toLocaleString()}</span>
-            </LiElement>
-            <LiElement>
+            </li>
+            <li
+              className="grid-child cursor-pointer rounded-lg 
+            w-fit flex items-center 
+            gap-2 whitespace-nowrap max-w-full"
+            >
               <span>{String(item.profile?.available)}</span>
-            </LiElement>
-          </LeadGrid>
-        </UnstyledNextLink>
+            </li>
+          </ul>
+        </DynamicLink>
       ))}
-    </LeadData>
-  );
-};
-
-export const LeaderboardSkeleton = (): JSX.Element => {
-  return (
-    <Column $padding="4rem">
-      <Loader $size="40px" />
+      {data.map((item, ind) => (
+        <DynamicLink key={ind} href={`/user/${item.address}`}>
+          <ul
+            className="grid grid-cols-12 list-none m-0 p-2 rounded-md 
+          shadow bg-dark cursor-pointer transition-colors hover:bg-dark-primary-20"
+          >
+            <li
+              className="grid-child cursor-pointer rounded-lg 
+            w-fit flex items-center 
+            gap-2 whitespace-nowrap max-w-full"
+            >
+              <Icon image={item.profile?.image} size="md" seed={item.address} />
+              <span>{item.profile?.name || trimAddress(item.address)}</span>
+            </li>
+            <li
+              className="grid-child cursor-pointer rounded-lg 
+            w-fit flex items-center 
+            gap-2 whitespace-nowrap max-w-full"
+            >
+              <span>{item.totalValue.toLocaleString()}</span>
+            </li>
+            <li
+              className="grid-child cursor-pointer rounded-lg 
+            w-fit flex items-center 
+            gap-2 whitespace-nowrap max-w-full"
+            >
+              <span>{item.totalActive.toLocaleString()}</span>
+            </li>
+            <li
+              className="grid-child cursor-pointer rounded-lg 
+            w-fit flex items-center 
+            gap-2 whitespace-nowrap max-w-full"
+            >
+              <span>{item.totalComplete.toLocaleString()}</span>
+            </li>
+            <li
+              className="grid-child cursor-pointer rounded-lg 
+            w-fit flex items-center 
+            gap-2 whitespace-nowrap max-w-full"
+            >
+              <span>{String(item.profile?.available)}</span>
+            </li>
+          </ul>
+        </DynamicLink>
+      ))}
+      {data.map((item, ind) => (
+        <DynamicLink key={ind} href={`/user/${item.address}`}>
+          <ul
+            className="grid grid-cols-12 list-none m-0 p-2 rounded-md 
+          shadow bg-dark cursor-pointer transition-colors hover:bg-dark-primary-20"
+          >
+            <li
+              className="grid-child cursor-pointer rounded-lg 
+            w-fit flex items-center 
+            gap-2 whitespace-nowrap max-w-full"
+            >
+              <Icon image={item.profile?.image} size="md" seed={item.address} />
+              <span>{item.profile?.name || trimAddress(item.address)}</span>
+            </li>
+            <li
+              className="grid-child cursor-pointer rounded-lg 
+            w-fit flex items-center 
+            gap-2 whitespace-nowrap max-w-full"
+            >
+              <span>{item.totalValue.toLocaleString()}</span>
+            </li>
+            <li
+              className="grid-child cursor-pointer rounded-lg 
+            w-fit flex items-center 
+            gap-2 whitespace-nowrap max-w-full"
+            >
+              <span>{item.totalActive.toLocaleString()}</span>
+            </li>
+            <li
+              className="grid-child cursor-pointer rounded-lg 
+            w-fit flex items-center 
+            gap-2 whitespace-nowrap max-w-full"
+            >
+              <span>{item.totalComplete.toLocaleString()}</span>
+            </li>
+            <li
+              className="grid-child cursor-pointer rounded-lg 
+            w-fit flex items-center 
+            gap-2 whitespace-nowrap max-w-full"
+            >
+              <span>{String(item.profile?.available)}</span>
+            </li>
+          </ul>
+        </DynamicLink>
+      ))}
+      {data.map((item, ind) => (
+        <DynamicLink key={ind} href={`/user/${item.address}`}>
+          <ul
+            className="grid grid-cols-12 list-none m-0 p-2 rounded-md 
+          shadow bg-dark cursor-pointer transition-colors hover:bg-dark-primary-20"
+          >
+            <li
+              className="grid-child cursor-pointer rounded-lg 
+            w-fit flex items-center 
+            gap-2 whitespace-nowrap max-w-full"
+            >
+              <Icon image={item.profile?.image} size="md" seed={item.address} />
+              <span>{item.profile?.name || trimAddress(item.address)}</span>
+            </li>
+            <li
+              className="grid-child cursor-pointer rounded-lg 
+            w-fit flex items-center 
+            gap-2 whitespace-nowrap max-w-full"
+            >
+              <span>{item.totalValue.toLocaleString()}</span>
+            </li>
+            <li
+              className="grid-child cursor-pointer rounded-lg 
+            w-fit flex items-center 
+            gap-2 whitespace-nowrap max-w-full"
+            >
+              <span>{item.totalActive.toLocaleString()}</span>
+            </li>
+            <li
+              className="grid-child cursor-pointer rounded-lg 
+            w-fit flex items-center 
+            gap-2 whitespace-nowrap max-w-full"
+            >
+              <span>{item.totalComplete.toLocaleString()}</span>
+            </li>
+            <li
+              className="grid-child cursor-pointer rounded-lg 
+            w-fit flex items-center 
+            gap-2 whitespace-nowrap max-w-full"
+            >
+              <span>{String(item.profile?.available)}</span>
+            </li>
+          </ul>
+        </DynamicLink>
+      ))}
+      {data.map((item, ind) => (
+        <DynamicLink key={ind} href={`/user/${item.address}`}>
+          <ul
+            className="grid grid-cols-12 list-none m-0 p-2 rounded-md 
+          shadow bg-dark cursor-pointer transition-colors hover:bg-dark-primary-20"
+          >
+            <li
+              className="grid-child cursor-pointer rounded-lg 
+            w-fit flex items-center 
+            gap-2 whitespace-nowrap max-w-full"
+            >
+              <Icon image={item.profile?.image} size="md" seed={item.address} />
+              <span>{item.profile?.name || trimAddress(item.address)}</span>
+            </li>
+            <li
+              className="grid-child cursor-pointer rounded-lg 
+            w-fit flex items-center 
+            gap-2 whitespace-nowrap max-w-full"
+            >
+              <span>{item.totalValue.toLocaleString()}</span>
+            </li>
+            <li
+              className="grid-child cursor-pointer rounded-lg 
+            w-fit flex items-center 
+            gap-2 whitespace-nowrap max-w-full"
+            >
+              <span>{item.totalActive.toLocaleString()}</span>
+            </li>
+            <li
+              className="grid-child cursor-pointer rounded-lg 
+            w-fit flex items-center 
+            gap-2 whitespace-nowrap max-w-full"
+            >
+              <span>{item.totalComplete.toLocaleString()}</span>
+            </li>
+            <li
+              className="grid-child cursor-pointer rounded-lg 
+            w-fit flex items-center 
+            gap-2 whitespace-nowrap max-w-full"
+            >
+              <span>{String(item.profile?.available)}</span>
+            </li>
+          </ul>
+        </DynamicLink>
+      ))}
     </Column>
   );
 };

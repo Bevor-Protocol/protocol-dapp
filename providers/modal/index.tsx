@@ -3,7 +3,7 @@
 import { createContext, useState, useRef } from "react";
 
 import { ModalStateI } from "@/lib/types";
-import { ModalWrapper, ModalContent } from "@/components/Modal";
+import { Card } from "@/components/Card";
 import { useCloseDialog } from "@/hooks/useCloseDialog";
 
 // Create a context with initial state
@@ -41,7 +41,9 @@ const ModalProvider = ({ children }: { children: React.ReactNode }): JSX.Element
     <ModalContext.Provider value={modalState}>
       {children}
       {/* Without this conditional, the <ModalContent> still shows */}
-      <ModalWrapper ref={ref}>{isOpen && <ModalContent>{content}</ModalContent>}</ModalWrapper>
+      <dialog ref={ref}>
+        {isOpen && <Card className="h-[400px] max-h-[75%] w-[300px] max-w-[80%]">{content}</Card>}
+      </dialog>
     </ModalContext.Provider>
   );
 };

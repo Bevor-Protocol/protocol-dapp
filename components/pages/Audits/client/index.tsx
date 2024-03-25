@@ -6,57 +6,28 @@ import { useState, useRef } from "react";
 import { User, Profile } from "@prisma/client";
 import { useAccount } from "wagmi";
 
+import { Icon } from "@/components/Icon";
+import DynamicLink from "@/components/Link";
 import { Row } from "@/components/Box";
-import { AuditNav, Auditor } from "../styled";
-import { ToolTip } from "@/components/Tooltip";
-import { FallbackIcon } from "@/components/Icon";
-import { ButtonLight } from "@/components/Button";
-import { UnstyledNextLink } from "@/components/Link";
-
-export const AuditHeader = ({ current }: { current: string }): JSX.Element => {
-  const router = useRouter();
-
-  const fetchAudits = (event: React.MouseEvent<HTMLDivElement>): void => {
-    const { name } = event.currentTarget.dataset;
-    router.replace(`/audits?status=${name}`);
-  };
-
-  return (
-    <Row $gap="rem1">
-      <AuditNav $active={current == "open"} data-name="open" onClick={fetchAudits}>
-        open
-      </AuditNav>
-      <AuditNav $active={current == "pending"} data-name="pending" onClick={fetchAudits}>
-        pending
-      </AuditNav>
-      <AuditNav $active={current == "closed"} data-name="closed" onClick={fetchAudits}>
-        closed
-      </AuditNav>
-    </Row>
-  );
-};
+import { Button } from "@/components/Button";
+import { Toggle } from "@/components/Toggle";
+import { cn } from "@/lib/utils";
 
 export const AuditDashboardHeader = ({ display }: { display: string }): JSX.Element => {
   const router = useRouter();
   const pathname = usePathname();
 
-  const handleMarkdownChange = (displayType: string): void => {
-    if (display == displayType) return;
-    const path = `${pathname}?display=${displayType}`;
-    router.replace(path);
+  const handleMarkdownChange = (event: React.MouseEvent<HTMLDivElement>): void => {
+    const { name } = event.currentTarget.dataset;
+    if (name == display) return;
+    const path = `${pathname}?display=${name}`;
+    router.replace(path, { scroll: false });
   };
 
   return (
-    <Row $gap="rem1" $justify="flex-start">
-      <AuditNav
-        onClick={(): void => handleMarkdownChange("details")}
-        $active={display === "details"}
-      >
-        Details
-      </AuditNav>
-      <AuditNav onClick={(): void => handleMarkdownChange("audit")} $active={display === "audit"}>
-        Audit
-      </AuditNav>
+    <Row className="gap-4 justify-start">
+      <Toggle onClick={handleMarkdownChange} active={display === "details"} title={"details"} />
+      <Toggle onClick={handleMarkdownChange} active={display === "audit"} title={"audit"} />
     </Row>
   );
 };
@@ -78,7 +49,7 @@ export const AuditAuditor = ({
     const { auditoradd } = event.currentTarget.dataset;
 
     tooltip.current.style.bottom = "110%";
-    tooltip.current.style.left = "0px";
+    tooltip.current.style.left = "50%";
     tooltip.current.style.display = "block";
     setCont(auditoradd || "");
   };
@@ -89,19 +60,27 @@ export const AuditAuditor = ({
     setCont("");
   };
   return (
-    <Auditor $offset={position}>
-      <UnstyledNextLink href={`/user/${auditor.address}`}>
-        <FallbackIcon
+    <div className="h-fit w-fit relative" style={{ transform: `translateX(${position})` }}>
+      <DynamicLink href={`/user/${auditor.address}`}>
+        <Icon
           image={auditor.profile?.image}
           size="md"
-          address={auditor.address}
+          seed={auditor.address}
           data-auditoradd={auditor.address}
           onMouseOver={handleToolTip}
           onMouseOut={clearToolTip}
         />
-      </UnstyledNextLink>
-      <ToolTip ref={tooltip}>{cont}</ToolTip>
-    </Auditor>
+      </DynamicLink>
+      <div
+        className={cn(
+          "absolute hidden text-sm max-w-28 overflow-hidden text-ellipsis bg-dark-primary-20",
+          "px-2 py-1 -translate-x-1/2 border border-gray-200/20",
+        )}
+        ref={tooltip}
+      >
+        {cont}
+      </div>
+    </div>
   );
 };
 
@@ -125,8 +104,8 @@ export const AuditDashboardBtn = ({
     }
   };
   return (
-    <ButtonLight $hover="dim" disabled={true}>
-      {buttonLabel()}
-    </ButtonLight>
+    <Button aria-disabled={true} disabled={true}>
+      <span>{buttonLabel()}</span>
+    </Button>
   );
 };

@@ -1,62 +1,24 @@
-"use client";
+import React from "react";
+import { cn } from "@/lib/utils";
 
-import styled, { css, CSSProp } from "styled-components";
+interface Props extends React.ButtonHTMLAttributes<HTMLButtonElement> {
+  children: React.ReactNode;
+  className?: string;
+}
 
-const Grow = css`
-  transition: transform ${({ theme }): string => theme.transitions.speed.md}
-    ${({ theme }): string => theme.transitions.ease};
-
-  &:not(:disabled):hover,
-  &:not(:disabled):focus-visible,
-  &:not(:disabled):active {
-    transform: scale(1.025);
-  }
-`;
-
-const Dim = css`
-  transition: opacity ${({ theme }): string => theme.transitions.speed.md}
-    ${({ theme }): string => theme.transitions.ease};
-
-  &:not(:disabled):hover,
-  &:not(:disabled):focus-visible,
-  &:not(:disabled):active {
-    opacity: ${({ theme }): number => theme.opacity.hover};
-  }
-`;
-
-export const Button = styled.button<{ $pad?: string; $border?: string; $hover?: string }>`
-  outline: none;
-  border: none;
-  font-weight: 700;
-  position: relative;
-  display: flex;
-  align-items: center;
-  padding: ${({ $pad }): string => $pad ?? "10px 20px"};
-  border: ${({ $border }): string => $border ?? "none"};
-  border-radius: 5px;
-  font-size: 0.89rem !important;
-  line-height: 1.3rem;
-  cursor: pointer;
-
-  &:disabled {
-    cursor: default;
-    opacity: ${({ theme }): number => theme.opacity.disable};
-  }
-  &:focus,
-  &:focus-visible {
-    outline: none;
-  }
-
-  ${({ $hover }): CSSProp => $hover === "dim" && Dim};
-  ${({ $hover }): CSSProp => $hover === "grow" && Grow};
-`;
-
-export const ButtonLight = styled(Button)`
-  background: ${({ theme }): string => theme.textGradLight};
-  color: ${({ theme }): string => theme.textDark};
-`;
-
-export const ButtonDark = styled(Button)<{ $hover?: string }>`
-  background: ${({ theme }): string => theme.textGradDark};
-  color: ${({ theme }): string => theme.textPrimary};
-`;
+export const Button: React.FC<Props> = ({ children, className, ...rest }) => {
+  return (
+    <button
+      className={cn(
+        "flex flex-row outline-none border-none rounded-md font-semibold",
+        "py-2 px-4 dim disabled:opacity-disable",
+        "text-dark text-sm gap-1",
+        "grad-light",
+        className,
+      )}
+      {...rest}
+    >
+      {children}
+    </button>
+  );
+};

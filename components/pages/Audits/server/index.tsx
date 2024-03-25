@@ -1,60 +1,52 @@
 /* eslint-disable @next/next/no-img-element */
-import { P, Span, Strong } from "@/components/Text";
-import { Column, Row, Card } from "@/components/Box";
-import { Loader } from "@/components/Common";
-import { FallbackIcon } from "@/components/Icon";
-import DynamicLink, { UnstyledNextLink } from "@/components/Link";
-import ProgressBar from "@/components/ProgressBar";
-import { Markdown } from "@/components/Markdown";
-import { AuditFooter, AuditorWrapper, AuditDescription } from "../styled";
-import { AuditAuditor, AuditDashboardBtn, AuditDashboardHeader } from "../client";
+import { Card } from "@/components/Card";
+import { Icon } from "@/components/Icon";
+import DynamicLink from "@/components/Link";
+import { AuditAuditor, AuditDashboardBtn } from "../client";
 import { getAudits, getAudit, getMarkdown } from "@/lib/actions/audits";
 import { AuditFull } from "@/lib/types/actions";
+import { Column, Row } from "@/components/Box";
 
 export const AuditCard = ({
   audit,
   disabled,
-  trimWidth = false,
 }: {
   audit: AuditFull;
   disabled: boolean;
-  trimWidth?: boolean;
 }): JSX.Element => {
   return (
-    <Card $hover $width="100%" $padding="0px" style={{ flex: `${trimWidth && "1 0 50%"}` }}>
-      <Row $align="stretch" $justify="flex-start" $gap="rem2" $padding="1rem" $width="100%">
-        <UnstyledNextLink href={`/user/${audit.auditee.address}`}>
-          <FallbackIcon
-            image={audit.auditee.profile?.image}
-            address={audit.auditee.address}
-            size="lg"
-          />
-        </UnstyledNextLink>
-        <Column $justify="flex-start" $align="flex-start" style={{ overflow: "hidden" }}>
-          <Row $justify="space-between" $width="100%">
-            <P>
-              <Strong $large>{audit.title}</Strong>
-            </P>
-            <div>${audit.terms?.price.toLocaleString() || 0}</div>
+    <Card hover className="divide-y divide-gray-200/20 w-full">
+      <Row className="items-stretch justify-start gap-8 p-4 w-full">
+        <DynamicLink href={`/user/${audit.auditee.address}`}>
+          <Icon image={audit.auditee.profile?.image} seed={audit.auditee.address} size="lg" />
+        </DynamicLink>
+        <Column className="justify-start items-start overflow-hidden w-full">
+          <Row className="justify-between w-full">
+            <p className="text-lg font-bold">{audit.title}</p>
+            <p>${audit.terms?.price.toLocaleString() || 0}</p>
           </Row>
-          <P $trim={trimWidth}>{audit.description}</P>
+          <p className="whitespace-nowrap text-ellipsis overflow-hidden w-full">
+            {audit.description}
+          </p>
         </Column>
       </Row>
-      <AuditFooter $justify="space-between" $gap="rem2" $padding="0.5rem 1rem" $width="100%">
-        <AuditorWrapper>
-          <Span $secondary>auditors:</Span>
+      <Row className="justify-between items-center p-2">
+        <Row className="justify-center items-center gap-2">
+          <span className="text-white/60">auditors:</span>
           {audit.auditors.length > 0 ? (
-            audit.auditors.map((auditor, ind2) => (
-              <AuditAuditor position={`-${ind2 * 12.5}px`} key={ind2} auditor={auditor} />
-            ))
+            <Row>
+              {audit.auditors.map((auditor, ind2) => (
+                <AuditAuditor position={`-${ind2 * 12.5}px`} key={ind2} auditor={auditor} />
+              ))}
+            </Row>
           ) : (
-            <Span>TBD</Span>
+            <span className="text-white/60">TBD</span>
           )}
-        </AuditorWrapper>
-        <DynamicLink href={`/audits/${audit.id}`} disabled={disabled}>
-          <Span>View Audit</Span>
+        </Row>
+        <DynamicLink href={`/audits/${audit.id}`} disabled={disabled} transition>
+          <span className="block p-1">View Audit</span>
         </DynamicLink>
-      </AuditFooter>
+      </Row>
     </Card>
   );
 };
@@ -63,8 +55,8 @@ export const Audits = async ({ current }: { current: string }): Promise<JSX.Elem
   const audits = await getAudits(current);
 
   return (
-    <Column $gap="rem1">
-      {audits.length == 0 && <P>Currently no {current} audits</P>}
+    <Column className="gap-4 justify-center items-center w-full">
+      {audits.length == 0 && <p>Currently no {current} audits</p>}
       {audits.map((audit, ind) => (
         <AuditCard audit={audit} key={ind} disabled={current !== "closed"} />
       ))}
@@ -72,59 +64,56 @@ export const Audits = async ({ current }: { current: string }): Promise<JSX.Elem
   );
 };
 
-export const AuditDashboard = async ({
-  auditId,
-  display,
-}: {
-  auditId: string;
-  display: string;
-}): Promise<JSX.Element> => {
+export const AuditDetailed = async ({ auditId }: { auditId: string }): Promise<JSX.Element> => {
   const audit = await getAudit(auditId);
-  const content = await getMarkdown(display);
+
   return (
-    <Column $gap="md">
-      <Card $width="100%" $padding="0px">
-        <Row $align="flex-start" $justify="flex-start" $gap="rem2" $padding="1rem" $width="100%">
-          <FallbackIcon
-            image={audit.auditee.profile?.image}
-            address={audit.auditee.address}
-            size="lg"
-          />
-          <Column $justify="flex-start" $align="flex-start">
-            <Row $justify="space-between" $width="100%">
-              <P>
-                <Strong $large>{audit.title}</Strong>
-              </P>
-              <div>${audit.terms?.price.toLocaleString()}</div>
+    <Column>
+      <div className="flex flex-col w-full gap-2 py-4 items-center">
+        <p className="text-white/60">Vesting Progress</p>
+        <div className="h-4 bg-dark-primary-20 rounded-xl border-2 border-gray-200/20 w-full max-w-sm">
+          <div className="h-full w-[20%] grad-light rounded-[inherit]" />
+        </div>
+        <p className="text-white/60">200 / 1000 ETH Vested</p>
+      </div>
+      <Card className="divide-y divide-gray-200/20 w-full">
+        <Row className="items-stretch justify-start gap-8 p-4 w-full">
+          <DynamicLink href={`/user/${audit.auditee.address}`}>
+            <Icon image={audit.auditee.profile?.image} seed={audit.auditee.address} size="lg" />
+          </DynamicLink>
+          <Column className="justify-start items-start overflow-hidden w-full">
+            <Row className="justify-between w-full">
+              <p className="text-lg font-bold">{audit.title}</p>
+              <p>${audit.terms?.price.toLocaleString() || 0}</p>
             </Row>
-            <P>{audit.description}</P>
-            <P>Months: {audit.terms?.duration}</P>
-            <P>Created: {new Date(audit.createdAt).toLocaleDateString()}</P>
+            <p className="whitespace-nowrap text-ellipsis overflow-hidden w-full">
+              {audit.description}
+            </p>
+            <p className="text-sm">Months: {audit.terms?.duration}</p>
+            <p className="text-sm">Created: {new Date(audit.createdAt).toLocaleDateString()}</p>
           </Column>
         </Row>
-        <ProgressBar />
-        <AuditDescription $align="flex-start" $gap="lg">
-          <AuditDashboardHeader display={display} />
-          <Markdown dangerouslySetInnerHTML={{ __html: content }} />
-        </AuditDescription>
-        <AuditFooter $justify="space-between" $gap="rem2" $padding="0.5rem 1rem" $width="100%">
-          <AuditorWrapper>
-            <Span>auditors:</Span>
-            {audit.auditors.map((auditor, ind: number) => (
-              <AuditAuditor position={`-${ind * 12.5}px`} key={ind} auditor={auditor} />
-            ))}
-          </AuditorWrapper>
+        <Row className="justify-between items-center p-2">
+          <Row className="justify-center items-center gap-2">
+            <span className="text-white/60">auditors:</span>
+            {audit.auditors.length > 0 ? (
+              <Row>
+                {audit.auditors.map((auditor, ind2) => (
+                  <AuditAuditor position={`-${ind2 * 12.5}px`} key={ind2} auditor={auditor} />
+                ))}
+              </Row>
+            ) : (
+              <span className="text-white/60">TBD</span>
+            )}
+          </Row>
           <AuditDashboardBtn auditors={audit.auditors} />
-        </AuditFooter>
+        </Row>
       </Card>
     </Column>
   );
 };
 
-export const AuditsSkeleton = (): JSX.Element => {
-  return (
-    <Column $padding="4rem">
-      <Loader $size="40px" />
-    </Column>
-  );
+export const AuditMarkdown = async ({ display }: { display: string }) => {
+  const content = await getMarkdown(display);
+  return <div className="markdown" dangerouslySetInnerHTML={{ __html: content }} />;
 };
