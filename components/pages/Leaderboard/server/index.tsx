@@ -2,19 +2,19 @@
 import { getLeaderboard } from "@/lib/actions/users";
 import { trimAddress } from "@/lib/utils";
 import { Icon } from "@/components/Icon";
-import { Loader } from "@/components/Loader";
 import DynamicLink from "@/components/Link";
+import { Column } from "@/components/Box";
 
 export const LeaderboardData = async ({
-  filter,
+  sort,
   order,
 }: {
-  filter: string;
+  sort: string;
   order: string;
 }): Promise<JSX.Element> => {
-  const data = await getLeaderboard(filter, order);
+  const data = await getLeaderboard(sort, order);
   return (
-    <div className="w-full flex flex-col gap-1">
+    <Column className="w-full gap-1">
       {data.map((item, ind) => (
         <DynamicLink key={ind} href={`/user/${item.address}`}>
           <ul
@@ -240,14 +240,6 @@ export const LeaderboardData = async ({
           </ul>
         </DynamicLink>
       ))}
-    </div>
-  );
-};
-
-export const LeaderboardSkeleton = (): JSX.Element => {
-  return (
-    <div className="flex flex-col p-16 justify-center items-center">
-      <Loader className="h-12" />
-    </div>
+    </Column>
   );
 };

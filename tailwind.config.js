@@ -36,6 +36,7 @@ module.exports = {
         dark: "#121212",
         "off-white": "#F4F5F7",
         "dark-white": "#C8D0E7",
+        muted: "hsl(240 3.7% 15.9%)",
         primary: "#004080",
         "primary-light": {
           15: "color-mix(in oklab, #004080, #FFFFFF 15%)",

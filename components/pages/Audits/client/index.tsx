@@ -10,58 +10,8 @@ import { Icon } from "@/components/Icon";
 import DynamicLink from "@/components/Link";
 import { Row } from "@/components/Box";
 import { Button } from "@/components/Button";
+import { Toggle } from "@/components/Toggle";
 import { cn } from "@/lib/utils";
-
-export const AuditHeader = ({ current }: { current: string }): JSX.Element => {
-  const router = useRouter();
-
-  const fetchAudits = (event: React.MouseEvent<HTMLDivElement>): void => {
-    const { name } = event.currentTarget.dataset;
-    if (name == current) return;
-    router.replace(`/audits?status=${name}`, { scroll: false });
-  };
-
-  return (
-    <Row className="gap-4">
-      <div
-        className={cn(
-          "text-xs cursor-pointer relative transition-opacity after-underline",
-          current != "open" && "opacity-disable",
-          current != "open" && "hover:opacity-hover",
-          current != "open" && "after:bg-transparent",
-        )}
-        data-name="open"
-        onClick={fetchAudits}
-      >
-        open
-      </div>
-      <div
-        className={cn(
-          "text-xs cursor-pointer relative transition-opacity after-underline",
-          current != "pending" && "opacity-disable",
-          current != "pending" && "hover:opacity-hover",
-          current != "pending" && "after:bg-transparent",
-        )}
-        data-name="pending"
-        onClick={fetchAudits}
-      >
-        pending
-      </div>
-      <div
-        className={cn(
-          "text-xs cursor-pointer relative transition-opacity after-underline",
-          current != "closed" && "opacity-disable",
-          current != "closed" && "hover:opacity-hover",
-          current != "closed" && "after:bg-transparent",
-        )}
-        data-name="closed"
-        onClick={fetchAudits}
-      >
-        closed
-      </div>
-    </Row>
-  );
-};
 
 export const AuditDashboardHeader = ({ display }: { display: string }): JSX.Element => {
   const router = useRouter();
@@ -76,30 +26,8 @@ export const AuditDashboardHeader = ({ display }: { display: string }): JSX.Elem
 
   return (
     <Row className="gap-4 justify-start">
-      <div
-        className={cn(
-          "text-xs cursor-pointer relative transition-opacity after-underline",
-          display != "details" && "opacity-disable",
-          display != "details" && "hover:opacity-hover",
-          display != "details" && "after:bg-transparent",
-        )}
-        data-name="details"
-        onClick={handleMarkdownChange}
-      >
-        Details
-      </div>
-      <div
-        className={cn(
-          "text-xs cursor-pointer relative transition-opacity after-underline",
-          display != "audit" && "opacity-disable",
-          display != "audit" && "hover:opacity-hover",
-          display != "audit" && "after:bg-transparent",
-        )}
-        data-name="audit"
-        onClick={handleMarkdownChange}
-      >
-        Audit
-      </div>
+      <Toggle onClick={handleMarkdownChange} active={display === "details"} title={"details"} />
+      <Toggle onClick={handleMarkdownChange} active={display === "audit"} title={"audit"} />
     </Row>
   );
 };

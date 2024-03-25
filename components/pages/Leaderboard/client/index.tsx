@@ -6,22 +6,22 @@ import { cn } from "@/lib/utils";
 
 export const LeaderboardNav = ({
   headers,
-  filter,
+  sort,
   order,
 }: {
   headers: string[];
-  filter: string;
+  sort: string;
   order: string;
 }): JSX.Element => {
   const router = useRouter();
 
   const handleSearch = (header: string): void => {
     let path: string;
-    if (header === filter) {
+    if (header === sort) {
       const newOrder = order === "asc" ? "desc" : "asc";
-      path = `/leaderboard?filter=${filter}&order=${newOrder}`;
+      path = `/leaderboard?sort=${sort}&order=${newOrder}`;
     } else {
-      path = `/leaderboard?filter=${header}&order=asc`;
+      path = `/leaderboard?sort=${header}&order=asc`;
     }
     router.replace(path);
   };
@@ -40,8 +40,8 @@ export const LeaderboardNav = ({
               header === "name" && "translate-x-[30px]",
             )}
           >
-            <span className=" text-ellipsis overflow-hidden block leading-[1.27rem]">{header}</span>
-            {header === filter && (
+            <span className="text-ellipsis overflow-hidden block leading-[1.27rem]">{header}</span>
+            {header === sort && (
               <Arrow
                 fill="white"
                 height="0.6rem"
