@@ -1,4 +1,9 @@
 import { cn } from "@/lib/utils";
+import { Row } from "../Box";
+
+interface RadioInput extends React.InputHTMLAttributes<HTMLInputElement> {
+  text?: string;
+}
 
 export const Text: React.FC<React.InputHTMLAttributes<HTMLInputElement>> = (props): JSX.Element => {
   return (
@@ -14,17 +19,15 @@ export const Text: React.FC<React.InputHTMLAttributes<HTMLInputElement>> = (prop
   );
 };
 
-export const Radio: React.FC<React.InputHTMLAttributes<HTMLInputElement>> = (
-  props,
-): JSX.Element => {
-  const { name, ...rest } = props;
+export const Radio: React.FC<RadioInput> = (props): JSX.Element => {
+  const { text, name, ...rest } = props;
   return (
-    <div className="flex flex-row gap-2 items-center">
-      <p>{name}</p>
+    <Row className="gap-2 items-center justify-between">
+      <p>{text || name}</p>
       <label htmlFor={name} className="toggle">
         <input id={name} type="checkbox" name={name} className="toggle" {...rest} />
         <span className="toggle" />
       </label>
-    </div>
+    </Row>
   );
 };

@@ -3,6 +3,7 @@ import { prisma } from "@/lib/db/prisma.server";
 import { Profile } from "@prisma/client";
 
 import type { UserProfile, UserWithCount, AuditFull } from "@/lib/types/actions";
+import { revalidatePath } from "next/cache";
 
 type UserStats = {
   moneyPaid: number;
@@ -263,5 +264,6 @@ export const updateProfile = async (id: string, profileData: FormData): Promise<
       available: data.available == "true", // add zod validation
     },
   });
+  revalidatePath(`/user/${id}`);
   return updated;
 };

@@ -26,8 +26,8 @@ const UserData = async ({ address }: { address: string }): Promise<JSX.Element> 
   const auditsAuditorClosed = auditsAuditor.filter((audit) => audit.terms);
 
   return (
-    <Column className="items-start gap-4 w-full">
-      <Column className="items-start gap-4">
+    <Column className="items-start gap-8 w-full">
+      <Column className="items-start gap-2">
         <p>
           Potential Payout: <span>{userStats.moneyPaid}</span>
         </p>
@@ -38,7 +38,7 @@ const UserData = async ({ address }: { address: string }): Promise<JSX.Element> 
       <hr className="w-full h-[1px] border-gray-200/20" />
       {auditsAuditee.length > 0 && <h2>Audits Created</h2>}
       {auditsAuditeeOpen.length > 0 && (
-        <Column className="items-start gap-4">
+        <Column className="items-start gap-2">
           <p>Open:</p>
           <Row className="w-full justify-start">
             {auditsAuditeeOpen.map((audit, ind) => (
@@ -48,7 +48,7 @@ const UserData = async ({ address }: { address: string }): Promise<JSX.Element> 
         </Column>
       )}
       {auditsAuditeeOpen.length > 0 && (
-        <Column className="items-start gap-4">
+        <Column className="items-start gap-2">
           <p>Pending:</p>
           <Row className="w-full justify-start">
             {auditsAuditeePending.map((audit, ind) => (
@@ -58,7 +58,7 @@ const UserData = async ({ address }: { address: string }): Promise<JSX.Element> 
         </Column>
       )}
       {auditsAuditeeClosed.length > 0 && (
-        <Column className="items-start gap-4">
+        <Column className="items-start gap-2">
           <p>Pending:</p>
           <Row className="w-full justify-start">
             {auditsAuditeeClosed.map((audit, ind) => (
@@ -69,7 +69,7 @@ const UserData = async ({ address }: { address: string }): Promise<JSX.Element> 
       )}
       {auditsAuditor.length > 0 && <h2>Audits Auditing</h2>}
       {auditsAuditorOpen.length > 0 && (
-        <Column className="items-start gap-4">
+        <Column className="items-start gap-2">
           <p>Pending:</p>
           <Row className="w-full justify-start">
             {auditsAuditorOpen.map((audit, ind) => (
@@ -79,7 +79,7 @@ const UserData = async ({ address }: { address: string }): Promise<JSX.Element> 
         </Column>
       )}
       {auditsAuditorPending.length > 0 && (
-        <Column className="items-start gap-4">
+        <Column className="items-start gap-2">
           <p>Pending:</p>
           <Row className="w-full justify-start">
             {auditsAuditorPending.map((audit, ind) => (
@@ -89,7 +89,7 @@ const UserData = async ({ address }: { address: string }): Promise<JSX.Element> 
         </Column>
       )}
       {auditsAuditorClosed.length > 0 && (
-        <Column className="items-start gap-4">
+        <Column className="items-start gap-2">
           <p>Pending:</p>
           <Row className="w-full justify-start">
             {auditsAuditorClosed.map((audit, ind) => (

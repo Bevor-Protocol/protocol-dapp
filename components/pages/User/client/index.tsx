@@ -52,27 +52,41 @@ export const UserProfileData = ({ user }: { user: UserProfile }): JSX.Element =>
         <p className="text-white/60">{user.address}</p>
         <Row className="gap-8 items-start">
           <Icon size="xl" image={user.profile?.image} seed={user.address} />
-          <Column className="items-start">
-            <Column className="gap-4">
-              <Form.Text
-                name="name"
-                disabled={!isEditing || isPending}
-                defaultValue={user.profile ? user.profile.name || "" : ""}
-                aria-disabled={!isEditing || isPending}
-              />
+          <Column className="items-start gap-4">
+            <Form.Text
+              name="name"
+              disabled={!isEditing || isPending}
+              defaultValue={user.profile ? user.profile.name || "" : ""}
+              aria-disabled={!isEditing || isPending}
+            />
+            <div className="pl-2">
               <Form.Radio
                 name="available"
                 defaultChecked={user.profile?.available}
                 disabled={!isEditing || isPending}
                 aria-disabled={!isEditing || isPending}
               />
-            </Column>
-            <div className="pl-[3px]">
-              <p className="text-white/60">
+              <Form.Radio
+                name="auditorRole"
+                text="auditor role"
+                defaultChecked={user.auditorRole}
+                disabled={true}
+                aria-disabled={true}
+              />
+              <Form.Radio
+                name="auditeeRole"
+                text="auditee role"
+                defaultChecked={user.auditeeRole}
+                disabled={true}
+                aria-disabled={true}
+              />
+            </div>
+            <div className="pl-2">
+              <p className="text-white/60 text-xs">
                 Member Since:
                 <span> {user.createdAt.toLocaleDateString()}</span>
               </p>
-              <p className="text-white/60">
+              <p className="text-white/60 text-xs">
                 Last Profile Update:
                 <span> {user.profile?.updatedAt.toLocaleDateString()}</span>
               </p>

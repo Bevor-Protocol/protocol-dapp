@@ -7,5 +7,6 @@ import Chevron from "./chevron";
 import Copy from "./copy";
 import Logout from "./logout";
 import Pencil from "./pencil";
+import Check from "./check";
 
-export { Gitbook, Twitter, Discord, Github, Arrow, Chevron, Copy, Logout, Pencil };
+export { Gitbook, Twitter, Discord, Github, Arrow, Chevron, Copy, Logout, Pencil, Check };

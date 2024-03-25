@@ -14,6 +14,7 @@ import { useClickOutside } from "@/hooks/useClickOutside";
 import { trimAddress } from "@/lib/utils";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/Button";
+import { Row } from "@/components/Box";
 
 const Web3Holder = (): JSX.Element => {
   const { address, isConnected, chain } = useAccount();
@@ -56,7 +57,7 @@ const Web3Holder = (): JSX.Element => {
   // console.log(isConnected, status, address, mounted, chainId);
 
   return (
-    <div className="flex flex-row gap-2 items-center relative">
+    <Row className="gap-2 items-center relative">
       {isConnected && mounted && (
         <div
           className={cn(
@@ -66,8 +67,8 @@ const Web3Holder = (): JSX.Element => {
           ref={refNetwork}
           tabIndex={0}
         >
-          <div
-            className="flex flex-row justify-center items-center gap-2 px-2"
+          <Row
+            className="justify-center items-center gap-2 px-2"
             onMouseOver={handleToolTip}
             onMouseOut={clearToolTip}
             onClick={setShow}
@@ -78,14 +79,14 @@ const Web3Holder = (): JSX.Element => {
               className={cn(imgSrc === 99999 && "!bg-auto")}
             />
             <Chevron />
-          </div>
+          </Row>
           {show && <Networks close={setShow} />}
         </div>
       )}
       {isConnected && mounted && (
-        <div
+        <Row
           className={cn(
-            "flex flex-row items-center relative cursor-pointer rounded-lg focus-border h-12",
+            "items-center relative cursor-pointer rounded-lg focus-border h-12",
             "hover:bg-dark-primary-30 gap-2 text-sm px-2",
           )}
           onClick={handleProfileModal}
@@ -95,7 +96,7 @@ const Web3Holder = (): JSX.Element => {
           <span className="lg:hidden">
             {isConnected && mounted ? trimAddress(address) : "connect"}
           </span>
-        </div>
+        </Row>
       )}
       {!isConnected && mounted && (
         <Button onClick={handleWalletModal}>
@@ -111,7 +112,7 @@ const Web3Holder = (): JSX.Element => {
       >
         <div className="px-2 py-1">This is an unsupported network</div>
       </div>
-    </div>
+    </Row>
   );
 };
 
