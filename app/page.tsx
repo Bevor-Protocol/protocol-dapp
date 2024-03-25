@@ -3,7 +3,7 @@ import { Suspense } from "react";
 import { Arrow } from "@/assets";
 import { HomeStat, HomeStatSkeleton } from "@/components/pages/Home";
 import * as Actions from "@/lib/actions/protocolData";
-import clsx from "clsx";
+import { cn } from "@/lib/utils";
 
 const Page = (): JSX.Element => {
   return (
@@ -41,7 +41,7 @@ const Page = (): JSX.Element => {
           </div>
         </div>
         <div
-          className={clsx(
+          className={cn(
             "grid grid-cols-2 grid-rows-2 relative z-[1] gap-2",
             "before:flex before:absolute before:inset-0 before:scale-110 \
             before:blur-[50px] before:bg-dark-primary-50 before:-z-20",

@@ -17,22 +17,16 @@ export const HomeStat = async ({ action, symbol, text }: HomeStatI): Promise<JSX
   const data = await action();
   return (
     <Card hover className="text-center p-6 items-center justify-center">
-      <p className="text-lg">
-        <strong className="text-grad grad-light">{`${
-          symbol || ""
-        }${data?.toLocaleString()}`}</strong>
-      </p>
-      <p>{text}</p>
+      <p className="text-lg font-bold">{`${symbol || ""}${data?.toLocaleString()}`}</p>
+      <p className="text-sm">{text}</p>
     </Card>
   );
 };
 
 export const HomeStatSkeleton = (): JSX.Element => {
   return (
-    <Card className="text-center p-6 items-center justify-center">
-      <div className="flex flex-col h-12 w-full items-center justify-center">
-        <Loader className="h-8" />
-      </div>
+    <Card className="p-6 items-center justify-center">
+      <Loader className="h-12" />
     </Card>
   );
 };

@@ -1,6 +1,14 @@
 import { Address } from "viem";
 import { Connector } from "wagmi";
 
+export const cn = (...args: unknown[]): string => {
+  return args
+    .flat()
+    .filter((x) => typeof x === "string")
+    .join(" ")
+    .trim();
+};
+
 export const trimAddress = (address: Address | string | undefined): string => {
   return address?.substring(0, 6) + "..." + address?.substring(address.length - 3, address.length);
 };

@@ -5,10 +5,11 @@ import { useRouter, usePathname } from "next/navigation";
 import { useState, useRef } from "react";
 import { User, Profile } from "@prisma/client";
 import { useAccount } from "wagmi";
-import clsx from "clsx";
 
 import { Icon } from "@/components/Icon";
 import DynamicLink from "@/components/Link";
+import { Row } from "@/components/Box";
+import { cn } from "@/lib/utils";
 
 export const AuditHeader = ({ current }: { current: string }): JSX.Element => {
   const router = useRouter();
@@ -19,16 +20,13 @@ export const AuditHeader = ({ current }: { current: string }): JSX.Element => {
   };
 
   return (
-    <div className="flex flex-row gap-4">
+    <Row className="gap-4">
       <div
-        className={clsx(
-          "text-xs cursor-pointer relative transition-opacity",
-          "after:absolute after:-bottom-1 after:left-0 after:right-0 after:h-[1px] after:bg-current",
-          {
-            "opacity-disable": current != "open",
-            "hover:opacity-hover": current != "open",
-            "after:bg-transparent": current != "open",
-          },
+        className={cn(
+          "text-xs cursor-pointer relative transition-opacity after-underline",
+          current != "open" && "opacity-disable",
+          current != "open" && "hover:opacity-hover",
+          current != "open" && "after:bg-transparent",
         )}
         data-name="open"
         onClick={fetchAudits}
@@ -36,14 +34,11 @@ export const AuditHeader = ({ current }: { current: string }): JSX.Element => {
         open
       </div>
       <div
-        className={clsx(
-          "text-xs cursor-pointer relative transition-opacity",
-          "after:absolute after:-bottom-1 after:left-0 after:right-0 after:h-[1px] after:bg-current",
-          {
-            "opacity-disable": current != "pending",
-            "hover:opacity-hover": current != "pending",
-            "after:bg-transparent": current != "pending",
-          },
+        className={cn(
+          "text-xs cursor-pointer relative transition-opacity after-underline",
+          current != "pending" && "opacity-disable",
+          current != "pending" && "hover:opacity-hover",
+          current != "pending" && "after:bg-transparent",
         )}
         data-name="pending"
         onClick={fetchAudits}
@@ -51,21 +46,18 @@ export const AuditHeader = ({ current }: { current: string }): JSX.Element => {
         pending
       </div>
       <div
-        className={clsx(
-          "text-xs cursor-pointer relative transition-opacity",
-          "after:absolute after:-bottom-1 after:left-0 after:right-0 after:h-[1px] after:bg-current",
-          {
-            "opacity-disable": current != "closed",
-            "hover:opacity-hover": current != "closed",
-            "after:bg-transparent": current != "closed",
-          },
+        className={cn(
+          "text-xs cursor-pointer relative transition-opacity after-underline",
+          current != "closed" && "opacity-disable",
+          current != "closed" && "hover:opacity-hover",
+          current != "closed" && "after:bg-transparent",
         )}
         data-name="closed"
         onClick={fetchAudits}
       >
         closed
       </div>
-    </div>
+    </Row>
   );
 };
 
@@ -80,36 +72,30 @@ export const AuditDashboardHeader = ({ display }: { display: string }): JSX.Elem
   };
 
   return (
-    <div className="flex flex-row gap-4 justify-start">
+    <Row className="gap-4 justify-start">
       <div
-        className={clsx(
-          "text-xs cursor-pointer relative transition-opacity",
-          "after:absolute after:-bottom-1 after:left-0 after:right-0 after:h-[1px] after:bg-current",
-          {
-            "opacity-disable": display != "details",
-            "hover:opacity-hover": display != "details",
-            "after:bg-transparent": display != "details",
-          },
+        className={cn(
+          "text-xs cursor-pointer relative transition-opacity after-underline",
+          display != "details" && "opacity-disable",
+          display != "details" && "hover:opacity-hover",
+          display != "details" && "after:bg-transparent",
         )}
         onClick={(): void => handleMarkdownChange("details")}
       >
         Details
       </div>
       <div
-        className={clsx(
-          "text-xs cursor-pointer relative transition-opacity",
-          "after:absolute after:-bottom-1 after:left-0 after:right-0 after:h-[1px] after:bg-current",
-          {
-            "opacity-disable": display != "audit",
-            "hover:opacity-hover": display != "audit",
-            "after:bg-transparent": display != "audit",
-          },
+        className={cn(
+          "text-xs cursor-pointer relative transition-opacity after-underline",
+          display != "audit" && "opacity-disable",
+          display != "audit" && "hover:opacity-hover",
+          display != "audit" && "after:bg-transparent",
         )}
         onClick={(): void => handleMarkdownChange("audit")}
       >
         Audit
       </div>
-    </div>
+    </Row>
   );
 };
 
@@ -153,7 +139,7 @@ export const AuditAuditor = ({
         />
       </DynamicLink>
       <div
-        className={clsx(
+        className={cn(
           "absolute hidden text-sm max-w-28 overflow-hidden text-ellipsis bg-dark-primary-20",
           "px-2 py-1 -translate-x-1/2 border border-gray-200/20",
         )}

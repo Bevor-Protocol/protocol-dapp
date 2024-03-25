@@ -1,5 +1,5 @@
 import React from "react";
-import clsx from "clsx";
+import { cn } from "@/lib/utils";
 
 interface Props extends React.HTMLAttributes<HTMLDivElement> {
   children: React.ReactNode;
@@ -8,7 +8,7 @@ interface Props extends React.HTMLAttributes<HTMLDivElement> {
 
 export const Row: React.FC<Props> = ({ children, className, ...rest }) => {
   return (
-    <div className={clsx("flex flex-row", className)} {...rest}>
+    <div className={cn("flex flex-row", className)} {...rest}>
       {children}
     </div>
   );
@@ -16,7 +16,7 @@ export const Row: React.FC<Props> = ({ children, className, ...rest }) => {
 
 export const Column: React.FC<Props> = ({ children, className, ...rest }) => {
   return (
-    <div className={clsx("flex flex-col", className)} {...rest}>
+    <div className={cn("flex flex-col", className)} {...rest}>
       {children}
     </div>
   );
@@ -25,7 +25,7 @@ export const Column: React.FC<Props> = ({ children, className, ...rest }) => {
 export const HoverItem: React.FC<Props> = ({ children, className, ...rest }) => {
   return (
     <Row
-      className={clsx(
+      className={cn(
         "items-center relative rounded-lg transition-colors hover:bg-dark-primary-30",
         className,
       )}

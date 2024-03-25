@@ -1,5 +1,6 @@
 import Link from "next/link";
-import clsx from "clsx";
+
+import { cn } from "@/lib/utils";
 
 type PropsI = {
   children: React.ReactNode;
@@ -19,16 +20,14 @@ const DynamicLink = ({ children, disabled, href, transition = false }: PropsI): 
       passHref={isExternal}
       target={isExternal ? "_blank" : ""}
       referrerPolicy={isExternal ? "no-referrer" : ""}
-      className={clsx(
+      className={cn(
         "appearance-none text-inherit no-underline font-inherit \
         rounded-lg cursor-pointer focus-border block",
-        {
-          "cursor-default": disabled,
-          "pointer-events-none": disabled,
-          "pointer-events-auto": !disabled,
-          "*:opacity-disable": disabled,
-          "*:hover:opacity-hover": transition && !disabled,
-        },
+        disabled && "cursor-default",
+        disabled && "pointer-events-none",
+        !disabled && "pointer-events-auto",
+        disabled && "*:opacity-disable",
+        transition && !disabled && "*:hover:opacity-hover",
       )}
     >
       {children}

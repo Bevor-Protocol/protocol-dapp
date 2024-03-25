@@ -1,4 +1,4 @@
-import clsx from "clsx";
+import { cn } from "@/lib/utils";
 
 export const Card = ({
   children,
@@ -11,11 +11,9 @@ export const Card = ({
 }): JSX.Element => {
   return (
     <div
-      className={clsx(
+      className={cn(
         "bg-dark shadow rounded-lg flex flex-col",
-        {
-          "transition-colors hover:bg-dark-primary-30": hover,
-        },
+        hover && "transition-colors hover:bg-dark-primary-30",
         className,
       )}
     >

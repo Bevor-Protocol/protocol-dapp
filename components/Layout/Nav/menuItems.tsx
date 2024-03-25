@@ -1,6 +1,5 @@
 "use client";
 
-import clsx from "clsx";
 import { useRef, useReducer } from "react";
 import { usePathname } from "next/navigation";
 import { useAccount } from "wagmi";
@@ -14,6 +13,7 @@ import { Social } from "@/components/Icon";
 import { Card } from "@/components/Card";
 import { Row, HoverItem, Column } from "@/components/Box";
 import { Ellipses } from "@/components/Items";
+import { cn } from "@/lib/utils";
 
 export const NavDashboard = (): JSX.Element => {
   const pathname = usePathname();
@@ -24,10 +24,10 @@ export const NavDashboard = (): JSX.Element => {
     <DynamicLink href={mounted && address ? `/user/${address}` : "/"}>
       <HoverItem className="h-12 px-2">
         <span
-          className={clsx({
-            "opacity-disable":
-              pathname.split("/")[1] != "user" || pathname.split("/")[2] != address,
-          })}
+          className={cn(
+            (pathname.split("/")[1] != "user" || pathname.split("/")[2] != address) &&
+              "opacity-disable",
+          )}
         >
           dashboard
         </span>
@@ -43,13 +43,7 @@ export const NavMenuItems = (): JSX.Element => {
       {navItems.main.map((item, ind) => (
         <DynamicLink href={item.url} key={ind}>
           <HoverItem className="h-12 px-2">
-            <span
-              className={clsx({
-                "opacity-disable": pathname !== item.url,
-              })}
-            >
-              {item.text}
-            </span>
+            <span className={cn(pathname !== item.url && "opacity-disable")}>{item.text}</span>
           </HoverItem>
         </DynamicLink>
       ))}
@@ -65,15 +59,10 @@ export const NavDropdown = (): JSX.Element => {
   return (
     <div ref={ref}>
       <HoverItem className="focus-border cursor-pointer h-12" tabIndex={0}>
-        <Ellipses
-          className={clsx({
-            "*:opacity-disable": !show,
-          })}
-          onClick={setShow}
-        />
+        <Ellipses className={cn(!show && "*:opacity-disable")} onClick={setShow} />
         {show && (
           <Card
-            className={clsx(
+            className={cn(
               "absolute top-full right-0 z-[999]",
               "cursor-default text-xs min-w-52 px-2 py-2 gap-2",
               "md:text-base md:top-[unset] md:-right-5 md:bottom-full md:w-svw md:rounded-t-lg",

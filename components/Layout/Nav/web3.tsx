@@ -1,6 +1,5 @@
 "use client";
 import { useRef, useReducer } from "react";
-import clsx from "clsx";
 import { useAccount } from "wagmi";
 
 import { useIsMounted } from "@/hooks/useIsMounted";
@@ -13,6 +12,7 @@ import Networks from "@/components/Web3/networks";
 import Profile from "@/components/Web3/profile";
 import { useClickOutside } from "@/hooks/useClickOutside";
 import { trimAddress } from "@/lib/utils";
+import { cn } from "@/lib/utils";
 
 const Web3Holder = (): JSX.Element => {
   const { address, isConnected, chain } = useAccount();
@@ -58,7 +58,7 @@ const Web3Holder = (): JSX.Element => {
     <div className="flex flex-row gap-2 items-center relative">
       {isConnected && mounted && (
         <div
-          className={clsx(
+          className={cn(
             "flex flex-row relative cursor-pointer rounded-lg focus-border h-12",
             "hover:bg-dark-primary-30",
           )}
@@ -79,7 +79,7 @@ const Web3Holder = (): JSX.Element => {
       )}
       {isConnected && mounted && (
         <div
-          className={clsx(
+          className={cn(
             "flex flex-row items-center relative cursor-pointer rounded-lg focus-border h-12",
             "hover:bg-dark-primary-30 gap-2 text-sm px-2",
           )}
@@ -104,7 +104,7 @@ const Web3Holder = (): JSX.Element => {
         </button>
       )}
       <div
-        className={clsx(
+        className={cn(
           "absolute top-0 right-full bg-dark shadow rounded-lg z-[999]",
           "cursor-default text-xs min-w-40 hidden",
         )}
