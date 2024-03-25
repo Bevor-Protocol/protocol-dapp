@@ -73,6 +73,7 @@ export const AuditDashboard = async ({
 }): Promise<JSX.Element> => {
   const audit = await getAudit(auditId);
   const content = await getMarkdown(display);
+
   return (
     <Card className="divide-y divide-gray-200/20 w-full">
       <div className="flex flex-row justify-start items-stretch gap-8 p-4 w-full">

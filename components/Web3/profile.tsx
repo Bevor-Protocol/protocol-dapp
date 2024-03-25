@@ -6,6 +6,7 @@ import { useModal } from "@/hooks/contexts";
 import { Icon } from "@/components/Icon";
 import { trimAddress } from "@/lib/utils";
 import { Copy, Logout } from "@/assets";
+import { Button } from "../Button";
 
 const Profile = (): JSX.Element => {
   const [copied, setCopied] = useState(false);
@@ -35,16 +36,10 @@ const Profile = (): JSX.Element => {
         <span>{trimAddress(address)}</span>
         <Copy stroke="white" copied={copied} className="absolute right-0" />
       </div>
-      <button
-        className="outline-none border-none font-bold rounded-md 
-            grad-light py-2 px-3 dim disabled:opacity-disable"
-        onClick={(): void => disconnect()}
-      >
-        <div className="flex flex-row items-center gap-1 text-dark text-sm">
-          <Logout />
-          <span>Disconnect</span>
-        </div>
-      </button>
+      <Button onClick={(): void => disconnect()}>
+        <Logout />
+        <span>Disconnect</span>
+      </Button>
     </div>
   );
 };

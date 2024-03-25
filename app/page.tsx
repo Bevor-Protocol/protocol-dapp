@@ -2,6 +2,7 @@ import { Suspense } from "react";
 
 import { Arrow } from "@/assets";
 import { HomeStat, HomeStatSkeleton } from "@/components/pages/Home";
+import { Button } from "@/components/Button";
 import * as Actions from "@/lib/actions/protocolData";
 import { cn } from "@/lib/utils";
 
@@ -20,24 +21,14 @@ const Page = (): JSX.Element => {
             Register as an auditee, auditor, or DAO participant.
           </p>
           <div className="flex flex-row flex-nowrap align-middle justify-center gap-2">
-            <button
-              className="outline-none border-none font-bold rounded-md 
-            grad-light py-2 px-5 dim disabled:opacity-disable"
-            >
-              <div className="flex flex-row align-middle gap-1 text-dark text-sm">
-                <span>Get Audited</span>
-                <Arrow height="0.75rem" width="0.75rem" />
-              </div>
-            </button>
-            <button
-              className="outline-none border-none font-bold rounded-md 
-            grad-light py-2 px-5 dim disabled:opacity-disable"
-            >
-              <div className="flex flex-row align-middle gap-1 text-dark text-sm">
-                <span>Conduct Audit</span>
-                <Arrow height="0.75rem" width="0.75rem" />
-              </div>
-            </button>
+            <Button>
+              <span>Get Audited</span>
+              <Arrow height="0.75rem" width="0.75rem" />
+            </Button>
+            <Button>
+              <span>Conduct Audit</span>
+              <Arrow height="0.75rem" width="0.75rem" />
+            </Button>
           </div>
         </div>
         <div

@@ -9,6 +9,7 @@ import { useAccount } from "wagmi";
 import { Icon } from "@/components/Icon";
 import DynamicLink from "@/components/Link";
 import { Row } from "@/components/Box";
+import { Button } from "@/components/Button";
 import { cn } from "@/lib/utils";
 
 export const AuditHeader = ({ current }: { current: string }): JSX.Element => {
@@ -16,7 +17,8 @@ export const AuditHeader = ({ current }: { current: string }): JSX.Element => {
 
   const fetchAudits = (event: React.MouseEvent<HTMLDivElement>): void => {
     const { name } = event.currentTarget.dataset;
-    router.replace(`/audits?status=${name}`);
+    if (name == current) return;
+    router.replace(`/audits?status=${name}`, { scroll: false });
   };
 
   return (
@@ -65,9 +67,10 @@ export const AuditDashboardHeader = ({ display }: { display: string }): JSX.Elem
   const router = useRouter();
   const pathname = usePathname();
 
-  const handleMarkdownChange = (displayType: string): void => {
-    if (display == displayType) return;
-    const path = `${pathname}?display=${displayType}`;
+  const handleMarkdownChange = (event: React.MouseEvent<HTMLDivElement>): void => {
+    const { name } = event.currentTarget.dataset;
+    if (name == display) return;
+    const path = `${pathname}?display=${name}`;
     router.replace(path, { scroll: false });
   };
 
@@ -80,7 +83,8 @@ export const AuditDashboardHeader = ({ display }: { display: string }): JSX.Elem
           display != "details" && "hover:opacity-hover",
           display != "details" && "after:bg-transparent",
         )}
-        onClick={(): void => handleMarkdownChange("details")}
+        data-name="details"
+        onClick={handleMarkdownChange}
       >
         Details
       </div>
@@ -91,7 +95,8 @@ export const AuditDashboardHeader = ({ display }: { display: string }): JSX.Elem
           display != "audit" && "hover:opacity-hover",
           display != "audit" && "after:bg-transparent",
         )}
-        onClick={(): void => handleMarkdownChange("audit")}
+        data-name="audit"
+        onClick={handleMarkdownChange}
       >
         Audit
       </div>
@@ -171,14 +176,8 @@ export const AuditDashboardBtn = ({
     }
   };
   return (
-    <button
-      className="outline-none border-none font-bold rounded-md 
-            grad-light py-2 px-5 dim disabled:opacity-disable"
-      disabled={true}
-    >
-      <div className="flex flex-row align-middle gap-1 text-dark text-sm">
-        <span>{buttonLabel()}</span>
-      </div>
-    </button>
+    <Button aria-disabled={true} disabled={true}>
+      <span>{buttonLabel()}</span>
+    </Button>
   );
 };

@@ -13,6 +13,7 @@ import Profile from "@/components/Web3/profile";
 import { useClickOutside } from "@/hooks/useClickOutside";
 import { trimAddress } from "@/lib/utils";
 import { cn } from "@/lib/utils";
+import { Button } from "@/components/Button";
 
 const Web3Holder = (): JSX.Element => {
   const { address, isConnected, chain } = useAccount();
@@ -93,15 +94,9 @@ const Web3Holder = (): JSX.Element => {
         </div>
       )}
       {!isConnected && mounted && (
-        <button
-          className="outline-none border-none font-bold rounded-md 
-      grad-light py-2 px-3 dim disabled:opacity-disable"
-          onClick={handleWalletModal}
-        >
-          <div className="flex flex-row align-middle gap-1 text-dark text-sm">
-            <span>connect</span>
-          </div>
-        </button>
+        <Button onClick={handleWalletModal}>
+          <span>connect</span>
+        </Button>
       )}
       <div
         className={cn(

@@ -10,6 +10,7 @@ import { UserProfile } from "@/lib/types/actions";
 import * as Form from "@/components/Form";
 import { Pencil } from "@/assets";
 import { updateProfile } from "@/lib/actions/users";
+import { Button } from "@/components/Button";
 
 export const UserProfileData = ({ user }: { user: UserProfile }): JSX.Element => {
   const mounted = useIsMounted();
@@ -83,24 +84,14 @@ export const UserProfileData = ({ user }: { user: UserProfile }): JSX.Element =>
         </div>
         {isOwner && isEditing && (
           <div className="flex flex-row gap-4">
-            <button
-              className="outline-none border-none font-bold rounded-md 
-            grad-light py-2 px-3 dim disabled:opacity-disable"
-              type="submit"
-            >
-              <div className="flex flex-row align-middle gap-1 text-dark text-sm">
-                <span>Submit</span>
-              </div>
-            </button>
-            <button
-              className="outline-none border-none font-bold rounded-md 
-            grad-light py-2 px-3 dim disabled:opacity-disable"
-              type="reset"
-            >
+            <Button type="submit">
+              <span>Submit</span>
+            </Button>
+            <Button type="reset">
               <div className="flex flex-row align-middle gap-1 text-dark text-sm">
                 <span>Reset</span>
               </div>
-            </button>
+            </Button>
           </div>
         )}
       </div>

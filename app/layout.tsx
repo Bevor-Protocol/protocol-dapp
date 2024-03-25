@@ -74,7 +74,7 @@ export const viewport: Viewport = {
   userScalable: false,
 };
 
-const jakarta = Plus_Jakarta_Sans({ subsets: ["latin"], weight: ["500", "700", "800"] });
+const jakarta = Plus_Jakarta_Sans({ subsets: ["latin"], weight: ["500", "600", "700", "800"] });
 
 const Page = ({ children }: { children: React.ReactNode }): JSX.Element => {
   const initialState = cookieToInitialState(config, headers().get("cookie"));
