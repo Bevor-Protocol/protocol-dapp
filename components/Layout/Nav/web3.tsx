@@ -72,7 +72,11 @@ const Web3Holder = (): JSX.Element => {
             onMouseOut={clearToolTip}
             onClick={setShow}
           >
-            <Icon size="sm" image={ChainPresets[imgSrc]} />
+            <Icon
+              size="sm"
+              image={ChainPresets[imgSrc]}
+              className={cn(imgSrc === 99999 && "!bg-auto")}
+            />
             <Chevron />
           </div>
           {show && <Networks close={setShow} />}

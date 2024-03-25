@@ -1,4 +1,5 @@
 import React from "react";
+import { cn } from "@/lib/utils";
 
 const sizeMapper: Record<string, Record<string, string>> = {
   xs: {
@@ -27,9 +28,10 @@ interface Props extends React.HTMLAttributes<HTMLElement> {
   size: string;
   image?: string | null;
   seed?: string | null;
+  className?: string;
 }
 
-export const Icon: React.FC<Props> = ({ size, image, seed, ...rest }): JSX.Element => {
+export const Icon: React.FC<Props> = ({ size, image, seed, className, ...rest }): JSX.Element => {
   const { desktop, mobile } = sizeMapper[size];
 
   let urlUse = `url(https://avatar.vercel.sh/${seed?.replace(/\s/g, "")})`;
@@ -38,7 +40,7 @@ export const Icon: React.FC<Props> = ({ size, image, seed, ...rest }): JSX.Eleme
   }
   return (
     <div
-      className="avatar"
+      className={cn("avatar", className)}
       style={
         {
           backgroundImage: urlUse,
