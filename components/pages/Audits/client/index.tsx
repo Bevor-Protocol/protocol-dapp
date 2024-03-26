@@ -42,7 +42,7 @@ export const AuditAuditor = ({
   };
 }): JSX.Element => {
   return (
-    <div className="h-fit w-fit relative" style={{ transform: `translateX(${position})` }}>
+    <div style={{ transform: `translateX(${position})` }}>
       <DynamicLink href={`/user/${auditor.address}`}>
         <Tooltip.Reference target={auditor.address}>
           <Icon

@@ -27,16 +27,13 @@ const Web3Network = (): JSX.Element => {
 
   return (
     <Dropdown.Main
-      className={cn(
-        "flex flex-row relative cursor-pointer rounded-lg focus-border",
-        "hover:bg-dark-primary-30",
-      )}
+      className={cn("flex flex-row relative cursor-pointer rounded-lg focus-border")}
       dropdown={dropdown}
       tabIndex={0}
     >
       <Dropdown.Trigger dropdown={dropdown}>
         <Tooltip.Reference target="invalid-network" shouldShow={!chain}>
-          <Row className="justify-center items-center gap-2 px-2 h-12">
+          <Row className="justify-center items-center gap-2 px-2 h-12 rounded-lg hover:bg-dark-primary-30">
             <Icon
               size="sm"
               image={ChainPresets[imgSrc]}
