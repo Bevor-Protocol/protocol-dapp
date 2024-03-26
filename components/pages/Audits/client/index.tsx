@@ -2,7 +2,6 @@
 "use client";
 
 import { useRouter, usePathname } from "next/navigation";
-import { useState, useRef } from "react";
 import { User, Profile } from "@prisma/client";
 import { useAccount } from "wagmi";
 
@@ -11,7 +10,8 @@ import DynamicLink from "@/components/Link";
 import { Row } from "@/components/Box";
 import { Button } from "@/components/Button";
 import { Toggle } from "@/components/Toggle";
-import { cn } from "@/lib/utils";
+import * as Tooltip from "@/components/Tooltip";
+import { cn, trimAddress } from "@/lib/utils";
 
 export const AuditDashboardHeader = ({ display }: { display: string }): JSX.Element => {
   const router = useRouter();
@@ -41,45 +41,28 @@ export const AuditAuditor = ({
     profile: Profile | null;
   };
 }): JSX.Element => {
-  const [cont, setCont] = useState("");
-  const tooltip = useRef<HTMLDivElement>(null);
-
-  const handleToolTip = (event: React.MouseEvent<HTMLElement>): void => {
-    if (!tooltip.current) return;
-    const { auditoradd } = event.currentTarget.dataset;
-
-    tooltip.current.style.bottom = "110%";
-    tooltip.current.style.left = "50%";
-    tooltip.current.style.display = "block";
-    setCont(auditoradd || "");
-  };
-
-  const clearToolTip = (): void => {
-    if (!tooltip.current) return;
-    tooltip.current.style.display = "none";
-    setCont("");
-  };
   return (
     <div className="h-fit w-fit relative" style={{ transform: `translateX(${position})` }}>
       <DynamicLink href={`/user/${auditor.address}`}>
-        <Icon
-          image={auditor.profile?.image}
-          size="md"
-          seed={auditor.address}
-          data-auditoradd={auditor.address}
-          onMouseOver={handleToolTip}
-          onMouseOut={clearToolTip}
-        />
+        <Tooltip.Reference target={auditor.address}>
+          <Icon
+            image={auditor.profile?.image}
+            size="md"
+            seed={auditor.address}
+            data-auditoradd={auditor.address}
+          />
+          <Tooltip.Content
+            target={auditor.address}
+            className={cn(
+              "text-xs max-w-28 overflow-hidden text-ellipsis bg-dark-primary-20",
+              "px-2 py-1 -translate-x-1/2 border border-gray-200/20 rounded-lg",
+              "bottom-full left-1/2",
+            )}
+          >
+            {trimAddress(auditor.address)}
+          </Tooltip.Content>
+        </Tooltip.Reference>
       </DynamicLink>
-      <div
-        className={cn(
-          "absolute hidden text-sm max-w-28 overflow-hidden text-ellipsis bg-dark-primary-20",
-          "px-2 py-1 -translate-x-1/2 border border-gray-200/20",
-        )}
-        ref={tooltip}
-      >
-        {cont}
-      </div>
     </div>
   );
 };

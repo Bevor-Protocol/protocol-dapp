@@ -44,12 +44,12 @@ const Web3Network = (): JSX.Element => {
             />
             <Chevron />
           </Row>
+          <Tooltip.Content target="invalid-network" className="top-0 right-full">
+            <div className="bg-dark shadow rounded-lg z-[999] cursor-default text-xs min-w-40">
+              <div className="px-2 py-1">This is an unsupported network</div>
+            </div>
+          </Tooltip.Content>
         </Tooltip.Reference>
-        <Tooltip.Content target="invalid-network" className="top-0 right-full">
-          <div className="bg-dark shadow rounded-lg z-[999] cursor-default text-xs min-w-40">
-            <div className="px-2 py-1">This is an unsupported network</div>
-          </div>
-        </Tooltip.Content>
       </Dropdown.Trigger>
       <Dropdown.Content dropdown={dropdown} className="top-full right-0">
         <Networks close={dropdown.toggle} />
