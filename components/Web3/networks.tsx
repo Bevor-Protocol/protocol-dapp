@@ -8,7 +8,7 @@ import { Column, HoverItem } from "@/components/Box";
 import { Check } from "@/assets";
 import { cn } from "@/lib/utils";
 
-const Wallets = ({ close }: { close: () => void }): JSX.Element => {
+const Networks = ({ close }: { close: () => void }): JSX.Element => {
   const { chain: currentChain } = useAccount();
   const { chains, switchChain } = useSwitchChain({
     mutation: {
@@ -17,16 +17,16 @@ const Wallets = ({ close }: { close: () => void }): JSX.Element => {
   });
 
   return (
-    <Card className="absolute top-full right-0 z-[999] cursor-default text-xs">
+    <Card className="text-xs">
       <Column className="px-2 py-2 gap-2">
         <p className="text-white/60 pl-2">Select Network:</p>
         {chains.map((chain) => (
           <HoverItem
             className={cn(
               "justify-start gap-2 pl-2 pr-6 py-1",
-              currentChain?.id == chain.id && "hover:bg-inherit",
               currentChain?.id != chain.id && "cursor-pointer",
             )}
+            disable={currentChain?.id == chain.id}
             key={chain.id}
             onClick={(): void =>
               switchChain({ chainId: chain.id as Register["config"]["chains"][number]["id"] })
@@ -52,4 +52,4 @@ const Wallets = ({ close }: { close: () => void }): JSX.Element => {
   );
 };
 
-export default Wallets;
+export default Networks;

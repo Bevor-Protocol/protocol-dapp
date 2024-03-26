@@ -4,6 +4,7 @@ import { cn } from "@/lib/utils";
 interface Props extends React.HTMLAttributes<HTMLDivElement> {
   children: React.ReactNode;
   className?: string;
+  disable?: boolean;
 }
 
 export const Row: React.FC<Props> = ({ children, className, ...rest }) => {
@@ -22,11 +23,12 @@ export const Column: React.FC<Props> = ({ children, className, ...rest }) => {
   );
 };
 
-export const HoverItem: React.FC<Props> = ({ children, className, ...rest }) => {
+export const HoverItem: React.FC<Props> = ({ children, className, disable = false, ...rest }) => {
   return (
     <Row
       className={cn(
-        "items-center relative rounded-lg transition-colors hover:bg-dark-primary-30",
+        "items-center relative rounded-lg transition-colors",
+        !disable && "hover:bg-dark-primary-30",
         className,
       )}
       {...rest}
