@@ -60,7 +60,6 @@ export type HomeStatI = {
 };
 
 export type ModalStateI = {
-  isOpen: boolean;
   toggleOpen: () => void;
   setContent: (content: React.ReactNode) => void;
 };

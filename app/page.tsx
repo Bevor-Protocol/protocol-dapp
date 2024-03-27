@@ -10,7 +10,7 @@ import DynamicLink from "@/components/Link";
 
 const Page = (): JSX.Element => {
   return (
-    <section className="flex flex-col h-full justify-center items-center px-screen">
+    <section className="flex flex-col h-full justify-center items-center px-content-limit">
       <div className="grid grid-cols-2 w-full md:grid-cols-1 gap-6 items-center justify-center">
         <Column className="items-start gap-8 text-left md:text-center md:items-center">
           <div className="grad-light text-grad">

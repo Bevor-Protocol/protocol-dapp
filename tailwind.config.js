@@ -30,7 +30,24 @@ module.exports = {
         enabled: 1,
       },
       spacing: {
-        screen: "var(--padding-screen)",
+        "content-limit": "var(--padding-screen)",
+      },
+      keyframes: {
+        shrink: {
+          "0%, 100%": {
+            transform: "scale(1) rotateX(80deg)",
+            opacity: 1,
+            animationTimingFunction: "cubic-bezier(0.8,0,1,1)",
+          },
+          "50%": {
+            transform: "scale(0) rotateX(80deg)",
+            opacity: 0.25,
+            animationTimingFunction: "cubic-bezier(0,0,0.2,1)",
+          },
+        },
+      },
+      animation: {
+        shrink: "shrink 1s infinite",
       },
       colors: {
         dark: "#121212",

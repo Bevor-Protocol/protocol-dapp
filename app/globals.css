@@ -274,16 +274,3 @@
     @apply after:absolute after:-bottom-1 after:left-0 after:right-0 after:h-[1px] after:bg-current
   }
 }
-
-dialog {
-  background: none;
-  border: none;
-  z-index: 9999;
-  color: inherit;
-}
-
-dialog::backdrop {
-  background: rbga(0, 0, 0, 0.7);
-  backdrop-filter: blur(2px);
-  pointer-events: none;
-}

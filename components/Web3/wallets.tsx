@@ -7,6 +7,8 @@ import { useModal } from "@/hooks/contexts";
 import { sortWallets } from "@/lib/utils";
 import { Icon } from "@/components/Icon";
 import { CoinbaseWallet, WalletConnect } from "@/assets/wallets";
+import { Column } from "@/components/Box";
+import { cn } from "@/lib/utils";
 
 const IconMapper: Record<string, React.ReactNode> = {
   walletConnect: <WalletConnect height="20" width="20" />,
@@ -36,7 +38,9 @@ const Wallets = (): JSX.Element => {
   const walletsShow = sortWallets([...connectors], recentConnector, true);
 
   return (
-    <div>
+    <Column className={cn("p-4", "w-[250px] min-w-fit h-[350px] min-h-fit text-center")}>
+      <p className="font-bold">Connect Wallet</p>
+      <hr className="border-gray-200/20 my-2" />
       {walletsShow.map((connector) => (
         <div
           key={connector.uid}
@@ -57,7 +61,7 @@ px-2 py-1 border border-transparent transition-colors hover:bg-dark-primary-30 c
           )}
         </div>
       ))}
-    </div>
+    </Column>
   );
 };
 

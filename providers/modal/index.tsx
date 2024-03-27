@@ -1,49 +1,49 @@
 "use client";
 
-import { createContext, useState, useRef } from "react";
+import { createContext, useState, useRef, useCallback } from "react";
 
 import { ModalStateI } from "@/lib/types";
-import { Card } from "@/components/Card";
-import { useCloseDialog } from "@/hooks/useCloseDialog";
+import * as Modal from "@/components/Modal";
+import { useClickOutside } from "@/hooks/useClickOutside";
 
 // Create a context with initial state
 export const ModalContext = createContext<ModalStateI>({
-  isOpen: false,
   toggleOpen: () => {},
   setContent: () => {},
 });
 
 // Modal provider component
 const ModalProvider = ({ children }: { children: React.ReactNode }): JSX.Element => {
-  const [isOpen, setIsOpen] = useState(false);
   const [content, setContent] = useState<React.ReactNode>(null);
   const ref = useRef<HTMLDialogElement>(null);
-  useCloseDialog(ref, () => setIsOpen(false));
+  const contentRef = useRef<HTMLDivElement>(null);
 
-  const toggleOpen = (): void => {
+  const toggleOpen = useCallback((): void => {
     if (!ref.current) return;
-    if (isOpen) {
+    if (ref.current.open) {
       ref.current.close();
       setContent(null);
     } else {
       ref.current.showModal();
     }
-    setIsOpen(!isOpen);
-  };
+  }, [ref]);
+
+  useClickOutside(contentRef, ref.current?.open ? toggleOpen : undefined);
 
   const modalState: ModalStateI = {
-    isOpen,
     toggleOpen,
     setContent,
   };
-
+  console.log(ref.current?.open);
   return (
     <ModalContext.Provider value={modalState}>
       {children}
       {/* Without this conditional, the <ModalContent> still shows */}
-      <dialog ref={ref}>
-        {isOpen && <Card className="h-[400px] max-h-[75%] w-[300px] max-w-[80%]">{content}</Card>}
-      </dialog>
+      <Modal.Wrapper ref={ref}>
+        <Modal.Content isOpen={ref.current?.open} ref={contentRef}>
+          {content}
+        </Modal.Content>
+      </Modal.Wrapper>
     </ModalContext.Provider>
   );
 };
