@@ -54,7 +54,8 @@ export const UserProfileData = ({ user }: { user: UserProfile }): JSX.Element =>
         <Row className="gap-8 items-start">
           <Icon size="xl" image={user.profile?.image} seed={user.address} />
           <Column className="items-start gap-4">
-            <Form.Text
+            <Form.Input
+              type="text"
               name="name"
               disabled={!isEditing || isPending}
               defaultValue={user.profile ? user.profile.name || "" : ""}
@@ -162,7 +163,7 @@ export const UserOnboard = ({ address }: { address: string }): JSX.Element => {
           <Icon size="xl" seed={address} />
           <label htmlFor="name">
             <p>Display Name</p>
-            <Form.Text name="name" disabled={isPending} aria-disabled={isPending} />
+            <Form.Input type="text" name="name" disabled={isPending} aria-disabled={isPending} />
           </label>
           <Column className="items-start gap-4">
             <Form.Radio name="available" disabled={isPending} aria-disabled={isPending} />

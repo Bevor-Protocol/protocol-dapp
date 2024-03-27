@@ -267,6 +267,10 @@
   .focus-border {
     @apply border border-transparent outline-none transition-all focus-visible:border-gray-200/20 focus-visible:outline-none
   }
+
+  .focus-input {
+    @apply focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-blue-300
+  }
 }
 
 @layer utilities {
