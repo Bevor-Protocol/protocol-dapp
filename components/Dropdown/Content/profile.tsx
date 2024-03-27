@@ -7,7 +7,7 @@ import { Copy, Logout } from "@/assets";
 import { Button } from "@/components/Button";
 import { Column, Row } from "@/components/Box";
 import { Card } from "@/components/Card";
-import { Social } from "../Icon";
+import { Social } from "@/components/Icon";
 
 const Profile = ({ close }: { close: () => void }): JSX.Element => {
   const [copied, setCopied] = useState(false);

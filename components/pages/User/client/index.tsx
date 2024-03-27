@@ -4,6 +4,7 @@ import { useMemo, useState, useTransition } from "react";
 import { useAccount } from "wagmi";
 import { useRouter } from "next/navigation";
 
+import { useModal } from "@/hooks/contexts";
 import { Icon } from "@/components/Icon";
 import { useIsMounted } from "@/hooks/useIsMounted";
 import { Loader } from "@/components/Loader";
@@ -13,10 +14,12 @@ import { Pencil } from "@/assets";
 import { updateProfile, createUser } from "@/lib/actions/users";
 import { Button } from "@/components/Button";
 import { Column, Row } from "@/components/Box";
+import CreateAudit from "@/components/Modal/Content/createAudit";
 
 export const UserProfileData = ({ user }: { user: UserProfile }): JSX.Element => {
   const mounted = useIsMounted();
   const { address } = useAccount();
+  const { setContent, toggleOpen } = useModal();
   const [isEditing, setIsEditing] = useState(false);
   const [isPending, startTransition] = useTransition();
 
@@ -44,6 +47,11 @@ export const UserProfileData = ({ user }: { user: UserProfile }): JSX.Element =>
       await updateProfile(user.id, formData);
       setIsEditing(false);
     });
+  };
+
+  const handleModal = (): void => {
+    setContent(<CreateAudit />);
+    toggleOpen();
   };
 
   return (
@@ -108,6 +116,11 @@ export const UserProfileData = ({ user }: { user: UserProfile }): JSX.Element =>
                 <span>Reset</span>
               </Row>
             </Button>
+          </Row>
+        )}
+        {isOwner && !isEditing && user.auditeeRole && (
+          <Row>
+            <Button onClick={handleModal}>Create Audit</Button>
           </Row>
         )}
       </Column>
