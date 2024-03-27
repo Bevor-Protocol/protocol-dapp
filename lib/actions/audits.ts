@@ -8,7 +8,7 @@ import html from "remark-html";
 import remarkGfm from "remark-gfm";
 import matter from "gray-matter";
 
-import { AuditFull } from "@/lib/types/actions";
+import { AuditFull, UserProfile } from "@/lib/types/actions";
 
 export const getAudits = (status?: string): Promise<AuditFull[]> => {
   let filter;
@@ -96,4 +96,50 @@ export const getMarkdown = async (display: string): Promise<string> => {
   const processedContent = (await remark().use(html).use(remarkGfm).process(content)).toString();
 
   return processedContent;
+};
+
+type CreateAuditI = {
+  success: boolean;
+  error?: string;
+};
+
+export const createAudit = (
+  id: string,
+  audit: FormData,
+  auditors: UserProfile[],
+): Promise<CreateAuditI> => {
+  const data = Object.fromEntries(audit);
+  const { title, description, price, duration } = data;
+  const auditorsConnect = auditors.map((auditor) => {
+    return { id: auditor.id };
+  });
+  // add zod validation.
+  return prisma.audit
+    .create({
+      data: {
+        title: title as string,
+        auditeeId: id,
+        description: description as string,
+        auditors: {
+          connect: auditorsConnect,
+        },
+        terms: {
+          create: {
+            price: Number(price) || 1_000,
+            duration: Number(duration) || 3,
+          },
+        },
+      },
+    })
+    .then(() => {
+      return {
+        success: true,
+      };
+    })
+    .catch((error) => {
+      return {
+        success: false,
+        error: error.name,
+      };
+    });
 };

@@ -13,6 +13,7 @@ import { Pencil } from "@/assets";
 import { updateProfile, createUser } from "@/lib/actions/users";
 import { Button } from "@/components/Button";
 import { Column, Row } from "@/components/Box";
+import DynamicLink from "@/components/Link";
 
 export const UserProfileData = ({ user }: { user: UserProfile }): JSX.Element => {
   const mounted = useIsMounted();
@@ -52,27 +53,42 @@ export const UserProfileData = ({ user }: { user: UserProfile }): JSX.Element =>
         <p className="text-white/60">{user.address}</p>
         <Row className="gap-8 items-start">
           <Icon size="xl" image={user.profile?.image} seed={user.address} />
-          <Column className="items-start">
-            <Column className="gap-4">
-              <Form.Text
-                name="name"
-                disabled={!isEditing || isPending}
-                defaultValue={user.profile ? user.profile.name || "" : ""}
-                aria-disabled={!isEditing || isPending}
-              />
+          <Column className="items-start gap-4">
+            <Form.Input
+              type="text"
+              name="name"
+              disabled={!isEditing || isPending}
+              defaultValue={user.profile ? user.profile.name || "" : ""}
+              aria-disabled={!isEditing || isPending}
+            />
+            <div className="pl-2">
               <Form.Radio
                 name="available"
                 defaultChecked={user.profile?.available}
                 disabled={!isEditing || isPending}
                 aria-disabled={!isEditing || isPending}
               />
-            </Column>
-            <div className="pl-[3px]">
-              <p className="text-white/60">
+              <Form.Radio
+                name="auditorRole"
+                text="auditor role"
+                defaultChecked={user.auditorRole}
+                disabled={true}
+                aria-disabled={true}
+              />
+              <Form.Radio
+                name="auditeeRole"
+                text="auditee role"
+                defaultChecked={user.auditeeRole}
+                disabled={true}
+                aria-disabled={true}
+              />
+            </div>
+            <div className="pl-2">
+              <p className="text-white/60 text-xs">
                 Member Since:
                 <span> {user.createdAt.toLocaleDateString()}</span>
               </p>
-              <p className="text-white/60">
+              <p className="text-white/60 text-xs">
                 Last Profile Update:
                 <span> {user.profile?.updatedAt.toLocaleDateString()}</span>
               </p>
@@ -96,6 +112,11 @@ export const UserProfileData = ({ user }: { user: UserProfile }): JSX.Element =>
             </Button>
           </Row>
         )}
+        {isOwner && !isEditing && user.auditeeRole && (
+          <DynamicLink href="/audits/create">
+            <Button>Create Audit</Button>
+          </DynamicLink>
+        )}
       </Column>
     </form>
   );
@@ -107,14 +128,6 @@ export const UserOnboard = ({ address }: { address: string }): JSX.Element => {
   const { address: connectedAddress } = useAccount();
   const [isPending, startTransition] = useTransition();
   const [error, setError] = useState("");
-
-  if (!mounted) {
-    return <Loader className="h-12" />;
-  }
-
-  if (mounted && connectedAddress !== address) {
-    return <h2>This is not a user of Bevor Protocol</h2>;
-  }
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>): void => {
     e.preventDefault();
@@ -133,6 +146,14 @@ export const UserOnboard = ({ address }: { address: string }): JSX.Element => {
     });
   };
 
+  if (!mounted) {
+    return <Loader className="h-12" />;
+  }
+
+  if (mounted && connectedAddress !== address) {
+    return <h2>This is not a user of Bevor Protocol</h2>;
+  }
+
   return (
     <Column className="gap-8 items-center">
       <h2 className="text-xl">Welcome to Bevor! Let`s create your profile</h2>
@@ -142,7 +163,7 @@ export const UserOnboard = ({ address }: { address: string }): JSX.Element => {
           <Icon size="xl" seed={address} />
           <label htmlFor="name">
             <p>Display Name</p>
-            <Form.Text name="name" disabled={isPending} aria-disabled={isPending} />
+            <Form.Input type="text" name="name" disabled={isPending} aria-disabled={isPending} />
           </label>
           <Column className="items-start gap-4">
             <Form.Radio name="available" disabled={isPending} aria-disabled={isPending} />

@@ -86,3 +86,11 @@ export const LeaderboardSkeleton = (): JSX.Element => {
     </Column>
   );
 };
+
+export const HomeStatSkeleton = (): JSX.Element => {
+  return (
+    <Card className="p-6 items-center justify-center">
+      <Loader className="h-12" />
+    </Card>
+  );
+};

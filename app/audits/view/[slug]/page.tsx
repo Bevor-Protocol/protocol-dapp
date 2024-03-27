@@ -16,7 +16,7 @@ const AuditDashboardPage = ({
   const display = searchParams.display ?? "details";
 
   return (
-    <section className="flex flex-col h-full items-center px-screen">
+    <section className="flex flex-col h-full items-center px-content-limit">
       <div className="flex flex-col w-full max-w-[1000px] gap-8 py-8 justify-start items-center h-full">
         <Column className="w-full gap-4">
           <Suspense fallback={<AuditDetailedSkeleton />}>
@@ -25,14 +25,14 @@ const AuditDashboardPage = ({
           <Column className="p-4">
             <Row className="gap-4">
               <Link
-                href={`/audits/${params.slug}?display=details`}
+                href={`/audits/view/${params.slug}?display=details`}
                 className="outline-none"
                 scroll={false}
               >
                 <Toggle active={display === "details"} title={"details"} />
               </Link>
               <Link
-                href={`/audits/${params.slug}?display=audit`}
+                href={`/audits/view/${params.slug}?display=audit`}
                 className="outline-none"
                 scroll={false}
               >

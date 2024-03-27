@@ -16,7 +16,7 @@ const LeaderboardPage = ({ searchParams }: { searchParams: SearchI }): JSX.Eleme
   const order = searchParams.order ?? "asc";
 
   return (
-    <section className="flex flex-col h-full items-center px-screen">
+    <section className="flex flex-col h-full items-center px-content-limit">
       <div className="flex flex-col scroll-table">
         <LeaderboardNav headers={headers} sort={sort} order={order} />
         {/* must add the key here to get suspense boundary on each new route */}
