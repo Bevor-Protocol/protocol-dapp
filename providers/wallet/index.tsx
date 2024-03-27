@@ -4,7 +4,13 @@ import { type State, WagmiProvider } from "wagmi";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { config } from "./config";
 
-const queryClient = new QueryClient();
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      staleTime: 5 * 1000,
+    },
+  },
+});
 
 const WalletProvider = ({
   children,

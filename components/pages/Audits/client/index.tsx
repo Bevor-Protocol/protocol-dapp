@@ -1,17 +1,22 @@
 /* eslint-disable @next/next/no-img-element */
 "use client";
 
+import { useEffect } from "react";
 import { useRouter, usePathname } from "next/navigation";
 import { User, Profile } from "@prisma/client";
 import { useAccount } from "wagmi";
+import { useQuery } from "@tanstack/react-query";
 
 import { Icon } from "@/components/Icon";
 import DynamicLink from "@/components/Link";
-import { Row } from "@/components/Box";
+import { Column, Row } from "@/components/Box";
 import { Button } from "@/components/Button";
 import { Toggle } from "@/components/Toggle";
 import * as Tooltip from "@/components/Tooltip";
 import { cn, trimAddress } from "@/lib/utils";
+import { getUserProfile } from "@/lib/actions/users";
+import { Loader } from "@/components/Loader";
+import { Arrow } from "@/assets";
 
 export const AuditDashboardHeader = ({ display }: { display: string }): JSX.Element => {
   const router = useRouter();
@@ -91,4 +96,44 @@ export const AuditDashboardBtn = ({
       <span>{buttonLabel()}</span>
     </Button>
   );
+};
+
+export const AuditCreation = (): JSX.Element => {
+  const { address } = useAccount();
+  const router = useRouter();
+
+  const { data, isFetchedAfterMount, isPending } = useQuery({
+    queryKey: ["user", address || ""],
+    queryFn: () => {
+      if (!address) return null;
+      return getUserProfile(address as string);
+    },
+  });
+
+  useEffect(() => {
+    if (!isFetchedAfterMount || isPending) return;
+    if (!address) {
+      router.push("/");
+    }
+    if (!data) {
+      router.push(`/user/${address}`);
+    }
+  }, [isFetchedAfterMount, isPending, router, data, address]);
+
+  if (!isFetchedAfterMount || isPending) return <Loader className="h-12" />;
+
+  if (!data?.auditeeRole)
+    return (
+      <Column className="items-center gap-4">
+        <p>Claim the Auditee role before creating an audit</p>
+        <DynamicLink href={`/user/${address}`}>
+          <Button>
+            <span>Dashboard</span>
+            <Arrow height="0.75rem" width="0.75rem" />
+          </Button>
+        </DynamicLink>
+      </Column>
+    );
+
+  return <p>k</p>;
 };

@@ -1,7 +1,8 @@
 import { Suspense } from "react";
 
 import { Arrow } from "@/assets";
-import { HomeStat, HomeStatSkeleton } from "@/components/pages/Home";
+import { HomeStat } from "@/components/pages/Home";
+import { HomeStatSkeleton } from "@/components/Loader";
 import { Button } from "@/components/Button";
 import * as Actions from "@/lib/actions/protocolData";
 import { cn } from "@/lib/utils";

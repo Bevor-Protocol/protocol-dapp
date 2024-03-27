@@ -43,7 +43,7 @@ export const AuditCard = ({
             <span className="text-white/60">TBD</span>
           )}
         </Row>
-        <DynamicLink href={`/audits/${audit.id}`} disabled={disabled} transition>
+        <DynamicLink href={`/audits/view/${audit.id}`} disabled={disabled} transition>
           <span className="block p-1">View Audit</span>
         </DynamicLink>
       </Row>
