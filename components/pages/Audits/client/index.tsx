@@ -166,7 +166,7 @@ const AuditForm = ({ address, userId }: { address: string; userId: string }): JS
         />
         <Form.TextArea
           placeholder="Audit Description..."
-          className="max-h-10 resize-y"
+          className="h-16"
           name="description"
           disabled={actionPending}
           required
