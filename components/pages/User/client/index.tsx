@@ -126,15 +126,35 @@ export const UserOnboard = ({ address }: { address: string }): JSX.Element => {
         <Column className="gap-4 items-center">
           <p className="text-white/60">{address}</p>
           <Icon size="xl" seed={address} />
-          <label htmlFor="name">
-            <p>Display Name</p>
-            <Form.Input type="text" name="name" disabled={isPending} aria-disabled={isPending} />
-          </label>
-          <Column className="items-start gap-4">
-            <Form.Radio name="available" disabled={isPending} aria-disabled={isPending} />
-            <p>Claim a role</p>
-            <Form.Radio name="auditor" disabled={isPending} aria-disabled={isPending} />
-            <Form.Radio name="auditee" disabled={isPending} aria-disabled={isPending} />
+          <Form.Input
+            type="text"
+            text="Display Name"
+            name="name"
+            disabled={isPending}
+            aria-disabled={isPending}
+          />
+          <Column className="items-stretch gap-4">
+            <Form.Radio
+              name="available"
+              disabled={isPending}
+              aria-disabled={isPending}
+              defaultChecked={false}
+              text="is available"
+            />
+            <Form.Radio
+              name="auditor"
+              disabled={isPending}
+              aria-disabled={isPending}
+              defaultChecked={false}
+              text="auditor role"
+            />
+            <Form.Radio
+              name="auditee"
+              disabled={isPending}
+              aria-disabled={isPending}
+              defaultChecked={false}
+              text="auditee role"
+            />
           </Column>
           <Row className="gap-4">
             <Button type="submit">

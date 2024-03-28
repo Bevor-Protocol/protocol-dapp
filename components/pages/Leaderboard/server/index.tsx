@@ -18,11 +18,11 @@ export const LeaderboardData = async ({
       {data.map((item, ind) => (
         <DynamicLink key={ind} href={`/user/${item.address}`}>
           <ul
-            className="grid grid-cols-12 list-none m-0 p-2 rounded-md 
+            className="grid grid-cols-12 list-none m-0 p-2 rounded-md
           shadow bg-dark cursor-pointer transition-colors hover:bg-dark-primary-20"
           >
             <li
-              className="grid-child cursor-pointer rounded-lg 
+              className="grid-child cursor-pointer rounded-lg text-sm
             w-fit flex items-center 
             gap-2 whitespace-nowrap max-w-full"
             >
@@ -30,28 +30,28 @@ export const LeaderboardData = async ({
               <span>{item.profile?.name || trimAddress(item.address)}</span>
             </li>
             <li
-              className="grid-child cursor-pointer rounded-lg 
+              className="grid-child cursor-pointer rounded-lg text-sm
             w-fit flex items-center 
             gap-2 whitespace-nowrap max-w-full"
             >
               <span>{item.totalValue.toLocaleString()}</span>
             </li>
             <li
-              className="grid-child cursor-pointer rounded-lg 
+              className="grid-child cursor-pointer rounded-lg text-sm
             w-fit flex items-center 
             gap-2 whitespace-nowrap max-w-full"
             >
               <span>{item.totalActive.toLocaleString()}</span>
             </li>
             <li
-              className="grid-child cursor-pointer rounded-lg 
+              className="grid-child cursor-pointer rounded-lg text-sm
             w-fit flex items-center 
             gap-2 whitespace-nowrap max-w-full"
             >
               <span>{item.totalComplete.toLocaleString()}</span>
             </li>
             <li
-              className="grid-child cursor-pointer rounded-lg 
+              className="grid-child cursor-pointer rounded-lg text-sm
             w-fit flex items-center 
             gap-2 whitespace-nowrap max-w-full"
             >
@@ -63,11 +63,11 @@ export const LeaderboardData = async ({
       {data.map((item, ind) => (
         <DynamicLink key={ind} href={`/user/${item.address}`}>
           <ul
-            className="grid grid-cols-12 list-none m-0 p-2 rounded-md 
+            className="grid grid-cols-12 list-none m-0 p-2 rounded-md
           shadow bg-dark cursor-pointer transition-colors hover:bg-dark-primary-20"
           >
             <li
-              className="grid-child cursor-pointer rounded-lg 
+              className="grid-child cursor-pointer rounded-lg text-sm
             w-fit flex items-center 
             gap-2 whitespace-nowrap max-w-full"
             >
@@ -75,28 +75,28 @@ export const LeaderboardData = async ({
               <span>{item.profile?.name || trimAddress(item.address)}</span>
             </li>
             <li
-              className="grid-child cursor-pointer rounded-lg 
+              className="grid-child cursor-pointer rounded-lg text-sm
             w-fit flex items-center 
             gap-2 whitespace-nowrap max-w-full"
             >
               <span>{item.totalValue.toLocaleString()}</span>
             </li>
             <li
-              className="grid-child cursor-pointer rounded-lg 
+              className="grid-child cursor-pointer rounded-lg text-sm
             w-fit flex items-center 
             gap-2 whitespace-nowrap max-w-full"
             >
               <span>{item.totalActive.toLocaleString()}</span>
             </li>
             <li
-              className="grid-child cursor-pointer rounded-lg 
+              className="grid-child cursor-pointer rounded-lg text-sm
             w-fit flex items-center 
             gap-2 whitespace-nowrap max-w-full"
             >
               <span>{item.totalComplete.toLocaleString()}</span>
             </li>
             <li
-              className="grid-child cursor-pointer rounded-lg 
+              className="grid-child cursor-pointer rounded-lg text-sm
             w-fit flex items-center 
             gap-2 whitespace-nowrap max-w-full"
             >
@@ -108,11 +108,11 @@ export const LeaderboardData = async ({
       {data.map((item, ind) => (
         <DynamicLink key={ind} href={`/user/${item.address}`}>
           <ul
-            className="grid grid-cols-12 list-none m-0 p-2 rounded-md 
+            className="grid grid-cols-12 list-none m-0 p-2 rounded-md
           shadow bg-dark cursor-pointer transition-colors hover:bg-dark-primary-20"
           >
             <li
-              className="grid-child cursor-pointer rounded-lg 
+              className="grid-child cursor-pointer rounded-lg text-sm
             w-fit flex items-center 
             gap-2 whitespace-nowrap max-w-full"
             >
@@ -120,28 +120,28 @@ export const LeaderboardData = async ({
               <span>{item.profile?.name || trimAddress(item.address)}</span>
             </li>
             <li
-              className="grid-child cursor-pointer rounded-lg 
+              className="grid-child cursor-pointer rounded-lg text-sm
             w-fit flex items-center 
             gap-2 whitespace-nowrap max-w-full"
             >
               <span>{item.totalValue.toLocaleString()}</span>
             </li>
             <li
-              className="grid-child cursor-pointer rounded-lg 
+              className="grid-child cursor-pointer rounded-lg text-sm
             w-fit flex items-center 
             gap-2 whitespace-nowrap max-w-full"
             >
               <span>{item.totalActive.toLocaleString()}</span>
             </li>
             <li
-              className="grid-child cursor-pointer rounded-lg 
+              className="grid-child cursor-pointer rounded-lg text-sm
             w-fit flex items-center 
             gap-2 whitespace-nowrap max-w-full"
             >
               <span>{item.totalComplete.toLocaleString()}</span>
             </li>
             <li
-              className="grid-child cursor-pointer rounded-lg 
+              className="grid-child cursor-pointer rounded-lg text-sm
             w-fit flex items-center 
             gap-2 whitespace-nowrap max-w-full"
             >
@@ -153,11 +153,11 @@ export const LeaderboardData = async ({
       {data.map((item, ind) => (
         <DynamicLink key={ind} href={`/user/${item.address}`}>
           <ul
-            className="grid grid-cols-12 list-none m-0 p-2 rounded-md 
+            className="grid grid-cols-12 list-none m-0 p-2 rounded-md
           shadow bg-dark cursor-pointer transition-colors hover:bg-dark-primary-20"
           >
             <li
-              className="grid-child cursor-pointer rounded-lg 
+              className="grid-child cursor-pointer rounded-lg text-sm
             w-fit flex items-center 
             gap-2 whitespace-nowrap max-w-full"
             >
@@ -165,73 +165,28 @@ export const LeaderboardData = async ({
               <span>{item.profile?.name || trimAddress(item.address)}</span>
             </li>
             <li
-              className="grid-child cursor-pointer rounded-lg 
+              className="grid-child cursor-pointer rounded-lg text-sm
             w-fit flex items-center 
             gap-2 whitespace-nowrap max-w-full"
             >
               <span>{item.totalValue.toLocaleString()}</span>
             </li>
             <li
-              className="grid-child cursor-pointer rounded-lg 
+              className="grid-child cursor-pointer rounded-lg text-sm
             w-fit flex items-center 
             gap-2 whitespace-nowrap max-w-full"
             >
               <span>{item.totalActive.toLocaleString()}</span>
             </li>
             <li
-              className="grid-child cursor-pointer rounded-lg 
+              className="grid-child cursor-pointer rounded-lg text-sm
             w-fit flex items-center 
             gap-2 whitespace-nowrap max-w-full"
             >
               <span>{item.totalComplete.toLocaleString()}</span>
             </li>
             <li
-              className="grid-child cursor-pointer rounded-lg 
-            w-fit flex items-center 
-            gap-2 whitespace-nowrap max-w-full"
-            >
-              <span>{String(item.profile?.available)}</span>
-            </li>
-          </ul>
-        </DynamicLink>
-      ))}
-      {data.map((item, ind) => (
-        <DynamicLink key={ind} href={`/user/${item.address}`}>
-          <ul
-            className="grid grid-cols-12 list-none m-0 p-2 rounded-md 
-          shadow bg-dark cursor-pointer transition-colors hover:bg-dark-primary-20"
-          >
-            <li
-              className="grid-child cursor-pointer rounded-lg 
-            w-fit flex items-center 
-            gap-2 whitespace-nowrap max-w-full"
-            >
-              <Icon image={item.profile?.image} size="md" seed={item.address} />
-              <span>{item.profile?.name || trimAddress(item.address)}</span>
-            </li>
-            <li
-              className="grid-child cursor-pointer rounded-lg 
-            w-fit flex items-center 
-            gap-2 whitespace-nowrap max-w-full"
-            >
-              <span>{item.totalValue.toLocaleString()}</span>
-            </li>
-            <li
-              className="grid-child cursor-pointer rounded-lg 
-            w-fit flex items-center 
-            gap-2 whitespace-nowrap max-w-full"
-            >
-              <span>{item.totalActive.toLocaleString()}</span>
-            </li>
-            <li
-              className="grid-child cursor-pointer rounded-lg 
-            w-fit flex items-center 
-            gap-2 whitespace-nowrap max-w-full"
-            >
-              <span>{item.totalComplete.toLocaleString()}</span>
-            </li>
-            <li
-              className="grid-child cursor-pointer rounded-lg 
+              className="grid-child cursor-pointer rounded-lg text-sm
             w-fit flex items-center 
             gap-2 whitespace-nowrap max-w-full"
             >
