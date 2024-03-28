@@ -1,6 +1,6 @@
 "use server";
 import { prisma } from "@/lib/db/prisma.server";
-import { Profile, Prisma } from "@prisma/client";
+import { Prisma } from "@prisma/client";
 
 import type { UserProfile, UserWithCount, AuditFull } from "@/lib/types/actions";
 import { revalidatePath } from "next/cache";
@@ -253,19 +253,51 @@ export const createUser = (address: string, profileData: FormData): Promise<Crea
     });
 };
 
-export const updateProfile = async (id: string, profileData: FormData): Promise<Profile> => {
-  const data = Object.fromEntries(profileData);
-  const updated = await prisma.profile.update({
-    where: {
-      userId: id,
-    },
-    data: {
-      ...data,
-      available: data.available == "true", // add zod validation
-    },
-  });
-  revalidatePath(`/user/${id}`);
-  return updated;
+export const updateUser = async (id: string, form: FormData): Promise<CreateUserI> => {
+  const data = Object.fromEntries(form);
+  const userData: Record<string, boolean> = {};
+  const profileData: Record<string, boolean | string> = {};
+  // add zod validation
+  if (data.auditeeRole) {
+    userData.auditeeRole = data.auditeeRole == "true";
+  }
+  if (data.auditorRole) {
+    userData.auditorRole = data.auditorRole == "true";
+  }
+  if (data.available) {
+    profileData.available = data.available == "true";
+  }
+  if (data.name) {
+    profileData.name = data.name as string;
+  }
+  return prisma.user
+    .update({
+      where: {
+        id,
+      },
+      data: {
+        ...userData,
+        profile: {
+          update: {
+            ...profileData,
+          },
+        },
+      },
+    })
+    .then(() => {
+      // currently revalidates entire path, which contains several server functions
+      // revalidateTag exists, but using server actions you can't directly tag calls.
+      revalidatePath("/user/[slug]");
+      return {
+        success: true,
+      };
+    })
+    .catch((error) => {
+      return {
+        success: false,
+        error: error.name,
+      };
+    });
 };
 
 export const searchAuditors = (query?: string): Promise<UserProfile[]> => {

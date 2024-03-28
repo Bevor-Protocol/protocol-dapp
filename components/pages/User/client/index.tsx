@@ -15,10 +15,13 @@ import { Button } from "@/components/Button";
 import { Column, Row } from "@/components/Box";
 import DynamicLink from "@/components/Link";
 import { trimAddress } from "@/lib/utils";
+import { useModal } from "@/hooks/contexts";
+import UserEdit from "@/components/Modal/Content/userEdit";
 
 export const UserProfileData = ({ user }: { user: UserProfile }): JSX.Element => {
   const mounted = useIsMounted();
   const { address } = useAccount();
+  const { toggleOpen, setContent } = useModal();
 
   const isOwner = useMemo(() => {
     return user.address == address;
@@ -28,10 +31,18 @@ export const UserProfileData = ({ user }: { user: UserProfile }): JSX.Element =>
     return <Loader className="h-12" />;
   }
 
+  const handleModal = (): void => {
+    setContent(<UserEdit user={user} />);
+    toggleOpen();
+  };
+
   return (
     <Column className="gap-1 justify-center items-center w-full relative">
       {isOwner && (
-        <Social className="absolute right-1/2 top-0 translate-x-[100px] cursor-pointer">
+        <Social
+          className="absolute right-1/2 top-0 translate-x-[100px] cursor-pointer"
+          onClick={handleModal}
+        >
           <Pencil height="14px" width="14px" fill="white" />
         </Social>
       )}
@@ -48,21 +59,21 @@ export const UserProfileData = ({ user }: { user: UserProfile }): JSX.Element =>
         <Form.Radio
           name="available"
           text="is available"
-          defaultChecked={user.profile?.available}
+          checked={user.profile?.available}
           disabled={true}
           aria-disabled={true}
         />
         <Form.Radio
           name="auditorRole"
           text="auditor role"
-          defaultChecked={user.auditorRole}
+          checked={user.auditorRole}
           disabled={true}
           aria-disabled={true}
         />
         <Form.Radio
           name="auditeeRole"
           text="auditee role"
-          defaultChecked={user.auditeeRole}
+          checked={user.auditeeRole}
           disabled={true}
           aria-disabled={true}
         />
