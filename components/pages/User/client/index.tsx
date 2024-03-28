@@ -4,22 +4,21 @@ import { useMemo, useState, useTransition } from "react";
 import { useAccount } from "wagmi";
 import { useRouter } from "next/navigation";
 
-import { Icon } from "@/components/Icon";
+import { Icon, Social } from "@/components/Icon";
 import { useIsMounted } from "@/hooks/useIsMounted";
 import { Loader } from "@/components/Loader";
 import { UserProfile } from "@/lib/types/actions";
 import * as Form from "@/components/Form";
 import { Pencil } from "@/assets";
-import { updateProfile, createUser } from "@/lib/actions/users";
+import { createUser } from "@/lib/actions/users";
 import { Button } from "@/components/Button";
 import { Column, Row } from "@/components/Box";
 import DynamicLink from "@/components/Link";
+import { trimAddress } from "@/lib/utils";
 
 export const UserProfileData = ({ user }: { user: UserProfile }): JSX.Element => {
   const mounted = useIsMounted();
   const { address } = useAccount();
-  const [isEditing, setIsEditing] = useState(false);
-  const [isPending, startTransition] = useTransition();
 
   const isOwner = useMemo(() => {
     return user.address == address;
@@ -29,96 +28,51 @@ export const UserProfileData = ({ user }: { user: UserProfile }): JSX.Element =>
     return <Loader className="h-12" />;
   }
 
-  const handleEdit = (): void => {
-    if (isEditing) {
-      const formEl = document.getElementById("profile") as HTMLFormElement;
-      formEl.reset();
-    }
-    setIsEditing(!isEditing);
-  };
-
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>): void => {
-    e.preventDefault();
-    const formData = new FormData(e.currentTarget);
-    formData.set("available", formData.has("available") ? "true" : "false");
-    startTransition(async () => {
-      await updateProfile(user.id, formData);
-      setIsEditing(false);
-    });
-  };
-
   return (
-    <form onSubmit={handleSubmit} id="profile" className="w-full">
-      <Column className="items-start gap-4">
-        <p className="text-white/60">{user.address}</p>
-        <Row className="gap-8 items-start">
-          <Icon size="xl" image={user.profile?.image} seed={user.address} />
-          <Column className="items-start gap-4">
-            <Form.Input
-              type="text"
-              name="name"
-              disabled={!isEditing || isPending}
-              defaultValue={user.profile ? user.profile.name || "" : ""}
-              aria-disabled={!isEditing || isPending}
-            />
-            <div className="pl-2">
-              <Form.Radio
-                name="available"
-                defaultChecked={user.profile?.available}
-                disabled={!isEditing || isPending}
-                aria-disabled={!isEditing || isPending}
-              />
-              <Form.Radio
-                name="auditorRole"
-                text="auditor role"
-                defaultChecked={user.auditorRole}
-                disabled={true}
-                aria-disabled={true}
-              />
-              <Form.Radio
-                name="auditeeRole"
-                text="auditee role"
-                defaultChecked={user.auditeeRole}
-                disabled={true}
-                aria-disabled={true}
-              />
-            </div>
-            <div className="pl-2">
-              <p className="text-white/60 text-xs">
-                Member Since:
-                <span> {user.createdAt.toLocaleDateString()}</span>
-              </p>
-              <p className="text-white/60 text-xs">
-                Last Profile Update:
-                <span> {user.profile?.updatedAt.toLocaleDateString()}</span>
-              </p>
-            </div>
-          </Column>
-          {isOwner && (
-            <div className="cursor-pointer text-base" onClick={handleEdit}>
-              {isEditing ? <div>&#10005;</div> : <Pencil fill="white" height="15px" width="15px" />}
-            </div>
-          )}
-        </Row>
-        {isOwner && isEditing && (
-          <Row className="gap-4">
-            <Button type="submit">
-              <span>Submit</span>
-            </Button>
-            <Button type="reset">
-              <Row className="align-middle gap-1 text-dark text-sm">
-                <span>Reset</span>
-              </Row>
-            </Button>
-          </Row>
-        )}
-        {isOwner && !isEditing && user.auditeeRole && (
-          <DynamicLink href="/audits/create">
-            <Button>Create Audit</Button>
-          </DynamicLink>
-        )}
-      </Column>
-    </form>
+    <Column className="gap-1 justify-center items-center w-full relative">
+      {isOwner && (
+        <Social className="absolute right-1/2 top-0 translate-x-[100px] cursor-pointer">
+          <Pencil height="14px" width="14px" fill="white" />
+        </Social>
+      )}
+      <Icon size="xxl" image={user.profile?.image} seed={user.address} />
+      <p className="text-sm">
+        {user.profile?.name && <span>{user.profile.name} | </span>}
+        <span>{trimAddress(user.address)}</span>
+      </p>
+      <p className="text-white/60 text-xs">
+        Member Since:
+        <span> {user.createdAt.toLocaleDateString()}</span>
+      </p>
+      <Row className="items-stretch gap-4 my-4">
+        <Form.Radio
+          name="available"
+          text="is available"
+          defaultChecked={user.profile?.available}
+          disabled={true}
+          aria-disabled={true}
+        />
+        <Form.Radio
+          name="auditorRole"
+          text="auditor role"
+          defaultChecked={user.auditorRole}
+          disabled={true}
+          aria-disabled={true}
+        />
+        <Form.Radio
+          name="auditeeRole"
+          text="auditee role"
+          defaultChecked={user.auditeeRole}
+          disabled={true}
+          aria-disabled={true}
+        />
+      </Row>
+      {isOwner && user.auditeeRole && (
+        <DynamicLink href="/audits/create">
+          <Button>Create Audit</Button>
+        </DynamicLink>
+      )}
+    </Column>
   );
 };
 

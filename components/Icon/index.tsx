@@ -22,16 +22,24 @@ const sizeMapper: Record<string, Record<string, string>> = {
     desktop: "90px",
     mobile: "75px",
   },
+  xxl: {
+    desktop: "120px",
+    mobile: "90px",
+  },
 };
 
-interface Props extends React.HTMLAttributes<HTMLElement> {
+interface IconI extends React.HTMLAttributes<HTMLElement> {
   size: string;
   image?: string | null;
   seed?: string | null;
   className?: string;
 }
 
-export const Icon: React.FC<Props> = ({ size, image, seed, className, ...rest }): JSX.Element => {
+interface SocialI extends React.HTMLAttributes<HTMLElement> {
+  children: React.ReactNode;
+}
+
+export const Icon: React.FC<IconI> = ({ size, image, seed, className, ...rest }) => {
   const { desktop, mobile } = sizeMapper[size];
 
   let urlUse = `url(https://avatar.vercel.sh/${seed?.replace(/\s/g, "")})`;
@@ -53,11 +61,15 @@ export const Icon: React.FC<Props> = ({ size, image, seed, className, ...rest })
   );
 };
 
-export const Social = ({ children }: { children: React.ReactNode }): JSX.Element => {
+export const Social: React.FC<SocialI> = ({ children, className, ...rest }) => {
   return (
     <div
-      className="flex justify-center items-center relative rounded-full
-p-1 border border-transparent transition-colors hover:bg-dark-primary-30"
+      className={cn(
+        "flex justify-center items-center rounded-full p-1",
+        "border border-transparent transition-colors hover:bg-dark-primary-30",
+        className,
+      )}
+      {...rest}
     >
       {children}
     </div>
