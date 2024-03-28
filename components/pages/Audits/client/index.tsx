@@ -16,7 +16,6 @@ import * as Tooltip from "@/components/Tooltip";
 import * as Form from "@/components/Form";
 import * as Dropdown from "@/components/Dropdown";
 import { cn, trimAddress } from "@/lib/utils";
-import { getUserProfile } from "@/lib/actions/users";
 import { Loader } from "@/components/Loader";
 import { Arrow } from "@/assets";
 import { useDropdown } from "@/hooks/useDropdown";
@@ -24,6 +23,7 @@ import { Card } from "@/components/Card";
 import { searchAuditors } from "@/lib/actions/users";
 import { UserProfile } from "@/lib/types/actions";
 import { createAudit } from "@/lib/actions/audits";
+import { useUser } from "@/hooks/contexts";
 
 export const AuditDashboardHeader = ({ display }: { display: string }): JSX.Element => {
   const router = useRouter();
@@ -266,28 +266,21 @@ const AuditForm = ({ address, userId }: { address: string; userId: string }): JS
 export const AuditCreation = (): JSX.Element => {
   const { address } = useAccount();
   const router = useRouter();
-
-  const { data, isFetchedAfterMount, isPending } = useQuery({
-    queryKey: ["user", address || ""],
-    queryFn: () => {
-      if (!address) return null;
-      return getUserProfile(address as string);
-    },
-  });
+  const { user, isFetchedAfterMount, isPending } = useUser();
 
   useEffect(() => {
     if (!isFetchedAfterMount || isPending) return;
     if (!address) {
       router.push("/");
     }
-    if (!data) {
+    if (!user) {
       router.push(`/user/${address}`);
     }
-  }, [isFetchedAfterMount, isPending, router, data, address]);
+  }, [isFetchedAfterMount, isPending, router, user, address]);
 
   if (!isFetchedAfterMount || isPending) return <Loader className="h-12" />;
 
-  if (!data?.auditeeRole)
+  if (!user?.auditeeRole)
     return (
       <Column className="items-center gap-4">
         <p>Claim the Auditee role before creating an audit</p>
@@ -300,5 +293,5 @@ export const AuditCreation = (): JSX.Element => {
       </Column>
     );
 
-  return <AuditForm address={address as string} userId={data.id} />;
+  return <AuditForm address={address as string} userId={user.id} />;
 };

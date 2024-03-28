@@ -1,4 +1,5 @@
 import { Address } from "viem";
+import { UserProfile } from "./actions";
 
 export type LeaderboardI = {
   name: string;
@@ -62,4 +63,13 @@ export type HomeStatI = {
 export type ModalStateI = {
   toggleOpen: () => void;
   setContent: (content: React.ReactNode) => void;
+};
+
+export type UserStateI = {
+  user: UserProfile | null | undefined;
+  isLoading: boolean;
+  isFetching: boolean;
+  isPending: boolean;
+  isFetched: boolean;
+  isFetchedAfterMount: boolean;
 };
