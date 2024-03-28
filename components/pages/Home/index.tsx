@@ -9,6 +9,8 @@ export const HomeStat = ({ action, symbol, text, queryKey }: HomeStatI): JSX.Ele
   // I converted this to a client component since it's not important for user interaction
   // and it CAN block the wagmi connector. I was seeing reconnecting -> disconnected -> connected
   // state in wagmi, which made it lose its interactivity.
+
+  // The slower requests still block others from completing.
   const { data, isLoading } = useQuery({
     queryKey: ["homestats", queryKey],
     queryFn: () => action(),

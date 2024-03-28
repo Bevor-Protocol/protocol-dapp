@@ -47,7 +47,7 @@ const UserData = async ({ address }: { address: string }): Promise<JSX.Element> 
           </Row>
         </Column>
       )}
-      {auditsAuditeeOpen.length > 0 && (
+      {auditsAuditeePending.length > 0 && (
         <Column className="items-start gap-2">
           <p>Pending:</p>
           <Row className="w-full justify-start">
