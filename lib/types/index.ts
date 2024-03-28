@@ -58,6 +58,7 @@ export type HomeStatI = {
   action: () => Promise<number>;
   symbol?: string;
   text: string;
+  queryKey: string;
 };
 
 export type ModalStateI = {

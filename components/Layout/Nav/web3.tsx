@@ -1,7 +1,6 @@
 "use client";
 import { useAccount } from "wagmi";
 
-import { useIsMounted } from "@/hooks/useIsMounted";
 import { useModal } from "@/hooks/contexts";
 import { Chevron } from "@/assets";
 import { Icon } from "@/components/Icon";
@@ -88,7 +87,6 @@ const Web3Profile = (): JSX.Element => {
 
 const Web3Holder = (): JSX.Element => {
   const { isConnected } = useAccount();
-  const mounted = useIsMounted();
   const { setContent, toggleOpen } = useModal();
 
   const handleWalletModal = (): void => {
@@ -98,9 +96,9 @@ const Web3Holder = (): JSX.Element => {
 
   return (
     <Row className="gap-2 items-center relative">
-      {isConnected && mounted && <Web3Network />}
-      {isConnected && mounted && <Web3Profile />}
-      {!isConnected && mounted && (
+      {isConnected && <Web3Network />}
+      {isConnected && <Web3Profile />}
+      {!isConnected && (
         <Button onClick={handleWalletModal}>
           <span>connect</span>
         </Button>
