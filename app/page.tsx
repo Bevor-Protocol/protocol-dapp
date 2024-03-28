@@ -1,5 +1,5 @@
 import { Arrow } from "@/assets";
-import { HomeStat } from "@/components/pages/Home";
+import { HomeStat } from "./_components";
 import { Button } from "@/components/Button";
 import * as Actions from "@/lib/actions/protocolData";
 import { cn } from "@/lib/utils";

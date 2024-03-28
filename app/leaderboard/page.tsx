@@ -1,7 +1,7 @@
 import { Suspense } from "react";
 
-import { LeaderboardNav } from "@/components/pages/Leaderboard/client";
-import { LeaderboardData } from "@/components/pages/Leaderboard/server";
+import { LeaderboardNav } from "./_components/client";
+import { LeaderboardData } from "./_components/server";
 import { LeaderboardSkeleton } from "@/components/Loader";
 
 const headers = ["name", "money", "active", "completed", "available"];
@@ -17,7 +17,7 @@ const LeaderboardPage = ({ searchParams }: { searchParams: SearchI }): JSX.Eleme
 
   return (
     <section className="flex flex-col h-full items-center px-content-limit">
-      <div className="flex flex-col scroll-table">
+      <div className="flex flex-col scroll-table h-full">
         <LeaderboardNav headers={headers} sort={sort} order={order} />
         {/* must add the key here to get suspense boundary on each new route */}
         <Suspense fallback={<LeaderboardSkeleton />} key={JSON.stringify(searchParams)}>

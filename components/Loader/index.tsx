@@ -79,10 +79,8 @@ export const AuditDetailedSkeleton = (): JSX.Element => {
 
 export const LeaderboardSkeleton = (): JSX.Element => {
   return (
-    <Column className="w-full gap-1">
-      {Array.from({ length: 20 }).map((_, ind) => (
-        <Skeleton className="p-2 border h-12 border-transparent" key={ind} />
-      ))}
+    <Column className="w-full gap-1 justify-center items-center h-full">
+      <Loader className="h-12" />
     </Column>
   );
 };

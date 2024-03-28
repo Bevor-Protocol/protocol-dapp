@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Audits } from "@/components/pages/Audits/server";
+import { Audits } from "./_components";
 import { Suspense } from "react";
 import { Row } from "@/components/Box";
 import { Toggle } from "@/components/Toggle";

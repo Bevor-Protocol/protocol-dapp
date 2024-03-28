@@ -1,5 +1,5 @@
 import { getUserAuditsAuditee, getUserAuditsAuditor } from "@/lib/actions/users";
-import { AuditCard } from "@/components/pages/Audits/server";
+import { AuditCard } from "@/components/Audit";
 import { Column, Row } from "@/components/Box";
 
 const UserAudits = async ({ address }: { address: string }): Promise<JSX.Element> => {
@@ -24,7 +24,7 @@ const UserAudits = async ({ address }: { address: string }): Promise<JSX.Element
           <p className="my-2">Open:</p>
           <Row className="w-full justify-start flex-wrap gap-2">
             {auditsAuditeeOpen.map((audit, ind) => (
-              <AuditCard key={ind} audit={audit} disabled={false} />
+              <AuditCard key={ind} audit={audit} />
             ))}
           </Row>
         </div>
@@ -34,7 +34,7 @@ const UserAudits = async ({ address }: { address: string }): Promise<JSX.Element
           <p className="my-2">Pending:</p>
           <Row className="w-full justify-start flex-wrap gap-2">
             {auditsAuditeePending.map((audit, ind) => (
-              <AuditCard key={ind} audit={audit} disabled={false} />
+              <AuditCard key={ind} audit={audit} />
             ))}
           </Row>
         </div>
@@ -44,7 +44,7 @@ const UserAudits = async ({ address }: { address: string }): Promise<JSX.Element
           <p className="my-2">Closed:</p>
           <Row className="w-full justify-start flex-wrap gap-2">
             {auditsAuditeeClosed.map((audit, ind) => (
-              <AuditCard key={ind} audit={audit} disabled={false} />
+              <AuditCard key={ind} audit={audit} />
             ))}
           </Row>
         </div>
@@ -55,7 +55,7 @@ const UserAudits = async ({ address }: { address: string }): Promise<JSX.Element
           <p className="my-2">Open:</p>
           <Row className="w-full justify-start flex-wrap gap-2">
             {auditsAuditorOpen.map((audit, ind) => (
-              <AuditCard key={ind} audit={audit} disabled={false} />
+              <AuditCard key={ind} audit={audit} />
             ))}
           </Row>
         </div>
@@ -65,7 +65,7 @@ const UserAudits = async ({ address }: { address: string }): Promise<JSX.Element
           <p className="my-2">Pending:</p>
           <Row className="w-full justify-start flex-wrap gap-2">
             {auditsAuditorPending.map((audit, ind) => (
-              <AuditCard key={ind} audit={audit} disabled={false} />
+              <AuditCard key={ind} audit={audit} />
             ))}
           </Row>
         </div>
@@ -75,7 +75,7 @@ const UserAudits = async ({ address }: { address: string }): Promise<JSX.Element
           <p className="my-2">Closed:</p>
           <Row className="w-full justify-start flex-wrap gap-2 *:flex-1">
             {auditsAuditorClosed.map((audit, ind) => (
-              <AuditCard key={ind} audit={audit} disabled={false} />
+              <AuditCard key={ind} audit={audit} />
             ))}
           </Row>
         </div>

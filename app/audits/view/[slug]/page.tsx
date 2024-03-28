@@ -2,7 +2,7 @@ import Link from "next/link";
 import { Suspense } from "react";
 
 import { AuditDetailedSkeleton } from "@/components/Loader";
-import { AuditDetailed, AuditMarkdown } from "@/components/pages/Audits/server";
+import { AuditDetailed, AuditMarkdown } from "./_components";
 import { Column, Row } from "@/components/Box";
 import { Toggle } from "@/components/Toggle";
 

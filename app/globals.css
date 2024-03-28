@@ -254,6 +254,7 @@
 
 @layer utilities {
   .conic {
+    aspect-ratio: 1 / 1;
     background: conic-gradient(theme("colors.white"), theme("colors.transparent"));
     -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
     mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
