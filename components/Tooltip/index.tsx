@@ -45,7 +45,7 @@ export const Reference: React.FC<Props> = ({
 export const Content: React.FC<Props> = ({ children, className, target, ...rest }) => {
   return (
     <div
-      className={cn("absolute z-[999]", className)}
+      className={cn("absolute z-[999] text-xs", className)}
       style={{ display: "none" }}
       data-tooltip-target={target}
       {...rest}

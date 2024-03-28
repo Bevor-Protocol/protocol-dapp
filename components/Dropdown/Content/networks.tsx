@@ -17,7 +17,7 @@ const Networks = ({ close }: { close: () => void }): JSX.Element => {
   });
 
   return (
-    <Card className="text-xs">
+    <Card className="text-sm">
       <Column className="px-2 py-2 gap-2">
         <p className="text-white/60 pl-2">Select Network:</p>
         {chains.map((chain) => (

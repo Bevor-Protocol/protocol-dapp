@@ -65,7 +65,7 @@ export const NavDropdown = (): JSX.Element => {
         <Card
           className={cn(
             "absolute top-full right-0 z-[999]",
-            "cursor-default text-xs min-w-52 px-2 py-2 gap-2",
+            "cursor-default text-sm min-w-52 px-2 py-2 gap-2",
             "md:text-base md:top-[unset] md:-right-5 md:bottom-full md:w-svw md:rounded-t-lg",
           )}
         >

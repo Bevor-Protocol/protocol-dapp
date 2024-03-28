@@ -92,7 +92,7 @@ const AuditForm = ({ address, userId }: { address: string; userId: string }): JS
           disabled={mutationPending}
           required
         />
-        <p className="text-xs">Auditors</p>
+        <p className="text-sm">Auditors</p>
         <Row className="gap-2">
           <Dropdown.Main dropdown={dropdown}>
             <Form.Search
@@ -123,15 +123,15 @@ const AuditForm = ({ address, userId }: { address: string; userId: string }): JS
                     >
                       <Icon image={auditor.profile?.image} seed={auditor.address} size="sm" />
                       <div>
-                        <p className="text-xs">{trimAddress(auditor.address)}</p>
+                        <p className="text-sm">{trimAddress(auditor.address)}</p>
                         {auditor.profile?.name && (
-                          <p className="text-xs whitespace-nowrap">{auditor.profile.name}</p>
+                          <p className="text-sm whitespace-nowrap">{auditor.profile.name}</p>
                         )}
                       </div>
                     </HoverItem>
                   ))}
                 {!isPending && auditorsShow.length == 0 && (
-                  <p className="text-xs">No results to show</p>
+                  <p className="text-sm">No results to show</p>
                 )}
               </Card>
             </Dropdown.Content>
@@ -145,9 +145,9 @@ const AuditForm = ({ address, userId }: { address: string; userId: string }): JS
               >
                 <Icon image={auditor.profile?.image} seed={auditor.address} size="sm" />
                 <div>
-                  <p className="text-xs">{trimAddress(auditor.address)}</p>
+                  <p className="text-sm">{trimAddress(auditor.address)}</p>
                   {auditor.profile?.name && (
-                    <p className="text-xs whitespace-nowrap">{auditor.profile.name}</p>
+                    <p className="text-sm whitespace-nowrap">{auditor.profile.name}</p>
                   )}
                 </div>
               </Row>

@@ -14,8 +14,8 @@ interface TextAreaI extends React.InputHTMLAttributes<HTMLTextAreaElement> {
 
 export const Input: React.FC<InputI> = ({ className, text, type, ...rest }) => {
   return (
-    <label className="w-fit max-w-fit *:text-xs">
-      {text && <p className="text-xs mb-1">{text}</p>}
+    <label className="w-fit max-w-fit *:text-sm">
+      {text && <p className="mb-1">{text}</p>}
       <input
         className={cn(
           "appearance-none bg-transparent outline-none",
@@ -34,8 +34,8 @@ export const Input: React.FC<InputI> = ({ className, text, type, ...rest }) => {
 
 export const Search: React.FC<InputI> = ({ className, text, ...rest }) => {
   return (
-    <label className="w-fit max-w-fit *:text-xs">
-      {text && <p className="text-xs mb-1">{text}</p>}
+    <label className="w-fit max-w-fit *:text-sm">
+      {text && <p className="mb-1">{text}</p>}
       <Row
         className={cn(
           "items-center gap-2 px-3 py-2 rounded border border-gray-200/20 outline-none w-56",
@@ -61,12 +61,12 @@ export const Search: React.FC<InputI> = ({ className, text, ...rest }) => {
 
 export const TextArea: React.FC<TextAreaI> = ({ className, text, ...rest }) => {
   return (
-    <label className="*:text-xs">
+    <label className="*:text-sm">
       {text && <p className="mb-1">{text}</p>}
       <textarea
         className={cn(
           "flex w-full rounded-md border border-gray-200/20 bg-transparent",
-          "p-2 text-xs shadow-sm placeholder:text-muted-foreground",
+          "p-2 shadow-sm placeholder:text-muted-foreground",
           "disabled:cursor-not-allowed disabled:opacity-50 disabled:border-transparent",
           "focus-input",
           className,
@@ -79,8 +79,8 @@ export const TextArea: React.FC<TextAreaI> = ({ className, text, ...rest }) => {
 
 export const Radio: React.FC<InputI> = ({ className, text, ...rest }): JSX.Element => {
   return (
-    <Row className="gap-2 items-center justify-between">
-      {text && <p className="text-xs">{text}</p>}
+    <Row className="gap-2 items-center justify-between *:text-sm">
+      {text && <p>{text}</p>}
       <label className="toggle w-fit">
         <input type="checkbox" className={cn("toggle", className)} {...rest} />
         <span className="toggle" />

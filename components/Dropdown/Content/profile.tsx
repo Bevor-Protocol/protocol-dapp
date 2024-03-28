@@ -27,10 +27,10 @@ const Profile = ({ close }: { close: () => void }): JSX.Element => {
   };
 
   return (
-    <Card className="text-[0.65rem] divide-y divide-gray-200/20 text-white/60">
+    <Card className="text-xs divide-y divide-gray-200/20 text-white/60">
       <Column className="gap-2 pb-2 pt-1 px-2">
         <Row className="justify-between items-center">
-          <p className="text-xs">Account</p>
+          <p className="text-sm">Account</p>
           <Social>
             <Copy
               stroke="white"
@@ -43,7 +43,7 @@ const Profile = ({ close }: { close: () => void }): JSX.Element => {
           </Social>
         </Row>
         <p className="text-white">{trimAddress(address)}</p>
-        <p className="">{connector?.name}</p>
+        <p>{connector?.name}</p>
         <Button onClick={(): void => disconnect()} className="text-xs justify-center">
           <Logout height="0.75rem" width="0.75rem" />
           <span>Disconnect</span>
