@@ -1,7 +1,7 @@
 import { Suspense } from "react";
 
 import { Loader } from "@/components/Loader";
-import { UserContent } from "@/components/pages/User/server";
+import UserContent from "@/components/pages/User";
 
 const UserPage = ({ params }: { params: { slug: string } }): JSX.Element => {
   return (

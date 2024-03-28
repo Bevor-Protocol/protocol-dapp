@@ -2,13 +2,8 @@
 import { prisma } from "@/lib/db/prisma.server";
 import { Prisma } from "@prisma/client";
 
-import type { UserProfile, UserWithCount, AuditFull } from "@/lib/types/actions";
+import type { UserProfile, UserWithCount, AuditFull, UserStats } from "@/lib/types/actions";
 import { revalidatePath } from "next/cache";
-
-type UserStats = {
-  moneyPaid: number;
-  moneyEarned: number;
-};
 
 export const getLeaderboard = (key?: string, order?: string): Promise<UserWithCount[]> => {
   let orderClause = {};
@@ -61,8 +56,8 @@ export const getLeaderboard = (key?: string, order?: string): Promise<UserWithCo
         const totalValue = auditor.reduce((acc, audit) => {
           return acc + (audit.terms?.price || 0);
         }, 0);
-        const totalActive = auditor.filter((audit) => !audit.terms?.isFinal).length;
-        const totalComplete = auditor.filter((audit) => audit.terms?.isFinal).length;
+        const totalActive = auditor.filter((audit) => !audit.isFinal).length;
+        const totalComplete = auditor.filter((audit) => audit.isFinal).length;
         return {
           ...rest,
           totalValue,
@@ -202,9 +197,29 @@ export const getUserStats = async (address: string): Promise<UserStats> => {
   const moneyPaid = await getUserMoneyPaid(address);
   const moneyEarned = await getUserMoneyEarned(address);
 
+  const numAuditsCreated = await prisma.audit.count({
+    where: {
+      auditee: {
+        address,
+      },
+    },
+  });
+
+  const numAuditsAudited = await prisma.audit.count({
+    where: {
+      auditors: {
+        some: {
+          address,
+        },
+      },
+    },
+  });
+
   return {
     moneyPaid,
     moneyEarned,
+    numAuditsCreated,
+    numAuditsAudited,
   };
 };
 

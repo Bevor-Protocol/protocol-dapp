@@ -11,27 +11,12 @@ import matter from "gray-matter";
 import { AuditFull, UserProfile } from "@/lib/types/actions";
 
 export const getAudits = (status?: string): Promise<AuditFull[]> => {
-  let filter;
-  switch (status) {
-    case "open":
-      filter = {
-        terms: null,
-      };
-      break;
-    case "pending":
-      filter = {
-        terms: {
-          isFinal: false,
-        },
-      };
-      break;
-    case "closed":
-      filter = {
-        terms: {
-          isFinal: true,
-        },
-      };
-      break;
+  let filter = {};
+  if (status) {
+    filter = {
+      isFinal: status == "closed",
+      isLocked: status != "open",
+    };
   }
 
   return prisma.audit.findMany({

@@ -1,11 +1,11 @@
 /* eslint-disable @next/next/no-img-element */
 "use client";
 
-import { useEffect, useState, useRef, useMemo, useTransition } from "react";
+import { useEffect, useState, useRef, useMemo } from "react";
 import { useRouter, usePathname } from "next/navigation";
 import { User, Profile } from "@prisma/client";
 import { useAccount } from "wagmi";
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 
 import { Icon } from "@/components/Icon";
 import DynamicLink from "@/components/Link";
@@ -106,8 +106,8 @@ export const AuditDashboardBtn = ({
 };
 
 const AuditForm = ({ address, userId }: { address: string; userId: string }): JSX.Element => {
+  const router = useRouter();
   const [auditors, setAuditors] = useState<UserProfile[]>([]);
-  const [actionPending, startTransition] = useTransition();
   const [queryString, setQueryString] = useState("");
   const timeoutRef = useRef<NodeJS.Timeout | null>(null);
   const dropdown = useDropdown();
@@ -117,14 +117,18 @@ const AuditForm = ({ address, userId }: { address: string; userId: string }): JS
     queryFn: () => searchAuditors(queryString),
   });
 
+  const { mutate, isPending: mutationPending } = useMutation({
+    mutationFn: (variables: { userId: string; formData: FormData; auditors: UserProfile[] }) =>
+      createAudit(variables.userId, variables.formData, variables.auditors),
+    onSuccess: () => {
+      router.push(`/user/${address}`);
+    },
+  });
+
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>): void => {
     e.preventDefault();
     const formData = new FormData(e.currentTarget);
-    startTransition(async () => {
-      const response = await createAudit(userId, formData, auditors);
-      // Do something. Redirect, change UI, etc...
-      console.log(response);
-    });
+    mutate({ userId, formData, auditors });
   };
 
   const addAuditorSet = (auditor: UserProfile): void => {
@@ -161,14 +165,14 @@ const AuditForm = ({ address, userId }: { address: string; userId: string }): JS
           type="text"
           placeholder="Audit Title"
           name="title"
-          disabled={actionPending}
+          disabled={mutationPending}
           required
         />
         <Form.TextArea
           placeholder="Audit Description..."
           className="h-16"
           name="description"
-          disabled={actionPending}
+          disabled={mutationPending}
           required
         />
         <p className="text-xs">Auditors</p>
@@ -177,7 +181,7 @@ const AuditForm = ({ address, userId }: { address: string; userId: string }): JS
             <Form.Search
               className="focus-visible:rounded-b-none"
               onFocus={!dropdown.isShowing ? dropdown.toggle : undefined}
-              disabled={actionPending}
+              disabled={mutationPending}
               onChange={handleChange}
             />
             <Dropdown.Content
@@ -243,14 +247,14 @@ const AuditForm = ({ address, userId }: { address: string; userId: string }): JS
           min={0}
           name="price"
           text="Total Price ($)"
-          disabled={actionPending}
+          disabled={mutationPending}
         />
         <Form.Input
           type="number"
           placeholder="3"
           min={0}
           name="duration"
-          disabled={actionPending}
+          disabled={mutationPending}
           text="Vesting Duration (months)"
         />
       </Row>
