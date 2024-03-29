@@ -2,7 +2,7 @@
 // import { useEffect, useState } from "react";
 import { HomeStatI } from "@/lib/types";
 import { useQuery } from "@tanstack/react-query";
-import { Card } from "@/components/Card";
+import * as Card from "@/components/Card";
 import { HomeStatSkeleton } from "@/components/Loader";
 
 export const HomeStat = ({ action, symbol, text, queryKey }: HomeStatI): JSX.Element => {
@@ -22,9 +22,9 @@ export const HomeStat = ({ action, symbol, text, queryKey }: HomeStatI): JSX.Ele
   if (isLoading) return <HomeStatSkeleton />;
 
   return (
-    <Card hover className="text-center p-6 items-center justify-center">
+    <Card.Main hover className="text-center p-6 items-center justify-center">
       <p className="text-lg font-bold">{`${symbol || ""}${data?.toLocaleString()}`}</p>
       <p className="text-sm">{text}</p>
-    </Card>
+    </Card.Main>
   );
 };

@@ -83,6 +83,9 @@ const seed = async (): Promise<void> => {
       terms: {
         create: {},
       },
+      termsAccepted: {
+        create: [],
+      },
     },
   });
 
@@ -97,6 +100,9 @@ const seed = async (): Promise<void> => {
       },
       terms: {
         create: {},
+      },
+      termsAccepted: {
+        create: [],
       },
     },
   });
@@ -126,6 +132,17 @@ const seed = async (): Promise<void> => {
           duration: 3,
         },
       },
+      termsAccepted: {
+        create: [
+          {
+            user: {
+              connect: {
+                address: "0x73F4aC126bF12DCe39080457FABdce9a43Bd1f70",
+              },
+            },
+          },
+        ],
+      },
     },
   });
 
@@ -153,11 +170,23 @@ const seed = async (): Promise<void> => {
           duration: 3,
         },
       },
+      termsAccepted: {
+        create: [
+          {
+            user: {
+              connect: {
+                address: "0x73F4aC126bF12DCe39080457FABdce9a43Bd1f70",
+              },
+            },
+            hasAttested: true,
+            hasAccepted: true,
+          },
+        ],
+      },
     },
   });
 
-  // FINALIZE AUDIT
-
+  // FINALIZED AUDIT
   await prisma.audit.create({
     data: {
       title: "Completed audit",
@@ -184,6 +213,28 @@ const seed = async (): Promise<void> => {
           price: 2_000,
           duration: 5,
         },
+      },
+      termsAccepted: {
+        create: [
+          {
+            user: {
+              connect: {
+                address: "0xc0ffee254729296a45a3885639AC7E10F9d54979",
+              },
+            },
+            hasAttested: true,
+            hasAccepted: true,
+          },
+          {
+            user: {
+              connect: {
+                address: "0x3A1D14c5B007f2aC5a5e174663Eb3e69C78ADbB5",
+              },
+            },
+            hasAttested: true,
+            hasAccepted: true,
+          },
+        ],
       },
     },
   });

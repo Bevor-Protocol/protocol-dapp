@@ -1,23 +1,44 @@
 import { cn } from "@/lib/utils";
+import { Column, Row } from "@/components/Box";
 
-export const Card = ({
-  children,
-  className,
-  hover = false,
-}: {
+interface Props extends React.HTMLAttributes<HTMLDivElement> {
   children: React.ReactNode;
-  className?: string;
   hover?: boolean;
-}): JSX.Element => {
+}
+
+export const Main: React.FC<Props> = ({ children, className, hover = false, ...rest }) => {
   return (
-    <div
+    <Column
       className={cn(
-        "bg-dark shadow rounded-lg flex flex-col",
+        "bg-dark shadow rounded-lg",
         hover && "transition-colors hover:bg-dark-primary-30",
         className,
       )}
+      {...rest}
     >
       {children}
-    </div>
+    </Column>
+  );
+};
+
+export const Content: React.FC<Props> = ({ children, className, ...rest }) => {
+  return (
+    <Row className={cn("flex-grow p-4", className)} {...rest}>
+      {children}
+    </Row>
+  );
+};
+
+export const Footer: React.FC<Props> = ({ children, className, ...rest }) => {
+  return (
+    <Row
+      className={cn(
+        "flex-grow justify-between items-center p-2 border-t border-t-gray-200/20",
+        className,
+      )}
+      {...rest}
+    >
+      {children}
+    </Row>
   );
 };

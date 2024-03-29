@@ -1,4 +1,4 @@
-import { Card } from "@/components/Card";
+import * as Card from "@/components/Card";
 import { Icon } from "@/components/Icon";
 import DynamicLink from "@/components/Link";
 import { AuditAuditor } from "./client";
@@ -9,8 +9,8 @@ import { AuditDashboardAction } from "./client";
 
 export const AuditCard = ({ audit }: { audit: AuditFull }): JSX.Element => {
   return (
-    <Card className="divide-y divide-gray-200/20 w-full">
-      <Row className="items-stretch justify-start gap-8 p-4 w-full">
+    <Card.Main className="w-full">
+      <Card.Content className="gap-4">
         <DynamicLink href={`/user/${audit.auditee.address}`}>
           <Icon image={audit.auditee.profile?.image} seed={audit.auditee.address} size="lg" />
         </DynamicLink>
@@ -43,8 +43,8 @@ export const AuditCard = ({ audit }: { audit: AuditFull }): JSX.Element => {
             </span>
           </p>
         </Column>
-      </Row>
-      <Row className="justify-between items-center p-2">
+      </Card.Content>
+      <Card.Footer>
         <Row className="justify-center items-center gap-2">
           <span className="text-white/60">auditors:</span>
           {audit.auditors.length > 0 ? (
@@ -60,8 +60,8 @@ export const AuditCard = ({ audit }: { audit: AuditFull }): JSX.Element => {
         <DynamicLink href={`/audits/view/${audit.id}`} transition>
           <span className="block p-1">View Audit</span>
         </DynamicLink>
-      </Row>
-    </Card>
+      </Card.Footer>
+    </Card.Main>
   );
 };
 

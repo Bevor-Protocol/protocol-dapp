@@ -84,9 +84,7 @@ export const AuditDashboardAction = ({ audit }: { audit: AuditFull }): JSX.Eleme
       {!isAuditor && audit.isLocked && !audit.isFinal && (
         <Button disabled={true}>Audit Locked</Button>
       )}
-      {isAuditor && audit.isLocked && !audit.isFinal && (
-        <Button disabled={true}>Add Audit Findings</Button>
-      )}
+      {isAuditor && audit.isLocked && !audit.isFinal && <Button>Add Audit Findings</Button>}
       {audit.isFinal && <Button>See Audit Findings</Button>}
     </div>
   );
