@@ -2,7 +2,7 @@ import Link from "next/link";
 import { Suspense } from "react";
 
 import { AuditDetailedSkeleton } from "@/components/Loader";
-import { AuditDetailed, AuditMarkdown } from "./_components";
+import { AuditPage, AuditMarkdown } from "./_components";
 import { Column, Row } from "@/components/Box";
 import { Toggle } from "@/components/Toggle";
 
@@ -20,7 +20,7 @@ const AuditDashboardPage = ({
       <div className="flex flex-col w-full max-w-[1000px] gap-8 py-8 justify-start items-center h-full">
         <Column className="w-full gap-4">
           <Suspense fallback={<AuditDetailedSkeleton />}>
-            <AuditDetailed auditId={params.slug} />
+            <AuditPage auditId={params.slug} />
           </Suspense>
           <Column className="p-4">
             <Row className="gap-4">

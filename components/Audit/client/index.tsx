@@ -2,7 +2,6 @@
 
 import { User, Profile } from "@prisma/client";
 import { useRouter, usePathname } from "next/navigation";
-import { useAccount } from "wagmi";
 
 import { Icon } from "@/components/Icon";
 import DynamicLink from "@/components/Link";
@@ -11,6 +10,8 @@ import { cn, trimAddress } from "@/lib/utils";
 import { Row } from "@/components/Box";
 import { Toggle } from "@/components/Toggle";
 import { Button } from "@/components/Button";
+import { AuditFull } from "@/lib/types/actions";
+import { useUser } from "@/hooks/contexts";
 
 export const AuditAuditor = ({
   position,
@@ -66,28 +67,27 @@ export const AuditDashboardHeader = ({ display }: { display: string }): JSX.Elem
   );
 };
 
-export const AuditDashboardBtn = ({
-  auditors,
-}: {
-  auditors: (User & {
-    profile: Profile | null;
-  })[];
-}): JSX.Element => {
-  const { address } = useAccount();
+export const AuditDashboardAction = ({ audit }: { audit: AuditFull }): JSX.Element => {
+  const { user } = useUser();
 
-  const buttonLabel = (): string => {
-    const auditorsAddresses = auditors.map((auditor) => auditor.address);
-    if (auditorsAddresses.includes(address?.toString() || "")) {
-      return "Withdraw";
-      // } else if (data.auditee.toString() === account.toLocaleString()) {
-      //   return "Challenge Validity";
-    } else {
-      return "Disabled";
-    }
-  };
+  const auditors = audit.auditors.map((auditor) => auditor.id);
+
+  if (!user) return <></>;
+
+  const isAuditee = audit.auditeeId === user.id;
+  const isAuditor = auditors.includes(user.id);
+
   return (
-    <Button aria-disabled={true} disabled={true}>
-      <span>{buttonLabel()}</span>
-    </Button>
+    <div>
+      {isAuditee && !audit.isLocked && <Button>Edit Audit</Button>}
+      {!isAuditee && !isAuditor && !audit.isLocked && <Button>Request to Audit</Button>}
+      {!isAuditor && audit.isLocked && !audit.isFinal && (
+        <Button disabled={true}>Audit Locked</Button>
+      )}
+      {isAuditor && audit.isLocked && !audit.isFinal && (
+        <Button disabled={true}>Add Audit Findings</Button>
+      )}
+      {audit.isFinal && <Button>See Audit Findings</Button>}
+    </div>
   );
 };
