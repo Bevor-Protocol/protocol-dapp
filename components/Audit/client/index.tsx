@@ -24,12 +24,7 @@ export const AuditAuditor = ({
       <DynamicLink href={`/user/${auditor.address}`}>
         <Tooltip.Reference>
           <Tooltip.Trigger>
-            <Icon
-              image={auditor.profile?.image}
-              size="md"
-              seed={auditor.address}
-              data-auditoradd={auditor.address}
-            />
+            <Icon image={auditor.profile?.image} size="md" seed={auditor.address} />
           </Tooltip.Trigger>
           <Tooltip.Content
             className={cn(

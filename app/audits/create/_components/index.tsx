@@ -71,7 +71,7 @@ const AuditForm = ({ address, userId }: { address: string; userId: string }): JS
   }, [auditors, data, address]);
 
   return (
-    <form onSubmit={handleSubmit} className="w-[500px] max-w-full">
+    <form onSubmit={handleSubmit} className="max-w-[700px] w-full">
       <h3>Create an Audit</h3>
       <Column className="gap-2 my-4">
         <Form.Input

@@ -27,7 +27,7 @@ const UserContent = async ({ address }: { address: string }): Promise<JSX.Elemen
   }
 
   return (
-    <Column className="items-start w-full">
+    <Column className="items-start w-full max-w-[1000px]">
       <div className="relative w-full">
         <Suspense>
           <UserData address={address} />
