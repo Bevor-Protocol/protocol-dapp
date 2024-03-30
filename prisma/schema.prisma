@@ -47,7 +47,7 @@ model Audit {
 
 model Terms {
   auditId   String   @unique
-  audit     Audit    @relation(fields: [auditId], references: [id])
+  audit     Audit    @relation(fields: [auditId], references: [id], onDelete: Cascade)
   markdown  String? // reference to an S3 storage key
   price     Int      @default(0)
   duration  Int      @default(6) // duration in months
@@ -59,8 +59,8 @@ model TermsAcceptance {
   id          String  @id @default(cuid())
   auditId     String
   userId      String
-  audit       Audit   @relation(fields: [auditId], references: [id], onDelete: Cascade)
-  user        User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  audit       Audit   @relation(fields: [auditId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  user        User    @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
   hasAttested Boolean @default(false) // auditor has attested to the audit terms
   hasAccepted Boolean @default(false) // auditor has accepted the audit terms
 

@@ -42,8 +42,8 @@ export const getAudits = (status?: string): Promise<AuditFull[]> => {
   });
 };
 
-export const getAudit = (id: string): PrismaPromise<AuditFull> => {
-  return prisma.audit.findUniqueOrThrow({
+export const getAudit = (id: string): PrismaPromise<AuditFull | null> => {
+  return prisma.audit.findUnique({
     where: {
       id,
     },
@@ -98,6 +98,15 @@ export const createAudit = (
   const auditorsConnect = auditors.map((auditor) => {
     return { id: auditor.id };
   });
+  const termsCreate = auditors.map((auditor) => {
+    return {
+      user: {
+        connect: {
+          id: auditor.id,
+        },
+      },
+    };
+  });
   // add zod validation.
   return prisma.audit
     .create({
@@ -113,6 +122,9 @@ export const createAudit = (
             price: Number(price) || 1_000,
             duration: Number(duration) || 3,
           },
+        },
+        termsAccepted: {
+          create: termsCreate,
         },
       },
     })

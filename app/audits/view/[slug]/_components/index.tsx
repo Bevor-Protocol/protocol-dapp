@@ -11,6 +11,8 @@ export const AuditMarkdown = async ({ display }: { display: string }): Promise<J
 export const AuditPage = async ({ auditId }: { auditId: string }): Promise<JSX.Element> => {
   const audit = await getAudit(auditId);
 
+  if (!audit) return <h2>This audit does not exist</h2>;
+
   return (
     <Column className="gap-4">
       <AuditDetailed audit={audit} />

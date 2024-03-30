@@ -115,6 +115,9 @@ export const getUserAuditsAuditee = (address: string): Promise<AuditFull[]> => {
         },
       },
     },
+    orderBy: {
+      createdAt: "desc",
+    },
   });
 };
 
@@ -139,6 +142,9 @@ export const getUserAuditsAuditor = (address: string): Promise<AuditFull[]> => {
           profile: true,
         },
       },
+    },
+    orderBy: {
+      createdAt: "desc",
     },
   });
 };
