@@ -17,34 +17,30 @@ const AuditDashboardPage = ({
 
   return (
     <section className="flex flex-col h-full items-center px-content-limit">
-      <div className="flex flex-col w-full max-w-[1000px] gap-8 py-8 justify-start items-center h-full">
-        <Column className="w-full gap-4">
-          <Suspense fallback={<AuditDetailedSkeleton />}>
-            <AuditPage auditId={params.slug} />
-          </Suspense>
-          <Column className="p-4">
-            <Row className="gap-4">
-              <Link
-                href={`/audits/view/${params.slug}?display=details`}
-                className="outline-none"
-                scroll={false}
-              >
-                <Toggle active={display === "details"} title={"details"} />
-              </Link>
-              <Link
-                href={`/audits/view/${params.slug}?display=audit`}
-                className="outline-none"
-                scroll={false}
-              >
-                <Toggle active={display === "audit"} title={"audit"} />
-              </Link>
-            </Row>
-            <Suspense fallback={<p>Loading...</p>}>
-              <AuditMarkdown display={display} />
-            </Suspense>
-          </Column>
-        </Column>
-      </div>
+      <Column className="w-full max-w-[1000px] gap-8 py-8 justify-start items-stretch h-full">
+        <Suspense fallback={<AuditDetailedSkeleton />}>
+          <AuditPage auditId={params.slug} />
+        </Suspense>
+        <Row className="gap-4 justify-start">
+          <Link
+            href={`/audits/view/${params.slug}?display=details`}
+            className="outline-none"
+            scroll={false}
+          >
+            <Toggle active={display === "details"} title={"details"} />
+          </Link>
+          <Link
+            href={`/audits/view/${params.slug}?display=audit`}
+            className="outline-none"
+            scroll={false}
+          >
+            <Toggle active={display === "audit"} title={"audit"} />
+          </Link>
+        </Row>
+        <Suspense fallback={<p>Loading...</p>}>
+          <AuditMarkdown display={display} />
+        </Suspense>
+      </Column>
     </section>
   );
 };

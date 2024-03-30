@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { Audits } from "./_components";
 import { Suspense } from "react";
-import { Row } from "@/components/Box";
+import { Column, Row } from "@/components/Box";
 import { Toggle } from "@/components/Toggle";
 import { AuditsSkeleton } from "@/components/Loader";
 
@@ -14,7 +14,7 @@ const Audit = ({
 
   return (
     <section className="flex flex-col h-full items-center px-content-limit">
-      <div className="flex flex-col gap-4 py-8 justify-start items-center w-full max-w-[1000px]">
+      <Column className="gap-4 py-8 justify-start items-center w-full max-w-[1000px]">
         <div className="grad-light text-grad">
           <h2 className="text-4xl font-extrabold leading-[normal]">Audits</h2>
         </div>
@@ -32,7 +32,7 @@ const Audit = ({
         <Suspense fallback={<AuditsSkeleton />} key={JSON.stringify(searchParams)}>
           <Audits current={status} />
         </Suspense>
-      </div>
+      </Column>
     </section>
   );
 };

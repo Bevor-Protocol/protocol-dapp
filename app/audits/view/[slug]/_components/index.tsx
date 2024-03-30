@@ -16,13 +16,6 @@ export const AuditPage = async ({ auditId }: { auditId: string }): Promise<JSX.E
   return (
     <Column className="gap-4">
       <AuditDetailed audit={audit} />
-      <Column className="w-full gap-2 py-4 items-center">
-        <p className="text-white/60">Vesting Progress</p>
-        <div className="h-4 bg-dark-primary-20 rounded-xl border-2 border-gray-200/20 w-full max-w-sm">
-          <div className="h-full w-[20%] grad-light rounded-[inherit]" />
-        </div>
-        <p className="text-white/60">200 / 1000 ETH Vested</p>
-      </Column>
     </Column>
   );
 };

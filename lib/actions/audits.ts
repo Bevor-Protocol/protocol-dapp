@@ -9,6 +9,7 @@ import remarkGfm from "remark-gfm";
 import matter from "gray-matter";
 
 import { AuditFull, UserProfile } from "@/lib/types/actions";
+import { revalidatePath } from "next/cache";
 
 export const getAudits = (status?: string): Promise<AuditFull[]> => {
   let filter = {};
@@ -129,6 +130,91 @@ export const createAudit = (
       },
     })
     .then(() => {
+      return {
+        success: true,
+      };
+    })
+    .catch((error) => {
+      return {
+        success: false,
+        error: error.name,
+      };
+    });
+};
+
+export const updateAudit = async (
+  id: string,
+  audit: FormData,
+  auditors: UserProfile[],
+): Promise<CreateAuditI> => {
+  const data = Object.fromEntries(audit);
+  const { title, description, price, duration } = data;
+
+  const passedAuditorIds = auditors.map((auditor) => auditor.id);
+
+  const currentAudit = await getAudit(id);
+  const currentAuditorIds = currentAudit?.auditors.map((auditor) => auditor.id) || [];
+
+  const auditorsDisconnect = currentAuditorIds
+    .filter((auditor) => !passedAuditorIds.includes(auditor))
+    .map((auditorId) => {
+      return {
+        id: auditorId,
+      };
+    });
+  const auditorsConnect = passedAuditorIds
+    .filter((auditor) => !currentAuditorIds.includes(auditor))
+    .map((auditorId) => {
+      return {
+        id: auditorId,
+      };
+    });
+
+  const termsDelete = auditorsDisconnect.map((auditor) => {
+    return {
+      userId: auditor.id,
+    };
+  });
+  const termsCreate = auditorsConnect.map((auditor) => {
+    return {
+      user: {
+        connect: {
+          id: auditor.id,
+        },
+      },
+    };
+  });
+
+  // add zod validation.
+  return prisma.audit
+    .update({
+      where: {
+        id,
+      },
+      data: {
+        title: title as string,
+        description: description as string,
+        auditors: {
+          connect: auditorsConnect,
+          disconnect: auditorsDisconnect,
+        },
+        terms: {
+          update: {
+            data: {
+              price: Number(price) || 1_000,
+              duration: Number(duration) || 3,
+            },
+          },
+        },
+        termsAccepted: {
+          // can't just connect these, need to create new observations entirely.
+          create: termsCreate,
+          deleteMany: termsDelete,
+        },
+      },
+    })
+    .then(() => {
+      revalidatePath("/audits/view/[slug]");
       return {
         success: true,
       };

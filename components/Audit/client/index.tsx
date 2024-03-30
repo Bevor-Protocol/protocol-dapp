@@ -2,15 +2,15 @@
 
 import { useRouter, usePathname } from "next/navigation";
 
-import { Icon } from "@/components/Icon";
-import DynamicLink from "@/components/Link";
-import * as Tooltip from "@/components/Tooltip";
-import { cn, trimAddress } from "@/lib/utils";
 import { Row } from "@/components/Box";
+import * as Tooltip from "@/components/Tooltip";
 import { Toggle } from "@/components/Toggle";
 import { Button } from "@/components/Button";
 import { AuditFull, UserProfile } from "@/lib/types/actions";
 import { useUser } from "@/hooks/contexts";
+import DynamicLink from "@/components/Link";
+import { Icon } from "@/components/Icon";
+import { cn, trimAddress } from "@/lib/utils";
 
 export const AuditAuditor = ({
   position,
@@ -72,7 +72,11 @@ export const AuditDashboardAction = ({ audit }: { audit: AuditFull }): JSX.Eleme
 
   return (
     <div>
-      {isAuditee && !audit.isLocked && <Button>Edit Audit</Button>}
+      {isAuditee && !audit.isLocked && (
+        <DynamicLink href={`/audits/edit/${audit.id}`}>
+          <Button>Edit Audit</Button>
+        </DynamicLink>
+      )}
       {!isAuditee && !isAuditor && !audit.isLocked && <Button>Request to Audit</Button>}
       {!isAuditor && audit.isLocked && !audit.isFinal && (
         <Button disabled={true}>Audit Locked</Button>
