@@ -1,6 +1,5 @@
 "use client";
 
-import { User, Profile } from "@prisma/client";
 import { useRouter, usePathname } from "next/navigation";
 
 import { Icon } from "@/components/Icon";
@@ -10,7 +9,7 @@ import { cn, trimAddress } from "@/lib/utils";
 import { Row } from "@/components/Box";
 import { Toggle } from "@/components/Toggle";
 import { Button } from "@/components/Button";
-import { AuditFull } from "@/lib/types/actions";
+import { AuditFull, UserProfile } from "@/lib/types/actions";
 import { useUser } from "@/hooks/contexts";
 
 export const AuditAuditor = ({
@@ -18,22 +17,21 @@ export const AuditAuditor = ({
   auditor,
 }: {
   position: string;
-  auditor: User & {
-    profile: Profile | null;
-  };
+  auditor: UserProfile;
 }): JSX.Element => {
   return (
     <div style={{ transform: `translateX(${position})` }}>
       <DynamicLink href={`/user/${auditor.address}`}>
-        <Tooltip.Reference target={auditor.address}>
-          <Icon
-            image={auditor.profile?.image}
-            size="md"
-            seed={auditor.address}
-            data-auditoradd={auditor.address}
-          />
+        <Tooltip.Reference>
+          <Tooltip.Trigger>
+            <Icon
+              image={auditor.profile?.image}
+              size="md"
+              seed={auditor.address}
+              data-auditoradd={auditor.address}
+            />
+          </Tooltip.Trigger>
           <Tooltip.Content
-            target={auditor.address}
             className={cn(
               "text-xs max-w-28 overflow-hidden text-ellipsis bg-dark-primary-20",
               "px-2 py-1 -translate-x-1/2 border border-gray-200/20 rounded-lg",

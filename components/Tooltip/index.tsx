@@ -1,34 +1,31 @@
 "use client";
 
 import { cn } from "@/lib/utils";
+import React, { cloneElement, forwardRef, useRef } from "react";
+import { filterChildren } from "@/lib/utils";
 
 interface Props extends React.HTMLAttributes<HTMLDivElement> {
   children: React.ReactNode;
   className?: string;
-  target: string;
   shouldShow?: boolean;
 }
 
-export const Reference: React.FC<Props> = ({
-  children,
-  className,
-  target,
-  shouldShow = true,
-  ...rest
-}) => {
+export const Reference: React.FC<Props> = ({ children, className, shouldShow = true, ...rest }) => {
+  const ref = useRef<HTMLDivElement>(null);
   const handleToolTip = (): void => {
-    const el = document.querySelector(`[data-tooltip-target="${target}"]`) as HTMLDivElement;
-    if (!el) return;
+    if (!ref.current) return;
     if (shouldShow) {
-      el.style.display = "block";
+      ref.current.style.display = "block";
     }
   };
 
   const clearToolTip = (): void => {
-    const el = document.querySelector(`[data-tooltip-target="${target}"]`) as HTMLDivElement;
-    if (!el) return;
-    el.style.display = "none";
+    if (!ref.current) return;
+    ref.current.style.display = "none";
   };
+
+  const childAddRef = filterChildren(children, "Tooltip.Content");
+  const childNoRef = filterChildren(children, "Tooltip.Trigger");
 
   return (
     <div
@@ -37,20 +34,31 @@ export const Reference: React.FC<Props> = ({
       onMouseOut={clearToolTip}
       {...rest}
     >
-      {children}
+      {childNoRef}
+      {cloneElement(childAddRef, { ref })}
     </div>
   );
 };
 
-export const Content: React.FC<Props> = ({ children, className, target, ...rest }) => {
-  return (
-    <div
-      className={cn("absolute z-[999] text-xs", className)}
-      style={{ display: "none" }}
-      data-tooltip-target={target}
-      {...rest}
-    >
-      {children}
-    </div>
-  );
+export const Trigger: React.FC<Props> = ({ children }) => {
+  return children;
 };
+
+Trigger.displayName = "Tooltip.Trigger";
+
+export const Content: React.FC<Props> = forwardRef<HTMLDivElement, Props>(
+  ({ children, className, ...rest }, ref) => {
+    return (
+      <div
+        className={cn("absolute z-[999] text-xs", className)}
+        style={{ display: "none" }}
+        ref={ref}
+        {...rest}
+      >
+        {children}
+      </div>
+    );
+  },
+);
+
+Content.displayName = "Tooltip.Content";

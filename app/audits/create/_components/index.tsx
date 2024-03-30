@@ -11,12 +11,9 @@ import DynamicLink from "@/components/Link";
 import { Column, HoverItem, Row } from "@/components/Box";
 import { Button } from "@/components/Button";
 import * as Form from "@/components/Form";
-import * as Dropdown from "@/components/Dropdown";
-import { cn, trimAddress } from "@/lib/utils";
+import { trimAddress } from "@/lib/utils";
 import { Loader } from "@/components/Loader";
 import { Arrow } from "@/assets";
-import { useDropdown } from "@/hooks/useDropdown";
-import { Card } from "@/components/Card";
 import { searchAuditors } from "@/lib/actions/users";
 import { UserProfile } from "@/lib/types/actions";
 import { createAudit } from "@/lib/actions/audits";
@@ -27,7 +24,6 @@ const AuditForm = ({ address, userId }: { address: string; userId: string }): JS
   const [auditors, setAuditors] = useState<UserProfile[]>([]);
   const [queryString, setQueryString] = useState("");
   const timeoutRef = useRef<NodeJS.Timeout | null>(null);
-  const dropdown = useDropdown();
 
   const { data, isPending } = useQuery({
     queryKey: ["auditors", queryString],
@@ -94,48 +90,41 @@ const AuditForm = ({ address, userId }: { address: string; userId: string }): JS
         />
         <p className="text-sm">Auditors</p>
         <Row className="gap-2">
-          <Dropdown.Main dropdown={dropdown}>
-            <Form.Search
-              className="focus-visible:rounded-b-none"
-              onFocus={!dropdown.isShowing ? dropdown.toggle : undefined}
-              disabled={mutationPending}
-              onChange={handleChange}
-            />
-            <Dropdown.Content
-              dropdown={dropdown}
-              className="w-full overflow-scroll"
-              style={{ maxHeight: "calc(5*(2rem + 8px)" }}
+          <Form.Search disabled={mutationPending} onChange={handleChange}>
+            <Column
+              className="w-full overflow-scroll px-2 min-h-[32px] justify-center"
+              style={{ maxHeight: "calc(5 * 32px)" }}
             >
-              <Card
-                className={cn(
-                  "rounded-t-none divide-y divide-gray-200/20 border border-gray-200/20",
-                  "overflow-hidden min-h-10 items-center justify-center border-t-0",
-                )}
-              >
-                {isPending && <Loader className="h-5" />}
-                {!isPending &&
-                  auditorsShow.length > 0 &&
-                  auditorsShow.map((auditor) => (
-                    <HoverItem
-                      key={auditor.id}
-                      onClick={() => addAuditorSet(auditor)}
-                      className="px-1 w-full cursor-pointer gap-1 rounded-none h-10 items-center"
-                    >
-                      <Icon image={auditor.profile?.image} seed={auditor.address} size="sm" />
-                      <div>
-                        <p className="text-sm">{trimAddress(auditor.address)}</p>
+              {isPending && <Loader className="h-5" />}
+              {!isPending &&
+                auditorsShow.length > 0 &&
+                auditorsShow.map((auditor) => (
+                  <HoverItem
+                    key={auditor.id}
+                    onClick={() => addAuditorSet(auditor)}
+                    className="px-1 w-full cursor-pointer gap-1 h-[32px] min-h-[32px] items-center"
+                  >
+                    <Icon image={auditor.profile?.image} seed={auditor.address} size="sm" />
+                    <div className="overflow-hidden">
+                      <p className="text-sm text-ellipsis overflow-hidden">
+                        <span>{trimAddress(auditor.address)}</span>
                         {auditor.profile?.name && (
-                          <p className="text-sm whitespace-nowrap">{auditor.profile.name}</p>
+                          <>
+                            <span className="mx-1">|</span>
+                            <span className="whitespace-nowrap overflow-ellipsis m-w-full">
+                              {auditor.profile.name}
+                            </span>
+                          </>
                         )}
-                      </div>
-                    </HoverItem>
-                  ))}
-                {!isPending && auditorsShow.length == 0 && (
-                  <p className="text-sm">No results to show</p>
-                )}
-              </Card>
-            </Dropdown.Content>
-          </Dropdown.Main>
+                      </p>
+                    </div>
+                  </HoverItem>
+                ))}
+              {!isPending && auditorsShow.length == 0 && (
+                <p className="text-sm px-1">No results to show</p>
+              )}
+            </Column>
+          </Form.Search>
           <Row className="gap-2 flex-wrap">
             {auditors.map((auditor) => (
               <Row

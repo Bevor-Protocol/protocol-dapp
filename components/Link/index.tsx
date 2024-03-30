@@ -5,6 +5,7 @@ import React from "react";
 
 interface PropsI extends React.HTMLAttributes<HTMLAnchorElement> {
   children: React.ReactNode;
+  className?: string;
   disabled?: boolean;
   transition?: boolean;
   href: string;
@@ -12,6 +13,7 @@ interface PropsI extends React.HTMLAttributes<HTMLAnchorElement> {
 
 const DynamicLink: React.FC<PropsI> = ({
   children,
+  className,
   disabled,
   href,
   transition = false,
@@ -34,6 +36,7 @@ const DynamicLink: React.FC<PropsI> = ({
         !disabled && "pointer-events-auto",
         disabled && "*:opacity-disable",
         transition && !disabled && "*:hover:opacity-hover",
+        className,
       )}
     >
       {children}

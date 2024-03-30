@@ -2,13 +2,13 @@
 import { useSwitchChain, useAccount, Register } from "wagmi";
 
 import { Icon } from "@/components/Icon";
-import { Card } from "@/components/Card";
+import * as Card from "@/components/Card";
 import { ChainPresets } from "@/lib/constants/chains";
 import { Column, HoverItem } from "@/components/Box";
 import { Check } from "@/assets";
 import { cn } from "@/lib/utils";
 
-const Networks = ({ close }: { close: () => void }): JSX.Element => {
+const Networks = ({ close }: { close?: () => void }): JSX.Element => {
   const { chain: currentChain } = useAccount();
   const { chains, switchChain } = useSwitchChain({
     mutation: {
@@ -17,7 +17,7 @@ const Networks = ({ close }: { close: () => void }): JSX.Element => {
   });
 
   return (
-    <Card className="text-sm">
+    <Card.Main className="text-sm">
       <Column className="px-2 py-2 gap-2">
         <p className="text-white/60 pl-2">Select Network:</p>
         {chains.map((chain) => (
@@ -48,7 +48,7 @@ const Networks = ({ close }: { close: () => void }): JSX.Element => {
           </HoverItem>
         ))}
       </Column>
-    </Card>
+    </Card.Main>
   );
 };
 

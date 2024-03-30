@@ -6,17 +6,13 @@ import { trimAddress } from "@/lib/utils";
 import { Copy, Logout } from "@/assets";
 import { Button } from "@/components/Button";
 import { Column, Row } from "@/components/Box";
-import { Card } from "@/components/Card";
+import * as Card from "@/components/Card";
 import { Social } from "@/components/Icon";
 
-const Profile = ({ close }: { close: () => void }): JSX.Element => {
+const Profile = (): JSX.Element => {
   const [copied, setCopied] = useState(false);
   const { address, chain, connector } = useAccount();
-  const { disconnect } = useDisconnect({
-    mutation: {
-      onSuccess: close,
-    },
-  });
+  const { disconnect } = useDisconnect();
 
   const handleClick = (): void => {
     setCopied(true);
@@ -27,7 +23,7 @@ const Profile = ({ close }: { close: () => void }): JSX.Element => {
   };
 
   return (
-    <Card className="text-xs divide-y divide-gray-200/20 text-white/60">
+    <Card.Main className="text-xs text-white/60">
       <Column className="gap-2 pb-2 pt-1 px-2">
         <Row className="justify-between items-center">
           <p className="text-sm">Account</p>
@@ -49,14 +45,14 @@ const Profile = ({ close }: { close: () => void }): JSX.Element => {
           <span>Disconnect</span>
         </Button>
       </Column>
-      <Row className="justify-between p-2">
+      <Card.Footer className="justify-between p-2">
         <p>Network:</p>
         <p>
           <span className="inline-block h-1 w-1 bg-green-400 rounded-full mr-1 align-middle" />
           <span>{chain?.name}</span>
         </p>
-      </Row>
-    </Card>
+      </Card.Footer>
+    </Card.Main>
   );
 };
 

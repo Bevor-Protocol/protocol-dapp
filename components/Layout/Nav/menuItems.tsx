@@ -8,11 +8,10 @@ import { useIsMounted } from "@/hooks/useIsMounted";
 import { navItems } from "@/lib/constants";
 import { Arrow, Twitter, Discord, Github } from "@/assets";
 import { Social } from "@/components/Icon";
-import { Card } from "@/components/Card";
 import { Row, HoverItem, Column } from "@/components/Box";
 import { Ellipses } from "@/components/Items";
 import * as Dropdown from "@/components/Dropdown";
-import { useDropdown } from "@/hooks/useDropdown";
+import * as Card from "@/components/Card";
 import { cn } from "@/lib/utils";
 
 export const NavDashboard = (): JSX.Element => {
@@ -52,19 +51,16 @@ export const NavMenuItems = (): JSX.Element => {
 };
 
 export const NavDropdown = (): JSX.Element => {
-  const dropdown = useDropdown();
-
   return (
-    <Dropdown.Main dropdown={dropdown}>
-      <Dropdown.Trigger dropdown={dropdown}>
+    <Dropdown.Main>
+      <Dropdown.Trigger>
         <HoverItem className="focus-border cursor-pointer h-12" tabIndex={0}>
-          <Ellipses className={cn("transition-colors", !dropdown.isShowing && "text-white/60")} />
+          <Ellipses className="transition-colors text-white/60" />
         </HoverItem>
       </Dropdown.Trigger>
-      <Dropdown.Content dropdown={dropdown} className="top-full right-0">
-        <Card
+      <Dropdown.Content className="top-full right-0">
+        <Card.Main
           className={cn(
-            "absolute top-full right-0 z-[999]",
             "cursor-default text-sm min-w-52 px-2 py-2 gap-2",
             "md:text-base md:top-[unset] md:-right-5 md:bottom-full md:w-svw md:rounded-t-lg",
           )}
@@ -97,7 +93,7 @@ export const NavDropdown = (): JSX.Element => {
               </Social>
             </DynamicLink>
           </Row>
-        </Card>
+        </Card.Main>
       </Dropdown.Content>
     </Dropdown.Main>
   );
