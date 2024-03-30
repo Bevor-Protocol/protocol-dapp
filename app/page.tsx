@@ -1,8 +1,5 @@
-import { Suspense } from "react";
-
 import { Arrow } from "@/assets";
-import { HomeStat } from "@/components/pages/Home";
-import { HomeStatSkeleton } from "@/components/Loader";
+import { HomeStat } from "./_components";
 import { Button } from "@/components/Button";
 import * as Actions from "@/lib/actions/protocolData";
 import { cn } from "@/lib/utils";
@@ -48,25 +45,23 @@ const Page = (): JSX.Element => {
             "xl:grid-cols-1 xl:grid-rows-4",
           )}
         >
-          {/* <HomeStat action={Actions.protocolDataAudits} text="audits conducted" />
-          <HomeStat action={Actions.protocolDataVulnerabilities} text="vulnerabilities uncovered" />
-          <HomeStat action={Actions.protocolDataFunds} symbol="$" text="funds facilitated" />
-          <HomeStat action={Actions.protocolDataAuditors} text="registered auditors" /> */}
-          <Suspense fallback={<HomeStatSkeleton />}>
-            <HomeStat action={Actions.protocolDataAudits} text="audits conducted" />
-          </Suspense>
-          <Suspense fallback={<HomeStatSkeleton />}>
-            <HomeStat
-              action={Actions.protocolDataVulnerabilities}
-              text="vulnerabilities uncovered"
-            />
-          </Suspense>
-          <Suspense fallback={<HomeStatSkeleton />}>
-            <HomeStat action={Actions.protocolDataFunds} symbol="$" text="funds facilitated" />
-          </Suspense>
-          <Suspense fallback={<HomeStatSkeleton />}>
-            <HomeStat action={Actions.protocolDataAuditors} text="registered auditors" />
-          </Suspense>
+          <HomeStat action={Actions.protocolDataAudits} text="audits conducted" queryKey="audits" />
+          <HomeStat
+            action={Actions.protocolDataVulnerabilities}
+            text="vulnerabilities uncovered"
+            queryKey="vulnerabilities"
+          />
+          <HomeStat
+            action={Actions.protocolDataFunds}
+            symbol="$"
+            text="funds facilitated"
+            queryKey="funds"
+          />
+          <HomeStat
+            action={Actions.protocolDataAuditors}
+            text="registered auditors"
+            queryKey="auditors"
+          />
         </div>
       </div>
     </section>

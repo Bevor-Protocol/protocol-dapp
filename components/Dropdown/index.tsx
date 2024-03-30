@@ -1,42 +1,54 @@
 "use client";
-import { useRef } from "react";
+import { useRef, useReducer, cloneElement, ReactElement } from "react";
 
 import { useClickOutside } from "@/hooks/useClickOutside";
-import { cn } from "@/lib/utils";
+import { cn, filterChildren } from "@/lib/utils";
 
 interface Props extends React.HTMLAttributes<HTMLDivElement> {
   children: React.ReactNode;
   className?: string;
-  dropdown: {
-    isShowing: boolean;
-    toggle: () => void;
-  };
 }
 
-export const Main: React.FC<Props> = ({ children, className, dropdown, ...rest }) => {
-  const ref = useRef<HTMLDivElement>(null);
+interface PropsWithClose extends Props {
+  hasCloseTrigger?: boolean;
+  close?: () => void;
+}
 
-  useClickOutside(ref, dropdown.isShowing ? dropdown.toggle : undefined);
+export const Main: React.FC<Props> = ({ children, className, ...rest }) => {
+  const ref = useRef<HTMLDivElement>(null);
+  const [isShowing, toggle] = useReducer((s) => !s, false);
+
+  useClickOutside(ref, isShowing ? toggle : undefined);
+
+  const triggerChild = filterChildren(children, "Dropdown.Trigger");
+  const contentChild = filterChildren(children, "Dropdown.Content");
+
   return (
     <div className={cn("relative", className)} ref={ref} {...rest}>
-      {children}
+      {cloneElement(triggerChild, { onClick: toggle })}
+      {isShowing && cloneElement(contentChild, { close: toggle })}
     </div>
   );
 };
 
-export const Trigger: React.FC<Props> = ({ children, dropdown, ...rest }) => {
-  return (
-    <div onClick={dropdown.toggle} {...rest}>
-      {children}
-    </div>
-  );
+export const Trigger: React.FC<Props> = ({ children, ...rest }) => {
+  return <div {...rest}>{children}</div>;
 };
 
-export const Content: React.FC<Props> = ({ children, className, dropdown, ...rest }) => {
-  if (!dropdown.isShowing) return <></>;
+Trigger.displayName = "Dropdown.Trigger";
+
+export const Content: React.FC<PropsWithClose> = ({
+  children,
+  className,
+  hasCloseTrigger = false,
+  close,
+  ...rest
+}) => {
   return (
     <div className={cn("absolute z-[999] cursor-default", className)} {...rest}>
-      {children}
+      {cloneElement(children as ReactElement, hasCloseTrigger ? { close } : {})}
     </div>
   );
 };
+
+Content.displayName = "Dropdown.Content";

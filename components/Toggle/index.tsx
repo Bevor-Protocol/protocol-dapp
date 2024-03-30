@@ -11,7 +11,7 @@ export const Toggle: React.FC<Props> = ({ active, title, className, ...rest }) =
   return (
     <div
       className={cn(
-        "text-xs cursor-pointer relative transition-opacity after-underline",
+        "text-sm cursor-pointer relative transition-opacity after-underline",
         !active && "opacity-disable",
         !active && "hover:opacity-hover",
         !active && "after:bg-transparent",

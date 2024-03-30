@@ -19,3 +19,10 @@ export interface AuditFull extends Audit {
     profile: Profile | null;
   };
 }
+
+export interface UserStats {
+  moneyPaid: number;
+  moneyEarned: number;
+  numAuditsCreated: number;
+  numAuditsAudited: number;
+}

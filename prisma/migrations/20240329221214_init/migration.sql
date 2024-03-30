@@ -22,6 +22,10 @@ CREATE TABLE "Profile" (
 CREATE TABLE "Audit" (
     "id" TEXT NOT NULL,
     "auditeeId" TEXT NOT NULL,
+    "title" TEXT NOT NULL,
+    "description" TEXT NOT NULL,
+    "isLocked" BOOLEAN NOT NULL DEFAULT false,
+    "isFinal" BOOLEAN NOT NULL DEFAULT false,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
 
@@ -34,9 +38,19 @@ CREATE TABLE "Terms" (
     "markdown" TEXT,
     "price" INTEGER NOT NULL DEFAULT 0,
     "duration" INTEGER NOT NULL DEFAULT 6,
-    "isFinal" BOOLEAN NOT NULL DEFAULT false,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL
+);
+
+-- CreateTable
+CREATE TABLE "TermsAcceptance" (
+    "id" TEXT NOT NULL,
+    "auditId" TEXT NOT NULL,
+    "userId" TEXT NOT NULL,
+    "hasAttested" BOOLEAN NOT NULL DEFAULT false,
+    "hasAccepted" BOOLEAN NOT NULL DEFAULT false,
+
+    CONSTRAINT "TermsAcceptance_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
@@ -55,6 +69,9 @@ CREATE UNIQUE INDEX "Profile_userId_key" ON "Profile"("userId");
 CREATE UNIQUE INDEX "Terms_auditId_key" ON "Terms"("auditId");
 
 -- CreateIndex
+CREATE UNIQUE INDEX "TermsAcceptance_auditId_userId_key" ON "TermsAcceptance"("auditId", "userId");
+
+-- CreateIndex
 CREATE UNIQUE INDEX "_UserAuditor_AB_unique" ON "_UserAuditor"("A", "B");
 
 -- CreateIndex
@@ -68,6 +85,12 @@ ALTER TABLE "Audit" ADD CONSTRAINT "Audit_auditeeId_fkey" FOREIGN KEY ("auditeeI
 
 -- AddForeignKey
 ALTER TABLE "Terms" ADD CONSTRAINT "Terms_auditId_fkey" FOREIGN KEY ("auditId") REFERENCES "Audit"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "TermsAcceptance" ADD CONSTRAINT "TermsAcceptance_auditId_fkey" FOREIGN KEY ("auditId") REFERENCES "Audit"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "TermsAcceptance" ADD CONSTRAINT "TermsAcceptance_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "_UserAuditor" ADD CONSTRAINT "_UserAuditor_A_fkey" FOREIGN KEY ("A") REFERENCES "Audit"("id") ON DELETE CASCADE ON UPDATE CASCADE;

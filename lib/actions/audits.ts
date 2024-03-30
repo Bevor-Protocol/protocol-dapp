@@ -9,29 +9,15 @@ import remarkGfm from "remark-gfm";
 import matter from "gray-matter";
 
 import { AuditFull, UserProfile } from "@/lib/types/actions";
+import { revalidatePath } from "next/cache";
 
 export const getAudits = (status?: string): Promise<AuditFull[]> => {
-  let filter;
-  switch (status) {
-    case "open":
-      filter = {
-        terms: null,
-      };
-      break;
-    case "pending":
-      filter = {
-        terms: {
-          isFinal: false,
-        },
-      };
-      break;
-    case "closed":
-      filter = {
-        terms: {
-          isFinal: true,
-        },
-      };
-      break;
+  let filter = {};
+  if (status) {
+    filter = {
+      isFinal: status == "closed",
+      isLocked: status != "open",
+    };
   }
 
   return prisma.audit.findMany({
@@ -57,8 +43,8 @@ export const getAudits = (status?: string): Promise<AuditFull[]> => {
   });
 };
 
-export const getAudit = (id: string): PrismaPromise<AuditFull> => {
-  return prisma.audit.findUniqueOrThrow({
+export const getAudit = (id: string): PrismaPromise<AuditFull | null> => {
+  return prisma.audit.findUnique({
     where: {
       id,
     },
@@ -113,6 +99,15 @@ export const createAudit = (
   const auditorsConnect = auditors.map((auditor) => {
     return { id: auditor.id };
   });
+  const termsCreate = auditors.map((auditor) => {
+    return {
+      user: {
+        connect: {
+          id: auditor.id,
+        },
+      },
+    };
+  });
   // add zod validation.
   return prisma.audit
     .create({
@@ -129,9 +124,97 @@ export const createAudit = (
             duration: Number(duration) || 3,
           },
         },
+        termsAccepted: {
+          create: termsCreate,
+        },
       },
     })
     .then(() => {
+      return {
+        success: true,
+      };
+    })
+    .catch((error) => {
+      return {
+        success: false,
+        error: error.name,
+      };
+    });
+};
+
+export const updateAudit = async (
+  id: string,
+  audit: FormData,
+  auditors: UserProfile[],
+): Promise<CreateAuditI> => {
+  const data = Object.fromEntries(audit);
+  const { title, description, price, duration } = data;
+
+  const passedAuditorIds = auditors.map((auditor) => auditor.id);
+
+  const currentAudit = await getAudit(id);
+  const currentAuditorIds = currentAudit?.auditors.map((auditor) => auditor.id) || [];
+
+  const auditorsDisconnect = currentAuditorIds
+    .filter((auditor) => !passedAuditorIds.includes(auditor))
+    .map((auditorId) => {
+      return {
+        id: auditorId,
+      };
+    });
+  const auditorsConnect = passedAuditorIds
+    .filter((auditor) => !currentAuditorIds.includes(auditor))
+    .map((auditorId) => {
+      return {
+        id: auditorId,
+      };
+    });
+
+  const termsDelete = auditorsDisconnect.map((auditor) => {
+    return {
+      userId: auditor.id,
+    };
+  });
+  const termsCreate = auditorsConnect.map((auditor) => {
+    return {
+      user: {
+        connect: {
+          id: auditor.id,
+        },
+      },
+    };
+  });
+
+  // add zod validation.
+  return prisma.audit
+    .update({
+      where: {
+        id,
+      },
+      data: {
+        title: title as string,
+        description: description as string,
+        auditors: {
+          connect: auditorsConnect,
+          disconnect: auditorsDisconnect,
+        },
+        terms: {
+          update: {
+            data: {
+              price: Number(price) || 1_000,
+              duration: Number(duration) || 3,
+            },
+          },
+        },
+        termsAccepted: {
+          // can't just connect these, need to create new observations entirely.
+          create: termsCreate,
+          deleteMany: termsDelete,
+        },
+      },
+    })
+    .then(() => {
+      revalidatePath("/audits/view/[slug]");
       return {
         success: true,
       };

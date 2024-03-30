@@ -68,8 +68,9 @@ const seed = async (): Promise<void> => {
     ),
   );
 
-  // create a newly generated audit. Will always have an auditee, since they're the
-  // one that initiated it, but auditors could be empty.
+  // NEWLY GENERATED AUDITS. NOT LOCKED, NOT FINAL
+
+  // Include yourself as auditee.
   await prisma.audit.create({
     data: {
       title: "My created audit",
@@ -78,6 +79,12 @@ const seed = async (): Promise<void> => {
         connect: {
           address: MY_WALLET,
         },
+      },
+      terms: {
+        create: {},
+      },
+      termsAccepted: {
+        create: [],
       },
     },
   });
@@ -91,14 +98,22 @@ const seed = async (): Promise<void> => {
           address: "0x999999cf1046e68e36E1aA2E0E07105eDDD1f08E",
         },
       },
+      terms: {
+        create: {},
+      },
+      termsAccepted: {
+        create: [],
+      },
     },
   });
 
-  // create an audit that already has auditors.
+  // AUDITS WITH AUDITORS ASSOCIATED WITH THEM
+
+  // still not locked.
   await prisma.audit.create({
     data: {
       title: "Contains an auditor",
-      description: "This audit was created and already has an auditor",
+      description: "Audit was created but isn't locked yet",
       auditee: {
         connect: {
           address: "0xc0ffee254729296a45a3885639AC7E10F9d54979",
@@ -117,13 +132,67 @@ const seed = async (): Promise<void> => {
           duration: 3,
         },
       },
+      termsAccepted: {
+        create: [
+          {
+            user: {
+              connect: {
+                address: "0x73F4aC126bF12DCe39080457FABdce9a43Bd1f70",
+              },
+            },
+          },
+        ],
+      },
     },
   });
 
+  // audit is locked. Can't update terms or auditor set.
+  await prisma.audit.create({
+    data: {
+      title: "Contains an auditor",
+      description: "This audit was created and already has an auditor",
+      isLocked: true,
+      auditee: {
+        connect: {
+          address: "0xc0ffee254729296a45a3885639AC7E10F9d54979",
+        },
+      },
+      auditors: {
+        connect: [
+          {
+            address: "0x73F4aC126bF12DCe39080457FABdce9a43Bd1f70",
+          },
+        ],
+      },
+      terms: {
+        create: {
+          price: 10_000,
+          duration: 3,
+        },
+      },
+      termsAccepted: {
+        create: [
+          {
+            user: {
+              connect: {
+                address: "0x73F4aC126bF12DCe39080457FABdce9a43Bd1f70",
+              },
+            },
+            hasAttested: true,
+            hasAccepted: true,
+          },
+        ],
+      },
+    },
+  });
+
+  // FINALIZED AUDIT
   await prisma.audit.create({
     data: {
       title: "Completed audit",
       description: "This audit is closed and will be viewable",
+      isLocked: true,
+      isFinal: true,
       auditee: {
         connect: {
           address: "0x999999cf1046e68e36E1aA2E0E07105eDDD1f08E",
@@ -143,8 +212,29 @@ const seed = async (): Promise<void> => {
         create: {
           price: 2_000,
           duration: 5,
-          isFinal: true,
         },
+      },
+      termsAccepted: {
+        create: [
+          {
+            user: {
+              connect: {
+                address: "0xc0ffee254729296a45a3885639AC7E10F9d54979",
+              },
+            },
+            hasAttested: true,
+            hasAccepted: true,
+          },
+          {
+            user: {
+              connect: {
+                address: "0x3A1D14c5B007f2aC5a5e174663Eb3e69C78ADbB5",
+              },
+            },
+            hasAttested: true,
+            hasAccepted: true,
+          },
+        ],
       },
     },
   });

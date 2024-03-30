@@ -13,19 +13,13 @@
   }
 
   html {
-    font-size: 18px;
+    font-size: 16px;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
   }
 
   main {
     flex: 1 0 0;
-  }
-
-  @media screen(lg) {
-    html {
-      font-size: 16px;
-    }
   }
 
   @media screen(md) {
@@ -254,6 +248,7 @@
 
 @layer utilities {
   .conic {
+    aspect-ratio: 1 / 1;
     background: conic-gradient(theme("colors.white"), theme("colors.transparent"));
     -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
     mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);

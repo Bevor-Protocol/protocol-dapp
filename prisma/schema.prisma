@@ -10,14 +10,15 @@ datasource db {
 }
 
 model User {
-  id          String   @id @default(cuid())
-  address     String   @unique
-  auditeeRole Boolean  @default(false)
-  auditorRole Boolean  @default(false)
-  profile     Profile?
-  auditee     Audit[]  @relation("UserAuditee")
-  auditor     Audit[]  @relation("UserAuditor")
-  createdAt   DateTime @default(now())
+  id              String            @id @default(cuid())
+  address         String            @unique
+  profile         Profile?
+  auditee         Audit[]           @relation("UserAuditee")
+  auditor         Audit[]           @relation("UserAuditor")
+  termsAcceptance TermsAcceptance[]
+  auditeeRole     Boolean           @default(false)
+  auditorRole     Boolean           @default(false)
+  createdAt       DateTime          @default(now())
 }
 
 model Profile {
@@ -30,24 +31,38 @@ model Profile {
 }
 
 model Audit {
-  id          String   @id @default(cuid())
-  terms       Terms?
-  auditee     User     @relation("UserAuditee", fields: [auditeeId], references: [id])
-  auditeeId   String
-  auditors    User[]   @relation("UserAuditor")
-  title       String
-  description String
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  id            String            @id @default(cuid())
+  auditeeId     String
+  terms         Terms?
+  auditee       User              @relation("UserAuditee", fields: [auditeeId], references: [id])
+  auditors      User[]            @relation("UserAuditor")
+  termsAccepted TermsAcceptance[]
+  title         String
+  description   String
+  isLocked      Boolean           @default(false) // parties have agreed on terms
+  isFinal       Boolean           @default(false) // audit is complete and handed off
+  createdAt     DateTime          @default(now())
+  updatedAt     DateTime          @updatedAt
 }
 
 model Terms {
   auditId   String   @unique
-  audit     Audit    @relation(fields: [auditId], references: [id])
+  audit     Audit    @relation(fields: [auditId], references: [id], onDelete: Cascade)
   markdown  String? // reference to an S3 storage key
   price     Int      @default(0)
   duration  Int      @default(6) // duration in months
-  isFinal   Boolean  @default(false)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+}
+
+model TermsAcceptance {
+  id          String  @id @default(cuid())
+  auditId     String
+  userId      String
+  audit       Audit   @relation(fields: [auditId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  user        User    @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  hasAttested Boolean @default(false) // auditor has attested to the audit terms
+  hasAccepted Boolean @default(false) // auditor has accepted the audit terms
+
+  @@unique([auditId, userId])
 }
