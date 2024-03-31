@@ -130,6 +130,7 @@ export const createAudit = (
       },
     })
     .then(() => {
+      revalidatePath(`{/user/${id}}`);
       return {
         success: true,
       };
@@ -214,7 +215,7 @@ export const updateAudit = async (
       },
     })
     .then(() => {
-      revalidatePath("/audits/view/[slug]");
+      revalidatePath(`{/audits/view/${id}}`);
       return {
         success: true,
       };
