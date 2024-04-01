@@ -68,9 +68,9 @@ export const AuditPage = async ({ auditId }: { auditId: string }): Promise<JSX.E
       </Row>
       <Row className="items-center gap-4">
         <p className="w-40">Requested to Audit:</p>
-        {audit.auditors.length > 0 ? (
+        {audit.requests.length > 0 ? (
           <Row>
-            {audit.auditors.map((auditor, ind2) => (
+            {audit.requests.map((auditor, ind2) => (
               <AuditAuditor position={`-${ind2 * 12.5}px`} key={ind2} auditor={auditor} />
             ))}
           </Row>

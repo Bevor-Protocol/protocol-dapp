@@ -1,6 +1,5 @@
 "use server";
 import { prisma } from "@/lib/db/prisma.server";
-import { PrismaPromise } from "@prisma/client";
 import fs from "fs";
 import path from "path";
 import { remark } from "remark";
@@ -8,10 +7,10 @@ import html from "remark-html";
 import remarkGfm from "remark-gfm";
 import matter from "gray-matter";
 
-import { AuditFull, UserProfile } from "@/lib/types/actions";
+import { AuditBriefI, AuditViewI, UserProfile, GenericUpdateI } from "@/lib/types/actions";
 import { revalidatePath } from "next/cache";
 
-export const getAudits = (status?: string): Promise<AuditFull[]> => {
+export const getAudits = (status?: string): Promise<AuditBriefI[]> => {
   let filter = {};
   if (status) {
     filter = {
@@ -43,7 +42,7 @@ export const getAudits = (status?: string): Promise<AuditFull[]> => {
   });
 };
 
-export const getAudit = (id: string): PrismaPromise<AuditFull | null> => {
+export const getAudit = (id: string): Promise<AuditViewI | null> => {
   return prisma.audit.findUnique({
     where: {
       id,
@@ -58,6 +57,20 @@ export const getAudit = (id: string): PrismaPromise<AuditFull | null> => {
       auditee: {
         include: {
           profile: true,
+        },
+      },
+      requests: {
+        include: {
+          profile: true,
+        },
+      },
+      termsAccepted: {
+        include: {
+          user: {
+            include: {
+              profile: true,
+            },
+          },
         },
       },
     },
@@ -84,48 +97,33 @@ export const getMarkdown = async (display: string): Promise<string> => {
   return processedContent;
 };
 
-type CreateAuditI = {
-  success: boolean;
-  error?: string;
-};
-
 export const createAudit = (
   id: string,
   audit: FormData,
   auditors: UserProfile[],
-): Promise<CreateAuditI> => {
+): Promise<GenericUpdateI> => {
+  // This function doesn't require "requests" or "termsAccepted" connections/creations.
+  // However, you can create a function with explicit auditors, who bypass the need for requests.
   const data = Object.fromEntries(audit);
   const { title, description, price, duration } = data;
   const auditorsConnect = auditors.map((auditor) => {
     return { id: auditor.id };
   });
-  const termsCreate = auditors.map((auditor) => {
-    return {
-      user: {
-        connect: {
-          id: auditor.id,
-        },
-      },
-    };
-  });
   // add zod validation.
   return prisma.audit
     .create({
       data: {
-        title: title as string,
         auditeeId: id,
+        title: title as string,
         description: description as string,
-        auditors: {
-          connect: auditorsConnect,
-        },
         terms: {
           create: {
-            price: Number(price) || 1_000,
+            price: Number(price) || 10_000,
             duration: Number(duration) || 3,
           },
         },
-        termsAccepted: {
-          create: termsCreate,
+        auditors: {
+          connect: auditorsConnect,
         },
       },
     })
@@ -147,13 +145,14 @@ export const updateAudit = async (
   id: string,
   audit: FormData,
   auditors: UserProfile[],
-): Promise<CreateAuditI> => {
+): Promise<GenericUpdateI> => {
+  // To be used for audit updates like creating an audit
+  const currentAudit = await getAudit(id);
+
   const data = Object.fromEntries(audit);
   const { title, description, price, duration } = data;
-
   const passedAuditorIds = auditors.map((auditor) => auditor.id);
 
-  const currentAudit = await getAudit(id);
   const currentAuditorIds = currentAudit?.auditors.map((auditor) => auditor.id) || [];
 
   const auditorsDisconnect = currentAuditorIds
@@ -171,22 +170,6 @@ export const updateAudit = async (
       };
     });
 
-  const termsDelete = auditorsDisconnect.map((auditor) => {
-    return {
-      userId: auditor.id,
-    };
-  });
-  const termsCreate = auditorsConnect.map((auditor) => {
-    return {
-      user: {
-        connect: {
-          id: auditor.id,
-        },
-      },
-    };
-  });
-
-  // add zod validation.
   return prisma.audit
     .update({
       where: {
@@ -207,10 +190,160 @@ export const updateAudit = async (
             },
           },
         },
+      },
+    })
+    .then(() => {
+      revalidatePath(`{/audits/view/${id}}`);
+      return {
+        success: true,
+      };
+    })
+    .catch((error) => {
+      return {
+        success: false,
+        error: error.name,
+      };
+    });
+};
+
+export const auditAddRequest = (id: string, userId: string): Promise<GenericUpdateI> => {
+  return prisma.audit
+    .update({
+      where: {
+        id,
+      },
+      data: {
+        requests: {
+          connect: {
+            id: userId,
+          },
+        },
+      },
+    })
+    .then(() => {
+      revalidatePath(`{/audits/view/${id}}`);
+      return {
+        success: true,
+      };
+    })
+    .catch((error) => {
+      return {
+        success: false,
+        error: error.name,
+      };
+    });
+};
+
+export const auditClearRequests = (id: string): Promise<GenericUpdateI> => {
+  return prisma.audit
+    .update({
+      where: {
+        id,
+      },
+      data: {
+        requests: {
+          set: [],
+        },
+      },
+    })
+    .then(() => {
+      revalidatePath(`{/audits/view/${id}}`);
+      return {
+        success: true,
+      };
+    })
+    .catch((error) => {
+      return {
+        success: false,
+        error: error.name,
+      };
+    });
+};
+
+export const auditRemoveRequest = (id: string, userId: string): Promise<GenericUpdateI> => {
+  return prisma.audit
+    .update({
+      where: {
+        id,
+      },
+      data: {
+        requests: {
+          disconnect: {
+            id: userId,
+          },
+        },
+      },
+    })
+    .then(() => {
+      revalidatePath(`{/audits/view/${id}}`);
+      return {
+        success: true,
+      };
+    })
+    .catch((error) => {
+      return {
+        success: false,
+        error: error.name,
+      };
+    });
+};
+
+export const auditApproveRequest = (id: string, userId: string): Promise<GenericUpdateI> => {
+  return prisma.audit
+    .update({
+      where: {
+        id,
+      },
+      data: {
+        requests: {
+          disconnect: {
+            id: userId,
+          },
+        },
+        auditors: {
+          connect: {
+            id: userId,
+          },
+        },
+      },
+    })
+    .then(() => {
+      revalidatePath(`{/audits/view/${id}}`);
+      return {
+        success: true,
+      };
+    })
+    .catch((error) => {
+      return {
+        success: false,
+        error: error.name,
+      };
+    });
+};
+
+export const lockAudit = async (id: string): Promise<GenericUpdateI> => {
+  const currentAudit = await getAudit(id);
+
+  const termsCreate = currentAudit?.auditors.map((auditor) => {
+    return {
+      user: {
+        connect: {
+          id: auditor.id,
+        },
+      },
+    };
+  });
+
+  return prisma.audit
+    .update({
+      where: {
+        id,
+      },
+      data: {
+        isLocked: true,
         termsAccepted: {
           // can't just connect these, need to create new observations entirely.
           create: termsCreate,
-          deleteMany: termsDelete,
         },
       },
     })

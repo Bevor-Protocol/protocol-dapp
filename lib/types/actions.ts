@@ -10,14 +10,14 @@ export interface UserWithCount extends UserProfile {
   totalComplete: number;
 }
 
-export interface AuditFull extends Audit {
+export interface AuditBriefI extends Audit {
   terms?: Terms | null;
-  auditors: (User & {
-    profile: Profile | null;
-  })[];
-  auditee: User & {
-    profile: Profile | null;
-  };
+  auditors: UserProfile[];
+  auditee: UserProfile;
+}
+
+export interface AuditViewI extends AuditBriefI {
+  requests: UserProfile[];
 }
 
 export interface UserStats {
@@ -25,4 +25,9 @@ export interface UserStats {
   moneyEarned: number;
   numAuditsCreated: number;
   numAuditsAudited: number;
+}
+
+export interface GenericUpdateI {
+  success: boolean;
+  error?: string;
 }

@@ -6,11 +6,11 @@ import { useQuery } from "@tanstack/react-query";
 import { getAudits } from "@/lib/actions/audits";
 import { Column, Row } from "@/components/Box";
 import { AuditCard } from "@/components/Audit";
-import { AuditFull } from "@/lib/types/actions";
+import { AuditBriefI } from "@/lib/types/actions";
 import { Toggle } from "@/components/Toggle";
 import { AuditsSkeleton } from "@/components/Loader";
 
-const Audits = ({ initialData }: { initialData: AuditFull[] }): JSX.Element => {
+const Audits = ({ initialData }: { initialData: AuditBriefI[] }): JSX.Element => {
   const [display, setDisplay] = useState("open");
 
   const { data, isFetching } = useQuery({

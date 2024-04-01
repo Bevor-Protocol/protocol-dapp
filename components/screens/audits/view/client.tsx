@@ -5,7 +5,7 @@ import { useRouter, usePathname } from "next/navigation";
 import { Row } from "@/components/Box";
 import { Toggle } from "@/components/Toggle";
 import { Button } from "@/components/Button";
-import { AuditFull } from "@/lib/types/actions";
+import { AuditViewI } from "@/lib/types/actions";
 import { useUser } from "@/hooks/contexts";
 import DynamicLink from "@/components/Link";
 
@@ -28,34 +28,30 @@ export const AuditDashboardHeader = ({ display }: { display: string }): JSX.Elem
   );
 };
 
-export const AuditDashboardAction = ({ audit }: { audit: AuditFull }): JSX.Element => {
+export const AuditDashboardAction = ({ audit }: { audit: AuditViewI }): JSX.Element => {
   const { user } = useUser();
 
   const auditors = audit.auditors.map((auditor) => auditor.id);
+  const requesters = audit.requests.map((auditor) => auditor.id);
 
   if (!user) return <></>;
 
-  const isAuditee = audit.auditeeId === user.id;
-  const isAuditor = auditors.includes(user.id);
-
-  // Will likely need to update this.
-  const canEdit = isAuditee && !audit.isLocked;
-  const canRequest = !isAuditee && !isAuditor && !audit.isLocked && user.auditorRole;
-  // const canAttest = false;
-  const canAdd = isAuditor && audit.isLocked && !audit.isFinal;
-  const isLocked = !isAuditor && audit.isLocked && !audit.isFinal;
+  const isTheAuditee = audit.auditeeId === user.id;
+  const isAnAuditor = auditors.includes(user.id);
+  const isRequestor = requesters.includes(user.id);
 
   return (
-    <div>
-      {canEdit && (
+    <Row className="gap-4">
+      {isTheAuditee && !audit.isFinal && (
         <DynamicLink href={`/audits/edit/${audit.id}`}>
           <Button>Edit Audit</Button>
         </DynamicLink>
       )}
-      {canRequest && <Button>Request to Audit</Button>}
-      {isLocked && <Button disabled={true}>Audit Locked</Button>}
-      {canAdd && <Button>Add Audit Findings</Button>}
-      {audit.isFinal && <Button>See Audit Findings</Button>}
-    </div>
+      {isTheAuditee && requesters.length > 0 && <Button>Manage Requests</Button>}
+      {isRequestor && <Button>Remove Request to Audit</Button>}
+      {!isRequestor && !audit.isLocked && <Button>Request to Audit</Button>}
+      {isAnAuditor && !audit.isFinal && <Button>Remove me as Auditor</Button>}
+      {isTheAuditee && audit.isLocked && !audit.isFinal && <Button>Re-open Audit</Button>}
+    </Row>
   );
 };
