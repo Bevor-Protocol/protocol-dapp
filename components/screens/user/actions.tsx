@@ -2,14 +2,20 @@
 import { useMemo } from "react";
 import { useAccount } from "wagmi";
 
-import { UserProfile } from "@/lib/types/actions";
+import { UserProfile, UserStats } from "@/lib/types/actions";
 import { Button } from "@/components/Button";
 import { Row } from "@/components/Box";
 import DynamicLink from "@/components/Link";
 import { useModal } from "@/hooks/contexts";
 import UserEdit from "@/components/Modal/Content/userEdit";
 
-const UserProfileActions = ({ user }: { user: UserProfile }): JSX.Element => {
+const UserProfileActions = ({
+  user,
+  stats,
+}: {
+  user: UserProfile;
+  stats: UserStats;
+}): JSX.Element => {
   const { address } = useAccount();
   const { toggleOpen, setContent } = useModal();
 
@@ -18,7 +24,7 @@ const UserProfileActions = ({ user }: { user: UserProfile }): JSX.Element => {
   }, [address, user.address]);
 
   const handleModal = (): void => {
-    setContent(<UserEdit user={user} />);
+    setContent(<UserEdit user={user} stats={stats} />);
     toggleOpen();
   };
 

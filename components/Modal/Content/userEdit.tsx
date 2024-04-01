@@ -4,12 +4,12 @@ import React, { useTransition } from "react";
 import { useModal } from "@/hooks/contexts";
 import { Icon } from "@/components/Icon";
 import { Column, Row } from "@/components/Box";
-import { UserProfile } from "@/lib/types/actions";
+import { UserProfile, UserStats } from "@/lib/types/actions";
 import * as Form from "@/components/Form";
 import { Button } from "@/components/Button";
 import { updateUser } from "@/lib/actions/users";
 
-const UserEdit = ({ user }: { user: UserProfile }): JSX.Element => {
+const UserEdit = ({ user, stats }: { user: UserProfile; stats: UserStats }): JSX.Element => {
   const { toggleOpen } = useModal();
   const [isPending, startTransition] = useTransition();
 
@@ -21,6 +21,11 @@ const UserEdit = ({ user }: { user: UserProfile }): JSX.Element => {
       await updateUser(user.id, formData);
     });
   };
+
+  const canUpdateAuditorRole =
+    !user.auditorRole || (user.auditorRole && stats.numAuditsAudited == 0);
+  const canUpdateAuditeeRole =
+    !user.auditeeRole || (user.auditeeRole && stats.numAuditsCreated == 0);
 
   return (
     <form onSubmit={handleSubmit} className="relative">
@@ -49,15 +54,15 @@ const UserEdit = ({ user }: { user: UserProfile }): JSX.Element => {
             name="auditorRole"
             text="auditor role"
             defaultChecked={user.auditorRole}
-            disabled={true}
-            aria-disabled={true}
+            disabled={!canUpdateAuditorRole || isPending}
+            aria-disabled={!canUpdateAuditorRole || isPending}
           />
           <Form.Radio
             name="auditeeRole"
             text="auditee role"
             defaultChecked={user.auditeeRole}
-            disabled={true}
-            aria-disabled={true}
+            disabled={!canUpdateAuditeeRole || isPending}
+            aria-disabled={!canUpdateAuditeeRole || isPending}
           />
         </Column>
         <Row className="gap-4">

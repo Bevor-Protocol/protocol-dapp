@@ -1,8 +1,7 @@
 import UserNotExist from "./onboard";
 import UserAudits from "./audits";
-import UserData from "./data";
 import UserProfileActions from "./actions";
-import { getUserProfile } from "@/lib/actions/users";
+import { getUserProfile, getUserStats } from "@/lib/actions/users";
 import { Loader } from "@/components/Loader";
 import { Suspense } from "react";
 import { Column, Row } from "@/components/Box";
@@ -28,6 +27,8 @@ const UserContent = async ({ address }: { address: string }): Promise<JSX.Elemen
   if (!user) {
     return <UserNotExist address={address} />;
   }
+  const stats = await getUserStats(address);
+  console.log(user);
 
   return (
     <Column className="items-start w-full max-w-[1000px] py-8">
@@ -68,11 +69,26 @@ const UserContent = async ({ address }: { address: string }): Promise<JSX.Elemen
             />
           </Row>
         </Column>
-        <Suspense>
-          <UserData address={address} />
-        </Suspense>
+        <Column className="gap-1 text-sm whitespace-nowrap min-w-44">
+          <p>
+            <span className="inline-block w-32 text-right mr-4">Potential Payout: </span>
+            <span className="float-right">${stats.moneyPaid.toLocaleString()}</span>
+          </p>
+          <p>
+            <span className="inline-block w-32 text-right mr-4">Potential Earnings: </span>
+            <span className="float-right">${stats.moneyEarned}</span>
+          </p>
+          <p>
+            <span className="inline-block w-32 text-right mr-4"># Audits Created: </span>
+            <span className="float-right">{stats.numAuditsCreated}</span>
+          </p>
+          <p>
+            <span className="inline-block w-32 text-right mr-4"># Audits Audited: </span>
+            <span className="float-right">{stats.numAuditsAudited}</span>
+          </p>
+        </Column>
       </Row>
-      <UserProfileActions user={user} />
+      <UserProfileActions user={user} stats={stats} />
       <hr className="w-full h-[1px] border-gray-200/20 my-4" />
       <Suspense fallback={<Loader className="h-12" />}>
         <UserAudits address={address} />

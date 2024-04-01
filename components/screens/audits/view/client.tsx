@@ -38,18 +38,23 @@ export const AuditDashboardAction = ({ audit }: { audit: AuditFull }): JSX.Eleme
   const isAuditee = audit.auditeeId === user.id;
   const isAuditor = auditors.includes(user.id);
 
+  // Will likely need to update this.
+  const canEdit = isAuditee && !audit.isLocked;
+  const canRequest = !isAuditee && !isAuditor && !audit.isLocked && user.auditorRole;
+  // const canAttest = false;
+  const canAdd = isAuditor && audit.isLocked && !audit.isFinal;
+  const isLocked = !isAuditor && audit.isLocked && !audit.isFinal;
+
   return (
     <div>
-      {isAuditee && !audit.isLocked && (
+      {canEdit && (
         <DynamicLink href={`/audits/edit/${audit.id}`}>
           <Button>Edit Audit</Button>
         </DynamicLink>
       )}
-      {!isAuditee && !isAuditor && !audit.isLocked && <Button>Request to Audit</Button>}
-      {!isAuditor && audit.isLocked && !audit.isFinal && (
-        <Button disabled={true}>Audit Locked</Button>
-      )}
-      {isAuditor && audit.isLocked && !audit.isFinal && <Button>Add Audit Findings</Button>}
+      {canRequest && <Button>Request to Audit</Button>}
+      {isLocked && <Button disabled={true}>Audit Locked</Button>}
+      {canAdd && <Button>Add Audit Findings</Button>}
       {audit.isFinal && <Button>See Audit Findings</Button>}
     </div>
   );
