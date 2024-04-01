@@ -16,7 +16,7 @@ const AuditDashboardPage = ({
   const display = searchParams.display ?? "details";
 
   return (
-    <section className="flex flex-col h-full items-center px-content-limit">
+    <section className="flex flex-col h-full items-center">
       <Column className="w-full max-w-[1000px] gap-8 py-8 justify-start">
         <Suspense fallback={<AuditDetailedSkeleton />}>
           <AuditPage auditId={params.slug} />

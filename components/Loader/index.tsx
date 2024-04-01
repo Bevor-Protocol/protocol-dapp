@@ -10,19 +10,22 @@ export const Skeleton = ({ className }: { className: string }): JSX.Element => {
   return <div className={cn("bg-muted animate-pulse rounded-md", className)} />;
 };
 
-export const AuditsSkeleton = (): JSX.Element => {
+export const AuditsSkeleton = ({ nItems }: { nItems: number }): JSX.Element => {
+  const nUse = Math.min(nItems, 10);
   return (
     <Column className="gap-4 justify-center items-center w-full">
-      {Array.from({ length: 5 }).map((_, ind) => (
+      {Array.from({ length: nUse }).map((_, ind) => (
         <Card.Main className="w-full" key={ind}>
           <Card.Content className="gap-8">
             <Skeleton className="aspect-square h-[77px] md:h-[62px] !rounded-full" />
             <Column className="justify-start items-start overflow-hidden w-full gap-1">
-              <Row className="justify-between w-full">
-                <Skeleton className="h-7 w-48" />
-                <Skeleton className="h-7 w-12" />
-              </Row>
-              <Skeleton className="h-7 w-full" />
+              <Skeleton className="h-6 w-48" />
+              <Skeleton className="h-11 w-full" />
+            </Column>
+            <Column className="h-[3.75rem] justify-between">
+              <Skeleton className="w-48 h-4" />
+              <Skeleton className="w-48 h-4" />
+              <Skeleton className="w-48 h-4" />
             </Column>
           </Card.Content>
           <Card.Footer>
@@ -46,10 +49,13 @@ export const AuditDetailedSkeleton = (): JSX.Element => {
   );
 };
 
-export const LeaderboardSkeleton = (): JSX.Element => {
+export const LeaderboardSkeleton = ({ nItems }: { nItems: number }): JSX.Element => {
+  const nUse = Math.min(nItems, 10);
   return (
-    <Column className="w-full gap-1 justify-center items-center h-full">
-      <Loader className="h-12" />
+    <Column className="w-full gap-1">
+      {Array.from({ length: nUse }).map((_, ind) => (
+        <Skeleton key={ind} className="h-[calc(1rem+32px)] border border-transparent" />
+      ))}
     </Column>
   );
 };

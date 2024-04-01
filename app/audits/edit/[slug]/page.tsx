@@ -4,7 +4,7 @@ import { AuditDetailedSkeleton } from "@/components/Loader";
 
 const EditAudit = ({ params }: { params: { slug: string } }): JSX.Element => {
   return (
-    <section className="flex flex-col h-full items-center px-content-limit">
+    <section className="flex flex-col h-full items-center">
       <Suspense fallback={<AuditDetailedSkeleton />}>
         <AuditEdit auditId={params.slug} />
       </Suspense>

@@ -6,13 +6,13 @@ import DynamicLink from "@/components/Link";
 import { Row, Column } from "@/components/Box";
 
 export const Layout = ({ children }: { children: React.ReactNode }): JSX.Element => {
-  return <div className="min-h-svh flex flex-col">{children}</div>;
+  return <div className="min-h-svh flex flex-col px-content-limit">{children}</div>;
 };
 
 export const Footer = (): JSX.Element => {
   return (
     <footer>
-      <Column className="gap-4 w-full p-content-limit py-7 text-center text-xs md:hidden">
+      <Column className="gap-4 w-full py-7 text-center text-xs md:hidden">
         <p className="opacity-disable">de-risk. incentivize. audit. decentralize.</p>
         <span className="opacity-disable">Bevor &copy; {`${new Date().getFullYear()}`}</span>
       </Column>
@@ -22,7 +22,7 @@ export const Footer = (): JSX.Element => {
 
 export const Nav = (): JSX.Element => {
   return (
-    <nav className="px-content-limit py-6 w-full flex flex-row justify-between items-center md:py-4">
+    <nav className="py-6 w-full flex flex-row justify-between items-center md:py-4">
       <Row className="gap-6">
         <DynamicLink href="/">
           <div className="aspect-[1091/1685] relative h-16">

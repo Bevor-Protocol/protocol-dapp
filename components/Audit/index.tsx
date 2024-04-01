@@ -19,27 +19,18 @@ export const AuditCard = ({ audit }: { audit: AuditFull }): JSX.Element => {
             {audit.description}
           </p>
         </Column>
-        <Column className="whitespace-nowrap items-end text-sm">
+        <Column className="text-sm whitespace-nowrap min-w-fit">
           <p>
-            Prize Pool:
-            <span className="w-[100px] inline-block text-right">
-              {" "}
-              ${audit.terms?.price.toLocaleString() || 0}
-            </span>
+            <span className="inline-block w-32 text-right mr-4">Prize Pool: </span>
+            <span className="float-right">${audit.terms?.price.toLocaleString() || 0}</span>
           </p>
           <p>
-            Vesting Duration:
-            <span className="w-[100px] inline-block text-right">
-              {" "}
-              {audit.terms?.duration || "TBD"} month(s)
-            </span>
+            <span className="inline-block w-32 text-right mr-4">Vesting Duration: </span>
+            <span className="float-right">{audit.terms?.duration || "TBD"} month(s)</span>
           </p>
           <p>
-            Created:{" "}
-            <span className="w-[100px] inline-block text-right">
-              {" "}
-              {new Date(audit.createdAt).toLocaleDateString()}
-            </span>
+            <span className="inline-block w-32 text-right mr-4">Created: </span>
+            <span className="float-right">{new Date(audit.createdAt).toLocaleDateString()}</span>
           </p>
         </Column>
       </Card.Content>
