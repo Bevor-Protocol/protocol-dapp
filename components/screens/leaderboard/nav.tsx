@@ -1,31 +1,19 @@
 "use client";
 
-import { useRouter } from "next/navigation";
 import { Arrow } from "@/assets";
 import { cn } from "@/lib/utils";
 
-export const LeaderboardNav = ({
-  headers,
+const headers = ["name", "money", "active", "completed", "available"];
+
+const LeaderboardNav = ({
   sort,
   order,
+  handleSearch,
 }: {
-  headers: string[];
   sort: string;
   order: string;
+  handleSearch: (s: string) => void;
 }): JSX.Element => {
-  const router = useRouter();
-
-  const handleSearch = (header: string): void => {
-    let path: string;
-    if (header === sort) {
-      const newOrder = order === "asc" ? "desc" : "asc";
-      path = `/leaderboard?sort=${sort}&order=${newOrder}`;
-    } else {
-      path = `/leaderboard?sort=${header}&order=asc`;
-    }
-    router.replace(path);
-  };
-
   return (
     <div className="sticky -top-[1px] bg-dark z-50 w-full">
       <ul className="grid grid-cols-12 list-none m-0 p-2">
@@ -56,3 +44,5 @@ export const LeaderboardNav = ({
     </div>
   );
 };
+
+export default LeaderboardNav;

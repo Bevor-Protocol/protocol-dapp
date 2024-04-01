@@ -1,30 +1,13 @@
+import { Loader } from "@/components/Loader";
+import Leaderboard from "@/components/screens/leaderboard";
 import { Suspense } from "react";
 
-import { LeaderboardNav } from "./_components/client";
-import { LeaderboardData } from "./_components/server";
-import { LeaderboardSkeleton } from "@/components/Loader";
-import { Column } from "@/components/Box";
-
-const headers = ["name", "money", "active", "completed", "available"];
-
-type SearchI = {
-  sort?: string;
-  order?: string;
-};
-
-const LeaderboardPage = ({ searchParams }: { searchParams: SearchI }): JSX.Element => {
-  const sort = searchParams.sort ?? "name";
-  const order = searchParams.order ?? "asc";
-
+const LeaderboardPage = (): JSX.Element => {
   return (
     <section className="flex flex-col h-full items-center px-content-limit">
-      <Column className="scroll-table h-full">
-        <LeaderboardNav headers={headers} sort={sort} order={order} />
-        {/* must add the key here to get suspense boundary on each new route */}
-        <Suspense fallback={<LeaderboardSkeleton />} key={JSON.stringify(searchParams)}>
-          <LeaderboardData sort={sort} order={order} />
-        </Suspense>
-      </Column>
+      <Suspense fallback={<Loader className="h-12 w-12" />}>
+        <Leaderboard />
+      </Suspense>
     </section>
   );
 };

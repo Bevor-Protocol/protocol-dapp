@@ -1,5 +1,5 @@
 import { Suspense } from "react";
-import { AuditEdit } from "./_components/server";
+import AuditEdit from "@/components/screens/audits/edit";
 import { AuditDetailedSkeleton } from "@/components/Loader";
 
 const EditAudit = ({ params }: { params: { slug: string } }): JSX.Element => {

@@ -2,7 +2,7 @@ import { getAudits } from "@/lib/actions/audits";
 import { Column } from "@/components/Box";
 import { AuditCard } from "@/components/Audit";
 
-export const Audits = async ({ current }: { current: string }): Promise<JSX.Element> => {
+const Audits = async ({ current }: { current: string }): Promise<JSX.Element> => {
   const audits = await getAudits(current);
 
   return (
@@ -14,3 +14,5 @@ export const Audits = async ({ current }: { current: string }): Promise<JSX.Elem
     </Column>
   );
 };
+
+export default Audits;

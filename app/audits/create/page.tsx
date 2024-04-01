@@ -1,4 +1,4 @@
-import { AuditCreation } from "./_components";
+import AuditCreation from "@/components/screens/audits/create";
 
 const CreateAudit = (): JSX.Element => {
   return (
