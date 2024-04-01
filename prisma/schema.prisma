@@ -13,8 +13,9 @@ model User {
   id              String            @id @default(cuid())
   address         String            @unique
   profile         Profile?
-  auditee         Audit[]           @relation("UserAuditee")
+  auditee         Audit[]
   auditor         Audit[]           @relation("UserAuditor")
+  requests        Audit[]           @relation("UserRequests")
   termsAcceptance TermsAcceptance[]
   auditeeRole     Boolean           @default(false)
   auditorRole     Boolean           @default(false)
@@ -34,8 +35,9 @@ model Audit {
   id            String            @id @default(cuid())
   auditeeId     String
   terms         Terms?
-  auditee       User              @relation("UserAuditee", fields: [auditeeId], references: [id])
+  auditee       User              @relation(fields: [auditeeId], references: [id])
   auditors      User[]            @relation("UserAuditor")
+  requests      User[]            @relation("UserRequests")
   termsAccepted TermsAcceptance[]
   title         String
   description   String

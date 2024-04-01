@@ -54,21 +54,31 @@ export const AuditPage = async ({ auditId }: { auditId: string }): Promise<JSX.E
         <p className="text-lg font-bold">{audit.title}</p>
         <p className="text-base my-2">{audit.description}</p>
       </div>
-      <Row className="justify-between">
-        <Row className="justify-start items-center gap-2">
-          <span className="text-white/60">auditors:</span>
-          {audit.auditors.length > 0 ? (
-            <Row>
-              {audit.auditors.map((auditor, ind2) => (
-                <AuditAuditor position={`-${ind2 * 12.5}px`} key={ind2} auditor={auditor} />
-              ))}
-            </Row>
-          ) : (
-            <span className="text-white/60">TBD</span>
-          )}
-        </Row>
-        <AuditDashboardAction audit={audit} />
+      <Row className="items-center gap-4">
+        <p className="w-40">Verified to Audit:</p>
+        {audit.auditors.length > 0 ? (
+          <Row>
+            {audit.auditors.map((auditor, ind2) => (
+              <AuditAuditor position={`-${ind2 * 12.5}px`} key={ind2} auditor={auditor} />
+            ))}
+          </Row>
+        ) : (
+          <span className="text-white/60">TBD</span>
+        )}
       </Row>
+      <Row className="items-center gap-4">
+        <p className="w-40">Requested to Audit:</p>
+        {audit.auditors.length > 0 ? (
+          <Row>
+            {audit.auditors.map((auditor, ind2) => (
+              <AuditAuditor position={`-${ind2 * 12.5}px`} key={ind2} auditor={auditor} />
+            ))}
+          </Row>
+        ) : (
+          <span className="text-white/60">TBD</span>
+        )}
+      </Row>
+      <AuditDashboardAction audit={audit} />
     </Column>
   );
 };
