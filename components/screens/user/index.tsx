@@ -28,7 +28,6 @@ const UserContent = async ({ address }: { address: string }): Promise<JSX.Elemen
     return <UserNotExist address={address} />;
   }
   const stats = await getUserStats(address);
-  console.log(user);
 
   return (
     <Column className="items-start w-full max-w-[1000px] py-8">

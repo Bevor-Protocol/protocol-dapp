@@ -13,19 +13,31 @@ const UserEdit = ({ user, stats }: { user: UserProfile; stats: UserStats }): JSX
   const { toggleOpen } = useModal();
   const [isPending, startTransition] = useTransition();
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>): void => {
-    e.preventDefault();
-    const formData = new FormData(e.currentTarget);
-    formData.set("available", formData.has("available") ? "true" : "false");
-    startTransition(async () => {
-      await updateUser(user.id, formData);
-    });
-  };
-
   const canUpdateAuditorRole =
     !user.auditorRole || (user.auditorRole && stats.numAuditsAudited == 0);
   const canUpdateAuditeeRole =
     !user.auditeeRole || (user.auditeeRole && stats.numAuditsCreated == 0);
+
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>): void => {
+    e.preventDefault();
+    const formData = new FormData(e.currentTarget);
+    // Need to explicitly control for checkbox inputs, especially those that can be disabled.
+    formData.set("available", formData.has("available") ? "true" : "false");
+    if (canUpdateAuditeeRole) {
+      formData.set("auditeeRole", formData.has("auditeeRole") ? "true" : "false");
+    } else {
+      formData.set("auditeeRole", user.auditeeRole ? "true" : "false");
+    }
+    if (canUpdateAuditorRole) {
+      formData.set("auditorRole", formData.has("auditorRole") ? "true" : "false");
+    } else {
+      formData.set("auditorRole", user.auditorRole ? "true" : "false");
+    }
+    startTransition(async () => {
+      await updateUser(user.id, formData);
+      toggleOpen();
+    });
+  };
 
   return (
     <form onSubmit={handleSubmit} className="relative">
