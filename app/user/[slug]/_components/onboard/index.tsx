@@ -39,11 +39,11 @@ const UserOnboard = ({ address }: { address: string }): JSX.Element => {
   };
 
   return (
-    <Column className="gap-8 items-center">
-      <h2 className="text-xl">Welcome to Bevor! Let`s create your profile</h2>
-      <form onSubmit={handleSubmit} id="profile" className="w-full">
-        <Column className="gap-4 items-center">
-          <p className="text-white/60">{address}</p>
+    <form onSubmit={handleSubmit} className="max-w-full w-[700px]">
+      <h3 className="text-xl">Welcome to Bevor! Let`s create your profile</h3>
+      <p className="text-white/60 my-4">{address}</p>
+      <Row className="my-4 justify-between">
+        <Column className="gap-2">
           <Icon size="xl" seed={address} />
           <Form.Input
             type="text"
@@ -52,43 +52,43 @@ const UserOnboard = ({ address }: { address: string }): JSX.Element => {
             disabled={isPending}
             aria-disabled={isPending}
           />
-          <Column className="items-stretch gap-4">
-            <Form.Radio
-              name="available"
-              disabled={isPending}
-              aria-disabled={isPending}
-              defaultChecked={false}
-              text="is available"
-            />
-            <Form.Radio
-              name="auditor"
-              disabled={isPending}
-              aria-disabled={isPending}
-              defaultChecked={false}
-              text="auditor role"
-            />
-            <Form.Radio
-              name="auditee"
-              disabled={isPending}
-              aria-disabled={isPending}
-              defaultChecked={false}
-              text="auditee role"
-            />
-          </Column>
-          <Row className="gap-4">
-            <Button type="submit">
-              <span>Submit</span>
-            </Button>
-            <Button type="reset">
-              <Row className="align-middle gap-1 text-dark text-sm">
-                <span>Reset</span>
-              </Row>
-            </Button>
-          </Row>
         </Column>
-      </form>
+        <Column className="items-stretch gap-4">
+          <Form.Radio
+            name="available"
+            disabled={isPending}
+            aria-disabled={isPending}
+            defaultChecked={false}
+            text="is available"
+          />
+          <Form.Radio
+            name="auditor"
+            disabled={isPending}
+            aria-disabled={isPending}
+            defaultChecked={false}
+            text="auditor role"
+          />
+          <Form.Radio
+            name="auditee"
+            disabled={isPending}
+            aria-disabled={isPending}
+            defaultChecked={false}
+            text="auditee role"
+          />
+        </Column>
+      </Row>
+      <Row className="gap-4">
+        <Button type="submit">
+          <span>Submit</span>
+        </Button>
+        <Button type="reset">
+          <Row className="align-middle gap-1 text-dark text-sm">
+            <span>Reset</span>
+          </Row>
+        </Button>
+      </Row>
       {error && <span className="text-rose-400 text-xs">{error}</span>}
-    </Column>
+    </form>
   );
 };
 

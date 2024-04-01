@@ -128,13 +128,15 @@
 
 @layer components {
   .avatar {
-    height: var(--height-desktop);
-    @apply rounded-full transition-all aspect-square bg-no-repeat bg-contain bg-center
+    height: var(--size-desktop);
+    width: var(--size-desktop);
+    @apply rounded-full transition-all bg-no-repeat bg-contain bg-center
   }
 
   @media screen(md) {
     .avatar {
-      height: var(--height-mobile);
+      height: var(--size-mobile);
+      width: var(--size-mobile);
     }
   }
 }
