@@ -30,7 +30,7 @@ const UserContent = async ({ address }: { address: string }): Promise<JSX.Elemen
   }
 
   return (
-    <Column className="items-start w-full max-w-[1000px]">
+    <Column className="items-start w-full max-w-[1000px] py-8">
       <Row className="justify-between w-full">
         <Column className="gap-4">
           <div>

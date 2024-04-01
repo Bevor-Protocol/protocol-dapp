@@ -17,10 +17,11 @@ const AuditDashboardPage = ({
 
   return (
     <section className="flex flex-col h-full items-center px-content-limit">
-      <Column className="w-full max-w-[1000px] gap-8 py-8 justify-start items-stretch h-full">
+      <Column className="w-full max-w-[1000px] gap-8 py-8 justify-start">
         <Suspense fallback={<AuditDetailedSkeleton />}>
           <AuditPage auditId={params.slug} />
         </Suspense>
+        <hr className="w-full h-[1px] border-gray-200/20 my-4" />
         <Row className="gap-4 justify-start">
           <Link
             href={`/audits/view/${params.slug}?display=details`}
