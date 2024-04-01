@@ -3,11 +3,11 @@
 import { prisma } from "@/lib/db/prisma.server";
 
 export const protocolDataAudits = (): Promise<number> => {
-  return prisma.audit.count();
+  return prisma.audits.count();
 };
 
 export const protocolDataFunds = (): Promise<number> => {
-  return prisma.terms
+  return prisma.audits
     .aggregate({
       // where: {
       //   isFinal: true,
@@ -30,7 +30,7 @@ export const protocolDataVulnerabilities = (): Promise<number> => {
 };
 
 export const protocolDataAuditors = (): Promise<number> => {
-  return prisma.user.count({
+  return prisma.users.count({
     where: {
       auditorRole: true,
     },

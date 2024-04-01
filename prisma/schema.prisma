@@ -57,8 +57,8 @@ model Auditors {
   userId        String
   user          Users         @relation(fields: [userId], references: [id])
   status        AuditorStatus
-  attestedTerms Boolean
-  acceptedTerms Boolean
+  attestedTerms Boolean       @default(false)
+  acceptedTerms Boolean       @default(false)
 
   @@unique([auditId, userId])
 }
