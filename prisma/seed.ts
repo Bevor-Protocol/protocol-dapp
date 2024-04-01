@@ -45,6 +45,7 @@ const seed = async (): Promise<void> => {
     {
       address: "0x3A1D14c5B007f2aC5a5e174663Eb3e69C78ADbB5",
       auditorRole: true,
+      available: true,
     },
   ];
 

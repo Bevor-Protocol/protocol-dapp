@@ -1,23 +1,14 @@
-import { Audit, User, Profile, Terms } from "@prisma/client";
+import { Audits, Users } from "@prisma/client";
 
-export interface UserProfile extends User {
-  profile: Profile | null;
-}
-
-export interface UserWithCount extends UserProfile {
+export interface UserWithCount extends Users {
   totalValue: number;
   totalActive: number;
   totalComplete: number;
 }
 
-export interface AuditBriefI extends Audit {
-  terms?: Terms | null;
-  auditors: UserProfile[];
-  auditee: UserProfile;
-}
-
-export interface AuditViewI extends AuditBriefI {
-  requests: UserProfile[];
+export interface AuditViewI extends Audits {
+  auditors: Users[];
+  auditee: Users;
 }
 
 export interface UserStats {

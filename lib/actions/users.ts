@@ -1,8 +1,8 @@
 "use server";
 import { prisma } from "@/lib/db/prisma.server";
-import { Prisma } from "@prisma/client";
+import { AuditorStatus, Audits, AuditStatus, Prisma, Users } from "@prisma/client";
 
-import type { UserProfile, UserWithCount, AuditFull, UserStats } from "@/lib/types/actions";
+import type { UserWithCount, UserStats } from "@/lib/types/actions";
 import { revalidatePath } from "next/cache";
 
 export const getLeaderboard = (key?: string, order?: string): Promise<UserWithCount[]> => {
@@ -14,9 +14,7 @@ export const getLeaderboard = (key?: string, order?: string): Promise<UserWithCo
       orderClause = {
         orderBy: [
           {
-            profile: {
-              [key ?? "name"]: order ?? "asc",
-            },
+            [key ?? "name"]: order ?? "asc",
           },
           {
             address: order ?? "asc",
@@ -27,37 +25,44 @@ export const getLeaderboard = (key?: string, order?: string): Promise<UserWithCo
     case "available":
       orderClause = {
         orderBy: {
-          profile: {
-            available: order ?? "asc",
-          },
+          available: order ?? "asc",
         },
       };
       break;
   }
-
-  return prisma.user
+  // come back to this.
+  return prisma.users
     .findMany({
-      ...orderClause,
       where: {
         auditorRole: true,
       },
       include: {
-        profile: true,
-        auditor: {
+        auditors: {
+          where: {
+            status: AuditorStatus.VERIFIED,
+            audit: {
+              status: AuditStatus.ATTESTATION,
+            },
+          },
           include: {
-            terms: true,
+            audit: true,
           },
         },
       },
+      ...orderClause,
     })
     .then((users) => {
       const toReturn = users.map((user) => {
-        const { auditor, ...rest } = user;
-        const totalValue = auditor.reduce((acc, audit) => {
-          return acc + (audit.terms?.price || 0);
-        }, 0);
-        const totalActive = auditor.filter((audit) => !audit.isFinal).length;
-        const totalComplete = auditor.filter((audit) => audit.isFinal).length;
+        const { auditors, ...rest } = user;
+
+        const totalValue = auditors.reduce((acc, auditor) => acc + auditor.audit.price, 0);
+        const totalActive = auditors.filter(
+          (auditor) => auditor.audit.status !== AuditStatus.ATTESTATION,
+        ).length;
+        const totalComplete = auditors.filter(
+          (auditor) => auditor.audit.status === AuditStatus.ATTESTATION,
+        ).length;
+
         return {
           ...rest,
           totalValue,
@@ -84,36 +89,24 @@ export const getLeaderboard = (key?: string, order?: string): Promise<UserWithCo
     });
 };
 
-export const getUserProfile = (address: string): Promise<UserProfile | null> => {
-  return prisma.user.findUnique({
+export const getUserProfile = (address: string): Promise<Users | null> => {
+  return prisma.users.findUnique({
     where: {
       address,
-    },
-    include: {
-      profile: true,
     },
   });
 };
 
-export const getUserAuditsAuditee = (address: string): Promise<AuditFull[]> => {
-  return prisma.audit.findMany({
+export const getUserAuditsAuditee = (address: string): Promise<Audits[]> => {
+  return prisma.audits.findMany({
     where: {
       auditee: {
         address,
       },
     },
     include: {
-      auditee: {
-        include: {
-          profile: true,
-        },
-      },
-      terms: true,
-      auditors: {
-        include: {
-          profile: true,
-        },
-      },
+      auditee: true,
+      auditors: true,
     },
     orderBy: {
       createdAt: "desc",
@@ -121,27 +114,20 @@ export const getUserAuditsAuditee = (address: string): Promise<AuditFull[]> => {
   });
 };
 
-export const getUserAuditsAuditor = (address: string): Promise<AuditFull[]> => {
-  return prisma.audit.findMany({
+export const getUserAuditsAuditor = (address: string): Promise<Audits[]> => {
+  return prisma.audits.findMany({
     where: {
       auditors: {
         some: {
-          address,
+          user: {
+            address,
+          },
         },
       },
     },
     include: {
-      auditee: {
-        include: {
-          profile: true,
-        },
-      },
-      terms: true,
-      auditors: {
-        include: {
-          profile: true,
-        },
-      },
+      auditee: true,
+      auditors: true,
     },
     orderBy: {
       createdAt: "desc",
@@ -150,60 +136,50 @@ export const getUserAuditsAuditor = (address: string): Promise<AuditFull[]> => {
 };
 
 const getUserMoneyPaid = (address: string): Promise<number> => {
-  return prisma.audit
+  return prisma.audits
     .findMany({
       where: {
         auditee: {
           address,
         },
-        terms: {
-          price: {
-            gt: 0,
-          },
+        price: {
+          gt: 0,
         },
       },
       select: {
-        terms: {
-          select: {
-            price: true,
-          },
-        },
+        price: true,
       },
     })
-    .then((audits) => audits.reduce((a, audit) => audit.terms?.price ?? 0 + a, 0));
+    .then((audits) => audits.reduce((a, audit) => audit.price + a, 0));
 };
 
 const getUserMoneyEarned = (address: string): Promise<number> => {
-  return prisma.audit
+  return prisma.audits
     .findMany({
       where: {
         auditors: {
           some: {
-            address,
+            user: {
+              address,
+            },
           },
         },
-        terms: {
-          price: {
-            gt: 0,
-          },
+        price: {
+          gt: 0,
         },
       },
       select: {
-        terms: {
-          select: {
-            price: true,
-          },
-        },
+        price: true,
       },
     })
-    .then((audits) => audits.reduce((a, audit) => audit.terms?.price ?? 0 + a, 0));
+    .then((audits) => audits.reduce((a, audit) => audit.price + a, 0));
 };
 
 export const getUserStats = async (address: string): Promise<UserStats> => {
   const moneyPaid = await getUserMoneyPaid(address);
   const moneyEarned = await getUserMoneyEarned(address);
 
-  const numAuditsCreated = await prisma.audit.count({
+  const numAuditsCreated = await prisma.audits.count({
     where: {
       auditee: {
         address,
@@ -211,13 +187,12 @@ export const getUserStats = async (address: string): Promise<UserStats> => {
     },
   });
 
-  const numAuditsAudited = await prisma.audit.count({
+  const numAuditsAudited = await prisma.auditors.count({
     where: {
-      auditors: {
-        some: {
-          address,
-        },
+      user: {
+        address,
       },
+      status: AuditorStatus.VERIFIED,
     },
   });
 
@@ -247,18 +222,14 @@ export const createUser = (address: string, profileData: FormData): Promise<Crea
     );
   }
 
-  return prisma.user
+  return prisma.users
     .create({
       data: {
         address,
         auditorRole: auditor == "true", // add zod validation
         auditeeRole: auditee == "true", // add zod validation
-        profile: {
-          create: {
-            ...profile,
-            available: profile.available == "true", // add zod validation
-          },
-        },
+        available: profile.available == "true", // add zod validation
+        ...profile,
       },
     })
     .then(() => {
@@ -291,18 +262,14 @@ export const updateUser = async (id: string, form: FormData): Promise<CreateUser
   if (data.name) {
     profileData.name = data.name as string;
   }
-  return prisma.user
+  return prisma.users
     .update({
       where: {
         id,
       },
       data: {
         ...userData,
-        profile: {
-          update: {
-            ...profileData,
-          },
-        },
+        ...profileData,
       },
     })
     .then(() => {
@@ -321,7 +288,7 @@ export const updateUser = async (id: string, form: FormData): Promise<CreateUser
     });
 };
 
-export const searchAuditors = (query?: string): Promise<UserProfile[]> => {
+export const searchAuditors = (query?: string): Promise<Users[]> => {
   // I'll do filtering on frontend to exclude selected auditors from response.
   const search = query
     ? {
@@ -333,23 +300,18 @@ export const searchAuditors = (query?: string): Promise<UserProfile[]> => {
             },
           },
           {
-            profile: {
-              name: {
-                contains: query,
-                mode: Prisma.QueryMode.insensitive,
-              },
+            name: {
+              contains: query,
+              mode: Prisma.QueryMode.insensitive,
             },
           },
         ],
       }
     : {};
-  return prisma.user.findMany({
+  return prisma.users.findMany({
     where: {
       auditeeRole: true,
       ...search,
-    },
-    include: {
-      profile: true,
     },
   });
 };

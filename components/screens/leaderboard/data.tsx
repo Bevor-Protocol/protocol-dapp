@@ -18,8 +18,8 @@ const LeaderboardData = ({ data }: { data: UserWithCount[] }): JSX.Element => {
             w-fit flex items-center 
             gap-2 whitespace-nowrap max-w-full"
             >
-              <Icon image={item.profile?.image} size="md" seed={item.address} />
-              <span>{item.profile?.name || trimAddress(item.address)}</span>
+              <Icon image={item.image} size="md" seed={item.address} />
+              <span>{item.name || trimAddress(item.address)}</span>
             </li>
             <li
               className="grid-child cursor-pointer rounded-lg text-sm
@@ -47,7 +47,7 @@ const LeaderboardData = ({ data }: { data: UserWithCount[] }): JSX.Element => {
             w-fit flex items-center 
             gap-2 whitespace-nowrap max-w-full"
             >
-              <span>{String(item.profile?.available)}</span>
+              <span>{String(item.available)}</span>
             </li>
           </ul>
         </DynamicLink>
