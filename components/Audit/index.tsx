@@ -41,8 +41,8 @@ export const AuditCard = ({ audit }: { audit: AuditViewI }): JSX.Element => {
           <span className="text-white/60">auditors:</span>
           {audit.auditors.length > 0 ? (
             <Row>
-              {audit.auditors.map((auditor, ind2) => (
-                <AuditAuditor position={`-${ind2 * 12.5}px`} key={ind2} auditor={auditor} />
+              {audit.auditors.map(({ user }, ind2) => (
+                <AuditAuditor position={`-${ind2 * 12.5}px`} key={ind2} auditor={user} />
               ))}
             </Row>
           ) : (

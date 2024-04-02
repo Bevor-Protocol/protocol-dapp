@@ -280,7 +280,7 @@ Terms were attested to and agreed on (by my other wallet)",
   await prisma.audits.create({
     data: {
       title: "Completed audit",
-      description: "This audit is closed and will be viewable",
+      description: "This audit is ongoing and the handoff hasn't occured yet.",
       status: AuditStatus.ONGOING,
       price: 2_000,
       duration: 5,

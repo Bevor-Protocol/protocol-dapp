@@ -7,7 +7,7 @@ import html from "remark-html";
 import remarkGfm from "remark-gfm";
 import matter from "gray-matter";
 
-import { AuditViewI, GenericUpdateI } from "@/lib/types/actions";
+import { AuditViewI, AuditViewDetailedI, GenericUpdateI } from "@/lib/types/actions";
 import { revalidatePath } from "next/cache";
 import { AuditorStatus, AuditStatus, Users } from "@prisma/client";
 
@@ -28,27 +28,39 @@ export const getAudits = (status?: string): Promise<AuditViewI[]> => {
       break;
   }
   return prisma.audits.findMany({
-    orderBy: {
-      createdAt: "desc",
-    },
     where: {
       status: statusFilter,
     },
     include: {
       auditee: true,
-      auditors: true,
+      auditors: {
+        where: {
+          status: AuditorStatus.VERIFIED,
+        },
+        select: {
+          user: true,
+        },
+      },
+    },
+    orderBy: {
+      createdAt: "desc",
     },
   });
 };
 
-export const getAudit = (id: string): Promise<AuditViewI | null> => {
+export const getAudit = (id: string): Promise<AuditViewDetailedI | null> => {
+  // A more detailed view. Will show verified, rejected, and requested auditors as well.
   return prisma.audits.findUnique({
     where: {
       id,
     },
     include: {
-      auditors: true,
       auditee: true,
+      auditors: {
+        include: {
+          user: true,
+        },
+      },
     },
   });
 };
@@ -142,7 +154,7 @@ export const updateAudit = async (
   const { title, description, price, duration } = data;
   const passedAuditorIds = auditors.map((auditor) => auditor.id);
 
-  const currentAuditorIds = currentAudit.auditors.map((auditor) => auditor.userId);
+  const currentAuditorIds = currentAudit.auditors.map((auditor) => auditor.user.id);
 
   const auditorsDelete = currentAuditorIds
     .filter((auditor) => !passedAuditorIds.includes(auditor))

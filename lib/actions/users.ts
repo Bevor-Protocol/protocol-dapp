@@ -1,8 +1,8 @@
 "use server";
 import { prisma } from "@/lib/db/prisma.server";
-import { AuditorStatus, Audits, AuditStatus, Prisma, Users } from "@prisma/client";
+import { AuditorStatus, AuditStatus, Prisma, Users } from "@prisma/client";
 
-import type { UserWithCount, UserStats } from "@/lib/types/actions";
+import type { UserWithCount, UserStats, AuditViewI, GenericUpdateI } from "@/lib/types/actions";
 import { revalidatePath } from "next/cache";
 
 export const getLeaderboard = (key?: string, order?: string): Promise<UserWithCount[]> => {
@@ -112,7 +112,7 @@ export const getUserProfile = (address: string): Promise<Users | null> => {
   });
 };
 
-export const getUserAuditsAuditee = (address: string): Promise<Audits[]> => {
+export const getUserAuditsAuditee = (address: string): Promise<AuditViewI[]> => {
   return prisma.audits.findMany({
     where: {
       auditee: {
@@ -121,15 +121,19 @@ export const getUserAuditsAuditee = (address: string): Promise<Audits[]> => {
     },
     include: {
       auditee: true,
-      auditors: true,
-    },
-    orderBy: {
-      createdAt: "desc",
+      auditors: {
+        where: {
+          status: AuditorStatus.VERIFIED,
+        },
+        include: {
+          user: true,
+        },
+      },
     },
   });
 };
 
-export const getUserAuditsAuditor = (address: string): Promise<Audits[]> => {
+export const getUserAuditsVerifiedAuditor = (address: string): Promise<AuditViewI[]> => {
   return prisma.audits.findMany({
     where: {
       auditors: {
@@ -137,12 +141,20 @@ export const getUserAuditsAuditor = (address: string): Promise<Audits[]> => {
           user: {
             address,
           },
+          status: AuditorStatus.VERIFIED,
         },
       },
     },
     include: {
       auditee: true,
-      auditors: true,
+      auditors: {
+        where: {
+          status: AuditorStatus.VERIFIED,
+        },
+        include: {
+          user: true,
+        },
+      },
     },
     orderBy: {
       createdAt: "desc",
@@ -157,6 +169,7 @@ const getUserMoneyPaid = (address: string): Promise<number> => {
         auditee: {
           address,
         },
+        status: AuditStatus.FINAL,
         price: {
           gt: 0,
         },
@@ -172,6 +185,7 @@ const getUserMoneyEarned = (address: string): Promise<number> => {
   return prisma.audits
     .findMany({
       where: {
+        status: AuditStatus.FINAL,
         auditors: {
           some: {
             user: {
@@ -219,12 +233,7 @@ export const getUserStats = async (address: string): Promise<UserStats> => {
   };
 };
 
-type CreateUserI = {
-  success: boolean;
-  error?: string;
-};
-
-export const createUser = (address: string, profileData: FormData): Promise<CreateUserI> => {
+export const createUser = (address: string, profileData: FormData): Promise<GenericUpdateI> => {
   const data = Object.fromEntries(profileData);
   const { auditor, auditee, ...profile } = data;
 
@@ -260,16 +269,15 @@ export const createUser = (address: string, profileData: FormData): Promise<Crea
     });
 };
 
-export const updateUser = async (id: string, form: FormData): Promise<CreateUserI> => {
+export const updateUser = async (id: string, form: FormData): Promise<GenericUpdateI> => {
   const data = Object.fromEntries(form);
-  const userData: Record<string, boolean> = {};
   const profileData: Record<string, boolean | string> = {};
   // add zod validation
   if (data.auditeeRole) {
-    userData.auditeeRole = data.auditeeRole == "true";
+    profileData.auditeeRole = data.auditeeRole == "true";
   }
   if (data.auditorRole) {
-    userData.auditorRole = data.auditorRole == "true";
+    profileData.auditorRole = data.auditorRole == "true";
   }
   if (data.available) {
     profileData.available = data.available == "true";
@@ -283,7 +291,6 @@ export const updateUser = async (id: string, form: FormData): Promise<CreateUser
         id,
       },
       data: {
-        ...userData,
         ...profileData,
       },
     })
