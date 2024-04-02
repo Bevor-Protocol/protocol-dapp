@@ -1,4 +1,4 @@
-import { Audits, Users } from "@prisma/client";
+import { Audits, Users, Auditors } from "@prisma/client";
 
 export interface UserWithCount extends Users {
   totalValue: number;
@@ -7,7 +7,7 @@ export interface UserWithCount extends Users {
 }
 
 export interface AuditViewI extends Audits {
-  auditors: Users[];
+  auditors: Auditors[];
   auditee: Users;
 }
 

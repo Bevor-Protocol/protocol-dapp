@@ -33,7 +33,7 @@ enum AuditStatus {
 model Audits {
   id          String      @id @default(cuid())
   auditeeId   String
-  auditee     Users       @relation(fields: [auditeeId], references: [id])
+  auditee     Users       @relation(fields: [auditeeId], references: [id], onDelete: Cascade)
   title       String
   description String
   markdown    String? // reference to an S3 storage key
@@ -53,9 +53,9 @@ enum AuditorStatus {
 
 model Auditors {
   auditId       String
-  audit         Audits        @relation(fields: [auditId], references: [id])
+  audit         Audits        @relation(fields: [auditId], references: [id], onDelete: Cascade)
   userId        String
-  user          Users         @relation(fields: [userId], references: [id])
+  user          Users         @relation(fields: [userId], references: [id], onDelete: Cascade)
   status        AuditorStatus
   attestedTerms Boolean       @default(false)
   acceptedTerms Boolean       @default(false)
