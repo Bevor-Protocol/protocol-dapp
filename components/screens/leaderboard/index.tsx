@@ -30,7 +30,7 @@ const LeaderboardWrapper = ({ initialData }: { initialData: UserWithCount[] }): 
   };
 
   return (
-    <Column className="scroll-table h-full">
+    <Column className="leaderboard">
       <LeaderboardNav sort={listSort} order={listOrder} handleSearch={handleSearch} />
       {isFetching ? <LeaderboardSkeleton nItems={data.length} /> : <LeaderboardData data={data} />}
     </Column>

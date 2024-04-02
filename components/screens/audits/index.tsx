@@ -6,11 +6,13 @@ import { useQuery } from "@tanstack/react-query";
 import { getAudits } from "@/lib/actions/audits";
 import { Column, Row } from "@/components/Box";
 import { AuditCard } from "@/components/Audit";
-import { AuditFull } from "@/lib/types/actions";
 import { Toggle } from "@/components/Toggle";
 import { AuditsSkeleton } from "@/components/Loader";
+import { AuditViewI } from "@/lib/types/actions";
 
-const Audits = ({ initialData }: { initialData: AuditFull[] }): JSX.Element => {
+const statuses = ["open", "locked", "ongoing", "completed"];
+
+const Audits = ({ initialData }: { initialData: AuditViewI[] }): JSX.Element => {
   const [display, setDisplay] = useState("open");
 
   const { data, isFetching } = useQuery({
@@ -25,13 +27,14 @@ const Audits = ({ initialData }: { initialData: AuditFull[] }): JSX.Element => {
         <h2 className="text-4xl font-extrabold leading-[normal]">Audits</h2>
       </div>
       <Row className="gap-4">
-        <Toggle active={display === "open"} title="open" onClick={() => setDisplay("open")} />
-        <Toggle
-          active={display === "pending"}
-          title="pending"
-          onClick={() => setDisplay("pending")}
-        />
-        <Toggle active={display === "closed"} title="closed" onClick={() => setDisplay("closed")} />
+        {statuses.map((status) => (
+          <Toggle
+            active={display === status}
+            title={status}
+            onClick={() => setDisplay(status)}
+            key={status}
+          />
+        ))}
       </Row>
       {isFetching ? (
         <AuditsSkeleton nItems={data.length} />

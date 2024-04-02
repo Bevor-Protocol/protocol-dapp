@@ -34,9 +34,9 @@ const UserContent = async ({ address }: { address: string }): Promise<JSX.Elemen
       <Row className="justify-between w-full">
         <Column className="gap-4">
           <div>
-            <Icon size="xxl" image={user.profile?.image} seed={user.address} />
+            <Icon size="xxl" image={user.image} seed={user.address} />
             <p className="text-sm mt-4 mb-1">
-              {user.profile?.name && <span>{user.profile.name} | </span>}
+              {user.name && <span>{user.name} | </span>}
               <span>{trimAddress(user.address)}</span>
             </p>
             <p className="text-white/60 text-xs my-1">
@@ -48,7 +48,7 @@ const UserContent = async ({ address }: { address: string }): Promise<JSX.Elemen
             <Form.Radio
               name="available"
               text="is available"
-              checked={user.profile?.available}
+              checked={user.available}
               disabled={true}
               aria-disabled={true}
             />

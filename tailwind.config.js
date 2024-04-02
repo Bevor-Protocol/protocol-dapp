@@ -14,6 +14,12 @@ module.exports = {
       xs: { max: "450px" },
     },
     extend: {
+      gridTemplateColumns: {
+        14: "repeat(16, minmax(0, 1fr))",
+      },
+      rotate: {
+        135: "135deg",
+      },
       fontSize: {
         xxs: "0.6rem",
       },

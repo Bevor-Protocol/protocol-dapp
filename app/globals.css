@@ -64,21 +64,21 @@
 }
 
 @layer components {
-  .scroll-table {
-    @apply relative max-h-none py-0 mt-8 mb-8 w-full max-w-[1000px]
+  .leaderboard {
+    @apply relative max-h-none py-0 mt-8 mb-8 w-full max-w-[1000px] h-full
   }
-  .scroll-table::-webkit-scrollbar {
+  .leaderboard::-webkit-scrollbar {
     @apply w-[10px] h-[10px]
   }
-  .scroll-table::-webkit-scrollbar-track {
+  .leaderboard::-webkit-scrollbar-track {
     @apply rounded-lg bg-dark-primary-15
   }
-  .scroll-table::-webkit-scrollbar-thumb {
+  .leaderboard::-webkit-scrollbar-thumb {
     @apply rounded-lg bg-primary-light-15
   }
 
   @media screen(xl) {
-    .scroll-table {
+    .leaderboard {
       @apply block overflow-y-scroll mb-0;
       max-height: calc(100vh - (3rem + 60px));
       max-height: calc(100dvh - (3rem + 60px));
@@ -86,16 +86,16 @@
   }
 
   @media screen(lg) {
-    .scroll-table {
+    .leaderboard {
       @apply overflow-x-scroll
     }
-    .scroll-table > div {
-      @apply min-w-[622px]
+    .leaderboard > div {
+      @apply min-w-[914px]
     }
   }
 
   @media screen(md) {
-    .scroll-table {
+    .leaderboard {
       max-height: calc(100vh - (3rem + 60px + 3rem));
       max-height: calc(100dvh - (3rem + 60px + 3rem));
     }
@@ -109,20 +109,53 @@
 }
 
 @layer components {
+  .leaderboard-element {
+    @apply flex flex-row list-none m-0 p-2
+  }
+  .leaderboard-element li:nth-child(1) {
+    width: 25%;
+    min-width: 25%;
+  }
+  .leaderboard-element li:nth-child(2) {
+    width: 15%;
+    min-width: 15%;
+  }
+  .leaderboard-element li:nth-child(3) {
+    width: 15%;
+    min-width: 15%;
+  }
+  .leaderboard-element li:nth-child(4) {
+    width: 15%;
+    min-width: 15%;
+  }
+  .leaderboard-element li:nth-child(5) {
+    width: 15%;
+    min-width: 15%;
+  }
+  .leaderboard-element li:nth-child(6) {
+    width: 15%;
+    min-width: 15%;
+  }
+}
+
+@layer components {
   .grid-child:nth-child(1) {
     grid-column: 1 / 5;
   }
   .grid-child:nth-child(2) {
-    grid-column: 5 / 7;
+    grid-column: 5 / 8;
   }
   .grid-child:nth-child(3) {
-    grid-column: 7 / 9;
+    grid-column: 8 / 10;
   }
   .grid-child:nth-child(4) {
-    grid-column: 9 / 11;
+    grid-column: 10 / 12;
   }
   .grid-child:nth-child(5) {
-    grid-column: 11 / 13;
+    grid-column: 12 / 14;
+  }
+  .grid-child:nth-child(6) {
+    grid-column: 14 / 16;
   }
 }
 
@@ -130,6 +163,8 @@
   .avatar {
     height: var(--size-desktop);
     width: var(--size-desktop);
+    min-height: var(--size-desktop);
+    min-width: var(--size-desktop);
     @apply rounded-full transition-all bg-no-repeat bg-contain bg-center
   }
 
@@ -137,6 +172,8 @@
     .avatar {
       height: var(--size-mobile);
       width: var(--size-mobile);
+      min-height: var(--size-mobile);
+      min-width: var(--size-mobile);
     }
   }
 }
