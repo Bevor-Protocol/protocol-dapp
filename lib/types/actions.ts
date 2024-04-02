@@ -1,4 +1,4 @@
-import { Audits, Users, Auditors } from "@prisma/client";
+import { Users, Prisma } from "@prisma/client";
 
 export interface UserWithCount extends Users {
   totalValue: number;
@@ -6,10 +6,12 @@ export interface UserWithCount extends Users {
   totalComplete: number;
 }
 
-export interface AuditViewI extends Audits {
-  auditors: Auditors[];
-  auditee: Users;
-}
+export type AuditViewI = Prisma.AuditsGetPayload<{
+  include: {
+    auditee: true;
+    auditors: true;
+  };
+}>;
 
 export interface UserStats {
   moneyPaid: number;

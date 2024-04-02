@@ -3,13 +3,14 @@
 
 import React, { useState, useRef, useMemo } from "react";
 import { useQuery } from "@tanstack/react-query";
+import { Users } from "@prisma/client";
 
 import { Column, Row } from "@/components/Box";
 import { Button } from "@/components/Button";
 import * as Form from "@/components/Form";
 import { Loader } from "@/components/Loader";
 import { searchAuditors } from "@/lib/actions/users";
-import { AuditFull, UserProfile } from "@/lib/types/actions";
+import { AuditViewI } from "@/lib/types/actions";
 import { AuditorItem } from "@/components/Audit";
 
 const AuditForm = ({
@@ -23,10 +24,10 @@ const AuditForm = ({
   address: string;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   query: any;
-  auditors: UserProfile[];
-  setAuditors: React.Dispatch<React.SetStateAction<UserProfile[]>>;
+  auditors: Users[];
+  setAuditors: React.Dispatch<React.SetStateAction<Users[]>>;
   handleSubmit: (e: React.FormEvent<HTMLFormElement>) => void;
-  initialState?: AuditFull;
+  initialState?: AuditViewI;
 }): JSX.Element => {
   const [timoutPending, setTimoutPending] = useState(false);
   const [queryString, setQueryString] = useState("");
@@ -37,7 +38,7 @@ const AuditForm = ({
     queryFn: () => searchAuditors(queryString),
   });
 
-  const addAuditorSet = (auditor: UserProfile): void => {
+  const addAuditorSet = (auditor: Users): void => {
     setAuditors((prev) => [...prev, auditor]);
   };
 
@@ -138,7 +139,7 @@ const AuditForm = ({
           min={0}
           name="price"
           text="Total Price ($)"
-          defaultValue={initialState?.terms?.price}
+          defaultValue={initialState?.price}
           disabled={query.isPending}
         />
         <Form.Input
@@ -147,7 +148,7 @@ const AuditForm = ({
           min={0}
           name="duration"
           text="Vesting Duration (months)"
-          defaultValue={initialState?.terms?.duration}
+          defaultValue={initialState?.duration}
           disabled={query.isPending}
         />
       </Row>

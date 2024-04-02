@@ -1,6 +1,7 @@
 "use client";
 
 import { useRouter, usePathname } from "next/navigation";
+import { AuditorStatus, AuditStatus } from "@prisma/client";
 
 import { Row } from "@/components/Box";
 import { Toggle } from "@/components/Toggle";
@@ -31,8 +32,12 @@ export const AuditDashboardHeader = ({ display }: { display: string }): JSX.Elem
 export const AuditDashboardAction = ({ audit }: { audit: AuditViewI }): JSX.Element => {
   const { user } = useUser();
 
-  const auditors = audit.auditors.map((auditor) => auditor.id);
-  const requesters = audit.requests.map((auditor) => auditor.id);
+  const auditors = audit.auditors
+    .filter((auditor) => auditor.status === AuditorStatus.VERIFIED)
+    .map((auditor) => auditor.userId);
+  const requesters = audit.auditors
+    .filter((auditor) => auditor.status === AuditorStatus.REQUESTED)
+    .map((auditor) => auditor.userId);
 
   if (!user) return <></>;
 
@@ -42,16 +47,18 @@ export const AuditDashboardAction = ({ audit }: { audit: AuditViewI }): JSX.Elem
 
   return (
     <Row className="gap-4">
-      {isTheAuditee && !audit.isFinal && (
+      {isTheAuditee && audit.status !== AuditStatus.FINAL && (
         <DynamicLink href={`/audits/edit/${audit.id}`}>
           <Button>Edit Audit</Button>
         </DynamicLink>
       )}
       {isTheAuditee && requesters.length > 0 && <Button>Manage Requests</Button>}
       {isRequestor && <Button>Remove Request to Audit</Button>}
-      {!isRequestor && !audit.isLocked && <Button>Request to Audit</Button>}
-      {isAnAuditor && !audit.isFinal && <Button>Remove me as Auditor</Button>}
-      {isTheAuditee && audit.isLocked && !audit.isFinal && <Button>Re-open Audit</Button>}
+      {!isRequestor && audit.status === AuditStatus.OPEN && <Button>Request to Audit</Button>}
+      {isAnAuditor &&
+        audit.status !== AuditStatus.FINAL &&
+        audit.status !== AuditStatus.ONGOING && <Button>Remove me as Auditor</Button>}
+      {isTheAuditee && audit.status === AuditStatus.ATTESTATION && <Button>Re-open Audit</Button>}
     </Row>
   );
 };

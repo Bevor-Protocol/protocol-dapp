@@ -22,27 +22,24 @@ export const AuditPage = async ({ auditId }: { auditId: string }): Promise<JSX.E
       <Row className="justify-between">
         <div>
           <DynamicLink href={`/user/${audit.auditee.address}`}>
-            <Icon image={audit.auditee.profile?.image} seed={audit.auditee.address} size="xxl" />
+            <Icon image={audit.auditee.image} seed={audit.auditee.address} size="xxl" />
           </DynamicLink>
           <p className="text-sm mt-4 mb-1">
-            {audit.auditee.profile?.name && <span>{audit.auditee.profile.name} | </span>}
+            {audit.auditee.name && <span>{audit.auditee.name} | </span>}
             <span>{trimAddress(audit.auditee.address)}</span>
           </p>
         </div>
         <Column className="gap-1 text-sm whitespace-nowrap min-w-44">
           <p className="text-right text-lg">
-            Audit is{" "}
-            <span className="uppercase">
-              {audit.isFinal ? "Closed" : audit.isLocked ? "Locked" : "Open"}
-            </span>
+            Audit is <span className="uppercase">{audit.status}</span>
           </p>
           <p>
             <span className="inline-block w-32 text-right mr-4">Prize Pool: </span>
-            <span className="float-right">${audit.terms?.price.toLocaleString() || 0}</span>
+            <span className="float-right">${audit.price.toLocaleString()}</span>
           </p>
           <p>
             <span className="inline-block w-32 text-right mr-4">Vesting Duration: </span>
-            <span className="float-right">{audit.terms?.duration || "TBD"} month(s)</span>
+            <span className="float-right">{audit.duration || "TBD"} month(s)</span>
           </p>
           <p>
             <span className="inline-block w-32 text-right mr-4">Created: </span>
@@ -68,9 +65,9 @@ export const AuditPage = async ({ auditId }: { auditId: string }): Promise<JSX.E
       </Row>
       <Row className="items-center gap-4">
         <p className="w-40">Requested to Audit:</p>
-        {audit.requests.length > 0 ? (
+        {audit.auditors.length > 0 ? (
           <Row>
-            {audit.requests.map((auditor, ind2) => (
+            {audit.auditors.map((auditor, ind2) => (
               <AuditAuditor position={`-${ind2 * 12.5}px`} key={ind2} auditor={auditor} />
             ))}
           </Row>
