@@ -27,7 +27,7 @@ const Page = (): JSX.Element => {
                 <Arrow height="0.75rem" width="0.75rem" />
               </Button>
             </DynamicLink>
-            <DynamicLink href="/audits?status=open">
+            <DynamicLink href="/audits">
               <Button>
                 <span>Conduct Audit</span>
                 <Arrow height="0.75rem" width="0.75rem" />

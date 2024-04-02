@@ -169,7 +169,7 @@ const getUserMoneyPaid = (address: string): Promise<number> => {
         auditee: {
           address,
         },
-        status: AuditStatus.FINAL,
+        // status: AuditStatus.FINAL,
         price: {
           gt: 0,
         },
@@ -185,7 +185,7 @@ const getUserMoneyEarned = (address: string): Promise<number> => {
   return prisma.audits
     .findMany({
       where: {
-        status: AuditStatus.FINAL,
+        // status: AuditStatus.FINAL,
         auditors: {
           some: {
             user: {

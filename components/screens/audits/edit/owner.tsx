@@ -4,7 +4,7 @@ import React, { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useAccount } from "wagmi";
 import { useMutation } from "@tanstack/react-query";
-import { Users } from "@prisma/client";
+import { AuditorStatus, Users } from "@prisma/client";
 
 import { Loader } from "@/components/Loader";
 import { useUser } from "@/hooks/contexts";
@@ -17,7 +17,10 @@ const AuditEditWrapper = ({ audit }: { audit: AuditViewDetailedI }): JSX.Element
   const router = useRouter();
   const { user, isFetchedAfterMount, isPending } = useUser();
 
-  const initialAuditors = audit.auditors.map((auditor) => auditor.user);
+  // only show the selected auditors that were already verified.
+  const initialAuditors = audit.auditors
+    .filter((auditor) => auditor.status === AuditorStatus.VERIFIED)
+    .map((auditor) => auditor.user);
   const [auditors, setAuditors] = useState<Users[]>([...initialAuditors]);
 
   useEffect(() => {

@@ -68,10 +68,20 @@ const AuditForm = ({
 
   const auditorsShow = useMemo(() => {
     const chosenAuditors = auditors.map((auditor) => auditor.id);
+
+    // also want to exclude auditors who has previously requested to audit. Managing those will
+    // be a different task.
+    const excludeAuditors = initialState?.auditors.map((auditor) => auditor.user.id) || [];
     return (
-      data?.filter((item) => !chosenAuditors.includes(item.id) && item.address !== address) || []
+      data?.filter((item) => {
+        return (
+          !chosenAuditors.includes(item.id) &&
+          item.address !== address &&
+          !excludeAuditors.includes(item.id)
+        );
+      }) || []
     );
-  }, [auditors, data, address]);
+  }, [auditors, data, address, initialState]);
 
   return (
     <form onSubmit={handleSubmit} className="max-w-full w-[700px]">
@@ -95,7 +105,7 @@ const AuditForm = ({
         />
         <Row className="text-sm gap-2 mt-2">
           <p className="w-60">Find Auditors</p>
-          <p>Selected Auditors:</p>
+          <p>Selected Verified Auditors:</p>
         </Row>
         <Row className="gap-2">
           <Form.Search disabled={query.isPending} onChange={handleChange}>
