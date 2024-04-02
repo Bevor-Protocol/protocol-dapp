@@ -1,5 +1,5 @@
+import { Users } from "@prisma/client";
 import { Address } from "viem";
-import { UserProfile } from "./actions";
 
 export type LeaderboardI = {
   name: string;
@@ -67,7 +67,7 @@ export type ModalStateI = {
 };
 
 export type UserStateI = {
-  user: UserProfile | null | undefined;
+  user: Users | null | undefined;
   isLoading: boolean;
   isFetching: boolean;
   isPending: boolean;

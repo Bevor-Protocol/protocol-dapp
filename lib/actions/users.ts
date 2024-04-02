@@ -332,7 +332,7 @@ export const searchAuditors = (query?: string): Promise<Users[]> => {
     : {};
   return prisma.users.findMany({
     where: {
-      auditeeRole: true,
+      auditorRole: true,
       ...search,
     },
   });

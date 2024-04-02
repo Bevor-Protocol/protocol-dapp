@@ -6,7 +6,7 @@ import { AuditorStatus, AuditStatus } from "@prisma/client";
 import { Row } from "@/components/Box";
 import { Toggle } from "@/components/Toggle";
 import { Button } from "@/components/Button";
-import { AuditViewI } from "@/lib/types/actions";
+import { AuditViewDetailedI } from "@/lib/types/actions";
 import { useUser } from "@/hooks/contexts";
 import DynamicLink from "@/components/Link";
 
@@ -29,7 +29,7 @@ export const AuditDashboardHeader = ({ display }: { display: string }): JSX.Elem
   );
 };
 
-export const AuditDashboardAction = ({ audit }: { audit: AuditViewI }): JSX.Element => {
+export const AuditDashboardAction = ({ audit }: { audit: AuditViewDetailedI }): JSX.Element => {
   const { user } = useUser();
 
   const auditors = audit.auditors

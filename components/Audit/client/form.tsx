@@ -20,6 +20,7 @@ const AuditForm = ({
   setAuditors,
   handleSubmit,
   initialState,
+  initialAuditors = [],
 }: {
   address: string;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -28,6 +29,7 @@ const AuditForm = ({
   setAuditors: React.Dispatch<React.SetStateAction<Users[]>>;
   handleSubmit: (e: React.FormEvent<HTMLFormElement>) => void;
   initialState?: AuditViewI;
+  initialAuditors?: Users[];
 }): JSX.Element => {
   const [timoutPending, setTimoutPending] = useState(false);
   const [queryString, setQueryString] = useState("");
@@ -61,7 +63,7 @@ const AuditForm = ({
 
   const uncontrolledReset = (): void => {
     setQueryString("");
-    setAuditors([...(initialState?.auditors || [])]);
+    setAuditors([...initialAuditors]);
   };
 
   const auditorsShow = useMemo(() => {
@@ -118,7 +120,7 @@ const AuditForm = ({
               )}
             </Column>
           </Form.Search>
-          <Row className="gap-2 flex-wrap">
+          <Row className="gap-x-4 gap-y-0 flex-wrap content-start">
             {auditors.map((auditor) => (
               <AuditorItem
                 key={auditor.id}

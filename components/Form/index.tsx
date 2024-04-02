@@ -40,7 +40,7 @@ export const Input: React.FC<InputI> = ({ className, text, type, ...rest }) => {
 
 export const Search: React.FC<SearchI> = ({ children, className, text, ...rest }) => {
   return (
-    <div className="w-60">
+    <div className="w-60 min-w-60">
       <label className="w-fit max-w-fit *:text-sm">
         {text && <p className="mb-1">{text}</p>}
         <Row

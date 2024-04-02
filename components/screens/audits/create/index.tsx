@@ -4,6 +4,7 @@ import React, { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useAccount } from "wagmi";
 import { useMutation } from "@tanstack/react-query";
+import { Users } from "@prisma/client";
 
 import DynamicLink from "@/components/Link";
 import { Column } from "@/components/Box";
@@ -12,15 +13,13 @@ import { Loader } from "@/components/Loader";
 import { Arrow } from "@/assets";
 import { useUser } from "@/hooks/contexts";
 import AuditForm from "@/components/Audit/client/form";
-
-import { UserProfile } from "@/lib/types/actions";
 import { createAudit } from "@/lib/actions/audits";
 
 const AuditCreation = (): JSX.Element => {
   const { address } = useAccount();
   const router = useRouter();
   const { user, isFetchedAfterMount, isPending } = useUser();
-  const [auditors, setAuditors] = useState<UserProfile[]>([]);
+  const [auditors, setAuditors] = useState<Users[]>([]);
 
   useEffect(() => {
     if (!isFetchedAfterMount || isPending) return;
@@ -33,7 +32,7 @@ const AuditCreation = (): JSX.Element => {
   }, [isFetchedAfterMount, isPending, router, user, address]);
 
   const query = useMutation({
-    mutationFn: (variables: { userId: string; formData: FormData; auditors: UserProfile[] }) =>
+    mutationFn: (variables: { userId: string; formData: FormData; auditors: Users[] }) =>
       createAudit(variables.userId, variables.formData, variables.auditors),
     onSuccess: () => {
       router.push(`/user/${address}`);

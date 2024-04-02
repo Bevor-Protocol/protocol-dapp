@@ -4,19 +4,21 @@ import React, { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useAccount } from "wagmi";
 import { useMutation } from "@tanstack/react-query";
+import { Users } from "@prisma/client";
 
 import { Loader } from "@/components/Loader";
 import { useUser } from "@/hooks/contexts";
-// import AuditFormEdit from "./form";
-import { AuditFull, UserProfile } from "@/lib/types/actions";
+import { AuditViewDetailedI } from "@/lib/types/actions";
 import { updateAudit } from "@/lib/actions/audits";
 import AuditForm from "@/components/Audit/client/form";
 
-const AuditEditWrapper = ({ audit }: { audit: AuditFull }): JSX.Element => {
+const AuditEditWrapper = ({ audit }: { audit: AuditViewDetailedI }): JSX.Element => {
   const { address } = useAccount();
   const router = useRouter();
   const { user, isFetchedAfterMount, isPending } = useUser();
-  const [auditors, setAuditors] = useState<UserProfile[]>([...audit.auditors]);
+
+  const initialAuditors = audit.auditors.map((auditor) => auditor.user);
+  const [auditors, setAuditors] = useState<Users[]>([...initialAuditors]);
 
   useEffect(() => {
     if (!isFetchedAfterMount || isPending) return;
@@ -29,7 +31,7 @@ const AuditEditWrapper = ({ audit }: { audit: AuditFull }): JSX.Element => {
   }, [isFetchedAfterMount, isPending, router, user, address]);
 
   const query = useMutation({
-    mutationFn: (variables: { auditId: string; formData: FormData; auditors: UserProfile[] }) =>
+    mutationFn: (variables: { auditId: string; formData: FormData; auditors: Users[] }) =>
       updateAudit(variables.auditId, variables.formData, variables.auditors),
     onSuccess: () => {
       router.push(`/audits/view/${audit.id}`);
@@ -54,6 +56,7 @@ const AuditEditWrapper = ({ audit }: { audit: AuditFull }): JSX.Element => {
       auditors={auditors}
       setAuditors={setAuditors}
       initialState={audit}
+      initialAuditors={initialAuditors}
     />
   );
 };

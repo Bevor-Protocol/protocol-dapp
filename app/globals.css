@@ -163,6 +163,8 @@
   .avatar {
     height: var(--size-desktop);
     width: var(--size-desktop);
+    min-height: var(--size-desktop);
+    min-width: var(--size-desktop);
     @apply rounded-full transition-all bg-no-repeat bg-contain bg-center
   }
 
@@ -170,6 +172,8 @@
     .avatar {
       height: var(--size-mobile);
       width: var(--size-mobile);
+      min-height: var(--size-mobile);
+      min-width: var(--size-mobile);
     }
   }
 }
