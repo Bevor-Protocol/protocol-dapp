@@ -11,6 +11,8 @@ import { AuditViewDetailedI } from "@/lib/types/actions";
 import { useUser } from "@/hooks/contexts";
 import DynamicLink from "@/components/Link";
 import { auditAddRequest, auditRemoveRequest } from "@/lib/actions/audits";
+import { useModal } from "@/hooks/contexts";
+import RequestsEdit from "@/components/Modal/Content/requestsEdit";
 
 export const AuditDashboardHeader = ({ display }: { display: string }): JSX.Element => {
   const router = useRouter();
@@ -33,7 +35,9 @@ export const AuditDashboardHeader = ({ display }: { display: string }): JSX.Elem
 
 export const AuditDashboardAction = ({ audit }: { audit: AuditViewDetailedI }): JSX.Element => {
   const { user } = useUser();
+  const { toggleOpen, setContent } = useModal();
 
+  // For immediate mutations that don't require other screens.
   const { mutate, isPending } = useMutation({
     mutationFn: (variables: { fctType: string; auditId: string; userId: string }) => {
       if (variables.fctType == "add") {
@@ -47,18 +51,27 @@ export const AuditDashboardAction = ({ audit }: { audit: AuditViewDetailedI }): 
     },
   });
 
+  const handleRequestsModal = (): void => {
+    setContent(<RequestsEdit audit={audit} />);
+    toggleOpen();
+  };
+
   const auditors = audit.auditors
     .filter((auditor) => auditor.status === AuditorStatus.VERIFIED)
     .map((auditor) => auditor.userId);
-  const requesters = audit.auditors
+  const pendingRequesters = audit.auditors
     .filter((auditor) => auditor.status === AuditorStatus.REQUESTED)
+    .map((auditor) => auditor.userId);
+  const rejectedRequesters = audit.auditors
+    .filter((auditor) => auditor.status === AuditorStatus.REJECTED)
     .map((auditor) => auditor.userId);
 
   if (!user) return <></>;
 
   const isTheAuditee = audit.auditeeId === user.id;
   const isAnAuditor = auditors.includes(user.id);
-  const isRequestor = requesters.includes(user.id);
+  const isRequestor = pendingRequesters.includes(user.id);
+  const isRejected = rejectedRequesters.includes(user.id);
 
   return (
     <Row className="gap-4">
@@ -67,8 +80,10 @@ export const AuditDashboardAction = ({ audit }: { audit: AuditViewDetailedI }): 
           <Button>Edit Audit</Button>
         </DynamicLink>
       )}
-      {isTheAuditee && requesters.length > 0 && (
-        <Button disabled={isPending}>Manage Requests</Button>
+      {isTheAuditee && (pendingRequesters.length > 0 || rejectedRequesters.length > 0) && (
+        <Button disabled={isPending} onClick={handleRequestsModal}>
+          Manage Requests
+        </Button>
       )}
       {isRequestor && (
         <Button
@@ -78,14 +93,19 @@ export const AuditDashboardAction = ({ audit }: { audit: AuditViewDetailedI }): 
           Remove Request to Audit
         </Button>
       )}
-      {!isRequestor && audit.status === AuditStatus.OPEN && user.auditorRole && !isTheAuditee && (
-        <Button
-          onClick={() => mutate({ fctType: "add", auditId: audit.id, userId: user.id })}
-          disabled={isPending}
-        >
-          Request to Audit
-        </Button>
-      )}
+      {isRejected && <Button disabled={true}>Already Requested</Button>}
+      {!isRequestor &&
+        !isRejected &&
+        audit.status === AuditStatus.OPEN &&
+        user.auditorRole &&
+        !isTheAuditee && (
+          <Button
+            onClick={() => mutate({ fctType: "add", auditId: audit.id, userId: user.id })}
+            disabled={isPending}
+          >
+            Request to Audit
+          </Button>
+        )}
       {isAnAuditor &&
         audit.status !== AuditStatus.FINAL &&
         audit.status !== AuditStatus.ONGOING && (

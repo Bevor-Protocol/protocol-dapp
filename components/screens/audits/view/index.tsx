@@ -24,6 +24,9 @@ export const AuditPage = async ({ auditId }: { auditId: string }): Promise<JSX.E
   const requestedAuditors = audit.auditors.filter(
     (auditor) => auditor.status == AuditorStatus.REQUESTED,
   );
+  const rejectedAuditors = audit.auditors.filter(
+    (auditor) => auditor.status == AuditorStatus.REJECTED,
+  );
 
   return (
     <Column className="items-stretch gap-4">
@@ -76,6 +79,18 @@ export const AuditPage = async ({ auditId }: { auditId: string }): Promise<JSX.E
         {requestedAuditors.length > 0 ? (
           <Row>
             {requestedAuditors.map(({ user }, ind2) => (
+              <AuditAuditor position={`-${ind2 * 12.5}px`} key={ind2} auditor={user} />
+            ))}
+          </Row>
+        ) : (
+          <span className="text-white/60">TBD</span>
+        )}
+      </Row>
+      <Row className="items-center gap-4">
+        <p className="w-40">Rejected to Audit:</p>
+        {rejectedAuditors.length > 0 ? (
+          <Row>
+            {rejectedAuditors.map(({ user }, ind2) => (
               <AuditAuditor position={`-${ind2 * 12.5}px`} key={ind2} auditor={user} />
             ))}
           </Row>

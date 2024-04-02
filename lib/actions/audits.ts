@@ -9,7 +9,7 @@ import matter from "gray-matter";
 
 import { AuditViewI, AuditViewDetailedI, GenericUpdateI } from "@/lib/types/actions";
 import { revalidatePath } from "next/cache";
-import { AuditorStatus, AuditStatus, Users } from "@prisma/client";
+import { Auditors, AuditorStatus, AuditStatus, Prisma, Users } from "@prisma/client";
 
 export const getAudits = (status?: string): Promise<AuditViewI[]> => {
   let statusFilter;
@@ -139,6 +139,8 @@ export const updateAudit = async (
 ): Promise<GenericUpdateI> => {
   // To be used for audit updates like creating an audit
   // For more granular actions, we'll add different server actions.
+
+  // Rather than deleting auditors' instances, I'll just update them to be rejected.
   const currentAudit = await getAudit(id);
 
   if (!currentAudit) {
@@ -156,16 +158,8 @@ export const updateAudit = async (
 
   const currentAuditorIds = currentAudit.auditors.map((auditor) => auditor.user.id);
 
-  const auditorsDelete = currentAuditorIds
-    .filter((auditor) => !passedAuditorIds.includes(auditor))
-    .map((auditorId) => {
-      return {
-        auditId_userId: {
-          userId: auditorId,
-          auditId: id,
-        },
-      };
-    });
+  const auditorsReject = currentAuditorIds.filter((auditor) => !passedAuditorIds.includes(auditor));
+
   const auditorsCreate = passedAuditorIds
     .filter((auditor) => !currentAuditorIds.includes(auditor))
     .map((auditorId) => {
@@ -190,8 +184,18 @@ export const updateAudit = async (
         price: Number(price) || 1_000,
         duration: Number(duration) || 3,
         auditors: {
-          delete: auditorsDelete,
           create: auditorsCreate,
+          updateMany: {
+            where: {
+              auditId: id,
+              userId: {
+                in: auditorsReject,
+              },
+            },
+            data: {
+              status: AuditorStatus.REJECTED,
+            },
+          },
         },
       },
     })
@@ -240,34 +244,6 @@ export const auditAddRequest = (id: string, userId: string): Promise<GenericUpda
     });
 };
 
-export const auditClearRequests = (id: string): Promise<GenericUpdateI> => {
-  return prisma.audits
-    .update({
-      where: {
-        id,
-      },
-      data: {
-        auditors: {
-          deleteMany: {
-            status: AuditorStatus.REQUESTED,
-          },
-        },
-      },
-    })
-    .then(() => {
-      revalidatePath(`{/audits/view/${id}}`);
-      return {
-        success: true,
-      };
-    })
-    .catch((error) => {
-      return {
-        success: false,
-        error: error.name,
-      };
-    });
-};
-
 export const auditRemoveRequest = (id: string, userId: string): Promise<GenericUpdateI> => {
   return prisma.audits
     .update({
@@ -288,6 +264,67 @@ export const auditRemoveRequest = (id: string, userId: string): Promise<GenericU
     })
     .then(() => {
       revalidatePath(`{/audits/view/${id}}`);
+      return {
+        success: true,
+      };
+    })
+    .catch((error) => {
+      return {
+        success: false,
+        error: error.name,
+      };
+    });
+};
+
+export const auditRejectRequestors = (
+  id: string,
+  auditors: Auditors[],
+): Promise<Prisma.BatchPayload> => {
+  const auditorIds = auditors.map((auditor) => auditor.userId);
+
+  return prisma.auditors.updateMany({
+    where: {
+      auditId: id,
+      userId: {
+        in: auditorIds,
+      },
+    },
+    data: {
+      status: AuditorStatus.REJECTED,
+    },
+  });
+};
+
+export const auditVerifyRequestors = (
+  id: string,
+  auditors: Auditors[],
+): Promise<Prisma.BatchPayload> => {
+  const auditorIds = auditors.map((auditor) => auditor.userId);
+
+  return prisma.auditors.updateMany({
+    where: {
+      auditId: id,
+      userId: {
+        in: auditorIds,
+      },
+    },
+    data: {
+      status: AuditorStatus.VERIFIED,
+    },
+  });
+};
+
+export const auditUpdateApprovalStatus = (
+  id: string,
+  auditorsApprove: Auditors[],
+  auditorsReject: Auditors[],
+): Promise<GenericUpdateI> => {
+  return Promise.all([
+    auditRejectRequestors(id, auditorsReject),
+    auditVerifyRequestors(id, auditorsApprove),
+  ])
+    .then(() => {
+      revalidatePath(`/audits/view/${id}`);
       return {
         success: true,
       };

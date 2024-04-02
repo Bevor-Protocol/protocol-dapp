@@ -3,7 +3,7 @@ import { Suspense } from "react";
 
 import { AuditDetailedSkeleton } from "@/components/Loader";
 import { AuditPage, AuditMarkdown } from "@/components/screens/audits/view";
-import { Column, Row } from "@/components/Box";
+import { Row } from "@/components/Box";
 import { Toggle } from "@/components/Toggle";
 
 const AuditDashboardPage = ({
@@ -17,7 +17,7 @@ const AuditDashboardPage = ({
 
   return (
     <section className="flex flex-col h-full items-center">
-      <Column className="w-full max-w-[1000px] gap-8 py-8 justify-start">
+      <div className="w-full max-w-[1000px] py-8">
         <Suspense fallback={<AuditDetailedSkeleton />}>
           <AuditPage auditId={params.slug} />
         </Suspense>
@@ -41,7 +41,7 @@ const AuditDashboardPage = ({
         <Suspense fallback={<p>Loading...</p>}>
           <AuditMarkdown display={display} />
         </Suspense>
-      </Column>
+      </div>
     </section>
   );
 };
