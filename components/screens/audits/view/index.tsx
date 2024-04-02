@@ -6,6 +6,7 @@ import { trimAddress } from "@/lib/utils";
 import { Icon } from "@/components/Icon";
 import { AuditAuditor } from "@/components/Audit/client";
 import { AuditDashboardAction } from "./client";
+import { AuditorStatus } from "@prisma/client";
 
 export const AuditMarkdown = async ({ display }: { display: string }): Promise<JSX.Element> => {
   const content = await getMarkdown(display);
@@ -16,6 +17,13 @@ export const AuditPage = async ({ auditId }: { auditId: string }): Promise<JSX.E
   const audit = await getAudit(auditId);
 
   if (!audit) return <h2>This audit does not exist</h2>;
+
+  const verifiedAuditors = audit.auditors.filter(
+    (auditor) => auditor.status == AuditorStatus.VERIFIED,
+  );
+  const requestedAuditors = audit.auditors.filter(
+    (auditor) => auditor.status == AuditorStatus.REQUESTED,
+  );
 
   return (
     <Column className="items-stretch gap-4">
@@ -53,10 +61,10 @@ export const AuditPage = async ({ auditId }: { auditId: string }): Promise<JSX.E
       </div>
       <Row className="items-center gap-4">
         <p className="w-40">Verified to Audit:</p>
-        {audit.auditors.length > 0 ? (
+        {verifiedAuditors.length > 0 ? (
           <Row>
-            {audit.auditors.map((auditor, ind2) => (
-              <AuditAuditor position={`-${ind2 * 12.5}px`} key={ind2} auditor={auditor} />
+            {verifiedAuditors.map(({ user }, ind2) => (
+              <AuditAuditor position={`-${ind2 * 12.5}px`} key={ind2} auditor={user} />
             ))}
           </Row>
         ) : (
@@ -65,10 +73,10 @@ export const AuditPage = async ({ auditId }: { auditId: string }): Promise<JSX.E
       </Row>
       <Row className="items-center gap-4">
         <p className="w-40">Requested to Audit:</p>
-        {audit.auditors.length > 0 ? (
+        {requestedAuditors.length > 0 ? (
           <Row>
-            {audit.auditors.map((auditor, ind2) => (
-              <AuditAuditor position={`-${ind2 * 12.5}px`} key={ind2} auditor={auditor} />
+            {requestedAuditors.map(({ user }, ind2) => (
+              <AuditAuditor position={`-${ind2 * 12.5}px`} key={ind2} auditor={user} />
             ))}
           </Row>
         ) : (
