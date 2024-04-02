@@ -315,6 +315,45 @@ Terms were attested to and agreed on (by my other wallet)",
       },
     },
   });
+
+  await prisma.audits.create({
+    data: {
+      title: "Completed audit",
+      description: "This audit is closed and will be viewable",
+      status: AuditStatus.FINAL,
+      price: 2_000,
+      duration: 5,
+      auditee: {
+        connect: {
+          address: "0x999999cf1046e68e36E1aA2E0E07105eDDD1f08E",
+        },
+      },
+      auditors: {
+        create: [
+          {
+            status: AuditorStatus.VERIFIED,
+            attestedTerms: true,
+            acceptedTerms: true,
+            user: {
+              connect: {
+                address: "0xc0ffee254729296a45a3885639AC7E10F9d54979",
+              },
+            },
+          },
+          {
+            status: AuditorStatus.VERIFIED,
+            attestedTerms: true,
+            acceptedTerms: true,
+            user: {
+              connect: {
+                address: "0x3A1D14c5B007f2aC5a5e174663Eb3e69C78ADbB5",
+              },
+            },
+          },
+        ],
+      },
+    },
+  });
 };
 
 seed()

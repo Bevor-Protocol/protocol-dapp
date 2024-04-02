@@ -1,9 +1,12 @@
 import { Users, Prisma } from "@prisma/client";
 
 export interface UserWithCount extends Users {
-  totalValue: number;
-  totalActive: number;
-  totalComplete: number;
+  stats: {
+    valuePotential: number;
+    valueComplete: number;
+    numActive: number;
+    numComplete: number;
+  };
 }
 
 export type AuditViewI = Prisma.AuditsGetPayload<{

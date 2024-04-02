@@ -13,7 +13,6 @@ export const AuditAuditor = ({
   position: string;
   auditor: Users;
 }): JSX.Element => {
-  console.log(auditor);
   return (
     <div style={{ transform: `translateX(${position})` }}>
       <DynamicLink href={`/user/${auditor.address}`}>

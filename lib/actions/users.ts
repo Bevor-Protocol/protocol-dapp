@@ -6,30 +6,25 @@ import type { UserWithCount, UserStats } from "@/lib/types/actions";
 import { revalidatePath } from "next/cache";
 
 export const getLeaderboard = (key?: string, order?: string): Promise<UserWithCount[]> => {
-  let orderClause = {};
   // Can't currently sort on aggregations or further filtered counts of relations...
   // Handle these more unique cases post-query.
-  switch (key) {
-    case "name":
-      orderClause = {
-        orderBy: [
-          {
-            [key ?? "name"]: order ?? "asc",
-          },
-          {
-            address: order ?? "asc",
-          },
-        ],
-      };
-      break;
-    case "available":
-      orderClause = {
-        orderBy: {
-          available: order ?? "asc",
-        },
-      };
-      break;
+  const orderClause: { orderBy: { [key: string]: string }[] } = {
+    orderBy: [],
+  };
+  if (key === "name") {
+    orderClause.orderBy.push({
+      [key ?? "name"]: order ?? "asc",
+    });
+    orderClause.orderBy.push({
+      address: order ?? "asc",
+    });
   }
+  if (key == "date") {
+    orderClause.orderBy.push({
+      createdAt: order ?? "asc",
+    });
+  }
+
   // come back to this.
   return prisma.users
     .findMany({
@@ -41,7 +36,9 @@ export const getLeaderboard = (key?: string, order?: string): Promise<UserWithCo
           where: {
             status: AuditorStatus.VERIFIED,
             audit: {
-              status: AuditStatus.ATTESTATION,
+              status: {
+                not: AuditStatus.OPEN,
+              },
             },
           },
           include: {
@@ -55,34 +52,52 @@ export const getLeaderboard = (key?: string, order?: string): Promise<UserWithCo
       const toReturn = users.map((user) => {
         const { auditors, ...rest } = user;
 
-        const totalValue = auditors.reduce((acc, auditor) => acc + auditor.audit.price, 0);
-        const totalActive = auditors.filter(
-          (auditor) => auditor.audit.status !== AuditStatus.ATTESTATION,
+        const valuePotential = auditors.reduce((acc, auditor) => {
+          return acc + Number(auditor.audit.status != AuditStatus.FINAL) * auditor.audit.price;
+        }, 0);
+
+        const valueComplete = auditors.reduce((acc, auditor) => {
+          return acc + Number(auditor.audit.status == AuditStatus.FINAL) * auditor.audit.price;
+        }, 0);
+
+        const numActive = auditors.filter(
+          (auditor) => auditor.audit.status !== AuditStatus.FINAL,
         ).length;
-        const totalComplete = auditors.filter(
-          (auditor) => auditor.audit.status === AuditStatus.ATTESTATION,
+
+        const numComplete = auditors.filter(
+          (auditor) => auditor.audit.status === AuditStatus.FINAL,
         ).length;
 
         return {
           ...rest,
-          totalValue,
-          totalActive,
-          totalComplete,
+          stats: {
+            valuePotential,
+            valueComplete,
+            numActive,
+            numComplete,
+          },
         };
       });
-      if (key == "completed") {
+      if (key == "value_potential") {
         return toReturn.sort(
-          (a, b) => (a.totalComplete - b.totalComplete) * (2 * Number(order == "asc") - 1),
+          (a, b) =>
+            (a.stats.valuePotential - b.stats.valuePotential) * (2 * Number(order == "asc") - 1),
         );
       }
-      if (key == "money") {
+      if (key == "value_complete") {
         return toReturn.sort(
-          (a, b) => (a.totalValue - b.totalValue) * (2 * Number(order == "asc") - 1),
+          (a, b) =>
+            (a.stats.valueComplete - b.stats.valueComplete) * (2 * Number(order == "asc") - 1),
         );
       }
-      if (key == "active") {
+      if (key == "num_active") {
         return toReturn.sort(
-          (a, b) => (a.totalActive - b.totalActive) * (2 * Number(order == "asc") - 1),
+          (a, b) => (a.stats.numActive - b.stats.numActive) * (2 * Number(order == "asc") - 1),
+        );
+      }
+      if (key == "num_complete") {
+        return toReturn.sort(
+          (a, b) => (a.stats.numComplete - b.stats.numComplete) * (2 * Number(order == "asc") - 1),
         );
       }
       return toReturn;

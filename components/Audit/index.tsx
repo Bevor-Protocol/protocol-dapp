@@ -81,7 +81,7 @@ export const AuditorItem: React.FC<AuditorItemI> = ({
         className={cn(
           "h-1 w-1 rounded-full mb-auto",
           auditor.available && " bg-green-400",
-          !auditor.available && " bg-gray-400",
+          !auditor.available && " bg-gray-600",
         )}
       />
       <Icon image={auditor.image} seed={auditor.address} size="sm" />
