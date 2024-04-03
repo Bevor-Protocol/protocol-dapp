@@ -10,9 +10,12 @@ const seed = async (): Promise<void> => {
   // Can update this to be your dev wallet.
 
   // This will serve as the auditee initially.
-  const MY_WALLET1 = "0x239D3Ce2E15744C7EE6A76325c119C79BDa7aD7D";
+  const MY_WALLET1 = process.env.MY_WALLET_AUDITEE;
   // This will serve as the auditor initially.
-  const MY_WALLET2 = "0xe843D4315D34F200f97FA3dCCaB5D1184243bcA0";
+  const MY_WALLET2 = process.env.MY_WALLET_AUDITOR;
+  if (!MY_WALLET1 || !MY_WALLET2) {
+    throw new Error("must set 2 wallets in the .env file");
+  }
 
   const userData = [
     {
