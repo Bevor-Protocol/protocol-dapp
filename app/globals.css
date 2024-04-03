@@ -212,6 +212,37 @@
 }
 
 @layer components {
+  .btn-gradient {
+    @apply flex flex-row items-center justify-center outline-none border-none rounded-md py-2 px-3 text-dark text-sm gap-1 font-semibold transition-opacity
+  }
+  .btn-gradient:not(:disabled):hover,
+  .btn-gradient:not(:disabled):focus-visible,
+  .btn-gradient:not(:disabled):active,
+  a:not(.disabled):focus-visible .btn-gradient,
+  a:not(.disabled):active .btn-gradient {
+    @apply opacity-hover
+  }
+
+  .btn-outline {
+    @apply flex flex-row items-center justify-center rounded-lg h-9 px-3 text-sm gap-1 bg-dark transition-colors outline-offset-0 text-zinc-400 outline-none border border-zinc-800 min-w-16
+  }
+  .btn-outline:not(:disabled):hover,
+  .btn-outline:not(:disabled):focus-visible,
+  .btn-outline:not(:disabled):active,
+  a:not(.disabled):focus-visible .btn-outline,
+  a:not(.disabled):active .btn-outline {
+    @apply bg-slate-800/60 text-white
+  }
+
+  .btn-gradient:disabled,
+  .btn-outline:disabled,
+  a.btn-gradient.disabled,
+  a.btn-outline.disabled {
+    @apply opacity-disable
+  }
+}
+
+@layer components {
   label.toggle {
     @apply relative inline-block w-[35px] h-[20px]
   }
@@ -274,14 +305,6 @@
     background-clip: text;
     -webkit-background-clip: text;
     color: transparent;
-  }
-  .dim {
-    @apply transition-opacity
-  }
-  .dim:not(:disabled):hover,
-  .dim:not(:disabled):focus-visible,
-  .dim:not(:disabled):active {
-    @apply opacity-hover
   }
 }
 

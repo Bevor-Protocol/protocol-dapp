@@ -49,8 +49,8 @@ export const AuditCard = ({ audit }: { audit: AuditViewI }): JSX.Element => {
             <span className="text-white/60">TBD</span>
           )}
         </Row>
-        <DynamicLink href={`/audits/view/${audit.id}`} transition>
-          <span className="block p-1">View Audit</span>
+        <DynamicLink href={`/audits/view/${audit.id}`}>
+          <span className="block p-1 hover:opacity-hover">View Audit</span>
         </DynamicLink>
       </Card.Footer>
     </Card.Main>

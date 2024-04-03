@@ -23,10 +23,10 @@ const Profile = (): JSX.Element => {
   };
 
   return (
-    <Card.Main className="text-xs text-white/60">
+    <Card.Main className="text-xs">
       <Column className="gap-2 pb-2 pt-1 px-2">
         <Row className="justify-between items-center">
-          <p className="text-sm">Account</p>
+          <p className="text-sm text-white/60">Account</p>
           <Social>
             <Copy
               stroke="white"
@@ -38,14 +38,14 @@ const Profile = (): JSX.Element => {
             />
           </Social>
         </Row>
-        <p className="text-white">{trimAddress(address)}</p>
-        <p>{connector?.name}</p>
-        <Button onClick={(): void => disconnect()} className="text-xs justify-center">
+        <p>{trimAddress(address)}</p>
+        <p className="text-white/60">{connector?.name}</p>
+        <Button onClick={(): void => disconnect()} className="text-xs mt-2" variant="gradient">
           <Logout height="0.75rem" width="0.75rem" />
           <span>Disconnect</span>
         </Button>
       </Column>
-      <Card.Footer className="justify-between p-2">
+      <Card.Footer className="justify-between p-2 text-white/60">
         <p>Network:</p>
         <p>
           <span className="inline-block h-1 w-1 bg-green-400 rounded-full mr-1 align-middle" />

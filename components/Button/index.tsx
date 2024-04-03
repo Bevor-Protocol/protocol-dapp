@@ -4,16 +4,15 @@ import { cn } from "@/lib/utils";
 interface Props extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   children: React.ReactNode;
   className?: string;
+  variant?: string;
 }
 
-export const Button: React.FC<Props> = ({ children, className, ...rest }) => {
+export const Button: React.FC<Props> = ({ variant = "outline", className, children, ...rest }) => {
   return (
     <button
       className={cn(
-        "flex flex-row outline-none border-none rounded-md font-semibold items-center",
-        "py-2 px-4 dim disabled:opacity-disable",
-        "text-dark text-sm gap-1",
-        "grad-light",
+        variant == "gradient" && "btn-gradient grad-light",
+        variant == "outline" && "btn-outline",
         className,
       )}
       {...rest}

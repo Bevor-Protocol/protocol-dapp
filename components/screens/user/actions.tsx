@@ -27,10 +27,12 @@ const UserProfileActions = ({ user, stats }: { user: Users; stats: UserStats }):
 
   return (
     <Row className="w-full justify-between mt-4">
-      <Button onClick={handleModal}>Edit</Button>
+      <Button onClick={handleModal} variant="outline">
+        Edit
+      </Button>
       {user.auditeeRole && (
-        <DynamicLink href="/audits/create">
-          <Button>Create Audit</Button>
+        <DynamicLink href="/audits/create" asButton>
+          <Row className="btn-outline">Create Audit</Row>
         </DynamicLink>
       )}
     </Row>

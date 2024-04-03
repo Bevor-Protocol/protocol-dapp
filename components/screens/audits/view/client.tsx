@@ -76,8 +76,8 @@ export const AuditDashboardAction = ({ audit }: { audit: AuditViewDetailedI }): 
   return (
     <Row className="gap-4">
       {isTheAuditee && audit.status !== AuditStatus.FINAL && (
-        <DynamicLink href={`/audits/edit/${audit.id}`}>
-          <Button>Edit Audit</Button>
+        <DynamicLink href={`/audits/edit/${audit.id}`} asButton>
+          <Row className="btn-outline">Edit Audit</Row>
         </DynamicLink>
       )}
       {isTheAuditee && (pendingRequesters.length > 0 || rejectedRequesters.length > 0) && (

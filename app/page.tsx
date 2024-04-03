@@ -1,6 +1,5 @@
 import { Arrow } from "@/assets";
 import { HomeStat } from "@/components/screens/home";
-import { Button } from "@/components/Button";
 import * as Actions from "@/lib/actions/protocolData";
 import { cn } from "@/lib/utils";
 import { Column, Row } from "@/components/Box";
@@ -21,17 +20,17 @@ const Page = (): JSX.Element => {
             Register as an auditee, auditor, or DAO participant.
           </p>
           <Row className="flex-nowrap align-middle justify-center gap-2">
-            <DynamicLink href="/leaderboard">
-              <Button>
+            <DynamicLink href="/leaderboard" asButton>
+              <Row className="btn-gradient grad-light">
                 <span>Get Audited</span>
                 <Arrow height="0.75rem" width="0.75rem" />
-              </Button>
+              </Row>
             </DynamicLink>
-            <DynamicLink href="/audits">
-              <Button>
+            <DynamicLink href="/audits" asButton>
+              <Row className="btn-gradient grad-light">
                 <span>Conduct Audit</span>
                 <Arrow height="0.75rem" width="0.75rem" />
-              </Button>
+              </Row>
             </DynamicLink>
           </Row>
         </Column>

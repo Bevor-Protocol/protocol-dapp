@@ -166,9 +166,11 @@ const AuditForm = ({
       </Row>
       <hr className="border-gray-200/20 my-4" />
       <Row className="my-4 gap-4">
-        <Button type="submit">Submit</Button>
+        <Button type="submit" variant="gradient">
+          Submit
+        </Button>
         {/* combines both controlled and uncontrolled elements */}
-        <Button type="reset" onClick={uncontrolledReset}>
+        <Button type="reset" onClick={uncontrolledReset} variant="gradient">
           Reset
         </Button>
       </Row>
