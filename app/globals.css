@@ -2,6 +2,10 @@
 @tailwind components;
 @tailwind utilities;
 
+body.modal-show {
+  overflow: hidden;
+}
+
 @layer base {
   :root {
     --bg: radial-gradient(111.14% 117.16% at 16.61% 0%, #001062 0%, #000626 100%);

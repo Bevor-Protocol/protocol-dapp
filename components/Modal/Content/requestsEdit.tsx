@@ -1,4 +1,6 @@
 "use client";
+
+import { useState } from "react";
 import { useMutation } from "@tanstack/react-query";
 
 import { useModal } from "@/hooks/contexts";
@@ -6,10 +8,10 @@ import { Column, Row } from "@/components/Box";
 import { AuditViewDetailedI } from "@/lib/types/actions";
 // import * as Form from "@/components/Form";
 import { auditUpdateApprovalStatus } from "@/lib/actions/audits";
-import { useState } from "react";
 import { Auditors, AuditorStatus } from "@prisma/client";
 import { AuditorItem } from "@/components/Audit";
 import { Button } from "@/components/Button";
+import { X } from "@/assets";
 
 const RequestsEdit = ({ audit }: { audit: AuditViewDetailedI }): JSX.Element => {
   const requestedAuditors = audit.auditors.filter(
@@ -73,19 +75,12 @@ const RequestsEdit = ({ audit }: { audit: AuditViewDetailedI }): JSX.Element => 
   };
 
   return (
-    <div className="relative p-4">
-      <div onClick={toggleOpen} className="absolute top-0 right-0 w-5 h-5 cursor-pointer z-10">
-        x
+    <div>
+      <div onClick={toggleOpen} className="absolute top-4 right-4 w-5 h-5 cursor-pointer z-10">
+        <X height="1rem" width="1rem" />
       </div>
-      <Row className="gap-4">
-        <Button onClick={handleSubmit} disabled={isPending}>
-          Submit
-        </Button>
-        <Button onClick={handleReset} disabled={isPending}>
-          Reset
-        </Button>
-      </Row>
-      <Column className="items-stretch gap-2 my-4">
+      <p>Reject or Verify Auditors</p>
+      <Column className="items-stretch gap-2 pr-4 my-4 h-[calc(5*32px)] overflow-y-scroll">
         {requestedAuditors.map((auditor, ind) => (
           <Row key={ind} className="gap-2">
             <AuditorItem auditor={auditor.user} style={{ cursor: "default" }} />
@@ -106,6 +101,15 @@ const RequestsEdit = ({ audit }: { audit: AuditViewDetailedI }): JSX.Element => 
           </Row>
         ))}
       </Column>
+      <hr className="w-full h-[1px] border-gray-200/20 my-4" />
+      <Row className="gap-4 justify-end">
+        <Button onClick={handleSubmit} disabled={isPending}>
+          Submit
+        </Button>
+        <Button onClick={handleReset} disabled={isPending}>
+          Reset
+        </Button>
+      </Row>
     </div>
   );
 };

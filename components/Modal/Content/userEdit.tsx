@@ -9,6 +9,7 @@ import { UserStats } from "@/lib/types/actions";
 import * as Form from "@/components/Form";
 import { Button } from "@/components/Button";
 import { updateUser } from "@/lib/actions/users";
+import { X } from "@/assets";
 
 const UserEdit = ({ user, stats }: { user: Users; stats: UserStats }): JSX.Element => {
   const { toggleOpen } = useModal();
@@ -41,13 +42,13 @@ const UserEdit = ({ user, stats }: { user: Users; stats: UserStats }): JSX.Eleme
   };
 
   return (
-    <form onSubmit={handleSubmit} className="relative">
-      <div onClick={toggleOpen} className="absolute top-0 right-0 w-5 h-5 cursor-pointer z-10">
-        x
+    <form onSubmit={handleSubmit}>
+      <div onClick={toggleOpen} className="absolute top-4 right-4 w-5 h-5 cursor-pointer z-10">
+        <X height="1rem" width="1rem" />
       </div>
-      <Column className="gap-1 justify-center items-center w-full relative p-10">
+      <Column className="gap-4 justify-center items-center w-full relative">
         <Icon size="xl" image={user.image} seed={user.address} />
-        <Column className="items-stretch gap-2 my-4">
+        <Column className="items-stretch gap-2">
           <Form.Input
             type="text"
             name="name"
@@ -78,15 +79,16 @@ const UserEdit = ({ user, stats }: { user: Users; stats: UserStats }): JSX.Eleme
             aria-disabled={!canUpdateAuditeeRole || isPending}
           />
         </Column>
-        <Row className="gap-4">
-          <Button type="submit" disabled={isPending} aria-disabled={isPending}>
-            Submit
-          </Button>
-          <Button type="reset" disabled={isPending} aria-disabled={isPending}>
-            Reset
-          </Button>
-        </Row>
       </Column>
+      <hr className="w-full h-[1px] border-gray-200/20 my-4" />
+      <Row className="gap-4 justify-end">
+        <Button type="submit" disabled={isPending} aria-disabled={isPending}>
+          Submit
+        </Button>
+        <Button type="reset" disabled={isPending} aria-disabled={isPending}>
+          Reset
+        </Button>
+      </Row>
     </form>
   );
 };

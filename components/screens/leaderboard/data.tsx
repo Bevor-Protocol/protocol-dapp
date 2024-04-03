@@ -8,7 +8,7 @@ const LeaderboardData = ({ data }: { data: UserWithCount[] }): JSX.Element => {
   return (
     <Column className="w-full gap-1">
       {data.map((item, ind) => (
-        <DynamicLink key={ind} href={`/user/${item.address}`}>
+        <DynamicLink key={ind} href={`/user/${item.address}`} className="w-full">
           <ul
             className="leaderboard-element rounded-md
 shadow bg-dark cursor-pointer transition-colors hover:bg-dark-primary-20"

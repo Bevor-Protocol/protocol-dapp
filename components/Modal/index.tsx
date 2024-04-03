@@ -24,7 +24,7 @@ export const Wrapper: React.FC<Props> = ({ children, open }) => {
 export const Content = forwardRef<HTMLDivElement, Props>(({ children, open, ...rest }, ref) => {
   if (!open) return <></>;
   return (
-    <div className="border rounded-lg max-w-[80%] max-h-[80%] bg-dark" ref={ref} {...rest}>
+    <div className="shadow rounded-lg max-w-4/5 max-h-4/5 bg-dark p-6 relative" ref={ref} {...rest}>
       {children}
     </div>
   );

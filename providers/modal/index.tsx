@@ -1,6 +1,6 @@
 "use client";
 
-import { createContext, useState, useRef, useReducer } from "react";
+import { createContext, useState, useRef, useReducer, useEffect } from "react";
 
 import { ModalStateI } from "@/lib/types";
 import * as Modal from "@/components/Modal";
@@ -20,6 +20,14 @@ const ModalProvider = ({ children }: { children: React.ReactNode }): JSX.Element
 
   useClickOutside(contentRef, isOpen ? toggleOpen : undefined);
 
+  useEffect(() => {
+    if (isOpen) {
+      document.body.classList.add("modal-show");
+    } else {
+      document.body.classList.remove("modal-show");
+    }
+  }, [isOpen]);
+
   const modalState: ModalStateI = {
     toggleOpen,
     setContent,
@@ -28,7 +36,6 @@ const ModalProvider = ({ children }: { children: React.ReactNode }): JSX.Element
   return (
     <ModalContext.Provider value={modalState}>
       {children}
-      {/* Without this conditional, the <ModalContent> still shows */}
       <Modal.Wrapper open={isOpen}>
         <Modal.Content open={isOpen} ref={contentRef}>
           {content}
