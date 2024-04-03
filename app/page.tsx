@@ -1,6 +1,5 @@
 import { Arrow } from "@/assets";
-import { HomeStat } from "./_components";
-import { Button } from "@/components/Button";
+import { HomeStat } from "@/components/screens/home";
 import * as Actions from "@/lib/actions/protocolData";
 import { cn } from "@/lib/utils";
 import { Column, Row } from "@/components/Box";
@@ -8,7 +7,7 @@ import DynamicLink from "@/components/Link";
 
 const Page = (): JSX.Element => {
   return (
-    <section className="flex flex-col h-full justify-center items-center px-content-limit">
+    <section className="flex flex-col h-full justify-center items-center">
       <div className="grid grid-cols-2 w-full md:grid-cols-1 gap-6 items-center justify-center">
         <Column className="items-start gap-8 text-left md:text-center md:items-center">
           <div className="grad-light text-grad">
@@ -21,17 +20,17 @@ const Page = (): JSX.Element => {
             Register as an auditee, auditor, or DAO participant.
           </p>
           <Row className="flex-nowrap align-middle justify-center gap-2">
-            <DynamicLink href="/leaderboard">
-              <Button>
+            <DynamicLink href="/leaderboard" asButton>
+              <Row className="btn-gradient grad-light">
                 <span>Get Audited</span>
                 <Arrow height="0.75rem" width="0.75rem" />
-              </Button>
+              </Row>
             </DynamicLink>
-            <DynamicLink href="/audits?status=open">
-              <Button>
+            <DynamicLink href="/audits" asButton>
+              <Row className="btn-gradient grad-light">
                 <span>Conduct Audit</span>
                 <Arrow height="0.75rem" width="0.75rem" />
-              </Button>
+              </Row>
             </DynamicLink>
           </Row>
         </Column>

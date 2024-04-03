@@ -9,60 +9,56 @@ datasource db {
   directUrl = env("DATABASE_URL_UNPOOLED")
 }
 
-model User {
-  id              String            @id @default(cuid())
-  address         String            @unique
-  profile         Profile?
-  auditee         Audit[]           @relation("UserAuditee")
-  auditor         Audit[]           @relation("UserAuditor")
-  termsAcceptance TermsAcceptance[]
-  auditeeRole     Boolean           @default(false)
-  auditorRole     Boolean           @default(false)
-  createdAt       DateTime          @default(now())
+model Users {
+  id          String     @id @default(cuid())
+  address     String     @unique
+  auditeeRole Boolean    @default(false)
+  auditorRole Boolean    @default(false)
+  name        String?
+  image       String?
+  available   Boolean    @default(false)
+  auditors    Auditors[]
+  auditees    Audits[]
+  updatedAt   DateTime   @updatedAt
+  createdAt   DateTime   @default(now())
 }
 
-model Profile {
-  userId    String   @unique
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  name      String?
-  image     String?
-  available Boolean  @default(false)
-  updatedAt DateTime @updatedAt
+enum AuditStatus {
+  OPEN // auditors can join + leave
+  ATTESTATION // attestation period
+  ONGOING // terms are locked, audit is ongoing 
+  FINAL // handoff occurred, audit is complete -> push onchain.
 }
 
-model Audit {
-  id            String            @id @default(cuid())
-  auditeeId     String
-  terms         Terms?
-  auditee       User              @relation("UserAuditee", fields: [auditeeId], references: [id])
-  auditors      User[]            @relation("UserAuditor")
-  termsAccepted TermsAcceptance[]
-  title         String
-  description   String
-  isLocked      Boolean           @default(false) // parties have agreed on terms
-  isFinal       Boolean           @default(false) // audit is complete and handed off
-  createdAt     DateTime          @default(now())
-  updatedAt     DateTime          @updatedAt
+model Audits {
+  id          String      @id @default(cuid())
+  auditeeId   String
+  auditee     Users       @relation(fields: [auditeeId], references: [id], onDelete: Cascade)
+  title       String
+  description String
+  markdown    String? // reference to an S3 storage key
+  price       Int         @default(0)
+  duration    Int         @default(6) // duration in months
+  status      AuditStatus @default(OPEN)
+  auditors    Auditors[]
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
 }
 
-model Terms {
-  auditId   String   @unique
-  audit     Audit    @relation(fields: [auditId], references: [id], onDelete: Cascade)
-  markdown  String? // reference to an S3 storage key
-  price     Int      @default(0)
-  duration  Int      @default(6) // duration in months
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+enum AuditorStatus {
+  VERIFIED
+  REQUESTED
+  REJECTED
 }
 
-model TermsAcceptance {
-  id          String  @id @default(cuid())
-  auditId     String
-  userId      String
-  audit       Audit   @relation(fields: [auditId], references: [id], onDelete: Cascade, onUpdate: Cascade)
-  user        User    @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
-  hasAttested Boolean @default(false) // auditor has attested to the audit terms
-  hasAccepted Boolean @default(false) // auditor has accepted the audit terms
+model Auditors {
+  auditId       String
+  audit         Audits        @relation(fields: [auditId], references: [id], onDelete: Cascade)
+  userId        String
+  user          Users         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  status        AuditorStatus
+  attestedTerms Boolean       @default(false)
+  acceptedTerms Boolean       @default(false)
 
   @@unique([auditId, userId])
 }

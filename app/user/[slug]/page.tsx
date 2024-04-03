@@ -1,11 +1,11 @@
 import { Suspense } from "react";
 
 import { Loader } from "@/components/Loader";
-import UserContent from "./_components";
+import UserContent from "@/components/screens/user";
 
 const UserPage = ({ params }: { params: { slug: string } }): JSX.Element => {
   return (
-    <section className="flex flex-col h-full items-center px-content-limit">
+    <section className="flex flex-col h-full items-center">
       <Suspense fallback={<Loader className="h-12" />}>
         <UserContent address={params.slug} />
       </Suspense>

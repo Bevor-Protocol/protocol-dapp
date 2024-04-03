@@ -2,8 +2,8 @@ import Link from "next/link";
 import { Suspense } from "react";
 
 import { AuditDetailedSkeleton } from "@/components/Loader";
-import { AuditPage, AuditMarkdown } from "./_components";
-import { Column, Row } from "@/components/Box";
+import { AuditPage, AuditMarkdown } from "@/components/screens/audits/view";
+import { Row } from "@/components/Box";
 import { Toggle } from "@/components/Toggle";
 
 const AuditDashboardPage = ({
@@ -16,11 +16,12 @@ const AuditDashboardPage = ({
   const display = searchParams.display ?? "details";
 
   return (
-    <section className="flex flex-col h-full items-center px-content-limit">
-      <Column className="w-full max-w-[1000px] gap-8 py-8 justify-start items-stretch h-full">
+    <section className="flex flex-col h-full items-center">
+      <div className="w-full max-w-[1000px] py-8">
         <Suspense fallback={<AuditDetailedSkeleton />}>
           <AuditPage auditId={params.slug} />
         </Suspense>
+        <hr className="w-full h-[1px] border-gray-200/20 my-4" />
         <Row className="gap-4 justify-start">
           <Link
             href={`/audits/view/${params.slug}?display=details`}
@@ -40,7 +41,7 @@ const AuditDashboardPage = ({
         <Suspense fallback={<p>Loading...</p>}>
           <AuditMarkdown display={display} />
         </Suspense>
-      </Column>
+      </div>
     </section>
   );
 };

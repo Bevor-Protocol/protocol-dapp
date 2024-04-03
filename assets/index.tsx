@@ -9,5 +9,19 @@ import Logout from "./logout";
 import Pencil from "./pencil";
 import Check from "./check";
 import Search from "./search";
+import X from "./x";
 
-export { Gitbook, Twitter, Discord, Github, Arrow, Chevron, Copy, Logout, Pencil, Check, Search };
+export {
+  Gitbook,
+  Twitter,
+  Discord,
+  Github,
+  Arrow,
+  Chevron,
+  Copy,
+  Logout,
+  Pencil,
+  Check,
+  Search,
+  X,
+};

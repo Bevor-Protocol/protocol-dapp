@@ -52,8 +52,8 @@ export const Icon: React.FC<IconI> = ({ size, image, seed, className, ...rest })
       style={
         {
           backgroundImage: urlUse,
-          "--height-desktop": desktop,
-          "--height-mobile": mobile,
+          "--size-desktop": desktop,
+          "--size-mobile": mobile,
         } as React.CSSProperties
       }
       {...rest}

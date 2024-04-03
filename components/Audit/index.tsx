@@ -1,18 +1,19 @@
+import { Users } from "@prisma/client";
+
 import * as Card from "@/components/Card";
 import { Icon } from "@/components/Icon";
 import DynamicLink from "@/components/Link";
-import { AuditFull, UserProfile } from "@/lib/types/actions";
+import { AuditViewI } from "@/lib/types/actions";
 import { Column, Row } from "@/components/Box";
 import { trimAddress, cn } from "@/lib/utils";
-import { AuditDashboardAction } from "./client";
 import { AuditAuditor } from "./client";
 
-export const AuditCard = ({ audit }: { audit: AuditFull }): JSX.Element => {
+export const AuditCard = ({ audit }: { audit: AuditViewI }): JSX.Element => {
   return (
     <Card.Main className="w-full">
       <Card.Content className="gap-4">
         <DynamicLink href={`/user/${audit.auditee.address}`}>
-          <Icon image={audit.auditee.profile?.image} seed={audit.auditee.address} size="lg" />
+          <Icon image={audit.auditee.image} seed={audit.auditee.address} size="lg" />
         </DynamicLink>
         <Column className="justify-start items-start overflow-hidden w-full">
           <p className="text-lg font-bold">{audit.title}</p>
@@ -20,27 +21,18 @@ export const AuditCard = ({ audit }: { audit: AuditFull }): JSX.Element => {
             {audit.description}
           </p>
         </Column>
-        <Column className="whitespace-nowrap items-end text-sm">
+        <Column className="text-sm whitespace-nowrap min-w-fit">
           <p>
-            Prize Pool:
-            <span className="w-[100px] inline-block text-right">
-              {" "}
-              ${audit.terms?.price.toLocaleString() || 0}
-            </span>
+            <span className="inline-block w-32 text-right mr-4">Prize Pool: </span>
+            <span className="float-right">${audit.price.toLocaleString()}</span>
           </p>
           <p>
-            Vesting Duration:
-            <span className="w-[100px] inline-block text-right">
-              {" "}
-              {audit.terms?.duration || "TBD"} month(s)
-            </span>
+            <span className="inline-block w-32 text-right mr-4">Vesting Duration: </span>
+            <span className="float-right">{audit.duration || "TBD"} month(s)</span>
           </p>
           <p>
-            Created:{" "}
-            <span className="w-[100px] inline-block text-right">
-              {" "}
-              {new Date(audit.createdAt).toLocaleDateString()}
-            </span>
+            <span className="inline-block w-32 text-right mr-4">Created: </span>
+            <span className="float-right">{new Date(audit.createdAt).toLocaleDateString()}</span>
           </p>
         </Column>
       </Card.Content>
@@ -49,16 +41,16 @@ export const AuditCard = ({ audit }: { audit: AuditFull }): JSX.Element => {
           <span className="text-white/60">auditors:</span>
           {audit.auditors.length > 0 ? (
             <Row>
-              {audit.auditors.map((auditor, ind2) => (
-                <AuditAuditor position={`-${ind2 * 12.5}px`} key={ind2} auditor={auditor} />
+              {audit.auditors.map(({ user }, ind2) => (
+                <AuditAuditor position={`-${ind2 * 12.5}px`} key={ind2} auditor={user} />
               ))}
             </Row>
           ) : (
             <span className="text-white/60">TBD</span>
           )}
         </Row>
-        <DynamicLink href={`/audits/view/${audit.id}`} transition>
-          <span className="block p-1">View Audit</span>
+        <DynamicLink href={`/audits/view/${audit.id}`}>
+          <span className="block p-1 hover:opacity-hover">View Audit</span>
         </DynamicLink>
       </Card.Footer>
     </Card.Main>
@@ -66,7 +58,7 @@ export const AuditCard = ({ audit }: { audit: AuditFull }): JSX.Element => {
 };
 
 interface AuditorItemI extends React.HTMLAttributes<HTMLDivElement> {
-  auditor: UserProfile;
+  auditor: Users;
   hover?: boolean;
   canClose?: boolean;
 }
@@ -76,10 +68,6 @@ export const AuditorItem: React.FC<AuditorItemI> = ({
   hover = false,
   canClose = false,
   ...rest
-}: {
-  auditor: UserProfile;
-  hover?: boolean;
-  canClose?: boolean;
 }) => {
   return (
     <Row
@@ -92,87 +80,23 @@ export const AuditorItem: React.FC<AuditorItemI> = ({
       <span
         className={cn(
           "h-1 w-1 rounded-full mb-auto",
-          auditor.profile?.available && " bg-green-400",
-          !auditor.profile?.available && " bg-gray-400",
+          auditor.available && " bg-green-400",
+          !auditor.available && " bg-gray-600",
         )}
       />
-      <Icon image={auditor.profile?.image} seed={auditor.address} size="sm" />
+      <Icon image={auditor.image} seed={auditor.address} size="sm" />
       <div className="overflow-hidden">
         <p className="text-sm text-ellipsis overflow-hidden">
           <span>{trimAddress(auditor.address)}</span>
-          {auditor.profile?.name && (
+          {auditor.name && (
             <>
               <span className="mx-1">|</span>
-              <span className="whitespace-nowrap overflow-ellipsis m-w-full">
-                {auditor.profile.name}
-              </span>
+              <span className="whitespace-nowrap overflow-ellipsis m-w-full">{auditor.name}</span>
             </>
           )}
         </p>
       </div>
       {canClose && <span className="absolute -right-1 -top-1 text-xs">x</span>}
     </Row>
-  );
-};
-
-export const AuditDetailed = ({ audit }: { audit: AuditFull }): JSX.Element => {
-  return (
-    <Column className="gap-4">
-      <Row className="w-full justify-between">
-        <p>{audit.auditee.profile?.name || trimAddress(audit.auditee.address)}</p>
-        <p className="text-right text-lg">
-          Audit is <span>{audit.isFinal ? "Closed" : audit.isLocked ? "Locked" : "Open"}</span>
-        </p>
-      </Row>
-      <Row className="justify-between">
-        <DynamicLink href={`/user/${audit.auditee.address}`}>
-          <Icon image={audit.auditee.profile?.image} seed={audit.auditee.address} size="xl" />
-        </DynamicLink>
-        <Column className="whitespace-nowrap items-end text-sm">
-          <p>
-            Prize Pool:
-            <span className="w-[100px] inline-block text-right">
-              {" "}
-              ${audit.terms?.price.toLocaleString() || 0}
-            </span>
-          </p>
-          <p>
-            Vesting Duration:
-            <span className="w-[100px] inline-block text-right">
-              {" "}
-              {audit.terms?.duration || "TBD"} month(s)
-            </span>
-          </p>
-          <p>
-            Created:{" "}
-            <span className="w-[100px] inline-block text-right">
-              {" "}
-              {new Date(audit.createdAt).toLocaleDateString()}
-            </span>
-          </p>
-        </Column>
-      </Row>
-      <Row className="items-stretch justify-start gap-8 w-full">
-        <Column className="justify-start items-start overflow-hidden w-full">
-          <p className="text-lg font-bold">{audit.title}</p>
-          <p className="text-ellipsis overflow-hidden w-full text-base my-2">{audit.description}</p>
-        </Column>
-      </Row>
-      <Row className="justify-between w-full">
-        <Row className="justify-start items-center gap-2">
-          <span className="text-white/60">auditors:</span>
-          {audit.auditors.length > 0 ? (
-            <Row>
-              {audit.auditors.map((auditor, ind2) => (
-                <AuditAuditor position={`-${ind2 * 12.5}px`} key={ind2} auditor={auditor} />
-              ))}
-            </Row>
-          ) : (
-            <span className="text-white/60">TBD</span>
-          )}
-        </Row>
-        <AuditDashboardAction audit={audit} />
-      </Row>
-    </Column>
   );
 };
