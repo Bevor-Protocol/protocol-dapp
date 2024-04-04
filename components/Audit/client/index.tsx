@@ -20,14 +20,15 @@ export const AuditAuditor = ({
           <Tooltip.Trigger>
             <Icon image={auditor.image} size="md" seed={auditor.address} />
           </Tooltip.Trigger>
-          <Tooltip.Content
-            className={cn(
-              "text-xs max-w-28 overflow-hidden text-ellipsis bg-dark-primary-20",
-              "px-2 py-1 -translate-x-1/2 border border-gray-200/20 rounded-lg",
-              "bottom-full left-1/2",
-            )}
-          >
-            {trimAddress(auditor.address)}
+          <Tooltip.Content side="top" align="center">
+            <div
+              className={cn(
+                "max-w-28 text-ellipsis bg-dark-primary-20",
+                "px-2 py-1 border border-gray-200/20 rounded-lg",
+              )}
+            >
+              {trimAddress(auditor.address)}
+            </div>
           </Tooltip.Content>
         </Tooltip.Reference>
       </DynamicLink>

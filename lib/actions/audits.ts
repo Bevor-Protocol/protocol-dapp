@@ -214,6 +214,7 @@ export const updateAudit = async (
 };
 
 export const auditAddRequest = (id: string, userId: string): Promise<GenericUpdateI> => {
+  // Add the request. To be called by the Auditor only.
   return prisma.auditors
     .create({
       data: {
@@ -244,21 +245,14 @@ export const auditAddRequest = (id: string, userId: string): Promise<GenericUpda
     });
 };
 
-export const auditRemoveRequest = (id: string, userId: string): Promise<GenericUpdateI> => {
-  return prisma.audits
-    .update({
+export const auditDeleteRequest = (id: string, userId: string): Promise<GenericUpdateI> => {
+  // Hard delete the request. Will no longer be in the Database.
+  return prisma.auditors
+    .delete({
       where: {
-        id,
-      },
-      data: {
-        auditors: {
-          delete: {
-            auditId_userId: {
-              auditId: id,
-              userId,
-            },
-            status: AuditorStatus.REQUESTED,
-          },
+        auditId_userId: {
+          auditId: id,
+          userId,
         },
       },
     })
@@ -276,10 +270,14 @@ export const auditRemoveRequest = (id: string, userId: string): Promise<GenericU
     });
 };
 
-export const auditRejectRequestors = (
+export const auditUpdateRequestors = (
   id: string,
   auditors: Auditors[],
+  status: AuditorStatus,
 ): Promise<Prisma.BatchPayload> => {
+  // To be called by the Auditee on a batch basis. Can approve or reject auditors,
+  // but it won't hard delete them.
+
   const auditorIds = auditors.map((auditor) => auditor.userId);
 
   return prisma.auditors.updateMany({
@@ -290,26 +288,7 @@ export const auditRejectRequestors = (
       },
     },
     data: {
-      status: AuditorStatus.REJECTED,
-    },
-  });
-};
-
-export const auditVerifyRequestors = (
-  id: string,
-  auditors: Auditors[],
-): Promise<Prisma.BatchPayload> => {
-  const auditorIds = auditors.map((auditor) => auditor.userId);
-
-  return prisma.auditors.updateMany({
-    where: {
-      auditId: id,
-      userId: {
-        in: auditorIds,
-      },
-    },
-    data: {
-      status: AuditorStatus.VERIFIED,
+      status,
     },
   });
 };
@@ -320,47 +299,11 @@ export const auditUpdateApprovalStatus = (
   auditorsReject: Auditors[],
 ): Promise<GenericUpdateI> => {
   return Promise.all([
-    auditRejectRequestors(id, auditorsReject),
-    auditVerifyRequestors(id, auditorsApprove),
+    auditUpdateRequestors(id, auditorsReject, AuditorStatus.REJECTED),
+    auditUpdateRequestors(id, auditorsApprove, AuditorStatus.VERIFIED),
   ])
     .then(() => {
       revalidatePath(`/audits/view/${id}`);
-      return {
-        success: true,
-      };
-    })
-    .catch((error) => {
-      return {
-        success: false,
-        error: error.name,
-      };
-    });
-};
-
-export const auditApproveRequest = (id: string, userId: string): Promise<GenericUpdateI> => {
-  return prisma.audits
-    .update({
-      where: {
-        id,
-      },
-      data: {
-        auditors: {
-          update: {
-            where: {
-              auditId_userId: {
-                auditId: id,
-                userId,
-              },
-            },
-            data: {
-              status: AuditorStatus.VERIFIED,
-            },
-          },
-        },
-      },
-    })
-    .then(() => {
-      revalidatePath(`{/audits/view/${id}}`);
       return {
         success: true,
       };
@@ -384,6 +327,14 @@ export const lockAudit = async (id: string): Promise<GenericUpdateI> => {
       });
     });
   }
+  if (currentAudit.status !== AuditStatus.OPEN) {
+    return new Promise((resolve) => {
+      resolve({
+        success: false,
+        error: "This audit can't be reopened",
+      });
+    });
+  }
 
   return prisma.audits
     .update({
@@ -392,6 +343,89 @@ export const lockAudit = async (id: string): Promise<GenericUpdateI> => {
       },
       data: {
         status: AuditStatus.ATTESTATION,
+        auditors: {
+          deleteMany: {
+            auditId: id,
+            status: {
+              not: AuditorStatus.VERIFIED,
+            },
+          },
+        },
+      },
+    })
+    .then(() => {
+      revalidatePath(`{/audits/view/${id}}`);
+      return {
+        success: true,
+      };
+    })
+    .catch((error) => {
+      return {
+        success: false,
+        error: error.name,
+      };
+    });
+};
+
+export const reopenAudit = async (id: string): Promise<GenericUpdateI> => {
+  const currentAudit = await getAudit(id);
+
+  if (!currentAudit) {
+    return new Promise((resolve) => {
+      resolve({
+        success: false,
+        error: "This audit does not exist",
+      });
+    });
+  }
+  if (currentAudit.status !== AuditStatus.ATTESTATION) {
+    return new Promise((resolve) => {
+      resolve({
+        success: false,
+        error: "This audit can't be reopened",
+      });
+    });
+  }
+
+  return prisma.audits
+    .update({
+      where: {
+        id,
+      },
+      data: {
+        status: AuditStatus.OPEN,
+      },
+    })
+    .then(() => {
+      revalidatePath(`{/audits/view/${id}}`);
+      return {
+        success: true,
+      };
+    })
+    .catch((error) => {
+      return {
+        success: false,
+        error: error.name,
+      };
+    });
+};
+
+export const attestToTerms = (
+  id: string,
+  userId: string,
+  status: boolean,
+): Promise<GenericUpdateI> => {
+  return prisma.auditors
+    .update({
+      where: {
+        auditId_userId: {
+          auditId: id,
+          userId,
+        },
+      },
+      data: {
+        acceptedTerms: status,
+        attestedTerms: true,
       },
     })
     .then(() => {

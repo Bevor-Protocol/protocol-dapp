@@ -39,8 +39,8 @@ const Web3Network = (): JSX.Element => {
               <Chevron />
             </Row>
           </Tooltip.Trigger>
-          <Tooltip.Content className="top-0 right-full">
-            <div className="bg-dark shadow rounded-lg z-[999] cursor-default text-xs min-w-40">
+          <Tooltip.Content side="left" align="start">
+            <div className="bg-dark shadow rounded-lg cursor-default min-w-40">
               <div className="px-2 py-1">This is an unsupported network</div>
             </div>
           </Tooltip.Content>
