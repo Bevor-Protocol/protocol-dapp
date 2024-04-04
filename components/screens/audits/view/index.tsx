@@ -6,7 +6,7 @@ import { trimAddress } from "@/lib/utils";
 import { Icon } from "@/components/Icon";
 import { AuditAuditor } from "@/components/Audit/client";
 import { AuditDashboardActions } from "./client";
-import { AuditorStatus } from "@prisma/client";
+import { AuditorStatus, AuditStatus } from "@prisma/client";
 
 export const AuditMarkdown = async ({ display }: { display: string }): Promise<JSX.Element> => {
   const content = await getMarkdown(display);
@@ -28,6 +28,12 @@ export const AuditPage = async ({ auditId }: { auditId: string }): Promise<JSX.E
     (auditor) => auditor.status == AuditorStatus.REJECTED,
   );
 
+  const attestationPending = audit.auditors.filter((auditor) => !auditor.attestedTerms);
+  const attestationAccepted = audit.auditors.filter((auditor) => auditor.acceptedTerms);
+  const attestationRejected = audit.auditors.filter(
+    (auditor) => auditor.attestedTerms && !auditor.acceptedTerms,
+  );
+
   return (
     <Row className="justify-between items-stretch">
       <Column className="items-stretch gap-4">
@@ -45,42 +51,100 @@ export const AuditPage = async ({ auditId }: { auditId: string }): Promise<JSX.E
           <p className="text-base my-2">{audit.description}</p>
         </div>
         <div>
-          <Row className="items-center gap-4 h-[32px] md:h-[27px]">
-            <p className="w-40">Verified to Audit:</p>
-            {verifiedAuditors.length > 0 ? (
-              <Row>
-                {verifiedAuditors.map(({ user }, ind2) => (
-                  <AuditAuditor position={`-${ind2 * 12.5}px`} key={ind2} auditor={user} />
-                ))}
+          {audit.status === AuditStatus.OPEN && (
+            <>
+              <Row className="items-center gap-4 h-[32px] md:h-[27px]">
+                <p className="w-40">Verified to Audit:</p>
+                {verifiedAuditors.length > 0 ? (
+                  <Row>
+                    {verifiedAuditors.map(({ user }, ind2) => (
+                      <AuditAuditor position={`-${ind2 * 12.5}px`} key={ind2} auditor={user} />
+                    ))}
+                  </Row>
+                ) : (
+                  <span className="text-white/60">TBD</span>
+                )}
               </Row>
-            ) : (
-              <span className="text-white/60">TBD</span>
-            )}
-          </Row>
-          <Row className="items-center gap-4 h-[32px] md:h-[27px]">
-            <p className="w-40">Requested to Audit:</p>
-            {requestedAuditors.length > 0 ? (
-              <Row>
-                {requestedAuditors.map(({ user }, ind2) => (
-                  <AuditAuditor position={`-${ind2 * 12.5}px`} key={ind2} auditor={user} />
-                ))}
+              <Row className="items-center gap-4 h-[32px] md:h-[27px]">
+                <p className="w-40">Requested to Audit:</p>
+                {requestedAuditors.length > 0 ? (
+                  <Row>
+                    {requestedAuditors.map(({ user }, ind2) => (
+                      <AuditAuditor position={`-${ind2 * 12.5}px`} key={ind2} auditor={user} />
+                    ))}
+                  </Row>
+                ) : (
+                  <span className="text-white/60">TBD</span>
+                )}
               </Row>
-            ) : (
-              <span className="text-white/60">TBD</span>
-            )}
-          </Row>
-          <Row className="items-center gap-4 h-[32px] md:h-[27px]">
-            <p className="w-40">Rejected to Audit:</p>
-            {rejectedAuditors.length > 0 ? (
-              <Row>
-                {rejectedAuditors.map(({ user }, ind2) => (
-                  <AuditAuditor position={`-${ind2 * 12.5}px`} key={ind2} auditor={user} />
-                ))}
+              <Row className="items-center gap-4 h-[32px] md:h-[27px]">
+                <p className="w-40">Rejected to Audit:</p>
+                {rejectedAuditors.length > 0 ? (
+                  <Row>
+                    {rejectedAuditors.map(({ user }, ind2) => (
+                      <AuditAuditor position={`-${ind2 * 12.5}px`} key={ind2} auditor={user} />
+                    ))}
+                  </Row>
+                ) : (
+                  <span className="text-white/60">TBD</span>
+                )}
               </Row>
-            ) : (
-              <span className="text-white/60">TBD</span>
-            )}
-          </Row>
+            </>
+          )}
+          {audit.status === AuditStatus.ATTESTATION && (
+            <>
+              <Row className="items-center gap-4 h-[32px] md:h-[27px]">
+                <p className="w-44">Pending Attestation:</p>
+                {attestationPending.length > 0 ? (
+                  <Row>
+                    {attestationPending.map(({ user }, ind2) => (
+                      <AuditAuditor position={`-${ind2 * 12.5}px`} key={ind2} auditor={user} />
+                    ))}
+                  </Row>
+                ) : (
+                  <span className="text-white/60">TBD</span>
+                )}
+              </Row>
+              <Row className="items-center gap-4 h-[32px] md:h-[27px]">
+                <p className="w-44">Attested + Accepted:</p>
+                {attestationAccepted.length > 0 ? (
+                  <Row>
+                    {attestationAccepted.map(({ user }, ind2) => (
+                      <AuditAuditor position={`-${ind2 * 12.5}px`} key={ind2} auditor={user} />
+                    ))}
+                  </Row>
+                ) : (
+                  <span className="text-white/60">TBD</span>
+                )}
+              </Row>
+              <Row className="items-center gap-4 h-[32px] md:h-[27px]">
+                <p className="w-44">Attested + Rejected:</p>
+                {attestationRejected.length > 0 ? (
+                  <Row>
+                    {attestationRejected.map(({ user }, ind2) => (
+                      <AuditAuditor position={`-${ind2 * 12.5}px`} key={ind2} auditor={user} />
+                    ))}
+                  </Row>
+                ) : (
+                  <span className="text-white/60">TBD</span>
+                )}
+              </Row>
+            </>
+          )}
+          {(audit.status === AuditStatus.ONGOING || audit.status === AuditStatus.FINAL) && (
+            <Row className="items-center gap-4 h-[32px] md:h-[27px]">
+              <p className="w-40">Auditors:</p>
+              {verifiedAuditors.length > 0 ? (
+                <Row>
+                  {verifiedAuditors.map(({ user }, ind2) => (
+                    <AuditAuditor position={`-${ind2 * 12.5}px`} key={ind2} auditor={user} />
+                  ))}
+                </Row>
+              ) : (
+                <span className="text-white/60">TBD</span>
+              )}
+            </Row>
+          )}
         </div>
       </Column>
       <Column className="gap-6 justify-between items-end">

@@ -11,6 +11,7 @@ import DynamicLink from "@/components/Link";
 import { auditAddRequest, auditDeleteRequest, lockAudit, reopenAudit } from "@/lib/actions/audits";
 import { useModal } from "@/hooks/contexts";
 import RequestsEdit from "@/components/Modal/Content/requestsEdit";
+import AuditorAttest from "@/components/Modal/Content/auditorAttest";
 import { Skeleton } from "@/components/Loader";
 import * as Tooltip from "@/components/Tooltip";
 import { Info } from "@/assets";
@@ -226,6 +227,7 @@ export const AuditLockedActions = ({
   audit: AuditViewDetailedI;
   verifiedAuditors: Auditors[];
 }): JSX.Element => {
+  const { toggleOpen, setContent } = useModal();
   const { mutate, isPending } = useMutation({
     mutationFn: (variables: { fctType: string; auditId: string; userId: string }) => {
       if (variables.fctType == "add") {
@@ -241,8 +243,22 @@ export const AuditLockedActions = ({
     },
   });
 
+  const handleAttestModal = (): void => {
+    setContent(<AuditorAttest audit={audit} user={user} />);
+    toggleOpen();
+  };
+
   const isTheAuditee = audit.auditeeId === user.id;
   const isAnAuditor = verifiedAuditors.filter((auditor) => auditor.userId == user.id).length > 0;
+  const hasAttested =
+    verifiedAuditors.filter((auditor) => {
+      if (auditor.userId == user.id) {
+        if (auditor.attestedTerms) {
+          return true;
+        }
+      }
+      return false;
+    }).length > 0;
 
   return (
     <>
@@ -316,9 +332,9 @@ export const AuditLockedActions = ({
           </Tooltip.Reference>
         </Row>
       )}
-      {isAnAuditor && (
+      {isAnAuditor && !hasAttested && (
         <Row className="items-center gap-4">
-          <Button disabled={isPending} className="flex-1">
+          <Button disabled={isPending} className="flex-1" onClick={handleAttestModal}>
             Attest to Terms
           </Button>
           <Tooltip.Reference>
