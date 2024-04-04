@@ -51,9 +51,20 @@ module.exports = {
             animationTimingFunction: "cubic-bezier(0,0,0.2,1)",
           },
         },
+        appear: {
+          "0%": {
+            opacity: 0,
+            transform: "scale(0.7)",
+          },
+          "100%": {
+            opacity: 1,
+            transform: "scale(1)",
+          },
+        },
       },
       animation: {
         shrink: "shrink 1s infinite",
+        appear: "appear 0.15s",
       },
       colors: {
         dark: "#121212",
