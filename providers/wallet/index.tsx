@@ -2,7 +2,6 @@
 
 import { type State, WagmiProvider } from "wagmi";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { ReactQueryStreamedHydration } from "@tanstack/react-query-next-experimental";
 import { config } from "./config";
 
 const makeQueryClient = (): QueryClient => {
@@ -32,9 +31,7 @@ const WalletProvider = ({
   const queryClient = getQueryClient();
   return (
     <WagmiProvider config={config} initialState={initialState}>
-      <QueryClientProvider client={queryClient}>
-        <ReactQueryStreamedHydration>{children}</ReactQueryStreamedHydration>
-      </QueryClientProvider>
+      <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
     </WagmiProvider>
   );
 };

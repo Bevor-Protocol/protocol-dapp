@@ -1,7 +1,5 @@
 "use server";
 import { prisma } from "@/lib/db/prisma.server";
-import fs from "fs";
-import path from "path";
 import { remark } from "remark";
 import html from "remark-html";
 import remarkGfm from "remark-gfm";
@@ -65,24 +63,30 @@ export const getAudit = (id: string): Promise<AuditViewDetailedI | null> => {
   });
 };
 
-export const getMarkdown = async (display: string): Promise<string> => {
-  if (!["details", "audit"].includes(display)) {
-    display = "details";
-  }
+export const getMarkdown = async (display?: "details" | "audit"): Promise<string> => {
+  const displayUse = display ?? "details";
 
-  let filePath: string;
-  console.log(path.resolve("./public", display + ".md"));
-  if (process.env.NODE_ENV === "development") {
-    filePath = path.resolve("public", display + ".md");
-  } else {
-    filePath = path.resolve("./public", display + ".md");
-  }
-  const fileContents = fs.readFileSync(filePath, "utf8");
+  const tempMapper: Record<string, string> = {
+    details:
+      "https://v0ycfji0st2gd9rf.public.blob.vercel-storage.com/audit-details/example-7Ap1GR49l2yVbJtvIJ0dVnleKuM8pj.md",
+    audit:
+      "https://v0ycfji0st2gd9rf.public.blob.vercel-storage.com/audit-findings/example-q0D5zQMv65hQJ4mWfJfstcnagI5kUI.md",
+  };
 
-  const { content } = matter(fileContents);
-  const processedContent = (await remark().use(html).use(remarkGfm).process(content)).toString();
-
-  return processedContent;
+  return fetch(tempMapper[displayUse])
+    .then((response) => {
+      if (!response.ok) {
+        throw new Error("Failed to fetch remote markdown file");
+      }
+      return response.text();
+    })
+    .then((result) => {
+      const { content } = matter(result);
+      return remark().use(html).use(remarkGfm).process(content);
+    })
+    .then((contents) => {
+      return contents.toString();
+    });
 };
 
 export const createAudit = (
