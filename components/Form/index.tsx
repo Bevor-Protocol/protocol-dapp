@@ -12,18 +12,15 @@ interface InputI extends React.InputHTMLAttributes<HTMLInputElement> {
   isError?: boolean;
 }
 
-interface ImageI extends React.InputHTMLAttributes<HTMLInputElement> {
-  className?: string;
-  children: React.ReactNode;
-  selected: File | undefined;
-  setSelected: React.Dispatch<React.SetStateAction<File | undefined>>;
-}
-
-interface DropboxI extends React.InputHTMLAttributes<HTMLInputElement> {
+interface DropI extends React.InputHTMLAttributes<HTMLInputElement> {
   className?: string;
   extensions?: string[];
   selected: File | undefined;
   setSelected: React.Dispatch<React.SetStateAction<File | undefined>>;
+}
+
+interface ImageI extends DropI {
+  children: React.ReactNode;
 }
 
 interface TextAreaI extends React.InputHTMLAttributes<HTMLTextAreaElement> {
@@ -63,10 +60,13 @@ export const Image: React.FC<ImageI> = ({
   children,
   selected,
   setSelected,
+  extensions = ["jpg", "png", "jpeg"],
   disabled,
   ...rest
 }) => {
   const [preview, setPreview] = useState<string>("");
+  const [dragged, setDragged] = useState(false);
+  const [invalid, setInvalid] = useState(false);
 
   useEffect(() => {
     if (!selected) {
@@ -83,6 +83,14 @@ export const Image: React.FC<ImageI> = ({
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>): void => {
     if (!e.target.files) return;
     setSelected(e.target.files[0]);
+    const extension = e.target.files[0].name.split(".").pop();
+    if (extension && !extensions.includes(extension)) {
+      e.target.value = "";
+      setInvalid(true);
+    } else {
+      setSelected(e.target.files[0]);
+      setInvalid(false);
+    }
   };
 
   return (
@@ -94,11 +102,17 @@ export const Image: React.FC<ImageI> = ({
             style={{ backgroundImage: `url(${preview})` }}
           />
         )}
+        {invalid && (
+          <div className="text-xs absolute inset-0 justify-center items-center flex">
+            invalid file type
+          </div>
+        )}
         <div
           className={cn(
             "transition-opacity bg-white/20 absolute inset-0 rounded-full opacity-0",
-            "justify-center items-center hidden group-hover:flex group-hover:opacity-100",
-            disabled && "group-hover:hidden",
+            "justify-center items-center flex group-hover:opacity-100",
+            dragged && "opacity-100",
+            disabled && "group-hover:opacity-0",
           )}
         >
           <Pencil height="1rem" width="1rem" fill="white" />
@@ -111,6 +125,9 @@ export const Image: React.FC<ImageI> = ({
             "disabled:cursor-default",
           )}
           onChange={handleChange}
+          onDragEnter={() => setDragged(true)}
+          onDragLeave={() => setDragged(false)}
+          onDrop={() => setDragged(false)}
           {...rest}
         />
         {children}
@@ -119,7 +136,7 @@ export const Image: React.FC<ImageI> = ({
   );
 };
 
-export const Dropbox: React.FC<DropboxI> = ({
+export const Dropbox: React.FC<DropI> = ({
   className,
   disabled,
   extensions = ["md"],
