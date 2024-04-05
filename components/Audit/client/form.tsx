@@ -21,6 +21,8 @@ const AuditForm = ({
   handleSubmit,
   initialState,
   initialAuditors = [],
+  errors,
+  setErrors,
 }: {
   address: string;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -30,6 +32,8 @@ const AuditForm = ({
   handleSubmit: (e: React.FormEvent<HTMLFormElement>) => void;
   initialState?: AuditViewI;
   initialAuditors?: Users[];
+  errors: Record<string, string>;
+  setErrors: React.Dispatch<React.SetStateAction<Record<string, string>>>;
 }): JSX.Element => {
   const [timoutPending, setTimoutPending] = useState(false);
   const [queryString, setQueryString] = useState("");
@@ -84,7 +88,7 @@ const AuditForm = ({
   }, [auditors, data, address, initialState]);
 
   return (
-    <form onSubmit={handleSubmit} className="max-w-full w-[700px]">
+    <form onSubmit={handleSubmit} className="max-w-full w-[700px]" onChange={() => setErrors({})}>
       <h3>Create an Audit</h3>
       <Column className="gap-2 my-4">
         <Form.Input
@@ -93,7 +97,7 @@ const AuditForm = ({
           name="title"
           defaultValue={initialState?.title}
           disabled={query.isPending}
-          required
+          isError={"title" in errors}
         />
         <Form.TextArea
           placeholder="Audit Description..."
@@ -101,7 +105,7 @@ const AuditForm = ({
           name="description"
           defaultValue={initialState?.description}
           disabled={query.isPending}
-          required
+          isError={"description" in errors}
         />
         <Row className="text-sm gap-2 mt-2">
           <p className="w-60">Find Auditors</p>
@@ -153,6 +157,7 @@ const AuditForm = ({
           text="Total Price ($)"
           defaultValue={initialState?.price}
           disabled={query.isPending}
+          isError={"price" in errors}
         />
         <Form.Input
           type="number"
@@ -162,6 +167,7 @@ const AuditForm = ({
           text="Vesting Duration (months)"
           defaultValue={initialState?.duration}
           disabled={query.isPending}
+          isError={"duration" in errors}
         />
       </Row>
       <hr className="border-gray-200/20 my-4" />
@@ -174,6 +180,12 @@ const AuditForm = ({
           Reset
         </Button>
       </Row>
+      {errors &&
+        Object.values(errors).map((error, ind) => (
+          <p key={ind} className="text-xs text-red-500">
+            {error}
+          </p>
+        ))}
     </form>
   );
 };

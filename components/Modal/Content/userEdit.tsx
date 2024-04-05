@@ -26,7 +26,6 @@ const UserEdit = ({ user, stats }: { user: Users; stats: UserStats }): JSX.Eleme
       return updateUser(user.id, variables.formData, allowAuditeeUpdate, allowAuditorUpdate);
     },
     onSettled: (data) => {
-      console.log(data);
       if (data?.success) toggleOpen();
       if (!data?.success && data?.validationErrors) {
         setErrors(data.validationErrors);
@@ -46,16 +45,8 @@ const UserEdit = ({ user, stats }: { user: Users; stats: UserStats }): JSX.Eleme
     setSelectedImage(undefined);
   };
 
-  const handleClearError = (e: React.ChangeEvent<HTMLFormElement>): void => {
-    const interErrors = { ...errors };
-    if (e.currentTarget.name in interErrors) {
-      delete interErrors[e.currentTarget.name];
-      setErrors({ ...interErrors });
-    }
-  };
-
   return (
-    <form onSubmit={handleSubmit} onReset={handleReset} onChange={handleClearError}>
+    <form onSubmit={handleSubmit} onReset={handleReset} onChange={() => setErrors({})}>
       <p>Update Profile</p>
       <hr className="w-full h-[1px] border-gray-200/20 my-4" />
       <div onClick={toggleOpen} className="absolute top-4 right-4 w-5 h-5 cursor-pointer z-10">

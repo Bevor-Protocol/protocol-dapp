@@ -18,3 +18,10 @@ export const userSchema = z.object({
   auditorRole: z.coerce.boolean(),
   auditeeRole: z.coerce.boolean(),
 });
+
+export const auditFormSchema = z.object({
+  title: z.string().min(1, { message: "A Title is required" }).max(100).trim(),
+  description: z.string().min(1, { message: "A Description is required" }).trim(),
+  price: z.coerce.number().min(0).default(1_000),
+  duration: z.coerce.number().min(0).default(3),
+});

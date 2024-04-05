@@ -8,6 +8,7 @@ import matter from "gray-matter";
 import { AuditViewI, AuditViewDetailedI, GenericUpdateI } from "@/lib/types/actions";
 import { revalidatePath } from "next/cache";
 import { Auditors, AuditorStatus, Audits, AuditStatus, Prisma, Users } from "@prisma/client";
+import { auditFormSchema } from "../validations";
 
 export const getAudits = (status?: string): Promise<AuditViewI[]> => {
   let statusFilter;
@@ -96,9 +97,20 @@ export const createAudit = (
 ): Promise<GenericUpdateI<Audits>> => {
   // This function doesn't require "requests" or "termsAccepted" connections/creations.
   // However, you can create a function with explicit auditors, who bypass the need for requests.
-  const formData = Object.fromEntries(audit);
-  const { title, description, price, duration } = formData;
-  const auditorsConnect = auditors.map((auditor) => {
+  const form = Object.fromEntries(audit);
+  const formParsed = auditFormSchema.safeParse(form);
+  if (!formParsed.success) {
+    const formattedErrors: Record<string, string> = {};
+    formParsed.error.errors.forEach((error) => {
+      formattedErrors[error.path[0]] = error.message;
+    });
+    return Promise.resolve({
+      success: false,
+      error: "zod",
+      validationErrors: formattedErrors,
+    });
+  }
+  const auditorsCreate = auditors.map((auditor) => {
     return {
       status: AuditorStatus.VERIFIED,
       user: {
@@ -113,12 +125,9 @@ export const createAudit = (
     .create({
       data: {
         auditeeId: id,
-        title: title as string,
-        description: description as string,
-        price: Number(price) || 10_000,
-        duration: Number(duration) || 3,
+        ...formParsed.data,
         auditors: {
-          create: auditorsConnect,
+          create: auditorsCreate,
         },
       },
     })
@@ -157,10 +166,21 @@ export const updateAudit = async (
     });
   }
 
-  const formData = Object.fromEntries(audit);
-  const { title, description, price, duration } = formData;
-  const passedAuditorIds = auditors.map((auditor) => auditor.id);
+  const form = Object.fromEntries(audit);
+  const formParsed = auditFormSchema.safeParse(form);
+  if (!formParsed.success) {
+    const formattedErrors: Record<string, string> = {};
+    formParsed.error.errors.forEach((error) => {
+      formattedErrors[error.path[0]] = error.message;
+    });
+    return Promise.resolve({
+      success: false,
+      error: "zod",
+      validationErrors: formattedErrors,
+    });
+  }
 
+  const passedAuditorIds = auditors.map((auditor) => auditor.id);
   const currentAuditorIds = currentAudit.auditors.map((auditor) => auditor.user.id);
 
   const auditorsReject = currentAuditorIds.filter((auditor) => !passedAuditorIds.includes(auditor));
@@ -184,10 +204,7 @@ export const updateAudit = async (
         id,
       },
       data: {
-        title: title as string,
-        description: description as string,
-        price: Number(price) || 1_000,
-        duration: Number(duration) || 3,
+        ...formParsed.data,
         auditors: {
           create: auditorsCreate,
           updateMany: {
