@@ -16,6 +16,7 @@ const AuditEditWrapper = ({ audit }: { audit: AuditViewDetailedI }): JSX.Element
   const { address } = useAccount();
   const router = useRouter();
   const { user, isFetchedAfterMount, isPending } = useUser();
+  const [errors, setErrors] = useState<Record<string, string>>({});
 
   // only show the selected auditors that were already verified.
   const initialAuditors = audit.auditors
@@ -34,17 +35,22 @@ const AuditEditWrapper = ({ audit }: { audit: AuditViewDetailedI }): JSX.Element
   }, [isFetchedAfterMount, isPending, router, user, address]);
 
   const query = useMutation({
-    mutationFn: (variables: { auditId: string; formData: FormData; auditors: Users[] }) =>
-      updateAudit(variables.auditId, variables.formData, variables.auditors),
-    onSuccess: () => {
-      router.push(`/audits/view/${audit.id}`);
+    mutationFn: (variables: { formData: FormData }) =>
+      updateAudit(audit.id, variables.formData, auditors),
+    onSettled: (data) => {
+      if (data?.success) {
+        router.push(`/audits/view/${audit.id}`);
+      }
+      if (!data?.success && data?.validationErrors) {
+        setErrors(data.validationErrors);
+      }
     },
   });
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>): void => {
     e.preventDefault();
     const formData = new FormData(e.currentTarget);
-    query.mutate({ auditId: audit.id, formData, auditors });
+    query.mutate({ formData });
   };
 
   if (!isFetchedAfterMount || isPending) return <Loader className="h-12" />;
@@ -60,6 +66,8 @@ const AuditEditWrapper = ({ audit }: { audit: AuditViewDetailedI }): JSX.Element
       setAuditors={setAuditors}
       initialState={audit}
       initialAuditors={initialAuditors}
+      setErrors={setErrors}
+      errors={errors}
     />
   );
 };

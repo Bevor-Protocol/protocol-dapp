@@ -1,15 +1,16 @@
 "use server";
 import { prisma } from "@/lib/db/prisma.server";
-import fs from "fs";
-import path from "path";
 import { remark } from "remark";
 import html from "remark-html";
 import remarkGfm from "remark-gfm";
 import matter from "gray-matter";
+import { z } from "zod";
 
 import { AuditViewI, AuditViewDetailedI, GenericUpdateI } from "@/lib/types/actions";
 import { revalidatePath } from "next/cache";
-import { Auditors, AuditorStatus, AuditStatus, Prisma, Users } from "@prisma/client";
+import { Auditors, AuditorStatus, Audits, AuditStatus, Prisma, Users } from "@prisma/client";
+import { auditFormSchema } from "../validations";
+import { put, PutBlobResult } from "@vercel/blob";
 
 export const getAudits = (status?: string): Promise<AuditViewI[]> => {
   let statusFilter;
@@ -65,63 +66,46 @@ export const getAudit = (id: string): Promise<AuditViewDetailedI | null> => {
   });
 };
 
-export const getMarkdown = async (display: string): Promise<string> => {
-  if (!["details", "audit"].includes(display)) {
-    display = "details";
-  }
+export const getMarkdown = async (id: string, display?: "details" | "audit"): Promise<string> => {
+  // I should move this to inside Audit Page, since we're already fetching the Audit, which is what
+  // we'd do here.
+  const displayUse = display ?? "details";
 
-  let filePath: string;
-  console.log(path.resolve("./public", display + ".md"));
-  if (process.env.NODE_ENV === "development") {
-    filePath = path.resolve("public", display + ".md");
-  } else {
-    filePath = path.resolve("./public", display + ".md");
-  }
-  const fileContents = fs.readFileSync(filePath, "utf8");
+  const tempMapper: Record<string, string> = {
+    details:
+      "https://v0ycfji0st2gd9rf.public.blob.vercel-storage.com/audit-details/example-7Ap1GR49l2yVbJtvIJ0dVnleKuM8pj.md",
+    audit:
+      "https://v0ycfji0st2gd9rf.public.blob.vercel-storage.com/audit-findings/example-q0D5zQMv65hQJ4mWfJfstcnagI5kUI.md",
+  };
 
-  const { content } = matter(fileContents);
-  const processedContent = (await remark().use(html).use(remarkGfm).process(content)).toString();
-
-  return processedContent;
+  return fetch(tempMapper[displayUse])
+    .then((response) => {
+      if (!response.ok) {
+        throw new Error("Failed to fetch remote markdown file");
+      }
+      return response.text();
+    })
+    .then((result) => {
+      const { content } = matter(result);
+      return remark().use(html).use(remarkGfm).process(content);
+    })
+    .then((contents) => {
+      return contents.toString();
+    });
 };
 
-export const createAudit = (
-  id: string,
-  audit: FormData,
-  auditors: Users[],
-): Promise<GenericUpdateI> => {
-  // This function doesn't require "requests" or "termsAccepted" connections/creations.
-  // However, you can create a function with explicit auditors, who bypass the need for requests.
-  const data = Object.fromEntries(audit);
-  const { title, description, price, duration } = data;
-  const auditorsConnect = auditors.map((auditor) => {
-    return {
-      status: AuditorStatus.VERIFIED,
-      user: {
-        connect: {
-          id: auditor.id,
-        },
-      },
-    };
-  });
-  // add zod validation.
-  return prisma.audits
-    .create({
-      data: {
-        auditeeId: id,
-        title: title as string,
-        description: description as string,
-        price: Number(price) || 10_000,
-        duration: Number(duration) || 3,
-        auditors: {
-          create: auditorsConnect,
-        },
-      },
-    })
-    .then(() => {
-      revalidatePath(`{/user/${id}}`);
+const putAuditDetailsBlob = (file: File | undefined): Promise<GenericUpdateI<PutBlobResult>> => {
+  if (!file || file.size <= 0 || !file.name) {
+    return Promise.resolve({
+      success: false,
+      error: "no file exists",
+    });
+  }
+  return put(`audit-details/${file.name}`, file, { access: "public" })
+    .then((data) => {
       return {
         success: true,
+        data,
       };
     })
     .catch((error) => {
@@ -132,30 +116,102 @@ export const createAudit = (
     });
 };
 
-export const updateAudit = async (
+const createAuditIso = (
+  id: string,
+  auditData: {
+    title: string;
+    description: string;
+    details?: string;
+    price: number;
+    duration: number;
+  },
+  auditors: Users[],
+): Promise<Audits> => {
+  const auditorsCreate = auditors.map((auditor) => {
+    return {
+      status: AuditorStatus.VERIFIED,
+      user: {
+        connect: {
+          id: auditor.id,
+        },
+      },
+    };
+  });
+
+  return prisma.audits.create({
+    data: {
+      auditee: {
+        connect: {
+          id,
+        },
+      },
+      ...auditData,
+      auditors: {
+        create: auditorsCreate,
+      },
+    },
+  });
+};
+
+export const createAudit = (
   id: string,
   audit: FormData,
   auditors: Users[],
-): Promise<GenericUpdateI> => {
-  // To be used for audit updates like creating an audit
-  // For more granular actions, we'll add different server actions.
-
-  // Rather than deleting auditors' instances, I'll just update them to be rejected.
-  const currentAudit = await getAudit(id);
-
-  if (!currentAudit) {
-    return new Promise((resolve) => {
-      resolve({
-        success: false,
-        error: "This audit does not exist",
-      });
+): Promise<GenericUpdateI<Audits>> => {
+  // This function doesn't require "requests" or "termsAccepted" connections/creations.
+  // However, you can create a function with explicit auditors, who bypass the need for requests.
+  const form = Object.fromEntries(audit);
+  const formParsed = auditFormSchema.safeParse(form);
+  if (!formParsed.success) {
+    const formattedErrors: Record<string, string> = {};
+    formParsed.error.errors.forEach((error) => {
+      formattedErrors[error.path[0]] = error.message;
+    });
+    return Promise.resolve({
+      success: false,
+      error: "zod",
+      validationErrors: formattedErrors,
     });
   }
+  const { details, ...rest } = formParsed.data as z.infer<typeof auditFormSchema>;
+  // add zod validation.
+  return putAuditDetailsBlob(details)
+    .then((result) => {
+      const { data, success } = result;
+      if (success && data) {
+        return createAuditIso(
+          id,
+          {
+            ...rest,
+            details: result.data.url,
+          },
+          auditors,
+        );
+      }
+      return createAuditIso(id, { ...rest }, auditors);
+    })
+    .then((data) => {
+      revalidatePath(`{/user/${id}}`);
+      return {
+        success: true,
+        data,
+      };
+    })
+    .catch((error) => {
+      return {
+        success: false,
+        error: error.name,
+      };
+    });
+};
 
-  const data = Object.fromEntries(audit);
-  const { title, description, price, duration } = data;
+const updateAuditIso = (
+  id: string,
+  auditData: Prisma.AuditsUpdateInput,
+  auditors: Users[],
+  currentAudit: AuditViewDetailedI,
+): Promise<Audits> => {
   const passedAuditorIds = auditors.map((auditor) => auditor.id);
-
   const currentAuditorIds = currentAudit.auditors.map((auditor) => auditor.user.id);
 
   const auditorsReject = currentAuditorIds.filter((auditor) => !passedAuditorIds.includes(auditor));
@@ -173,36 +229,87 @@ export const updateAudit = async (
       };
     });
 
-  return prisma.audits
-    .update({
-      where: {
-        id,
-      },
-      data: {
-        title: title as string,
-        description: description as string,
-        price: Number(price) || 1_000,
-        duration: Number(duration) || 3,
-        auditors: {
-          create: auditorsCreate,
-          updateMany: {
-            where: {
-              auditId: id,
-              userId: {
-                in: auditorsReject,
-              },
+  return prisma.audits.update({
+    where: {
+      id,
+    },
+    data: {
+      ...auditData,
+      auditors: {
+        create: auditorsCreate,
+        updateMany: {
+          where: {
+            auditId: id,
+            userId: {
+              in: auditorsReject,
             },
-            data: {
-              status: AuditorStatus.REJECTED,
-            },
+          },
+          data: {
+            status: AuditorStatus.REJECTED,
           },
         },
       },
+    },
+  });
+};
+
+export const updateAudit = async (
+  id: string,
+  audit: FormData,
+  auditors: Users[],
+): Promise<GenericUpdateI<Audits>> => {
+  // To be used for audit updates like creating an audit
+  // For more granular actions, we'll add different server actions.
+
+  // Rather than deleting auditors' instances, I'll just update them to be rejected.
+  const currentAudit = await getAudit(id);
+
+  if (!currentAudit) {
+    return new Promise((resolve) => {
+      resolve({
+        success: false,
+        error: "This audit does not exist",
+      });
+    });
+  }
+
+  const form = Object.fromEntries(audit);
+  const formParsed = auditFormSchema.safeParse(form);
+  if (!formParsed.success) {
+    const formattedErrors: Record<string, string> = {};
+    formParsed.error.errors.forEach((error) => {
+      formattedErrors[error.path[0]] = error.message;
+    });
+    return Promise.resolve({
+      success: false,
+      error: "zod",
+      validationErrors: formattedErrors,
+    });
+  }
+
+  const { details, ...rest } = formParsed.data as z.infer<typeof auditFormSchema>;
+  // add zod validation.
+  return putAuditDetailsBlob(details)
+    .then((result) => {
+      const { data, success } = result;
+      if (success && data) {
+        return updateAuditIso(
+          id,
+          {
+            ...rest,
+            details: result.data.url,
+          },
+          auditors,
+          currentAudit,
+        );
+      }
+      return updateAuditIso(id, { ...rest }, auditors, currentAudit);
     })
-    .then(() => {
+    .then((data) => {
       revalidatePath(`{/audits/view/${id}}`);
       return {
         success: true,
+        data,
       };
     })
     .catch((error) => {
@@ -213,7 +320,7 @@ export const updateAudit = async (
     });
 };
 
-export const auditAddRequest = (id: string, userId: string): Promise<GenericUpdateI> => {
+export const auditAddRequest = (id: string, userId: string): Promise<GenericUpdateI<Auditors>> => {
   // Add the request. To be called by the Auditor only.
   return prisma.auditors
     .create({
@@ -231,10 +338,11 @@ export const auditAddRequest = (id: string, userId: string): Promise<GenericUpda
         },
       },
     })
-    .then(() => {
+    .then((data) => {
       revalidatePath(`{/audits/view/${id}}`);
       return {
         success: true,
+        data,
       };
     })
     .catch((error) => {
@@ -245,7 +353,10 @@ export const auditAddRequest = (id: string, userId: string): Promise<GenericUpda
     });
 };
 
-export const auditDeleteRequest = (id: string, userId: string): Promise<GenericUpdateI> => {
+export const auditDeleteRequest = (
+  id: string,
+  userId: string,
+): Promise<GenericUpdateI<Auditors>> => {
   // Hard delete the request. Will no longer be in the Database.
   return prisma.auditors
     .delete({
@@ -256,10 +367,11 @@ export const auditDeleteRequest = (id: string, userId: string): Promise<GenericU
         },
       },
     })
-    .then(() => {
+    .then((data) => {
       revalidatePath(`{/audits/view/${id}}`);
       return {
         success: true,
+        data,
       };
     })
     .catch((error) => {
@@ -297,15 +409,19 @@ export const auditUpdateApprovalStatus = (
   id: string,
   auditorsApprove: Auditors[],
   auditorsReject: Auditors[],
-): Promise<GenericUpdateI> => {
+): Promise<GenericUpdateI<{ rejected: number; verified: number }>> => {
   return Promise.all([
     auditUpdateRequestors(id, auditorsReject, AuditorStatus.REJECTED),
     auditUpdateRequestors(id, auditorsApprove, AuditorStatus.VERIFIED),
   ])
-    .then(() => {
+    .then((data) => {
       revalidatePath(`/audits/view/${id}`);
       return {
         success: true,
+        data: {
+          rejected: data[0].count,
+          verified: data[1].count,
+        },
       };
     })
     .catch((error) => {
@@ -316,7 +432,7 @@ export const auditUpdateApprovalStatus = (
     });
 };
 
-export const lockAudit = async (id: string): Promise<GenericUpdateI> => {
+export const lockAudit = async (id: string): Promise<GenericUpdateI<Audits>> => {
   const currentAudit = await getAudit(id);
 
   if (!currentAudit) {
@@ -353,10 +469,11 @@ export const lockAudit = async (id: string): Promise<GenericUpdateI> => {
         },
       },
     })
-    .then(() => {
+    .then((data) => {
       revalidatePath(`{/audits/view/${id}}`);
       return {
         success: true,
+        data,
       };
     })
     .catch((error) => {
@@ -367,7 +484,7 @@ export const lockAudit = async (id: string): Promise<GenericUpdateI> => {
     });
 };
 
-export const reopenAudit = async (id: string): Promise<GenericUpdateI> => {
+export const reopenAudit = async (id: string): Promise<GenericUpdateI<Audits>> => {
   const currentAudit = await getAudit(id);
 
   if (!currentAudit) {
@@ -396,10 +513,11 @@ export const reopenAudit = async (id: string): Promise<GenericUpdateI> => {
         status: AuditStatus.OPEN,
       },
     })
-    .then(() => {
+    .then((data) => {
       revalidatePath(`{/audits/view/${id}}`);
       return {
         success: true,
+        data,
       };
     })
     .catch((error) => {
@@ -414,7 +532,7 @@ export const attestToTerms = (
   id: string,
   userId: string,
   status: boolean,
-): Promise<GenericUpdateI> => {
+): Promise<GenericUpdateI<Auditors>> => {
   return prisma.auditors
     .update({
       where: {
@@ -428,10 +546,11 @@ export const attestToTerms = (
         attestedTerms: true,
       },
     })
-    .then(() => {
+    .then((data) => {
       revalidatePath(`{/audits/view/${id}}`);
       return {
         success: true,
+        data,
       };
     })
     .catch((error) => {

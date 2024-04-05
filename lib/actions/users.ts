@@ -1,9 +1,12 @@
 "use server";
+import { revalidatePath } from "next/cache";
 import { prisma } from "@/lib/db/prisma.server";
 import { AuditorStatus, AuditStatus, Prisma, Users } from "@prisma/client";
+import { put, type PutBlobResult } from "@vercel/blob";
 
 import type { UserWithCount, UserStats, AuditViewI, GenericUpdateI } from "@/lib/types/actions";
-import { revalidatePath } from "next/cache";
+import { userSchema } from "@/lib/validations";
+import { z } from "zod";
 
 export const getLeaderboard = (key?: string, order?: string): Promise<UserWithCount[]> => {
   // Can't currently sort on aggregations or further filtered counts of relations...
@@ -233,9 +236,9 @@ export const getUserStats = async (address: string): Promise<UserStats> => {
   };
 };
 
-export const createUser = (address: string, profileData: FormData): Promise<GenericUpdateI> => {
-  const data = Object.fromEntries(profileData);
-  const { auditor, auditee, ...profile } = data;
+export const createUser = (address: string, formData: FormData): Promise<GenericUpdateI<Users>> => {
+  const form = Object.fromEntries(formData);
+  const { auditor, auditee, ...profile } = form;
 
   if (auditor != "true" && auditee != "true") {
     return new Promise((resolve) =>
@@ -256,9 +259,10 @@ export const createUser = (address: string, profileData: FormData): Promise<Gene
         ...profile,
       },
     })
-    .then(() => {
+    .then((data) => {
       return {
         success: true,
+        data,
       };
     })
     .catch((error) => {
@@ -269,37 +273,83 @@ export const createUser = (address: string, profileData: FormData): Promise<Gene
     });
 };
 
-export const updateUser = async (id: string, form: FormData): Promise<GenericUpdateI> => {
-  const data = Object.fromEntries(form);
-  const profileData: Record<string, boolean | string> = {};
-  // add zod validation
-  if (data.auditeeRole) {
-    profileData.auditeeRole = data.auditeeRole == "true";
+const updateProfileData = (id: string, profileData: Prisma.UsersUpdateInput): Promise<Users> => {
+  return prisma.users.update({
+    where: {
+      id,
+    },
+    data: {
+      ...profileData,
+    },
+  });
+};
+
+const putProfileBlob = (file: File | undefined): Promise<GenericUpdateI<PutBlobResult>> => {
+  if (!file || file.size <= 0 || !file.name) {
+    return Promise.resolve({
+      success: false,
+      error: "no file exists",
+    });
   }
-  if (data.auditorRole) {
-    profileData.auditorRole = data.auditorRole == "true";
-  }
-  if (data.available) {
-    profileData.available = data.available == "true";
-  }
-  if (data.name) {
-    profileData.name = data.name as string;
-  }
-  return prisma.users
-    .update({
-      where: {
-        id,
-      },
-      data: {
-        ...profileData,
-      },
-    })
-    .then(() => {
-      // currently revalidates entire path, which contains several server functions
-      // revalidateTag exists, but using server actions you can't directly tag calls.
-      revalidatePath("/user/[slug]");
+  return put(`profile-images/${file.name}`, file, { access: "public" })
+    .then((data) => {
       return {
         success: true,
+        data,
+      };
+    })
+    .catch((error) => {
+      return {
+        success: false,
+        error: error.name,
+      };
+    });
+};
+
+export const updateUser = (
+  id: string,
+  formData: FormData,
+  allowAuditeeUpdate: boolean,
+  allowAuditorUpdate: boolean,
+): Promise<GenericUpdateI<Users>> => {
+  const form = Object.fromEntries(formData);
+  // Disabled elements on forms don't appear in form data, explicitly handle these.
+  const partials: Record<string, true> = {};
+  if (!allowAuditeeUpdate) {
+    partials.auditeeRole = true;
+  }
+  if (!allowAuditorUpdate) {
+    partials.auditorRole = true;
+  }
+  const formParsed = userSchema.omit({ ...partials }).safeParse(form);
+  if (!formParsed.success) {
+    const formattedErrors: Record<string, string> = {};
+    formParsed.error.errors.forEach((error) => {
+      formattedErrors[error.path[0]] = error.message;
+    });
+    return Promise.resolve({
+      success: false,
+      error: "zod",
+      validationErrors: formattedErrors,
+    });
+  }
+  const { image, ...rest } = formParsed.data as z.infer<typeof userSchema>;
+  return putProfileBlob(image)
+    .then((result) => {
+      const { data, success } = result;
+      if (success && data) {
+        return updateProfileData(id, {
+          ...rest,
+          image: result.data.url,
+        });
+      }
+      return updateProfileData(id, { ...rest });
+    })
+    .then((data) => {
+      revalidatePath(`/user/${id}`);
+      return {
+        success: true,
+        data,
       };
     })
     .catch((error) => {

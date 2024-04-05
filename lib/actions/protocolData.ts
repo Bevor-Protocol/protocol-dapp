@@ -19,7 +19,7 @@ export const protocolDataFunds = (): Promise<number> => {
     .then((result: { _sum: { price: number | null } }) => result._sum.price || 0);
 };
 
-export const protocolDataVulnerabilities = (): Promise<number> => {
+export const protocolDataVulnerabilities = async (): Promise<number> => {
   // simulate a longer lasting request until we have data for this.
   return new Promise<number>((resolve) => {
     setTimeout(() => {

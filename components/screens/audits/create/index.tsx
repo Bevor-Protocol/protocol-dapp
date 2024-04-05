@@ -20,6 +20,7 @@ const AuditCreation = (): JSX.Element => {
   const router = useRouter();
   const { user, isFetchedAfterMount, isPending } = useUser();
   const [auditors, setAuditors] = useState<Users[]>([]);
+  const [errors, setErrors] = useState<Record<string, string>>({});
 
   useEffect(() => {
     if (!isFetchedAfterMount || isPending) return;
@@ -32,10 +33,15 @@ const AuditCreation = (): JSX.Element => {
   }, [isFetchedAfterMount, isPending, router, user, address]);
 
   const query = useMutation({
-    mutationFn: (variables: { userId: string; formData: FormData; auditors: Users[] }) =>
-      createAudit(variables.userId, variables.formData, variables.auditors),
-    onSuccess: () => {
-      router.push(`/user/${address}`);
+    mutationFn: (variables: { formData: FormData }) =>
+      createAudit(user!.id, variables.formData, auditors),
+    onSettled: (data) => {
+      if (data?.success) {
+        router.push(`/user/${address}`);
+      }
+      if (!data?.success && data?.validationErrors) {
+        setErrors(data.validationErrors);
+      }
     },
   });
 
@@ -43,7 +49,7 @@ const AuditCreation = (): JSX.Element => {
     e.preventDefault();
     if (!user) return;
     const formData = new FormData(e.currentTarget);
-    query.mutate({ userId: user.id, formData, auditors });
+    query.mutate({ formData });
   };
 
   if (!isFetchedAfterMount || isPending) return <Loader className="h-12" />;
@@ -68,6 +74,8 @@ const AuditCreation = (): JSX.Element => {
       address={address as string}
       auditors={auditors}
       setAuditors={setAuditors}
+      setErrors={setErrors}
+      errors={errors}
     />
   );
 };

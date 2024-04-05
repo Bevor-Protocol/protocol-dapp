@@ -11,7 +11,7 @@ const AuditDashboardPage = ({
   searchParams,
 }: {
   params: { slug: string };
-  searchParams: { [key: string]: string | undefined };
+  searchParams: { [key: string]: "details" | "audit" | undefined };
 }): JSX.Element => {
   const display = searchParams.display ?? "details";
 
@@ -39,7 +39,7 @@ const AuditDashboardPage = ({
           </Link>
         </Row>
         <Suspense fallback={<p>Loading...</p>}>
-          <AuditMarkdown display={display} />
+          <AuditMarkdown display={display} auditId={params.slug} />
         </Suspense>
       </div>
     </section>
