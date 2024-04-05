@@ -4,11 +4,13 @@ import { remark } from "remark";
 import html from "remark-html";
 import remarkGfm from "remark-gfm";
 import matter from "gray-matter";
+import { z } from "zod";
 
 import { AuditViewI, AuditViewDetailedI, GenericUpdateI } from "@/lib/types/actions";
 import { revalidatePath } from "next/cache";
 import { Auditors, AuditorStatus, Audits, AuditStatus, Prisma, Users } from "@prisma/client";
 import { auditFormSchema } from "../validations";
+import { put, PutBlobResult } from "@vercel/blob";
 
 export const getAudits = (status?: string): Promise<AuditViewI[]> => {
   let statusFilter;
@@ -90,6 +92,65 @@ export const getMarkdown = async (display?: "details" | "audit"): Promise<string
     });
 };
 
+const putAuditDetailsBlob = (file: File | undefined): Promise<GenericUpdateI<PutBlobResult>> => {
+  if (!file || file.size <= 0 || !file.name) {
+    return Promise.resolve({
+      success: false,
+      error: "no file exists",
+    });
+  }
+  return put(`audit-details/${file.name}`, file, { access: "public" })
+    .then((data) => {
+      return {
+        success: true,
+        data,
+      };
+    })
+    .catch((error) => {
+      return {
+        success: false,
+        error: error.name,
+      };
+    });
+};
+
+const createAuditIso = (
+  id: string,
+  auditData: {
+    title: string;
+    description: string;
+    details?: string;
+    price: number;
+    duration: number;
+  },
+  auditors: Users[],
+): Promise<Audits> => {
+  const auditorsCreate = auditors.map((auditor) => {
+    return {
+      status: AuditorStatus.VERIFIED,
+      user: {
+        connect: {
+          id: auditor.id,
+        },
+      },
+    };
+  });
+
+  return prisma.audits.create({
+    data: {
+      auditee: {
+        connect: {
+          id,
+        },
+      },
+      ...auditData,
+      auditors: {
+        create: auditorsCreate,
+      },
+    },
+  });
+};
+
 export const createAudit = (
   id: string,
   audit: FormData,
@@ -110,26 +171,22 @@ export const createAudit = (
       validationErrors: formattedErrors,
     });
   }
-  const auditorsCreate = auditors.map((auditor) => {
-    return {
-      status: AuditorStatus.VERIFIED,
-      user: {
-        connect: {
-          id: auditor.id,
-        },
-      },
-    };
-  });
+  const { details, ...rest } = formParsed.data as z.infer<typeof auditFormSchema>;
   // add zod validation.
-  return prisma.audits
-    .create({
-      data: {
-        auditeeId: id,
-        ...formParsed.data,
-        auditors: {
-          create: auditorsCreate,
-        },
-      },
+  return putAuditDetailsBlob(details)
+    .then((result) => {
+      const { data, success } = result;
+      if (success && data) {
+        return createAuditIso(
+          id,
+          {
+            ...rest,
+            details: result.data.url,
+          },
+          auditors,
+        );
+      }
+      return createAuditIso(id, { ...rest }, auditors);
     })
     .then((data) => {
       revalidatePath(`{/user/${id}}`);
@@ -144,6 +201,54 @@ export const createAudit = (
         error: error.name,
       };
     });
+};
+
+const updateAuditIso = (
+  id: string,
+  auditData: Prisma.AuditsUpdateInput,
+  auditors: Users[],
+  currentAudit: AuditViewDetailedI,
+): Promise<Audits> => {
+  const passedAuditorIds = auditors.map((auditor) => auditor.id);
+  const currentAuditorIds = currentAudit.auditors.map((auditor) => auditor.user.id);
+
+  const auditorsReject = currentAuditorIds.filter((auditor) => !passedAuditorIds.includes(auditor));
+
+  const auditorsCreate = passedAuditorIds
+    .filter((auditor) => !currentAuditorIds.includes(auditor))
+    .map((auditorId) => {
+      return {
+        status: AuditorStatus.VERIFIED,
+        user: {
+          connect: {
+            id: auditorId,
+          },
+        },
+      };
+    });
+
+  return prisma.audits.update({
+    where: {
+      id,
+    },
+    data: {
+      ...auditData,
+      auditors: {
+        create: auditorsCreate,
+        updateMany: {
+          where: {
+            auditId: id,
+            userId: {
+              in: auditorsReject,
+            },
+          },
+          data: {
+            status: AuditorStatus.REJECTED,
+          },
+        },
+      },
+    },
+  });
 };
 
 export const updateAudit = async (
@@ -180,46 +285,23 @@ export const updateAudit = async (
     });
   }
 
-  const passedAuditorIds = auditors.map((auditor) => auditor.id);
-  const currentAuditorIds = currentAudit.auditors.map((auditor) => auditor.user.id);
-
-  const auditorsReject = currentAuditorIds.filter((auditor) => !passedAuditorIds.includes(auditor));
-
-  const auditorsCreate = passedAuditorIds
-    .filter((auditor) => !currentAuditorIds.includes(auditor))
-    .map((auditorId) => {
-      return {
-        status: AuditorStatus.VERIFIED,
-        user: {
-          connect: {
-            id: auditorId,
+  const { details, ...rest } = formParsed.data as z.infer<typeof auditFormSchema>;
+  // add zod validation.
+  return putAuditDetailsBlob(details)
+    .then((result) => {
+      const { data, success } = result;
+      if (success && data) {
+        return updateAuditIso(
+          id,
+          {
+            ...rest,
+            details: result.data.url,
           },
-        },
-      };
-    });
-
-  return prisma.audits
-    .update({
-      where: {
-        id,
-      },
-      data: {
-        ...formParsed.data,
-        auditors: {
-          create: auditorsCreate,
-          updateMany: {
-            where: {
-              auditId: id,
-              userId: {
-                in: auditorsReject,
-              },
-            },
-            data: {
-              status: AuditorStatus.REJECTED,
-            },
-          },
-        },
-      },
+          auditors,
+          currentAudit,
+        );
+      }
+      return updateAuditIso(id, { ...rest }, auditors, currentAudit);
     })
     .then((data) => {
       revalidatePath(`{/audits/view/${id}}`);
