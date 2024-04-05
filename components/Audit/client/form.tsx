@@ -38,6 +38,7 @@ const AuditForm = ({
   const [timoutPending, setTimoutPending] = useState(false);
   const [queryString, setQueryString] = useState("");
   const timeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const [selectedFile, setSelectedFile] = useState<File | undefined>();
 
   const { data, isPending } = useQuery({
     queryKey: ["auditors", queryString],
@@ -68,6 +69,7 @@ const AuditForm = ({
   const uncontrolledReset = (): void => {
     setQueryString("");
     setAuditors([...initialAuditors]);
+    setSelectedFile(undefined);
   };
 
   const auditorsShow = useMemo(() => {
@@ -107,8 +109,15 @@ const AuditForm = ({
           disabled={query.isPending}
           isError={"description" in errors}
         />
-        <Row className="text-sm gap-2 mt-2">
-          <p className="w-60">Find Auditors</p>
+        <Form.Dropbox
+          name="details"
+          disabled={isPending}
+          aria-disabled={isPending}
+          selected={selectedFile}
+          setSelected={setSelectedFile}
+        />
+        <Row className="text-sm gap-4 mt-2">
+          <p className="w-80">Find Auditors</p>
           <p>Selected Verified Auditors:</p>
         </Row>
         <Row className="gap-2">

@@ -3,8 +3,8 @@
 import { useState, useEffect } from "react";
 
 import { cn } from "@/lib/utils";
-import { Row } from "@/components/Box";
-import { Search as SearchIcon, Pencil } from "@/assets";
+import { Column, Row } from "@/components/Box";
+import { Search as SearchIcon, Pencil, File } from "@/assets";
 
 interface InputI extends React.InputHTMLAttributes<HTMLInputElement> {
   text?: string;
@@ -15,6 +15,13 @@ interface InputI extends React.InputHTMLAttributes<HTMLInputElement> {
 interface ImageI extends React.InputHTMLAttributes<HTMLInputElement> {
   className?: string;
   children: React.ReactNode;
+  selected: File | undefined;
+  setSelected: React.Dispatch<React.SetStateAction<File | undefined>>;
+}
+
+interface DropboxI extends React.InputHTMLAttributes<HTMLInputElement> {
+  className?: string;
+  extensions?: string[];
   selected: File | undefined;
   setSelected: React.Dispatch<React.SetStateAction<File | undefined>>;
 }
@@ -112,9 +119,80 @@ export const Image: React.FC<ImageI> = ({
   );
 };
 
+export const Dropbox: React.FC<DropboxI> = ({
+  className,
+  disabled,
+  extensions = ["md"],
+  selected,
+  setSelected,
+  ...rest
+}) => {
+  const [dragged, setDragged] = useState(false);
+  const [invalid, setInvalid] = useState(false);
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>): void => {
+    if (!e.target.files) return;
+    const extension = e.target.files[0].name.split(".").pop();
+    if (extension && !extensions.includes(extension)) {
+      e.target.value = "";
+      setInvalid(true);
+    } else {
+      setSelected(e.target.files[0]);
+      setInvalid(false);
+    }
+  };
+  return (
+    <label className={cn("w-80 block group *:text-sm", className)}>
+      <p className="my-2">Audit Details</p>
+      <Column
+        className={cn(
+          "w-full h-28 transition-colors justify-center items-center relative",
+          "rounded-md border border-gray-200/20 bg-transparent",
+          "group-hover:bg-dark-primary-30",
+          dragged && "bg-dark-primary-30",
+          disabled && "group-hover:hidden",
+        )}
+        onDragEnter={() => setDragged(true)}
+        onDragLeave={() => setDragged(false)}
+        onDrop={() => setDragged(false)}
+      >
+        {selected && (
+          <>
+            <p className="text-xs my-1">{selected.name}</p>
+            <File height="1rem" width="1rem" fill="white" />
+          </>
+        )}
+        {!selected && !invalid && (
+          <>
+            <p>Drag and Drop your Audit Details file here</p>
+            <p className="text-xs my-1">supports .md files</p>
+            <File height="1rem" width="1rem" fill="white" />
+          </>
+        )}
+        {!selected && invalid && (
+          <>
+            <p>Invalid file type</p>
+            <p className="text-xs my-1">only supports {extensions.join(",")} files</p>
+          </>
+        )}
+        <input
+          type="file"
+          accept=".md, .markdown"
+          className={cn(
+            "absolute inset-0 appearance-none cursor-pointer focus-input opacity-0",
+            "disabled:cursor-default",
+          )}
+          onChange={handleChange}
+          {...rest}
+        />
+      </Column>
+    </label>
+  );
+};
+
 export const Search: React.FC<SearchI> = ({ children, className, text, ...rest }) => {
   return (
-    <div className="w-60 min-w-60">
+    <div className="w-80 min-w-80">
       <label className="w-fit max-w-fit *:text-sm">
         {text && <p className="mb-1">{text}</p>}
         <Row

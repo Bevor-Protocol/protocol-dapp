@@ -11,6 +11,7 @@ import Check from "./check";
 import Search from "./search";
 import X from "./x";
 import Info from "./info";
+import File from "./file";
 
 export {
   Gitbook,
@@ -26,4 +27,5 @@ export {
   Search,
   X,
   Info,
+  File,
 };
