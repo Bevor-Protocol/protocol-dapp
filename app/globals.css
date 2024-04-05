@@ -65,6 +65,10 @@ body.modal-show {
   p {
     margin: 0;
   }
+
+  input[type=file]::-webkit-file-upload-button {
+    visibility: hidden;
+}
 }
 
 @layer components {
@@ -169,7 +173,7 @@ body.modal-show {
     width: var(--size-desktop);
     min-height: var(--size-desktop);
     min-width: var(--size-desktop);
-    @apply rounded-full transition-all bg-no-repeat bg-contain bg-center
+    @apply rounded-full transition-all bg-no-repeat bg-cover bg-center
   }
 
   @media screen(md) {

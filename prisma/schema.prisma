@@ -36,7 +36,7 @@ model Audits {
   auditee     Users       @relation(fields: [auditeeId], references: [id], onDelete: Cascade)
   title       String
   description String
-  markdown    String? // reference to an S3 storage key
+  details     String? // references blob storage URL
   price       Int         @default(0)
   duration    Int         @default(6) // duration in months
   status      AuditStatus @default(OPEN)
@@ -59,6 +59,7 @@ model Auditors {
   status        AuditorStatus
   attestedTerms Boolean       @default(false)
   acceptedTerms Boolean       @default(false)
+  findings      String? // references blob storage URL
 
   @@unique([auditId, userId])
 }

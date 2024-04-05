@@ -52,7 +52,15 @@ export interface UserStats {
   numAuditsAudited: number;
 }
 
-export interface GenericUpdateI {
+interface GenericSuccess<T> {
   success: boolean;
-  error?: string;
+  data: T;
+  error?: never;
 }
+interface GenericFailure {
+  success: boolean;
+  data?: never;
+  error: string;
+}
+
+export type GenericUpdateI<T> = GenericSuccess<T> | GenericFailure;

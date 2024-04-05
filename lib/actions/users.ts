@@ -1,9 +1,10 @@
 "use server";
+import { revalidatePath } from "next/cache";
 import { prisma } from "@/lib/db/prisma.server";
 import { AuditorStatus, AuditStatus, Prisma, Users } from "@prisma/client";
+import { put, type PutBlobResult } from "@vercel/blob";
 
 import type { UserWithCount, UserStats, AuditViewI, GenericUpdateI } from "@/lib/types/actions";
-import { revalidatePath } from "next/cache";
 
 export const getLeaderboard = (key?: string, order?: string): Promise<UserWithCount[]> => {
   // Can't currently sort on aggregations or further filtered counts of relations...
@@ -233,9 +234,9 @@ export const getUserStats = async (address: string): Promise<UserStats> => {
   };
 };
 
-export const createUser = (address: string, profileData: FormData): Promise<GenericUpdateI> => {
-  const data = Object.fromEntries(profileData);
-  const { auditor, auditee, ...profile } = data;
+export const createUser = (address: string, formData: FormData): Promise<GenericUpdateI<Users>> => {
+  const form = Object.fromEntries(formData);
+  const { auditor, auditee, ...profile } = form;
 
   if (auditor != "true" && auditee != "true") {
     return new Promise((resolve) =>
@@ -256,9 +257,10 @@ export const createUser = (address: string, profileData: FormData): Promise<Gene
         ...profile,
       },
     })
-    .then(() => {
+    .then((data) => {
       return {
         success: true,
+        data,
       };
     })
     .catch((error) => {
@@ -269,37 +271,73 @@ export const createUser = (address: string, profileData: FormData): Promise<Gene
     });
 };
 
-export const updateUser = async (id: string, form: FormData): Promise<GenericUpdateI> => {
-  const data = Object.fromEntries(form);
-  const profileData: Record<string, boolean | string> = {};
-  // add zod validation
-  if (data.auditeeRole) {
-    profileData.auditeeRole = data.auditeeRole == "true";
+const updateProfileData = (id: string, profileData: Prisma.UsersUpdateInput): Promise<Users> => {
+  return prisma.users.update({
+    where: {
+      id,
+    },
+    data: {
+      ...profileData,
+    },
+  });
+};
+
+const putProfileBlob = (formData: FormData): Promise<GenericUpdateI<PutBlobResult>> => {
+  const file = formData.get("file") as File;
+  if (!file || file.size <= 0 || !file.name) {
+    return Promise.resolve({
+      success: false,
+      error: "no file exists",
+    });
   }
-  if (data.auditorRole) {
-    profileData.auditorRole = data.auditorRole == "true";
-  }
-  if (data.available) {
-    profileData.available = data.available == "true";
-  }
-  if (data.name) {
-    profileData.name = data.name as string;
-  }
-  return prisma.users
-    .update({
-      where: {
-        id,
-      },
-      data: {
-        ...profileData,
-      },
-    })
-    .then(() => {
-      // currently revalidates entire path, which contains several server functions
-      // revalidateTag exists, but using server actions you can't directly tag calls.
-      revalidatePath("/user/[slug]");
+  return put(`profile-images/${file.name}`, file, { access: "public" })
+    .then((data) => {
       return {
         success: true,
+        data,
+      };
+    })
+    .catch((error) => {
+      return {
+        success: false,
+        error: error.name,
+      };
+    });
+};
+
+export const updateUser = async (
+  id: string,
+  formData: FormData,
+): Promise<GenericUpdateI<Users>> => {
+  const form = Object.fromEntries(formData);
+  const profileData: Record<string, boolean | string> = {};
+  // add zod validation
+  if (form.auditeeRole) {
+    profileData.auditeeRole = form.auditeeRole == "true";
+  }
+  if (form.auditorRole) {
+    profileData.auditorRole = form.auditorRole == "true";
+  }
+  if (form.available) {
+    profileData.available = form.available == "true";
+  }
+  if (form.name) {
+    profileData.name = form.name as string;
+  }
+
+  return putProfileBlob(formData)
+    .then((result) => {
+      const { data } = result;
+      if (result.success && data) {
+        profileData.image = result.data.url;
+      }
+      return updateProfileData(id, profileData);
+    })
+    .then((data) => {
+      revalidatePath(`/user/${id}`);
+      return {
+        success: true,
+        data,
       };
     })
     .catch((error) => {
