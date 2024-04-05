@@ -7,7 +7,7 @@ import matter from "gray-matter";
 
 import { AuditViewI, AuditViewDetailedI, GenericUpdateI } from "@/lib/types/actions";
 import { revalidatePath } from "next/cache";
-import { Auditors, AuditorStatus, AuditStatus, Prisma, Users } from "@prisma/client";
+import { Auditors, AuditorStatus, Audits, AuditStatus, Prisma, Users } from "@prisma/client";
 
 export const getAudits = (status?: string): Promise<AuditViewI[]> => {
   let statusFilter;
@@ -93,11 +93,11 @@ export const createAudit = (
   id: string,
   audit: FormData,
   auditors: Users[],
-): Promise<GenericUpdateI> => {
+): Promise<GenericUpdateI<Audits>> => {
   // This function doesn't require "requests" or "termsAccepted" connections/creations.
   // However, you can create a function with explicit auditors, who bypass the need for requests.
-  const data = Object.fromEntries(audit);
-  const { title, description, price, duration } = data;
+  const formData = Object.fromEntries(audit);
+  const { title, description, price, duration } = formData;
   const auditorsConnect = auditors.map((auditor) => {
     return {
       status: AuditorStatus.VERIFIED,
@@ -122,10 +122,11 @@ export const createAudit = (
         },
       },
     })
-    .then(() => {
+    .then((data) => {
       revalidatePath(`{/user/${id}}`);
       return {
         success: true,
+        data,
       };
     })
     .catch((error) => {
@@ -140,7 +141,7 @@ export const updateAudit = async (
   id: string,
   audit: FormData,
   auditors: Users[],
-): Promise<GenericUpdateI> => {
+): Promise<GenericUpdateI<Audits>> => {
   // To be used for audit updates like creating an audit
   // For more granular actions, we'll add different server actions.
 
@@ -156,8 +157,8 @@ export const updateAudit = async (
     });
   }
 
-  const data = Object.fromEntries(audit);
-  const { title, description, price, duration } = data;
+  const formData = Object.fromEntries(audit);
+  const { title, description, price, duration } = formData;
   const passedAuditorIds = auditors.map((auditor) => auditor.id);
 
   const currentAuditorIds = currentAudit.auditors.map((auditor) => auditor.user.id);
@@ -203,10 +204,11 @@ export const updateAudit = async (
         },
       },
     })
-    .then(() => {
+    .then((data) => {
       revalidatePath(`{/audits/view/${id}}`);
       return {
         success: true,
+        data,
       };
     })
     .catch((error) => {
@@ -217,7 +219,7 @@ export const updateAudit = async (
     });
 };
 
-export const auditAddRequest = (id: string, userId: string): Promise<GenericUpdateI> => {
+export const auditAddRequest = (id: string, userId: string): Promise<GenericUpdateI<Auditors>> => {
   // Add the request. To be called by the Auditor only.
   return prisma.auditors
     .create({
@@ -235,10 +237,11 @@ export const auditAddRequest = (id: string, userId: string): Promise<GenericUpda
         },
       },
     })
-    .then(() => {
+    .then((data) => {
       revalidatePath(`{/audits/view/${id}}`);
       return {
         success: true,
+        data,
       };
     })
     .catch((error) => {
@@ -249,7 +252,10 @@ export const auditAddRequest = (id: string, userId: string): Promise<GenericUpda
     });
 };
 
-export const auditDeleteRequest = (id: string, userId: string): Promise<GenericUpdateI> => {
+export const auditDeleteRequest = (
+  id: string,
+  userId: string,
+): Promise<GenericUpdateI<Auditors>> => {
   // Hard delete the request. Will no longer be in the Database.
   return prisma.auditors
     .delete({
@@ -260,10 +266,11 @@ export const auditDeleteRequest = (id: string, userId: string): Promise<GenericU
         },
       },
     })
-    .then(() => {
+    .then((data) => {
       revalidatePath(`{/audits/view/${id}}`);
       return {
         success: true,
+        data,
       };
     })
     .catch((error) => {
@@ -301,15 +308,19 @@ export const auditUpdateApprovalStatus = (
   id: string,
   auditorsApprove: Auditors[],
   auditorsReject: Auditors[],
-): Promise<GenericUpdateI> => {
+): Promise<GenericUpdateI<{ rejected: number; verified: number }>> => {
   return Promise.all([
     auditUpdateRequestors(id, auditorsReject, AuditorStatus.REJECTED),
     auditUpdateRequestors(id, auditorsApprove, AuditorStatus.VERIFIED),
   ])
-    .then(() => {
+    .then((data) => {
       revalidatePath(`/audits/view/${id}`);
       return {
         success: true,
+        data: {
+          rejected: data[0].count,
+          verified: data[1].count,
+        },
       };
     })
     .catch((error) => {
@@ -320,7 +331,7 @@ export const auditUpdateApprovalStatus = (
     });
 };
 
-export const lockAudit = async (id: string): Promise<GenericUpdateI> => {
+export const lockAudit = async (id: string): Promise<GenericUpdateI<Audits>> => {
   const currentAudit = await getAudit(id);
 
   if (!currentAudit) {
@@ -357,10 +368,11 @@ export const lockAudit = async (id: string): Promise<GenericUpdateI> => {
         },
       },
     })
-    .then(() => {
+    .then((data) => {
       revalidatePath(`{/audits/view/${id}}`);
       return {
         success: true,
+        data,
       };
     })
     .catch((error) => {
@@ -371,7 +383,7 @@ export const lockAudit = async (id: string): Promise<GenericUpdateI> => {
     });
 };
 
-export const reopenAudit = async (id: string): Promise<GenericUpdateI> => {
+export const reopenAudit = async (id: string): Promise<GenericUpdateI<Audits>> => {
   const currentAudit = await getAudit(id);
 
   if (!currentAudit) {
@@ -400,10 +412,11 @@ export const reopenAudit = async (id: string): Promise<GenericUpdateI> => {
         status: AuditStatus.OPEN,
       },
     })
-    .then(() => {
+    .then((data) => {
       revalidatePath(`{/audits/view/${id}}`);
       return {
         success: true,
+        data,
       };
     })
     .catch((error) => {
@@ -418,7 +431,7 @@ export const attestToTerms = (
   id: string,
   userId: string,
   status: boolean,
-): Promise<GenericUpdateI> => {
+): Promise<GenericUpdateI<Auditors>> => {
   return prisma.auditors
     .update({
       where: {
@@ -432,10 +445,11 @@ export const attestToTerms = (
         attestedTerms: true,
       },
     })
-    .then(() => {
+    .then((data) => {
       revalidatePath(`{/audits/view/${id}}`);
       return {
         success: true,
+        data,
       };
     })
     .catch((error) => {
