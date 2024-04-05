@@ -39,7 +39,7 @@ const AuditDashboardPage = ({
           </Link>
         </Row>
         <Suspense fallback={<p>Loading...</p>}>
-          <AuditMarkdown display={display} />
+          <AuditMarkdown display={display} auditId={params.slug} />
         </Suspense>
       </div>
     </section>

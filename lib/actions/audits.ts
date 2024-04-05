@@ -66,7 +66,9 @@ export const getAudit = (id: string): Promise<AuditViewDetailedI | null> => {
   });
 };
 
-export const getMarkdown = async (display?: "details" | "audit"): Promise<string> => {
+export const getMarkdown = async (id: string, display?: "details" | "audit"): Promise<string> => {
+  // I should move this to inside Audit Page, since we're already fetching the Audit, which is what
+  // we'd do here.
   const displayUse = display ?? "details";
 
   const tempMapper: Record<string, string> = {
