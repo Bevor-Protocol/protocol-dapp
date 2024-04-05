@@ -5,6 +5,8 @@ import { AuditorStatus, AuditStatus, Prisma, Users } from "@prisma/client";
 import { put, type PutBlobResult } from "@vercel/blob";
 
 import type { UserWithCount, UserStats, AuditViewI, GenericUpdateI } from "@/lib/types/actions";
+import { userSchema } from "@/lib/validations";
+import { z } from "zod";
 
 export const getLeaderboard = (key?: string, order?: string): Promise<UserWithCount[]> => {
   // Can't currently sort on aggregations or further filtered counts of relations...
@@ -282,8 +284,7 @@ const updateProfileData = (id: string, profileData: Prisma.UsersUpdateInput): Pr
   });
 };
 
-const putProfileBlob = (formData: FormData): Promise<GenericUpdateI<PutBlobResult>> => {
-  const file = formData.get("file") as File;
+const putProfileBlob = (file: File | undefined): Promise<GenericUpdateI<PutBlobResult>> => {
   if (!file || file.size <= 0 || !file.name) {
     return Promise.resolve({
       success: false,
@@ -305,33 +306,44 @@ const putProfileBlob = (formData: FormData): Promise<GenericUpdateI<PutBlobResul
     });
 };
 
-export const updateUser = async (
+export const updateUser = (
   id: string,
   formData: FormData,
+  allowAuditeeUpdate: boolean,
+  allowAuditorUpdate: boolean,
 ): Promise<GenericUpdateI<Users>> => {
   const form = Object.fromEntries(formData);
-  const profileData: Record<string, boolean | string> = {};
-  // add zod validation
-  if (form.auditeeRole) {
-    profileData.auditeeRole = form.auditeeRole == "true";
+  // Disabled elements on forms don't appear in form data, explicitly handle these.
+  const partials: Record<string, true> = {};
+  if (!allowAuditeeUpdate) {
+    partials.auditeeRole = true;
   }
-  if (form.auditorRole) {
-    profileData.auditorRole = form.auditorRole == "true";
+  if (!allowAuditorUpdate) {
+    partials.auditorRole = true;
   }
-  if (form.available) {
-    profileData.available = form.available == "true";
+  const formParsed = userSchema.omit({ ...partials }).safeParse(form);
+  if (!formParsed.success) {
+    const formattedErrors: Record<string, string> = {};
+    formParsed.error.errors.forEach((error) => {
+      formattedErrors[error.path[0]] = error.message;
+    });
+    return Promise.resolve({
+      success: false,
+      error: "zod",
+      validationErrors: formattedErrors,
+    });
   }
-  if (form.name) {
-    profileData.name = form.name as string;
-  }
-
-  return putProfileBlob(formData)
+  const { image, ...rest } = formParsed.data as z.infer<typeof userSchema>;
+  return putProfileBlob(image)
     .then((result) => {
-      const { data } = result;
-      if (result.success && data) {
-        profileData.image = result.data.url;
+      const { data, success } = result;
+      if (success && data) {
+        return updateProfileData(id, {
+          ...rest,
+          image: result.data.url,
+        });
       }
-      return updateProfileData(id, profileData);
+      return updateProfileData(id, { ...rest });
     })
     .then((data) => {
       revalidatePath(`/user/${id}`);

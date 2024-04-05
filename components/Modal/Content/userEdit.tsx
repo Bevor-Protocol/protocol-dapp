@@ -16,48 +16,46 @@ import { X, Info } from "@/assets";
 const UserEdit = ({ user, stats }: { user: Users; stats: UserStats }): JSX.Element => {
   const { toggleOpen } = useModal();
   const [selectedImage, setSelectedImage] = useState<File | undefined>();
+  const [errors, setErrors] = useState<Record<string, string>>({});
 
-  const canUpdateAuditorRole =
-    !user.auditorRole || (user.auditorRole && stats.numAuditsAudited == 0);
-  const canUpdateAuditeeRole =
-    !user.auditeeRole || (user.auditeeRole && stats.numAuditsCreated == 0);
+  const allowAuditorUpdate = !user.auditorRole || (user.auditorRole && stats.numAuditsAudited == 0);
+  const allowAuditeeUpdate = !user.auditeeRole || (user.auditeeRole && stats.numAuditsCreated == 0);
 
   const { mutate, isPending } = useMutation({
     mutationFn: (variables: { formData: FormData }) => {
-      return updateUser(user.id, variables.formData);
+      return updateUser(user.id, variables.formData, allowAuditeeUpdate, allowAuditorUpdate);
     },
     onSettled: (data) => {
       console.log(data);
-      toggleOpen();
+      if (data?.success) toggleOpen();
+      if (!data?.success && data?.validationErrors) {
+        setErrors(data.validationErrors);
+      }
     },
   });
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>): void => {
     e.preventDefault();
     const formData = new FormData(e.currentTarget);
-    // Need to explicitly control for checkbox inputs, especially those that can be disabled.
-    formData.set("available", formData.has("available") ? "true" : "false");
-    if (canUpdateAuditeeRole) {
-      formData.set("auditeeRole", formData.has("auditeeRole") ? "true" : "false");
-    } else {
-      formData.set("auditeeRole", user.auditeeRole ? "true" : "false");
-    }
-    if (canUpdateAuditorRole) {
-      formData.set("auditorRole", formData.has("auditorRole") ? "true" : "false");
-    } else {
-      formData.set("auditorRole", user.auditorRole ? "true" : "false");
-    }
     mutate({ formData });
   };
 
   const handleReset = (): void => {
     // allows for resetting the image preview in an uncontrolled manner.
-    // default reset still occurs.
+    // default reset still occurs since the HTML is controlled the input values.
     setSelectedImage(undefined);
   };
 
+  const handleClearError = (e: React.ChangeEvent<HTMLFormElement>): void => {
+    const interErrors = { ...errors };
+    if (e.currentTarget.name in interErrors) {
+      delete interErrors[e.currentTarget.name];
+      setErrors({ ...interErrors });
+    }
+  };
+
   return (
-    <form onSubmit={handleSubmit} onReset={handleReset}>
+    <form onSubmit={handleSubmit} onReset={handleReset} onChange={handleClearError}>
       <p>Update Profile</p>
       <hr className="w-full h-[1px] border-gray-200/20 my-4" />
       <div onClick={toggleOpen} className="absolute top-4 right-4 w-5 h-5 cursor-pointer z-10">
@@ -65,7 +63,13 @@ const UserEdit = ({ user, stats }: { user: Users; stats: UserStats }): JSX.Eleme
       </div>
       <Row className="justify-center items-center gap-8">
         <Column className="gap-2 items-center">
-          <Form.Image name="file" selected={selectedImage} setSelected={setSelectedImage}>
+          <Form.Image
+            name="image"
+            selected={selectedImage}
+            setSelected={setSelectedImage}
+            disabled={isPending}
+            aria-disabled={isPending}
+          >
             <Icon size="xxl" image={user.image} seed={user.address} />
           </Form.Image>
           <Form.Input
@@ -75,6 +79,7 @@ const UserEdit = ({ user, stats }: { user: Users; stats: UserStats }): JSX.Eleme
             defaultValue={user.name || ""}
             disabled={isPending}
             aria-disabled={isPending}
+            isError={"name" in errors}
           />
         </Column>
         <Row className="gap-2">
@@ -85,20 +90,23 @@ const UserEdit = ({ user, stats }: { user: Users; stats: UserStats }): JSX.Eleme
               defaultChecked={user.available}
               disabled={isPending}
               aria-disabled={isPending}
+              isError={"available" in errors}
             />
             <Form.Radio
               name="auditorRole"
               text="auditor role"
               defaultChecked={user.auditorRole}
-              disabled={!canUpdateAuditorRole || isPending}
-              aria-disabled={!canUpdateAuditorRole || isPending}
+              disabled={!allowAuditorUpdate || isPending}
+              aria-disabled={!allowAuditorUpdate || isPending}
+              isError={"auditorRole" in errors}
             />
             <Form.Radio
               name="auditeeRole"
               text="auditee role"
               defaultChecked={user.auditeeRole}
-              disabled={!canUpdateAuditeeRole || isPending}
-              aria-disabled={!canUpdateAuditeeRole || isPending}
+              disabled={!allowAuditeeUpdate || isPending}
+              aria-disabled={!allowAuditeeUpdate || isPending}
+              isError={"auditeeRole" in errors}
             />
           </Column>
           <Column className="gap-2">
@@ -161,6 +169,12 @@ const UserEdit = ({ user, stats }: { user: Users; stats: UserStats }): JSX.Eleme
           Reset
         </Button>
       </Row>
+      {errors &&
+        Object.values(errors).map((error, ind) => (
+          <p key={ind} className="text-xs text-red-500">
+            {error}
+          </p>
+        ))}
     </form>
   );
 };

@@ -9,6 +9,7 @@ import { Search as SearchIcon, Pencil } from "@/assets";
 interface InputI extends React.InputHTMLAttributes<HTMLInputElement> {
   text?: string;
   className?: string;
+  isError?: boolean;
 }
 
 interface ImageI extends React.InputHTMLAttributes<HTMLInputElement> {
@@ -21,6 +22,7 @@ interface ImageI extends React.InputHTMLAttributes<HTMLInputElement> {
 interface TextAreaI extends React.InputHTMLAttributes<HTMLTextAreaElement> {
   text?: string;
   className?: string;
+  isError?: boolean;
 }
 
 interface SearchI extends React.InputHTMLAttributes<HTMLInputElement> {
@@ -29,7 +31,7 @@ interface SearchI extends React.InputHTMLAttributes<HTMLInputElement> {
   className?: string;
 }
 
-export const Input: React.FC<InputI> = ({ className, text, type, ...rest }) => {
+export const Input: React.FC<InputI> = ({ className, text, type, isError, ...rest }) => {
   return (
     <label className="w-fit max-w-fit *:text-sm">
       {text && <p className="mb-1">{text}</p>}
@@ -37,10 +39,10 @@ export const Input: React.FC<InputI> = ({ className, text, type, ...rest }) => {
         className={cn(
           "appearance-none bg-transparent outline-none",
           "font-inherit px-2 py-1 rounded border border-gray-200/20",
-          "focus-input",
-          "disabled:cursor-text disabled:text-inherit disabled:border-transparent",
+          "focus-input disabled:opacity-80",
           type == "text" && "w-48",
           type == "number" && "w-28",
+          isError && "ring-1 ring-red-500",
           className,
         )}
         {...rest}
@@ -54,6 +56,7 @@ export const Image: React.FC<ImageI> = ({
   children,
   selected,
   setSelected,
+  disabled,
   ...rest
 }) => {
   const [preview, setPreview] = useState<string>("");
@@ -88,6 +91,7 @@ export const Image: React.FC<ImageI> = ({
           className={cn(
             "transition-opacity bg-white/20 absolute inset-0 rounded-full opacity-0",
             "justify-center items-center hidden group-hover:flex group-hover:opacity-100",
+            disabled && "group-hover:hidden",
           )}
         >
           <Pencil height="1rem" width="1rem" fill="white" />
@@ -95,7 +99,10 @@ export const Image: React.FC<ImageI> = ({
         <input
           type="file"
           accept="image/*"
-          className="absolute inset-0 appearance-none cursor-pointer rounded-full focus-input"
+          className={cn(
+            "absolute inset-0 appearance-none cursor-pointer rounded-full focus-input",
+            "disabled:cursor-default",
+          )}
           onChange={handleChange}
           {...rest}
         />
@@ -123,7 +130,7 @@ export const Search: React.FC<SearchI> = ({ children, className, text, ...rest }
             className={cn(
               "appearance-none bg-transparent outline-none border-none",
               "font-inherit w-full",
-              "disabled:cursor-text disabled:text-inherit disabled:border-transparent",
+              "disabled:opacity-80",
               className,
             )}
             {...rest}
@@ -137,7 +144,7 @@ export const Search: React.FC<SearchI> = ({ children, className, text, ...rest }
   );
 };
 
-export const TextArea: React.FC<TextAreaI> = ({ className, text, ...rest }) => {
+export const TextArea: React.FC<TextAreaI> = ({ className, text, isError, ...rest }) => {
   return (
     <label className="*:text-sm">
       {text && <p className="mb-1">{text}</p>}
@@ -145,8 +152,9 @@ export const TextArea: React.FC<TextAreaI> = ({ className, text, ...rest }) => {
         className={cn(
           "flex w-full rounded-md border border-gray-200/20 bg-transparent",
           "p-2 shadow-sm placeholder:text-muted-foreground",
-          "disabled:cursor-not-allowed disabled:opacity-50 disabled:border-transparent",
+          "disabled:cursor-default disabled:opacity-80",
           "focus-input",
+          isError && "ring-1 ring-red-500",
           className,
         )}
         {...rest}
@@ -155,10 +163,10 @@ export const TextArea: React.FC<TextAreaI> = ({ className, text, ...rest }) => {
   );
 };
 
-export const Radio: React.FC<InputI> = ({ className, text, ...rest }): JSX.Element => {
+export const Radio: React.FC<InputI> = ({ className, text, isError, ...rest }): JSX.Element => {
   return (
     <Row className="gap-2 items-center justify-between *:text-sm">
-      {text && <p>{text}</p>}
+      {text && <p className={cn(isError && "text-red-500")}>{text}</p>}
       <label className="toggle w-fit">
         <input type="checkbox" className={cn("toggle", className)} {...rest} />
         <span className="toggle" />

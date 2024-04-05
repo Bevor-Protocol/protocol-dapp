@@ -56,11 +56,13 @@ interface GenericSuccess<T> {
   success: boolean;
   data: T;
   error?: never;
+  validationErrors?: never;
 }
 interface GenericFailure {
   success: boolean;
   data?: never;
   error: string;
+  validationErrors?: Record<string, string>;
 }
 
 export type GenericUpdateI<T> = GenericSuccess<T> | GenericFailure;
