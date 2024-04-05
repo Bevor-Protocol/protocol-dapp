@@ -11,7 +11,7 @@ const AuditDashboardPage = ({
   searchParams,
 }: {
   params: { slug: string };
-  searchParams: { [key: string]: string | undefined };
+  searchParams: { [key: string]: "details" | "audit" | undefined };
 }): JSX.Element => {
   const display = searchParams.display ?? "details";
 

@@ -8,7 +8,11 @@ import { AuditAuditor } from "@/components/Audit/client";
 import { AuditDashboardActions } from "./client";
 import { AuditorStatus, AuditStatus } from "@prisma/client";
 
-export const AuditMarkdown = async ({ display }: { display: string }): Promise<JSX.Element> => {
+export const AuditMarkdown = async ({
+  display,
+}: {
+  display: "details" | "audit" | undefined;
+}): Promise<JSX.Element> => {
   const content = await getMarkdown(display);
   return <div className="markdown" dangerouslySetInnerHTML={{ __html: content }} />;
 };

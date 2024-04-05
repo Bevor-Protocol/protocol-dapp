@@ -33,19 +33,26 @@ export const AuditOpenActions = ({
   const { toggleOpen, setContent } = useModal();
 
   const { mutate, isPending } = useMutation({
-    mutationFn: (variables: { fctType: string; auditId: string; userId: string }) => {
+    mutationFn: (variables: { fctType: string }) => {
       if (variables.fctType == "add") {
-        return auditAddRequest(variables.auditId, variables.userId);
-      } else if (variables.fctType == "remove") {
-        return auditDeleteRequest(variables.auditId, variables.userId);
+        return auditAddRequest(audit.id, user.id);
       } else {
-        return lockAudit(variables.auditId);
+        return auditDeleteRequest(audit.id, user.id);
       }
     },
     onSettled: (data) => {
       console.log(data);
     },
   });
+
+  const { mutate: mutateLock, isPending: isPendingLock } = useMutation({
+    mutationFn: () => lockAudit(audit.id),
+    onSettled: (data) => {
+      console.log(data);
+    },
+  });
+
+  const anyPending = isPending || isPendingLock;
 
   const isTheAuditee = audit.auditeeId === user.id;
   const isAnAuditor = verifiedAuditors.filter((auditor) => auditor.userId == user.id).length > 0;
@@ -78,7 +85,7 @@ export const AuditOpenActions = ({
       )}
       {isTheAuditee && (requestedAuditors.length > 0 || rejectedAuditors.length > 0) && (
         <Row className="items-center gap-4">
-          <Button disabled={isPending} onClick={handleRequestsModal} className="flex-1">
+          <Button disabled={anyPending} onClick={handleRequestsModal} className="flex-1">
             Manage Requests
           </Button>
           <Tooltip.Reference>
@@ -99,7 +106,7 @@ export const AuditOpenActions = ({
       {isRequestor && (
         <Row className="items-center gap-4">
           <Button
-            onClick={() => mutate({ fctType: "remove", auditId: audit.id, userId: user.id })}
+            onClick={() => mutate({ fctType: "remove" })}
             disabled={isPending}
             className="flex-1"
           >
@@ -123,8 +130,8 @@ export const AuditOpenActions = ({
       {!isRequestor && !isRejected && !isAnAuditor && user.auditorRole && !isTheAuditee && (
         <Row className="items-center gap-4">
           <Button
-            onClick={() => mutate({ fctType: "add", auditId: audit.id, userId: user.id })}
-            disabled={isPending}
+            onClick={() => mutate({ fctType: "add" })}
+            disabled={anyPending}
             className="flex-1"
           >
             Request to Audit
@@ -148,7 +155,7 @@ export const AuditOpenActions = ({
         <Row className="items-center gap-4">
           <Button
             disabled={isPending}
-            onClick={() => mutate({ fctType: "remove", auditId: audit.id, userId: user.id })}
+            onClick={() => mutate({ fctType: "remove" })}
             className="flex-1"
           >
             Remove me as Auditor
@@ -190,11 +197,7 @@ export const AuditOpenActions = ({
       )}
       {isTheAuditee && verifiedAuditors.length > 0 && (
         <Row className="items-center gap-4">
-          <Button
-            disabled={isPending}
-            onClick={() => mutate({ fctType: "lock", auditId: audit.id, userId: user.id })}
-            className="flex-1"
-          >
+          <Button disabled={anyPending} onClick={() => mutateLock()} className="flex-1">
             Lock Audit
           </Button>
           <Tooltip.Reference>
@@ -229,19 +232,20 @@ export const AuditLockedActions = ({
 }): JSX.Element => {
   const { toggleOpen, setContent } = useModal();
   const { mutate, isPending } = useMutation({
-    mutationFn: (variables: { fctType: string; auditId: string; userId: string }) => {
-      if (variables.fctType == "add") {
-        return auditAddRequest(variables.auditId, variables.userId);
-      } else if (variables.fctType == "remove") {
-        return auditDeleteRequest(variables.auditId, variables.userId);
-      } else {
-        return reopenAudit(variables.auditId);
-      }
-    },
+    mutationFn: () => auditDeleteRequest(audit.id, user.id),
     onSettled: (data) => {
       console.log(data);
     },
   });
+
+  const { mutate: mutateOpen, isPending: isPendingOpen } = useMutation({
+    mutationFn: () => reopenAudit(audit.id),
+    onSettled: (data) => {
+      console.log(data);
+    },
+  });
+
+  const anyPending = isPending || isPendingOpen;
 
   const handleAttestModal = (): void => {
     setContent(<AuditorAttest audit={audit} user={user} />);
@@ -265,7 +269,12 @@ export const AuditLockedActions = ({
       {!isTheAuditee && !isAnAuditor && <Button disabled>Audit is Locked</Button>}
       {isTheAuditee && (
         <Row className="items-center gap-4">
-          <DynamicLink href={`/audits/edit/${audit.id}`} asButton className="flex-1">
+          <DynamicLink
+            href={`/audits/edit/${audit.id}`}
+            asButton
+            className="flex-1"
+            disabled={anyPending}
+          >
             <Row className="btn-outline">Edit Audit</Row>
           </DynamicLink>
           <Tooltip.Reference>
@@ -285,11 +294,7 @@ export const AuditLockedActions = ({
       )}
       {isAnAuditor && (
         <Row className="items-center gap-4">
-          <Button
-            disabled={isPending}
-            onClick={() => mutate({ fctType: "remove", auditId: audit.id, userId: user.id })}
-            className="flex-1"
-          >
+          <Button disabled={anyPending} onClick={() => mutate()} className="flex-1">
             Remove me as Auditor
           </Button>
           <Tooltip.Reference>
@@ -310,11 +315,7 @@ export const AuditLockedActions = ({
       )}
       {isTheAuditee && (
         <Row className="items-center gap-4">
-          <Button
-            disabled={isPending}
-            onClick={() => mutate({ fctType: "reopen", auditId: audit.id, userId: user.id })}
-            className="flex-1"
-          >
+          <Button disabled={anyPending} onClick={() => mutateOpen()} className="flex-1">
             Re-open Audit
           </Button>
           <Tooltip.Reference>
@@ -334,7 +335,7 @@ export const AuditLockedActions = ({
       )}
       {isAnAuditor && !hasAttested && (
         <Row className="items-center gap-4">
-          <Button disabled={isPending} className="flex-1" onClick={handleAttestModal}>
+          <Button disabled={anyPending} className="flex-1" onClick={handleAttestModal}>
             Attest to Terms
           </Button>
           <Tooltip.Reference>
