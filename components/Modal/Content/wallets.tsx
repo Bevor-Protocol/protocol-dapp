@@ -3,7 +3,7 @@ import React, { useState, useEffect } from "react";
 import { useConnect } from "wagmi";
 import { config } from "@/providers/wallet/config";
 
-import { useModal } from "@/hooks/contexts";
+import { useModal } from "@/lib/hooks";
 import { sortWallets } from "@/lib/utils";
 import { Icon } from "@/components/Icon";
 import { CoinbaseWallet, WalletConnect } from "@/assets/wallets";

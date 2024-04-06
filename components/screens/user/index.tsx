@@ -1,7 +1,7 @@
 import UserNotExist from "./onboard";
 import UserAudits from "./audits";
 import UserProfileActions from "./actions";
-import { getUserProfile, getUserStats } from "@/lib/actions/users";
+import { getUserProfile, getUserStats } from "@/actions/users";
 import { Loader } from "@/components/Loader";
 import { Suspense } from "react";
 import { Column, Row } from "@/components/Box";

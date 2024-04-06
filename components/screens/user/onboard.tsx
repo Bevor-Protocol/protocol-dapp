@@ -6,7 +6,7 @@ import { useMutation } from "@tanstack/react-query";
 
 import { Icon } from "@/components/Icon";
 import * as Form from "@/components/Form";
-import { createUser } from "@/lib/actions/users";
+import { createUser } from "@/actions/users";
 import { Button } from "@/components/Button";
 import { Column, Row } from "@/components/Box";
 

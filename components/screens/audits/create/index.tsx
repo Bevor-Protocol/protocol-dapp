@@ -11,9 +11,9 @@ import { Column } from "@/components/Box";
 import { Button } from "@/components/Button";
 import { Loader } from "@/components/Loader";
 import { Arrow } from "@/assets";
-import { useUser } from "@/hooks/contexts";
+import { useUser } from "@/lib/hooks";
 import AuditForm from "@/components/Audit/client/form";
-import { createAudit } from "@/lib/actions/audits";
+import { createAudit } from "@/actions/audits";
 
 const AuditCreation = (): JSX.Element => {
   const { address } = useAccount();

@@ -9,8 +9,8 @@ import { Column, Row } from "@/components/Box";
 import { Button } from "@/components/Button";
 import * as Form from "@/components/Form";
 import { Loader } from "@/components/Loader";
-import { searchAuditors } from "@/lib/actions/users";
-import { AuditViewI } from "@/lib/types/actions";
+import { searchAuditors } from "@/actions/users";
+import { AuditViewI } from "@/lib/types";
 import { AuditorItem } from "@/components/Audit";
 
 const AuditForm = ({

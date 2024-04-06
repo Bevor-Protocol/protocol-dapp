@@ -2,7 +2,7 @@ import { Suspense } from "react";
 
 import { Loader } from "@/components/Loader";
 import LeaderboardWrapper from "@/components/screens/leaderboard";
-import { getLeaderboard } from "@/lib/actions/users";
+import { getLeaderboard } from "@/actions/users";
 
 const Fetcher = async (): Promise<JSX.Element> => {
   const data = await getLeaderboard("name", "asc");

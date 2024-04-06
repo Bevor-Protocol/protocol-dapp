@@ -1,10 +1,10 @@
 "use server";
 import { revalidatePath } from "next/cache";
-import { prisma } from "@/lib/db/prisma.server";
+import { prisma } from "@/db/prisma.server";
 import { AuditorStatus, AuditStatus, Prisma, Users } from "@prisma/client";
 import { z } from "zod";
 
-import type { UserWithCount, UserStats, AuditViewI, GenericUpdateI } from "@/lib/types/actions";
+import type { UserWithCount, UserStats, AuditViewI, GenericUpdateI } from "@/lib/types";
 import { userSchema } from "@/lib/validations";
 import { putBlob } from "./blobs";
 

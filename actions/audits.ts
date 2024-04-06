@@ -1,15 +1,15 @@
 "use server";
-import { prisma } from "@/lib/db/prisma.server";
+import { prisma } from "@/db/prisma.server";
 import { remark } from "remark";
 import html from "remark-html";
 import remarkGfm from "remark-gfm";
 import matter from "gray-matter";
 import { z } from "zod";
 
-import { AuditViewI, AuditViewDetailedI, GenericUpdateI } from "@/lib/types/actions";
+import { AuditViewI, AuditViewDetailedI, GenericUpdateI } from "@/lib/types";
 import { revalidatePath } from "next/cache";
 import { Auditors, AuditorStatus, Audits, AuditStatus, Prisma, Users } from "@prisma/client";
-import { auditFormSchema } from "../validations";
+import { auditFormSchema } from "../lib/validations";
 import { putBlob } from "./blobs";
 
 export const getAudits = (status?: string): Promise<AuditViewI[]> => {

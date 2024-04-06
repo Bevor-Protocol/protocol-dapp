@@ -1,6 +1,6 @@
 import { Arrow } from "@/assets";
 import { HomeStat } from "@/components/screens/home";
-import * as Actions from "@/lib/actions/protocolData";
+import * as Actions from "@/actions/protocolData";
 import { cn } from "@/lib/utils";
 import { Column, Row } from "@/components/Box";
 import DynamicLink from "@/components/Link";

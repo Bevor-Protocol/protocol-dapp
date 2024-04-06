@@ -1,5 +1,5 @@
 // import { Role, Prisma } from "@prisma/client";
-import { prisma } from "@/lib/db/prisma.server";
+import { prisma } from "@/db/prisma.server";
 import { AuditorStatus, AuditStatus } from "@prisma/client";
 
 const seed = async (): Promise<void> => {

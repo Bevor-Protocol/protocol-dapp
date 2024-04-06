@@ -3,13 +3,12 @@
 import { Auditors, AuditStatus, Users } from "@prisma/client";
 import { useMutation } from "@tanstack/react-query";
 
+import { AuditViewDetailedI } from "@/lib/types";
+import { useUser, useModal } from "@/lib/hooks";
+import { auditAddRequest, auditDeleteRequest, lockAudit, reopenAudit } from "@/actions/audits";
 import { Column, Row } from "@/components/Box";
 import { Button } from "@/components/Button";
-import { AuditViewDetailedI } from "@/lib/types/actions";
-import { useUser } from "@/hooks/contexts";
 import DynamicLink from "@/components/Link";
-import { auditAddRequest, auditDeleteRequest, lockAudit, reopenAudit } from "@/lib/actions/audits";
-import { useModal } from "@/hooks/contexts";
 import RequestsEdit from "@/components/Modal/Content/requestsEdit";
 import AuditorAttest from "@/components/Modal/Content/auditorAttest";
 import { Skeleton } from "@/components/Loader";

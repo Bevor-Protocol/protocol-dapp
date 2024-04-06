@@ -3,11 +3,11 @@
 import { useState } from "react";
 import { useMutation } from "@tanstack/react-query";
 
-import { useModal } from "@/hooks/contexts";
+import { useModal } from "@/lib/hooks";
 import { Column, Row } from "@/components/Box";
-import { AuditViewDetailedI } from "@/lib/types/actions";
+import { AuditViewDetailedI } from "@/lib/types";
 // import * as Form from "@/components/Form";
-import { auditUpdateApprovalStatus } from "@/lib/actions/audits";
+import { auditUpdateApprovalStatus } from "@/actions/audits";
 import { Auditors, AuditorStatus } from "@prisma/client";
 import { AuditorItem } from "@/components/Audit";
 import { Button } from "@/components/Button";

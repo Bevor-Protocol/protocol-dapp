@@ -1,21 +1,11 @@
 "use client";
 
-import { createContext } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useAccount } from "wagmi";
 
 import { UserStateI } from "@/lib/types";
-import { getUserProfile } from "@/lib/actions/users";
-
-// Create a context with initial state
-export const UserContext = createContext<UserStateI>({
-  user: undefined,
-  isLoading: false,
-  isPending: false,
-  isFetching: false,
-  isFetched: false,
-  isFetchedAfterMount: false,
-});
+import { getUserProfile } from "@/actions/users";
+import UserContext from "./context";
 
 // Modal provider component
 const UserProvider = ({ children }: { children: React.ReactNode }): JSX.Element => {

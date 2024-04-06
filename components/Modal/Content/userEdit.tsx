@@ -3,14 +3,14 @@ import React, { useState } from "react";
 import { Users } from "@prisma/client";
 import { useMutation } from "@tanstack/react-query";
 
-import { useModal } from "@/hooks/contexts";
+import { useModal } from "@/lib/hooks";
 import { Icon } from "@/components/Icon";
 import { Column, Row } from "@/components/Box";
-import { UserStats } from "@/lib/types/actions";
+import { UserStats } from "@/lib/types";
 import * as Form from "@/components/Form";
 import * as Tooltip from "@/components/Tooltip";
 import { Button } from "@/components/Button";
-import { updateUser } from "@/lib/actions/users";
+import { updateUser } from "@/actions/users";
 import { X, Info } from "@/assets";
 
 const UserEdit = ({ user, stats }: { user: Users; stats: UserStats }): JSX.Element => {

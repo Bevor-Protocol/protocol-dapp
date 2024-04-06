@@ -1,6 +1,6 @@
 import { put, del, type PutBlobResult } from "@vercel/blob";
 
-import type { GenericUpdateI } from "@/lib/types/actions";
+import type { GenericUpdateI } from "@/lib/types";
 
 export const putBlob = (
   folder: string,
