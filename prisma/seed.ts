@@ -215,6 +215,38 @@ const seed = async (): Promise<void> => {
 
   await prisma.audits.create({
     data: {
+      title: "Auditor Audit - Locked, Accepted, Findings Submitted",
+      description:
+        "Locked, 1 auditor, accepted terms, details provided, findings submitted. Can be pushed on-chain.",
+      status: AuditStatus.ONGOING,
+      price: 20_000,
+      duration: 5,
+      details:
+        "https://v0ycfji0st2gd9rf.public.blob.vercel-storage.com/audit-details/example-7Ap1GR49l2yVbJtvIJ0dVnleKuM8pj.md",
+      auditee: {
+        connect: {
+          address: MY_WALLET1,
+        },
+      },
+      auditors: {
+        create: {
+          status: AuditorStatus.VERIFIED,
+          attestedTerms: true,
+          acceptedTerms: true,
+          user: {
+            connect: {
+              address: MY_WALLET2,
+            },
+          },
+          findings:
+            "https://v0ycfji0st2gd9rf.public.blob.vercel-storage.com/audit-findings/example-q0D5zQMv65hQJ4mWfJfstcnagI5kUI.md",
+        },
+      },
+    },
+  });
+
+  await prisma.audits.create({
+    data: {
       title: "Random Auditee Audit - Open",
       description: "Open, no requestors, no auditors, no details",
       auditee: {
