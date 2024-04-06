@@ -1,29 +1,13 @@
-import { getMarkdown } from "@/actions/audits";
-import { getAudit } from "@/actions/audits";
 import { Column, Row } from "@/components/Box";
 import DynamicLink from "@/components/Link";
 import { trimAddress } from "@/lib/utils";
 import { Icon } from "@/components/Icon";
 import { AuditAuditor } from "@/components/Audit/client";
-import { AuditDashboardActions } from "./client";
+import { AuditDashboardActions } from "./actions";
 import { AuditorStatus, AuditStatus } from "@prisma/client";
+import { AuditViewDetailedI } from "@/lib/types";
 
-export const AuditMarkdown = async ({
-  auditId,
-  display,
-}: {
-  auditId: string;
-  display: "details" | "audit" | undefined;
-}): Promise<JSX.Element> => {
-  const content = await getMarkdown(auditId, display);
-  return <div className="markdown" dangerouslySetInnerHTML={{ __html: content }} />;
-};
-
-export const AuditPage = async ({ auditId }: { auditId: string }): Promise<JSX.Element> => {
-  const audit = await getAudit(auditId);
-
-  if (!audit) return <h2>This audit does not exist</h2>;
-
+const AuditPage = ({ audit }: { audit: AuditViewDetailedI }): JSX.Element => {
   const verifiedAuditors = audit.auditors.filter(
     (auditor) => auditor.status == AuditorStatus.VERIFIED,
   );
@@ -181,3 +165,5 @@ export const AuditPage = async ({ auditId }: { auditId: string }): Promise<JSX.E
     </Row>
   );
 };
+
+export default AuditPage;

@@ -23,6 +23,17 @@ export type AuditI = {
   status: string;
 };
 
+export type MarkdownAuditsI = {
+  details: string;
+  findings: Record<
+    string,
+    {
+      user: Users;
+      markdown: string;
+    }
+  >;
+};
+
 export type AuditSSRI = {
   auditShow: AuditI[];
 };

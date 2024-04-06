@@ -232,14 +232,14 @@ body.modal-show {
   }
 
   .btn-outline {
-    @apply flex flex-row items-center justify-center rounded-lg h-9 px-3 text-sm gap-1 bg-dark transition-colors outline-offset-0 text-zinc-400 outline-none border border-zinc-800 min-w-16
+    @apply flex flex-row items-center justify-center rounded-lg h-9 px-3 text-sm gap-1 bg-dark transition-colors outline-offset-0 text-zinc-400 outline-none border border-zinc-400 min-w-16
   }
   .btn-outline:not(:disabled):hover,
   .btn-outline:not(:disabled):focus-visible,
   .btn-outline:not(:disabled):active,
   a:not(.disabled):focus-visible .btn-outline,
   a:not(.disabled):active .btn-outline {
-    @apply bg-slate-800/60 text-white
+    @apply bg-slate-800/60 text-white shadow-md shadow-zinc-400/20
   }
 
   .btn-gradient:disabled,
