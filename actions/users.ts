@@ -1,12 +1,12 @@
 "use server";
 import { revalidatePath } from "next/cache";
-import { prisma } from "@/lib/db/prisma.server";
+import { prisma } from "@/db/prisma.server";
 import { AuditorStatus, AuditStatus, Prisma, Users } from "@prisma/client";
-import { put, type PutBlobResult } from "@vercel/blob";
-
-import type { UserWithCount, UserStats, AuditViewI, GenericUpdateI } from "@/lib/types/actions";
-import { userSchema } from "@/lib/validations";
 import { z } from "zod";
+
+import type { UserWithCount, UserStats, AuditViewI, GenericUpdateI } from "@/lib/types";
+import { userSchema, userSchemaCreate } from "@/lib/validations";
+import { putBlob } from "./blobs";
 
 export const getLeaderboard = (key?: string, order?: string): Promise<UserWithCount[]> => {
   // Can't currently sort on aggregations or further filtered counts of relations...
@@ -208,25 +208,25 @@ const getUserMoneyEarned = (address: string): Promise<number> => {
 };
 
 export const getUserStats = async (address: string): Promise<UserStats> => {
-  const moneyPaid = await getUserMoneyPaid(address);
-  const moneyEarned = await getUserMoneyEarned(address);
-
-  const numAuditsCreated = await prisma.audits.count({
-    where: {
-      auditee: {
-        address,
+  const [moneyPaid, moneyEarned, numAuditsCreated, numAuditsAudited] = await Promise.all([
+    getUserMoneyPaid(address),
+    getUserMoneyEarned(address),
+    prisma.audits.count({
+      where: {
+        auditee: {
+          address,
+        },
       },
-    },
-  });
-
-  const numAuditsAudited = await prisma.auditors.count({
-    where: {
-      user: {
-        address,
+    }),
+    prisma.auditors.count({
+      where: {
+        user: {
+          address,
+        },
+        status: AuditorStatus.VERIFIED,
       },
-      status: AuditorStatus.VERIFIED,
-    },
-  });
+    }),
+  ]);
 
   return {
     moneyPaid,
@@ -238,60 +238,37 @@ export const getUserStats = async (address: string): Promise<UserStats> => {
 
 export const createUser = (address: string, formData: FormData): Promise<GenericUpdateI<Users>> => {
   const form = Object.fromEntries(formData);
-  const { auditor, auditee, ...profile } = form;
-
-  if (auditor != "true" && auditee != "true") {
-    return new Promise((resolve) =>
-      resolve({
-        success: false,
-        error: "must claim an auditor or auditee role",
-      }),
-    );
-  }
-
-  return prisma.users
-    .create({
-      data: {
-        address,
-        auditorRole: auditor == "true", // add zod validation
-        auditeeRole: auditee == "true", // add zod validation
-        available: profile.available == "true", // add zod validation
-        ...profile,
-      },
-    })
-    .then((data) => {
-      return {
-        success: true,
-        data,
-      };
-    })
-    .catch((error) => {
-      return {
-        success: false,
-        error: error.name,
-      };
+  const formParsed = userSchemaCreate.safeParse(form);
+  if (!formParsed.success) {
+    const formattedErrors: Record<string, string> = {};
+    formParsed.error.errors.forEach((error) => {
+      formattedErrors[error.path[0]] = error.message;
     });
-};
-
-const updateProfileData = (id: string, profileData: Prisma.UsersUpdateInput): Promise<Users> => {
-  return prisma.users.update({
-    where: {
-      id,
-    },
-    data: {
-      ...profileData,
-    },
-  });
-};
-
-const putProfileBlob = (file: File | undefined): Promise<GenericUpdateI<PutBlobResult>> => {
-  if (!file || file.size <= 0 || !file.name) {
     return Promise.resolve({
       success: false,
-      error: "no file exists",
+      error: "zod",
+      validationErrors: formattedErrors,
     });
   }
-  return put(`profile-images/${file.name}`, file, { access: "public" })
+
+  const { image, ...rest } = formParsed.data as z.infer<typeof userSchemaCreate>;
+  const dataPass: Prisma.UsersCreateInput = {
+    address,
+    ...rest,
+  };
+
+  return putBlob("profile-images", image)
+    .then((result) => {
+      const { data, success } = result;
+      if (success && data) {
+        dataPass.image = result.data.url;
+      }
+      return prisma.users.create({
+        data: {
+          ...dataPass,
+        },
+      });
+    })
     .then((data) => {
       return {
         success: true,
@@ -306,22 +283,12 @@ const putProfileBlob = (file: File | undefined): Promise<GenericUpdateI<PutBlobR
     });
 };
 
-export const updateUser = (
-  id: string,
-  formData: FormData,
-  allowAuditeeUpdate: boolean,
-  allowAuditorUpdate: boolean,
-): Promise<GenericUpdateI<Users>> => {
+export const updateUser = (id: string, formData: FormData): Promise<GenericUpdateI<Users>> => {
+  // Might need more Server Side validation to ensure that someone doesn't disable
+  // the form on the frontend and allow for updating certain fields that shouldn't be
+  // updated.
   const form = Object.fromEntries(formData);
-  // Disabled elements on forms don't appear in form data, explicitly handle these.
-  const partials: Record<string, true> = {};
-  if (!allowAuditeeUpdate) {
-    partials.auditeeRole = true;
-  }
-  if (!allowAuditorUpdate) {
-    partials.auditorRole = true;
-  }
-  const formParsed = userSchema.omit({ ...partials }).safeParse(form);
+  const formParsed = userSchema.safeParse(form);
   if (!formParsed.success) {
     const formattedErrors: Record<string, string> = {};
     formParsed.error.errors.forEach((error) => {
@@ -334,16 +301,24 @@ export const updateUser = (
     });
   }
   const { image, ...rest } = formParsed.data as z.infer<typeof userSchema>;
-  return putProfileBlob(image)
+  const dataPass: Prisma.UsersUpdateInput = {
+    ...rest,
+  };
+
+  return putBlob("profile-images", image)
     .then((result) => {
       const { data, success } = result;
       if (success && data) {
-        return updateProfileData(id, {
-          ...rest,
-          image: result.data.url,
-        });
+        dataPass.image = result.data.url;
       }
-      return updateProfileData(id, { ...rest });
+      return prisma.users.update({
+        where: {
+          id,
+        },
+        data: {
+          ...dataPass,
+        },
+      });
     })
     .then((data) => {
       revalidatePath(`/user/${id}`);

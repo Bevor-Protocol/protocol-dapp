@@ -1,4 +1,11 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState, useContext } from "react";
+
+import { UserStateI, ModalStateI } from "./types";
+import UserContext from "@/providers/user/context";
+import ModalContext from "@/providers/modal/context";
+
+export const useModal = (): ModalStateI => useContext(ModalContext);
+export const useUser = (): UserStateI => useContext(UserContext);
 
 export const useClickOutside = (
   node: React.RefObject<HTMLElement | undefined>,
@@ -21,4 +28,14 @@ export const useClickOutside = (
 
     return (): void => document.removeEventListener("mousedown", handleClickOutside);
   }, [node]);
+};
+
+export const useIsMounted = (): boolean => {
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => {
+    setMounted(true);
+    return () => setMounted(false);
+  }, []);
+
+  return mounted;
 };

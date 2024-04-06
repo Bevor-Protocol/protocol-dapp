@@ -1,4 +1,4 @@
-import { getUserAuditsAuditee, getUserAuditsVerifiedAuditor } from "@/lib/actions/users";
+import { getUserAuditsAuditee, getUserAuditsVerifiedAuditor } from "@/actions/users";
 import { AuditCard } from "@/components/Audit";
 import { Column, Row } from "@/components/Box";
 import { AuditStatus } from "@prisma/client";

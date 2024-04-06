@@ -1,7 +1,7 @@
 "use client";
 import { useRef, useReducer, cloneElement, ReactElement } from "react";
 
-import { useClickOutside } from "@/hooks/useClickOutside";
+import { useClickOutside } from "@/lib/hooks";
 import { cn, filterChildren } from "@/lib/utils";
 
 interface Props extends React.HTMLAttributes<HTMLDivElement> {

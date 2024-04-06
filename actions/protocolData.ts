@@ -1,6 +1,6 @@
 "use server";
 
-import { prisma } from "@/lib/db/prisma.server";
+import { prisma } from "@/db/prisma.server";
 
 export const protocolDataAudits = (): Promise<number> => {
   return prisma.audits.count();

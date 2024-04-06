@@ -3,7 +3,7 @@ import { Users } from "@prisma/client";
 import * as Card from "@/components/Card";
 import { Icon } from "@/components/Icon";
 import DynamicLink from "@/components/Link";
-import { AuditViewI } from "@/lib/types/actions";
+import { AuditViewI } from "@/lib/types";
 import { Column, Row } from "@/components/Box";
 import { trimAddress, cn } from "@/lib/utils";
 import { AuditAuditor } from "./client";

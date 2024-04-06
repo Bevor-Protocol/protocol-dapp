@@ -2,7 +2,7 @@ import { cn, trimAddress } from "@/lib/utils";
 import { Icon } from "@/components/Icon";
 import DynamicLink from "@/components/Link";
 import { Column } from "@/components/Box";
-import { UserWithCount } from "@/lib/types/actions";
+import { UserWithCount } from "@/lib/types";
 
 const LeaderboardData = ({ data }: { data: UserWithCount[] }): JSX.Element => {
   return (

@@ -2,11 +2,11 @@
 import { useMemo } from "react";
 import { useAccount } from "wagmi";
 
-import { UserStats } from "@/lib/types/actions";
+import { UserStats } from "@/lib/types";
 import { Button } from "@/components/Button";
 import { Row } from "@/components/Box";
 import DynamicLink from "@/components/Link";
-import { useModal } from "@/hooks/contexts";
+import { useModal } from "@/lib/hooks";
 import UserEdit from "@/components/Modal/Content/userEdit";
 import { Users } from "@prisma/client";
 

@@ -1,4 +1,4 @@
-import { getAudit } from "@/lib/actions/audits";
+import { getAudit } from "@/actions/audits";
 import AuditEditWrapper from "./owner";
 
 const AuditEdit = async ({ auditId }: { auditId: string }): Promise<JSX.Element> => {

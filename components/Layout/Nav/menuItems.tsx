@@ -4,8 +4,7 @@ import { usePathname } from "next/navigation";
 import { useAccount } from "wagmi";
 
 import DynamicLink from "@/components/Link";
-import { useIsMounted } from "@/hooks/useIsMounted";
-import { navItems } from "@/lib/constants";
+import { useIsMounted } from "@/lib/hooks";
 import { Arrow, Twitter, Discord, Github } from "@/assets";
 import { Social } from "@/components/Icon";
 import { Row, HoverItem, Column } from "@/components/Box";
@@ -39,13 +38,16 @@ export const NavMenuItems = (): JSX.Element => {
   const pathname = usePathname();
   return (
     <>
-      {navItems.main.map((item, ind) => (
-        <DynamicLink href={item.url} key={ind}>
-          <HoverItem className="h-12 px-2">
-            <span className={cn(pathname !== item.url && "opacity-disable")}>{item.text}</span>
-          </HoverItem>
-        </DynamicLink>
-      ))}
+      <DynamicLink href="/leaderboard">
+        <HoverItem className="h-12 px-2">
+          <span className={cn(pathname !== "leaderboard" && "opacity-disable")}>leaderboard</span>
+        </HoverItem>
+      </DynamicLink>
+      <DynamicLink href="/audits">
+        <HoverItem className="h-12 px-2">
+          <span className={cn(pathname !== "audits" && "opacity-disable")}>audits</span>
+        </HoverItem>
+      </DynamicLink>
     </>
   );
 };
@@ -66,14 +68,18 @@ export const NavDropdown = (): JSX.Element => {
           )}
         >
           <Column className="items-stretch gap-1">
-            {navItems.dropdown.map((item, ind) => (
-              <DynamicLink href={item.url} key={ind}>
-                <HoverItem className="justify-start px-2 py-1 gap-1">
-                  <span className="opacity-disable">{item.text}</span>
-                  <Arrow fill="white" height={10} width={10} className="opacity-disable" />
-                </HoverItem>
-              </DynamicLink>
-            ))}
+            <DynamicLink href="/dao">
+              <HoverItem className="justify-start px-2 py-1 gap-1">
+                <span className="opacity-disable">Governance</span>
+                <Arrow fill="white" height={10} width={10} className="opacity-disable" />
+              </HoverItem>
+            </DynamicLink>
+            <DynamicLink href="https://docs.bevor.io">
+              <HoverItem className="justify-start px-2 py-1 gap-1">
+                <span className="opacity-disable">Documentation</span>
+                <Arrow fill="white" height={10} width={10} className="opacity-disable" />
+              </HoverItem>
+            </DynamicLink>
           </Column>
           <hr className="w-auto h-[1px] border-gray-200/20" />
           <Row className="gap-1 pl-1">

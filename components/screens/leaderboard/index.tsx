@@ -3,10 +3,10 @@
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 
-import { getLeaderboard } from "@/lib/actions/users";
+import { getLeaderboard } from "@/actions/users";
 import LeaderboardData from "./data";
 import LeaderboardNav from "./nav";
-import { UserWithCount } from "@/lib/types/actions";
+import { UserWithCount } from "@/lib/types";
 import { Column } from "@/components/Box";
 import { LeaderboardSkeleton } from "@/components/Loader";
 

@@ -2,11 +2,11 @@
 
 import { useMutation } from "@tanstack/react-query";
 
-import { useModal } from "@/hooks/contexts";
+import { useModal } from "@/lib/hooks";
 import { Row } from "@/components/Box";
-import { AuditViewDetailedI } from "@/lib/types/actions";
+import { AuditViewDetailedI } from "@/lib/types";
 // import * as Form from "@/components/Form";
-import { attestToTerms } from "@/lib/actions/audits";
+import { attestToTerms } from "@/actions/audits";
 import { Users } from "@prisma/client";
 import { Button } from "@/components/Button";
 import { X } from "@/assets";

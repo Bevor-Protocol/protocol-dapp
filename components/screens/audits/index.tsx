@@ -3,12 +3,12 @@
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 
-import { getAudits } from "@/lib/actions/audits";
+import { getAudits } from "@/actions/audits";
 import { Column, Row } from "@/components/Box";
 import { AuditCard } from "@/components/Audit";
 import { Toggle } from "@/components/Toggle";
 import { AuditsSkeleton } from "@/components/Loader";
-import { AuditViewI } from "@/lib/types/actions";
+import { AuditViewI } from "@/lib/types";
 
 const statuses = ["open", "locked", "ongoing", "completed"];
 

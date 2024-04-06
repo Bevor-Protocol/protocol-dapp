@@ -1,10 +1,10 @@
 "use client";
 import { useAccount } from "wagmi";
 
-import { useModal } from "@/hooks/contexts";
+import { useModal } from "@/lib/hooks";
 import { Chevron } from "@/assets";
 import { Icon } from "@/components/Icon";
-import { ChainPresets } from "@/lib/constants/chains";
+import { ChainPresets } from "@/lib/constants";
 import Wallets from "@/components/Modal/Content/wallets";
 import Networks from "@/components/Dropdown/Content/networks";
 import Profile from "@/components/Dropdown/Content/profile";

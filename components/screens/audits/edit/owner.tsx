@@ -7,9 +7,9 @@ import { useMutation } from "@tanstack/react-query";
 import { AuditorStatus, Users } from "@prisma/client";
 
 import { Loader } from "@/components/Loader";
-import { useUser } from "@/hooks/contexts";
-import { AuditViewDetailedI } from "@/lib/types/actions";
-import { updateAudit } from "@/lib/actions/audits";
+import { useUser } from "@/lib/hooks";
+import { AuditViewDetailedI } from "@/lib/types";
+import { updateAudit } from "@/actions/audits";
 import AuditForm from "@/components/Audit/client/form";
 
 const AuditEditWrapper = ({ audit }: { audit: AuditViewDetailedI }): JSX.Element => {

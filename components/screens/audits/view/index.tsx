@@ -1,5 +1,5 @@
-import { getMarkdown } from "@/lib/actions/audits";
-import { getAudit } from "@/lib/actions/audits";
+import { getMarkdown } from "@/actions/audits";
+import { getAudit } from "@/actions/audits";
 import { Column, Row } from "@/components/Box";
 import DynamicLink from "@/components/Link";
 import { trimAddress } from "@/lib/utils";

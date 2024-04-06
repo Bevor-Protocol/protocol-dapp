@@ -1,24 +1,33 @@
 "use client";
 
-import { createContext, useState, useRef, useReducer, useEffect } from "react";
+import { useState, useRef, useReducer, useEffect } from "react";
 
 import { ModalStateI } from "@/lib/types";
 import * as Modal from "@/components/Modal";
-import { useClickOutside } from "@/hooks/useClickOutside";
-
-// Create a context with initial state
-export const ModalContext = createContext<ModalStateI>({
-  toggleOpen: () => {},
-  setContent: () => {},
-});
+import ModalContext from "./context";
 
 // Modal provider component
 const ModalProvider = ({ children }: { children: React.ReactNode }): JSX.Element => {
   const [isOpen, toggleOpen] = useReducer((s) => !s, false);
   const [content, setContent] = useState<React.ReactNode>(null);
   const contentRef = useRef<HTMLDivElement>(null);
+  const handlerRef = useRef<undefined | (() => void)>(isOpen ? toggleOpen : undefined);
 
-  useClickOutside(contentRef, isOpen ? toggleOpen : undefined);
+  useEffect(() => {
+    handlerRef.current = isOpen ? toggleOpen : undefined;
+  }, [isOpen]);
+
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent): void => {
+      if (contentRef.current && !contentRef.current.contains(e.target as Node)) {
+        if (handlerRef.current) handlerRef.current();
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+
+    return (): void => document.removeEventListener("mousedown", handleClickOutside);
+  }, [contentRef]);
 
   useEffect(() => {
     if (isOpen) {
