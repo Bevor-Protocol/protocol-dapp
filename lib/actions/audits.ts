@@ -10,7 +10,7 @@ import { AuditViewI, AuditViewDetailedI, GenericUpdateI } from "@/lib/types/acti
 import { revalidatePath } from "next/cache";
 import { Auditors, AuditorStatus, Audits, AuditStatus, Prisma, Users } from "@prisma/client";
 import { auditFormSchema } from "../validations";
-import { put, PutBlobResult } from "@vercel/blob";
+import { putBlob } from "./blobs";
 
 export const getAudits = (status?: string): Promise<AuditViewI[]> => {
   let statusFilter;
@@ -94,28 +94,6 @@ export const getMarkdown = async (id: string, display?: "details" | "audit"): Pr
     });
 };
 
-const putAuditDetailsBlob = (file: File | undefined): Promise<GenericUpdateI<PutBlobResult>> => {
-  if (!file || file.size <= 0 || !file.name) {
-    return Promise.resolve({
-      success: false,
-      error: "no file exists",
-    });
-  }
-  return put(`audit-details/${file.name}`, file, { access: "public" })
-    .then((data) => {
-      return {
-        success: true,
-        data,
-      };
-    })
-    .catch((error) => {
-      return {
-        success: false,
-        error: error.name,
-      };
-    });
-};
-
 const createAuditIso = (
   id: string,
   auditData: {
@@ -174,8 +152,7 @@ export const createAudit = (
     });
   }
   const { details, ...rest } = formParsed.data as z.infer<typeof auditFormSchema>;
-  // add zod validation.
-  return putAuditDetailsBlob(details)
+  return putBlob("audit-details", details)
     .then((result) => {
       const { data, success } = result;
       if (success && data) {
@@ -289,7 +266,7 @@ export const updateAudit = async (
 
   const { details, ...rest } = formParsed.data as z.infer<typeof auditFormSchema>;
   // add zod validation.
-  return putAuditDetailsBlob(details)
+  return putBlob("audit-details", details)
     .then((result) => {
       const { data, success } = result;
       if (success && data) {

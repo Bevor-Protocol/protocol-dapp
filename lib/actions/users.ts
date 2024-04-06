@@ -2,11 +2,11 @@
 import { revalidatePath } from "next/cache";
 import { prisma } from "@/lib/db/prisma.server";
 import { AuditorStatus, AuditStatus, Prisma, Users } from "@prisma/client";
-import { put, type PutBlobResult } from "@vercel/blob";
+import { z } from "zod";
 
 import type { UserWithCount, UserStats, AuditViewI, GenericUpdateI } from "@/lib/types/actions";
 import { userSchema } from "@/lib/validations";
-import { z } from "zod";
+import { putBlob } from "./blobs";
 
 export const getLeaderboard = (key?: string, order?: string): Promise<UserWithCount[]> => {
   // Can't currently sort on aggregations or further filtered counts of relations...
@@ -284,28 +284,6 @@ const updateProfileData = (id: string, profileData: Prisma.UsersUpdateInput): Pr
   });
 };
 
-const putProfileBlob = (file: File | undefined): Promise<GenericUpdateI<PutBlobResult>> => {
-  if (!file || file.size <= 0 || !file.name) {
-    return Promise.resolve({
-      success: false,
-      error: "no file exists",
-    });
-  }
-  return put(`profile-images/${file.name}`, file, { access: "public" })
-    .then((data) => {
-      return {
-        success: true,
-        data,
-      };
-    })
-    .catch((error) => {
-      return {
-        success: false,
-        error: error.name,
-      };
-    });
-};
-
 export const updateUser = (
   id: string,
   formData: FormData,
@@ -334,7 +312,7 @@ export const updateUser = (
     });
   }
   const { image, ...rest } = formParsed.data as z.infer<typeof userSchema>;
-  return putProfileBlob(image)
+  return putBlob("profile-images", image)
     .then((result) => {
       const { data, success } = result;
       if (success && data) {
