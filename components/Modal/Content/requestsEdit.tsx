@@ -49,7 +49,8 @@ const RequestsEdit = ({ audit }: { audit: AuditViewDetailedI }): JSX.Element => 
     },
   });
 
-  const handleSubmit = (): void => {
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>): void => {
+    e.preventDefault();
     // Need to explicitly control for checkbox inputs, especially those that can be disabled.
     const toApprove = requestedAuditors.filter((_, ind) => checked[ind] == 1);
     const toReject = requestedAuditors.filter((_, ind) => checked[ind] == -1);
@@ -75,42 +76,54 @@ const RequestsEdit = ({ audit }: { audit: AuditViewDetailedI }): JSX.Element => 
   };
 
   return (
-    <div>
+    <form onSubmit={handleSubmit} onReset={handleReset}>
       <div onClick={toggleOpen} className="absolute top-4 right-4 w-5 h-5 cursor-pointer z-10">
         <X height="1rem" width="1rem" />
       </div>
       <p>Reject or Verify Auditors</p>
-      <Column className="items-stretch gap-2 pr-4 my-4 h-[calc(5*32px)] overflow-y-scroll">
+      <hr className="w-full h-[1px] border-gray-200/20 my-4" />
+      <div className="grid grid-cols-6 text-sm">
+        <p style={{ gridColumn: "1/5" }}>Auditor</p>
+        <p style={{ gridColumn: "5/6" }} className="justify-self-center">
+          Reject
+        </p>
+        <p style={{ gridColumn: "6/7" }} className="justify-self-center">
+          Verify
+        </p>
+      </div>
+      <Column className="items-stretch gap-2 my-2 h-[calc(5*32px)] overflow-y-scroll">
         {requestedAuditors.map((auditor, ind) => (
-          <Row key={ind} className="gap-2">
-            <AuditorItem auditor={auditor.user} style={{ cursor: "default" }} />
+          <div className="grid grid-cols-6 text-sm" key={ind}>
+            <AuditorItem auditor={auditor.user} style={{ cursor: "default", gridColumn: "1/5" }} />
             <input
               type="checkbox"
               onChange={() => handleChange(ind, "reject")}
               checked={checked[ind] == -1}
-              className="cursor-pointer"
+              className="cursor-pointer justify-self-center"
               disabled={isPending}
+              style={{ gridColumn: "5/6" }}
             />
             <input
               type="checkbox"
               onChange={() => handleChange(ind, "verify")}
               checked={checked[ind] == 1}
-              className="cursor-pointer"
+              className="cursor-pointer justify-self-center"
               disabled={isPending}
+              style={{ gridColumn: "6/7" }}
             />
-          </Row>
+          </div>
         ))}
       </Column>
       <hr className="w-full h-[1px] border-gray-200/20 my-4" />
       <Row className="gap-4 justify-end">
-        <Button onClick={handleSubmit} disabled={isPending}>
+        <Button type="submit" disabled={isPending}>
           Submit
         </Button>
-        <Button onClick={handleReset} disabled={isPending}>
+        <Button type="reset" disabled={isPending}>
           Reset
         </Button>
       </Row>
-    </div>
+    </form>
   );
 };
 

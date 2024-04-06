@@ -23,7 +23,7 @@ const UserEdit = ({ user, stats }: { user: Users; stats: UserStats }): JSX.Eleme
 
   const { mutate, isPending } = useMutation({
     mutationFn: (variables: { formData: FormData }) => {
-      return updateUser(user.id, variables.formData, allowAuditeeUpdate, allowAuditorUpdate);
+      return updateUser(user.id, variables.formData);
     },
     onSettled: (data) => {
       if (data?.success) toggleOpen();

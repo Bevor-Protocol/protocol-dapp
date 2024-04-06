@@ -12,16 +12,17 @@ import { Column, Row } from "@/components/Box";
 
 const UserOnboard = ({ address }: { address: string }): JSX.Element => {
   const router = useRouter();
-  const [error, setError] = useState("");
+  const [selectedImage, setSelectedImage] = useState<File | undefined>();
+  const [errors, setErrors] = useState<Record<string, string>>({});
 
   const { mutate, isPending } = useMutation({
     mutationFn: (variables: { userAddress: string; formData: FormData }) =>
       createUser(variables.userAddress, variables.formData),
-    onSuccess: (data: { success: boolean; error?: string }) => {
-      if (!data.success) {
-        setError(data.error!);
-      } else {
-        router.refresh();
+    onSettled: (data) => {
+      console.log(data);
+      if (data?.success) router.refresh();
+      if (!data?.success && data?.validationErrors) {
+        setErrors(data.validationErrors);
       }
     },
   });
@@ -29,22 +30,35 @@ const UserOnboard = ({ address }: { address: string }): JSX.Element => {
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>): void => {
     e.preventDefault();
     const formData = new FormData(e.currentTarget);
-    formData.set("auditee", formData.has("auditee") ? "true" : "false");
-    formData.set("auditor", formData.has("auditor") ? "true" : "false");
-    formData.set("available", formData.has("available") ? "true" : "false");
-    if (!formData.get("name")) {
-      formData.delete("name");
-    }
     mutate({ userAddress: address, formData });
   };
 
+  const handleReset = (): void => {
+    // allows for resetting the image preview in an uncontrolled manner.
+    // default reset still occurs since the HTML is controlled the input values.
+    setSelectedImage(undefined);
+  };
+
   return (
-    <form onSubmit={handleSubmit} className="max-w-full w-[700px]">
+    <form
+      onSubmit={handleSubmit}
+      onReset={handleReset}
+      onChange={() => setErrors({})}
+      className="max-w-full w-[700px]"
+    >
       <h3 className="text-xl">Welcome to Bevor! Let`s create your profile</h3>
       <p className="text-white/60 my-4">{address}</p>
       <Row className="my-4 justify-between">
         <Column className="gap-2">
-          <Icon size="xl" seed={address} />
+          <Form.Image
+            name="image"
+            selected={selectedImage}
+            setSelected={setSelectedImage}
+            disabled={isPending}
+            aria-disabled={isPending}
+          >
+            <Icon size="xxl" seed={address} />
+          </Form.Image>
           <Form.Input
             type="text"
             text="Display Name"
@@ -62,14 +76,14 @@ const UserOnboard = ({ address }: { address: string }): JSX.Element => {
             text="is available"
           />
           <Form.Radio
-            name="auditor"
+            name="auditorRole"
             disabled={isPending}
             aria-disabled={isPending}
             defaultChecked={false}
             text="auditor role"
           />
           <Form.Radio
-            name="auditee"
+            name="auditeeRole"
             disabled={isPending}
             aria-disabled={isPending}
             defaultChecked={false}
@@ -82,12 +96,15 @@ const UserOnboard = ({ address }: { address: string }): JSX.Element => {
           <span>Submit</span>
         </Button>
         <Button type="reset">
-          <Row className="align-middle gap-1 text-dark text-sm">
-            <span>Reset</span>
-          </Row>
+          <span>Reset</span>
         </Button>
       </Row>
-      {error && <span className="text-rose-400 text-xs">{error}</span>}
+      {errors &&
+        Object.values(errors).map((error, ind) => (
+          <p key={ind} className="text-xs text-red-500">
+            {error}
+          </p>
+        ))}
     </form>
   );
 };
