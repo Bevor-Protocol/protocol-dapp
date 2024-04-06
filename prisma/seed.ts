@@ -69,7 +69,7 @@ const seed = async (): Promise<void> => {
   await prisma.audits.create({
     data: {
       title: "Empty audit - Open",
-      description: "This is for my dev wallet, but has no auditors yet.",
+      description: "Open, no requestors, no auditors, no details provided",
       auditee: {
         connect: {
           address: MY_WALLET1,
@@ -81,9 +81,10 @@ const seed = async (): Promise<void> => {
   await prisma.audits.create({
     data: {
       title: "Requested Audit - Open",
-      description: "I opened this audit. My other wallet requested to audit it.",
+      description: "Open, 1 requestor, no auditors, details provided",
       price: 10_000,
       duration: 3,
+      details: "example-7Ap1GR49l2yVbJtvIJ0dVnleKuM8pj.md",
       auditee: {
         connect: {
           address: MY_WALLET1,
@@ -105,7 +106,7 @@ const seed = async (): Promise<void> => {
   await prisma.audits.create({
     data: {
       title: "Auditor Audit - Open",
-      description: "I opened this audit. My other wallet is a verified auditor.",
+      description: "Open, 1 auditor, no details",
       price: 10_000,
       duration: 3,
       auditee: {
@@ -129,9 +130,10 @@ const seed = async (): Promise<void> => {
   await prisma.audits.create({
     data: {
       title: "Auditor Audit - Locked",
-      description: "my other wallet is a verified auditor. The attestation period just started",
+      description: "Locked, 1 auditor, has not attested, details provided",
       price: 20_000,
       duration: 5,
+      details: "example-7Ap1GR49l2yVbJtvIJ0dVnleKuM8pj.md",
       status: AuditStatus.ATTESTATION,
       auditee: {
         connect: {
@@ -154,9 +156,10 @@ const seed = async (): Promise<void> => {
   await prisma.audits.create({
     data: {
       title: "Auditor Audit - Locked, Rejected",
-      description: "my other wallet is a verified auditor who rejected terms during attestation",
+      description: "Locked, 1 auditor, rejected terms, detailed provided.",
       price: 20_000,
       duration: 5,
+      details: "example-7Ap1GR49l2yVbJtvIJ0dVnleKuM8pj.md",
       status: AuditStatus.ATTESTATION,
       auditee: {
         connect: {
@@ -181,12 +184,11 @@ const seed = async (): Promise<void> => {
   await prisma.audits.create({
     data: {
       title: "Auditor Audit - Locked, Accepted",
-      description:
-        "This is for my dev wallet, but my other wallet is fully an auditor. \
-Terms were attested to and agreed on (by my other wallet)",
+      description: "Locked, 1 auditor, accepted terms, details provided. Can be kicked off.",
       status: AuditStatus.ATTESTATION,
       price: 20_000,
       duration: 5,
+      details: "example-7Ap1GR49l2yVbJtvIJ0dVnleKuM8pj.md",
       auditee: {
         connect: {
           address: MY_WALLET1,
@@ -210,7 +212,7 @@ Terms were attested to and agreed on (by my other wallet)",
   await prisma.audits.create({
     data: {
       title: "Random Auditee Audit - Open",
-      description: "This audit was created but doesn't have any designated auditors yet.",
+      description: "Open, no requestors, no auditors, no details",
       auditee: {
         connect: {
           address: "0x999999cf1046e68e36E1aA2E0E07105eDDD1f08E",
@@ -222,9 +224,10 @@ Terms were attested to and agreed on (by my other wallet)",
   await prisma.audits.create({
     data: {
       title: "Random Auditee Audit - Open",
-      description: "Audit has an auditor and a request but isn't locked yet",
+      description: "Open, 1 requestor, 1 auditor, details provided",
       price: 10_000,
       duration: 3,
+      details: "example-7Ap1GR49l2yVbJtvIJ0dVnleKuM8pj.md",
       auditee: {
         connect: {
           address: "0xc0ffee254729296a45a3885639AC7E10F9d54979",
@@ -256,10 +259,11 @@ Terms were attested to and agreed on (by my other wallet)",
   await prisma.audits.create({
     data: {
       title: "Contains an auditor",
-      description: "This audit was created and already has an auditor",
+      description: "Locked, 1 auditor accepted terms, can be kicked off",
       status: AuditStatus.ATTESTATION,
       price: 10_000,
       duration: 3,
+      details: "example-7Ap1GR49l2yVbJtvIJ0dVnleKuM8pj.md",
       auditee: {
         connect: {
           address: "0xc0ffee254729296a45a3885639AC7E10F9d54979",
@@ -283,10 +287,11 @@ Terms were attested to and agreed on (by my other wallet)",
   await prisma.audits.create({
     data: {
       title: "Completed audit",
-      description: "This audit is ongoing and the handoff hasn't occured yet.",
+      description: "Kicked off, 1 auditor completed audit, 1 has not",
       status: AuditStatus.ONGOING,
       price: 2_000,
       duration: 5,
+      details: "example-7Ap1GR49l2yVbJtvIJ0dVnleKuM8pj.md",
       auditee: {
         connect: {
           address: "0x999999cf1046e68e36E1aA2E0E07105eDDD1f08E",
@@ -303,6 +308,7 @@ Terms were attested to and agreed on (by my other wallet)",
                 address: "0xc0ffee254729296a45a3885639AC7E10F9d54979",
               },
             },
+            findings: "example-q0D5zQMv65hQJ4mWfJfstcnagI5kUI.md",
           },
           {
             status: AuditorStatus.VERIFIED,
@@ -322,10 +328,13 @@ Terms were attested to and agreed on (by my other wallet)",
   await prisma.audits.create({
     data: {
       title: "Completed audit",
-      description: "This audit is closed and will be viewable",
+      description:
+        "This audit is closed and will be viewable. Doesn't tell us if challengeable, \
+that needs to come from on-chain",
       status: AuditStatus.FINAL,
       price: 2_000,
       duration: 5,
+      details: "example-7Ap1GR49l2yVbJtvIJ0dVnleKuM8pj.md",
       auditee: {
         connect: {
           address: "0x999999cf1046e68e36E1aA2E0E07105eDDD1f08E",
@@ -342,6 +351,7 @@ Terms were attested to and agreed on (by my other wallet)",
                 address: "0xc0ffee254729296a45a3885639AC7E10F9d54979",
               },
             },
+            findings: "example-q0D5zQMv65hQJ4mWfJfstcnagI5kUI.md",
           },
           {
             status: AuditorStatus.VERIFIED,
@@ -352,11 +362,14 @@ Terms were attested to and agreed on (by my other wallet)",
                 address: "0x3A1D14c5B007f2aC5a5e174663Eb3e69C78ADbB5",
               },
             },
+            findings: "example-q0D5zQMv65hQJ4mWfJfstcnagI5kUI.md",
           },
         ],
       },
     },
   });
+
+  console.log("Seeded Audits + Auditors");
 };
 
 seed()
