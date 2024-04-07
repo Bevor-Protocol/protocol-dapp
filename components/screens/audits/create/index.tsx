@@ -9,7 +9,7 @@ import { Users } from "@prisma/client";
 import DynamicLink from "@/components/Link";
 import { Column } from "@/components/Box";
 import { Button } from "@/components/Button";
-import { Loader } from "@/components/Loader";
+import { LoaderFill } from "@/components/Loader";
 import { Arrow } from "@/assets";
 import { useUser } from "@/lib/hooks";
 import AuditForm from "@/components/Audit/client/form";
@@ -52,7 +52,7 @@ const AuditCreation = (): JSX.Element => {
     query.mutate({ formData });
   };
 
-  if (!isFetchedAfterMount || isPending) return <Loader className="h-12" />;
+  if (!isFetchedAfterMount || isPending) return <LoaderFill />;
 
   if (!user?.auditeeRole)
     return (

@@ -5,6 +5,7 @@ import AuditPage from "@/components/screens/audits/view";
 import AuditMarkdown from "@/components/screens/audits/view/markdown";
 import { getAudit, getMarkdown } from "@/actions/audits/get";
 import { MarkdownAuditsI } from "@/lib/types";
+import { LoaderFill } from "@/components/Loader";
 
 const Fetcher = async ({ auditId }: { auditId: string }): Promise<JSX.Element> => {
   const audit = await getAudit(auditId);
@@ -50,7 +51,7 @@ const Fetcher = async ({ auditId }: { auditId: string }): Promise<JSX.Element> =
 const AuditDashboardPage = ({ params }: { params: { slug: string } }): JSX.Element => {
   return (
     <section className="flex flex-col h-full items-center">
-      <Suspense fallback={<p>Loading...</p>}>
+      <Suspense fallback={<LoaderFill />}>
         <Fetcher auditId={params.slug} />
       </Suspense>
     </section>
