@@ -35,10 +35,12 @@ const AuditForm = ({
   errors: Record<string, string>;
   setErrors: React.Dispatch<React.SetStateAction<Record<string, string>>>;
 }): JSX.Element => {
+  const mockFileDefault = initialState?.details ? new File([], "") : undefined;
+
   const [timoutPending, setTimoutPending] = useState(false);
   const [queryString, setQueryString] = useState("");
   const timeoutRef = useRef<NodeJS.Timeout | null>(null);
-  const [selectedFile, setSelectedFile] = useState<File | undefined>();
+  const [selectedFile, setSelectedFile] = useState<File | undefined>(mockFileDefault);
 
   const { data, isPending } = useQuery({
     queryKey: ["auditors", queryString],
@@ -69,7 +71,7 @@ const AuditForm = ({
   const uncontrolledReset = (): void => {
     setQueryString("");
     setAuditors([...initialAuditors]);
-    setSelectedFile(undefined);
+    setSelectedFile(mockFileDefault);
   };
 
   const auditorsShow = useMemo(() => {

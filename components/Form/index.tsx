@@ -158,35 +158,39 @@ export const Dropbox: React.FC<DropI> = ({
       setInvalid(false);
     }
   };
+
   return (
-    <label className={cn("w-80 block group *:text-sm", className)}>
+    <label className={cn("w-full block *:text-sm", className)}>
       <p className="my-2">Audit Details</p>
+      {selected && !!selected.name && (
+        <p className="text-xs opacity-disable my-1">file chosen: {selected.name}</p>
+      )}
+      {selected && !selected.name && (
+        <p className="text-xs opacity-disable my-1">file already exists, feel free to update it</p>
+      )}
+      {!selected && <p className="text-xs opacity-disable my-1">no file chosen</p>}
       <Column
         className={cn(
-          "w-full h-28 transition-colors justify-center items-center relative",
-          "rounded-md border border-gray-200/20 bg-transparent",
-          "group-hover:bg-dark-primary-30",
+          "w-80 h-28 transition-colors justify-center items-center relative",
+          "rounded-md border border-dashed border-gray-200/20",
+          "hover:bg-dark-primary-30",
+          "has-[:focus-visible]:border-blue-300",
+          !dragged && "bg-transparent",
           dragged && "bg-dark-primary-30",
-          disabled && "group-hover:hidden",
+          disabled && "opacity-disable pointer-events-none",
         )}
         onDragEnter={() => setDragged(true)}
         onDragLeave={() => setDragged(false)}
         onDrop={() => setDragged(false)}
       >
-        {selected && (
+        {!invalid && (
           <>
-            <p className="text-xs my-1">{selected.name}</p>
-            <File height="1rem" width="1rem" fill="white" />
+            <File height="1.25rem" width="1.25rem" fill="white" />
+            <p className="mt-1">Drag and drop your Audit Details here</p>
+            <p className="text-xs opacity-disable">supports .md files</p>
           </>
         )}
-        {!selected && !invalid && (
-          <>
-            <p>Drag and Drop your Audit Details file here</p>
-            <p className="text-xs my-1">supports .md files</p>
-            <File height="1rem" width="1rem" fill="white" />
-          </>
-        )}
-        {!selected && invalid && (
+        {invalid && (
           <>
             <p>Invalid file type</p>
             <p className="text-xs my-1">only supports {extensions.join(",")} files</p>
@@ -196,10 +200,11 @@ export const Dropbox: React.FC<DropI> = ({
           type="file"
           accept=".md, .markdown"
           className={cn(
-            "absolute inset-0 appearance-none cursor-pointer focus-input opacity-0",
+            "absolute inset-0 appearance-none cursor-pointer opacity-0",
             "disabled:cursor-default",
           )}
           onChange={handleChange}
+          disabled={disabled}
           {...rest}
         />
       </Column>
