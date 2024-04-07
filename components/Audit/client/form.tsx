@@ -3,14 +3,14 @@
 
 import React, { useState, useRef, useMemo } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { Users } from "@prisma/client";
+import { AuditorStatus, Users } from "@prisma/client";
 
 import { Column, Row } from "@/components/Box";
 import { Button } from "@/components/Button";
 import * as Form from "@/components/Form";
 import { Loader } from "@/components/Loader";
 import { searchAuditors } from "@/actions/users";
-import { AuditViewI } from "@/lib/types";
+import { AuditViewDetailedI } from "@/lib/types";
 import { AuditorItem } from "@/components/Audit";
 
 const AuditForm = ({
@@ -30,7 +30,7 @@ const AuditForm = ({
   auditors: Users[];
   setAuditors: React.Dispatch<React.SetStateAction<Users[]>>;
   handleSubmit: (e: React.FormEvent<HTMLFormElement>) => void;
-  initialState?: AuditViewI;
+  initialState?: AuditViewDetailedI;
   initialAuditors?: Users[];
   errors: Record<string, string>;
   setErrors: React.Dispatch<React.SetStateAction<Record<string, string>>>;
@@ -75,17 +75,28 @@ const AuditForm = ({
   };
 
   const auditorsShow = useMemo(() => {
-    const chosenAuditors = auditors.map((auditor) => auditor.id);
+    // search on query string is done server-side, however we still
+    // do client-side additional filtering to ensure we don't show auditors
+    // that were already selected
 
+    // 1) Filter the verified auditors from the search results
+    // 2) Filter the requested or rejected auditors from the search results -> managed separately.
+    const chosenAuditors = auditors.map((auditor) => auditor.id);
+    const alreadyRequested =
+      initialState?.auditors
+        .filter(
+          (auditor) =>
+            auditor.status === AuditorStatus.REQUESTED || auditor.status === AuditorStatus.REJECTED,
+        )
+        .map((auditor) => auditor.userId) || [];
     // also want to exclude auditors who has previously requested to audit. Managing those will
     // be a different task.
-    const excludeAuditors = initialState?.auditors.map((auditor) => auditor.user.id) || [];
     return (
       data?.filter((item) => {
         return (
           !chosenAuditors.includes(item.id) &&
           item.address !== address &&
-          !excludeAuditors.includes(item.id)
+          !alreadyRequested.includes(item.id)
         );
       }) || []
     );
