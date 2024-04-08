@@ -162,13 +162,6 @@ export const Dropbox: React.FC<DropI> = ({
   return (
     <label className={cn("w-full block *:text-sm", className)}>
       <p className="my-2">Audit Details</p>
-      {selected && !!selected.name && (
-        <p className="text-xs opacity-disable my-1">file chosen: {selected.name}</p>
-      )}
-      {selected && !selected.name && (
-        <p className="text-xs opacity-disable my-1">file already exists, feel free to update it</p>
-      )}
-      {!selected && <p className="text-xs opacity-disable my-1">no file chosen</p>}
       <Column
         className={cn(
           "w-80 h-28 transition-colors justify-center items-center relative",
@@ -208,6 +201,13 @@ export const Dropbox: React.FC<DropI> = ({
           {...rest}
         />
       </Column>
+      {selected && !!selected.name && (
+        <p className="text-xs opacity-disable my-1">file chosen: {selected.name}</p>
+      )}
+      {selected && !selected.name && (
+        <p className="text-xs opacity-disable my-1">file already exists, feel free to update it</p>
+      )}
+      {!selected && <p className="text-xs opacity-disable my-1">no file chosen</p>}
     </label>
   );
 };

@@ -13,27 +13,23 @@ import { searchAuditors } from "@/actions/users";
 import { AuditViewDetailedI } from "@/lib/types";
 import { AuditorItem } from "@/components/Audit";
 
-const AuditForm = ({
+const AuditFormEntries = ({
   address,
   query,
   auditors,
   setAuditors,
-  handleSubmit,
   initialState,
   initialAuditors = [],
   errors,
-  setErrors,
 }: {
   address: string;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   query: any;
   auditors: Users[];
   setAuditors: React.Dispatch<React.SetStateAction<Users[]>>;
-  handleSubmit: (e: React.FormEvent<HTMLFormElement>) => void;
   initialState?: AuditViewDetailedI;
   initialAuditors?: Users[];
   errors: Record<string, string>;
-  setErrors: React.Dispatch<React.SetStateAction<Record<string, string>>>;
 }): JSX.Element => {
   const mockFileDefault = initialState?.details ? new File([], "") : undefined;
 
@@ -103,33 +99,35 @@ const AuditForm = ({
   }, [auditors, data, address, initialState]);
 
   return (
-    <form onSubmit={handleSubmit} className="max-w-full w-[700px]" onChange={() => setErrors({})}>
-      <h3>Create an Audit</h3>
+    <>
       <Column className="gap-2 my-4">
         <Form.Input
           type="text"
-          placeholder="Audit Title"
+          placeholder="Lorem ipsum..."
           name="title"
+          text="Title"
           defaultValue={initialState?.title}
           disabled={query.isPending}
           isError={"title" in errors}
         />
         <Form.TextArea
-          placeholder="Audit Description..."
+          placeholder="Sed ut perspiciatis unde omnis iste natus error sit voluptatem..."
           className="h-16"
           name="description"
+          text="Description"
           defaultValue={initialState?.description}
           disabled={query.isPending}
           isError={"description" in errors}
         />
         <Form.Dropbox
           name="details"
-          disabled={isPending}
-          aria-disabled={isPending}
+          disabled={query.isPending}
+          aria-disabled={query.isPending}
           selected={selectedFile}
           setSelected={setSelectedFile}
         />
-        <Row className="text-sm gap-4 mt-2">
+        <hr className="border-gray-200/20 my-4" />
+        <Row className="text-sm gap-4">
           <p className="w-80">Find Auditors</p>
           <p>Selected Verified Auditors:</p>
         </Row>
@@ -208,8 +206,8 @@ const AuditForm = ({
             {error}
           </p>
         ))}
-    </form>
+    </>
   );
 };
 
-export default AuditForm;
+export default AuditFormEntries;
