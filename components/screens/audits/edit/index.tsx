@@ -9,7 +9,7 @@ import { AuditorStatus, Users } from "@prisma/client";
 import { LoaderFill } from "@/components/Loader";
 import { useUser } from "@/lib/hooks";
 import { AuditViewDetailedI } from "@/lib/types";
-import { updateAudit } from "@/actions/audits";
+import { updateAudit } from "@/actions/audits/update";
 import AuditFormEntries from "@/components/Audit/client/form";
 
 const AuditEditWrapper = ({ audit }: { audit: AuditViewDetailedI }): JSX.Element => {

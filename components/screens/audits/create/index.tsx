@@ -13,7 +13,7 @@ import { LoaderFill } from "@/components/Loader";
 import { Arrow } from "@/assets";
 import { useUser } from "@/lib/hooks";
 import AuditFormEntries from "@/components/Audit/client/form";
-import { createAudit } from "@/actions/audits";
+import { createAudit } from "@/actions/audits/create";
 
 const AuditCreation = (): JSX.Element => {
   const { address } = useAccount();
