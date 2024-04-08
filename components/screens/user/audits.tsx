@@ -31,7 +31,7 @@ const UserAudits = async ({ address }: { address: string }): Promise<JSX.Element
           {audits.auditee.open.length > 0 && (
             <div className="w-full">
               <p className="my-2">Open:</p>
-              <Row className="w-full justify-start flex-wrap gap-2">
+              <Row className="w-full justify-start flex-wrap gap-4">
                 {audits.auditee.open.map((audit, ind) => (
                   <AuditCard key={ind} audit={audit} />
                 ))}
@@ -41,7 +41,7 @@ const UserAudits = async ({ address }: { address: string }): Promise<JSX.Element
           {audits.auditee.locked.length > 0 && (
             <div className="w-full">
               <p className="my-2">Locked:</p>
-              <Row className="w-full justify-start flex-wrap gap-2">
+              <Row className="w-full justify-start flex-wrap gap-4">
                 {audits.auditee.locked.map((audit, ind) => (
                   <AuditCard key={ind} audit={audit} />
                 ))}
@@ -51,7 +51,7 @@ const UserAudits = async ({ address }: { address: string }): Promise<JSX.Element
           {audits.auditee.ongoing.length > 0 && (
             <div className="w-full">
               <p className="my-2">Ongoing:</p>
-              <Row className="w-full justify-start flex-wrap gap-2">
+              <Row className="w-full justify-start flex-wrap gap-4">
                 {audits.auditee.ongoing.map((audit, ind) => (
                   <AuditCard key={ind} audit={audit} />
                 ))}
@@ -61,7 +61,7 @@ const UserAudits = async ({ address }: { address: string }): Promise<JSX.Element
           {audits.auditee.final.length > 0 && (
             <div className="w-full">
               <p className="my-2">Closed:</p>
-              <Row className="w-full justify-start flex-wrap gap-2">
+              <Row className="w-full justify-start flex-wrap gap-4">
                 {audits.auditee.final.map((audit, ind) => (
                   <AuditCard key={ind} audit={audit} />
                 ))}
@@ -76,7 +76,7 @@ const UserAudits = async ({ address }: { address: string }): Promise<JSX.Element
           {audits.auditor.open.length > 0 && (
             <div className="w-full">
               <p className="my-2">Open:</p>
-              <Row className="w-full justify-start flex-wrap gap-2">
+              <Row className="w-full justify-start flex-wrap gap-4">
                 {audits.auditor.open.map((audit, ind) => (
                   <AuditCard key={ind} audit={audit} />
                 ))}
@@ -86,7 +86,7 @@ const UserAudits = async ({ address }: { address: string }): Promise<JSX.Element
           {audits.auditor.locked.length > 0 && (
             <div className="w-full">
               <p className="my-2">Locked:</p>
-              <Row className="w-full justify-start flex-wrap gap-2">
+              <Row className="w-full justify-start flex-wrap gap-4">
                 {audits.auditor.locked.map((audit, ind) => (
                   <AuditCard key={ind} audit={audit} />
                 ))}
@@ -96,7 +96,7 @@ const UserAudits = async ({ address }: { address: string }): Promise<JSX.Element
           {audits.auditor.ongoing.length > 0 && (
             <div className="w-full">
               <p className="my-2">Ongoing:</p>
-              <Row className="w-full justify-start flex-wrap gap-2">
+              <Row className="w-full justify-start flex-wrap gap-4">
                 {audits.auditor.ongoing.map((audit, ind) => (
                   <AuditCard key={ind} audit={audit} />
                 ))}
@@ -106,7 +106,7 @@ const UserAudits = async ({ address }: { address: string }): Promise<JSX.Element
           {audits.auditor.final.length > 0 && (
             <div className="w-full">
               <p className="my-2">Closed:</p>
-              <Row className="w-full justify-start flex-wrap gap-2">
+              <Row className="w-full justify-start flex-wrap gap-4">
                 {audits.auditor.final.map((audit, ind) => (
                   <AuditCard key={ind} audit={audit} />
                 ))}

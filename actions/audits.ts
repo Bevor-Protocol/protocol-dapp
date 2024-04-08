@@ -413,19 +413,32 @@ export const lockAudit = async (id: string): Promise<GenericUpdateI<Audits>> => 
   const currentAudit = await getAudit(id);
 
   if (!currentAudit) {
-    return new Promise((resolve) => {
-      resolve({
-        success: false,
-        error: "This audit does not exist",
-      });
+    return Promise.resolve({
+      success: false,
+      error: "This audit does not exist",
     });
   }
   if (currentAudit.status !== AuditStatus.OPEN) {
-    return new Promise((resolve) => {
-      resolve({
-        success: false,
-        error: "This audit can't be reopened",
-      });
+    return Promise.resolve({
+      success: false,
+      error: "This audit cannot be locked, as it's not OPEN",
+    });
+  }
+
+  const verifiedAuditorExists = currentAudit.auditors.find(
+    (auditor) => auditor.status === AuditorStatus.VERIFIED,
+  );
+  if (!verifiedAuditorExists) {
+    return Promise.resolve({
+      success: false,
+      error: "This audit cannot be locked, as there are no verified auditors",
+    });
+  }
+
+  if (!currentAudit.details) {
+    return Promise.resolve({
+      success: false,
+      error: "Can't lock an audit without providing markdown of details",
     });
   }
 
@@ -476,7 +489,7 @@ export const reopenAudit = async (id: string): Promise<GenericUpdateI<Audits>> =
     return new Promise((resolve) => {
       resolve({
         success: false,
-        error: "This audit can't be reopened",
+        error: "This audit can't be reopened, as it's not LOCKED",
       });
     });
   }

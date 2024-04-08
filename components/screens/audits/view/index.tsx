@@ -1,11 +1,12 @@
+import { AuditorStatus, AuditStatus } from "@prisma/client";
+
 import { Column, Row } from "@/components/Box";
 import DynamicLink from "@/components/Link";
 import { trimAddress } from "@/lib/utils";
 import { Icon } from "@/components/Icon";
 import { AuditAuditor } from "@/components/Audit/client";
-import { AuditDashboardActions } from "./actions";
-import { AuditorStatus, AuditStatus } from "@prisma/client";
 import { AuditViewDetailedI } from "@/lib/types";
+import AuditDashboardActions from "./actions";
 
 const AuditPage = ({ audit }: { audit: AuditViewDetailedI }): JSX.Element => {
   const verifiedAuditors = audit.auditors.filter(
