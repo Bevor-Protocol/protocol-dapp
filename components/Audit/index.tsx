@@ -8,6 +8,26 @@ import { Column, Row } from "@/components/Box";
 import { trimAddress, cn } from "@/lib/utils";
 import { AuditAuditor } from "./client";
 
+export const AuditCardTruncated = ({ audit }: { audit: AuditViewI }): JSX.Element => {
+  return (
+    <div className="w-1/2 p-2">
+      <Card.Main className="w-full cursor-pointer transition-colors hover:bg-dark-primary-30">
+        <Card.Content className="gap-4">
+          <DynamicLink href={`/user/${audit.auditee.address}`}>
+            <Icon image={audit.auditee.image} seed={audit.auditee.address} size="lg" />
+          </DynamicLink>
+          <Column className="justify-start items-start overflow-hidden w-full">
+            <p className="text-lg font-bold line-clamp-1">{audit.title}</p>
+            <p className="text-ellipsis overflow-hidden w-full text-sm line-clamp-2">
+              {audit.description}
+            </p>
+          </Column>
+        </Card.Content>
+      </Card.Main>
+    </div>
+  );
+};
+
 export const AuditCard = ({ audit }: { audit: AuditViewI }): JSX.Element => {
   return (
     <Card.Main className="w-full">

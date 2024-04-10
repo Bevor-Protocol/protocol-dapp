@@ -12,9 +12,11 @@ import UploadFindings from "@/components/Modal/Content/uploadFindings";
 const AuditorSubmitFindings = ({
   auditId,
   userId,
+  disabled,
 }: {
   auditId: string;
   userId: string;
+  disabled: boolean;
 }): JSX.Element => {
   const { toggleOpen, setContent } = useModal();
 
@@ -24,7 +26,7 @@ const AuditorSubmitFindings = ({
   };
   return (
     <Row className="items-center gap-4">
-      <Button className="flex-1" onClick={handleUploadModal}>
+      <Button className="flex-1" onClick={handleUploadModal} disabled={disabled}>
         Submit Findings
       </Button>
       <Tooltip.Reference>
@@ -47,9 +49,11 @@ const AuditorSubmitFindings = ({
 const AuditorUpdateFindings = ({
   auditId,
   userId,
+  disabled,
 }: {
   auditId: string;
   userId: string;
+  disabled: boolean;
 }): JSX.Element => {
   const { toggleOpen, setContent } = useModal();
 
@@ -59,7 +63,7 @@ const AuditorUpdateFindings = ({
   };
   return (
     <Row className="items-center gap-4">
-      <Button className="flex-1" onClick={handleUploadModal}>
+      <Button className="flex-1" onClick={handleUploadModal} disabled={disabled}>
         Update Findings
       </Button>
       <Tooltip.Reference>
@@ -119,8 +123,8 @@ const AuditOngoingActions = ({
   if (isAnAuditor) {
     return (
       <Column className="gap-2 items-end w-fit *:w-full">
-        {auditorNotSubmitted && <AuditorSubmitFindings auditId={auditId} userId={userId} />}
-        {auditorSubmitted && <AuditorUpdateFindings auditId={auditId} userId={userId} />}
+        <AuditorSubmitFindings auditId={auditId} userId={userId} disabled={!auditorNotSubmitted} />
+        <AuditorUpdateFindings auditId={auditId} userId={userId} disabled={!auditorSubmitted} />
       </Column>
     );
   }

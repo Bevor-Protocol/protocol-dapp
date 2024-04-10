@@ -172,16 +172,16 @@ const AuditLockedActions = ({
   const [disabled, setDisabled] = useState(false);
 
   const isTheAuditee = audit.auditeeId === user.id;
-  const isAnAuditor = verifiedAuditors.filter((auditor) => auditor.userId == user.id).length > 0;
+  const isAnAuditor = verifiedAuditors.findIndex((auditor) => auditor.userId == user.id) > -1;
   const hasAttested =
-    verifiedAuditors.filter((auditor) => {
+    verifiedAuditors.findIndex((auditor) => {
       if (auditor.userId == user.id) {
         if (auditor.attestedTerms) {
           return true;
         }
       }
       return false;
-    }).length > 0;
+    }) > -1;
 
   if (isTheAuditee) {
     return (
@@ -201,7 +201,7 @@ const AuditLockedActions = ({
           disabled={disabled}
           setDisabled={setDisabled}
         />
-        {!hasAttested && <AuditorAttestTerms audit={audit} user={user} disabled={disabled} />}
+        <AuditorAttestTerms audit={audit} user={user} disabled={hasAttested || disabled} />
       </Column>
     );
   }

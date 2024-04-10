@@ -61,7 +61,8 @@ const AuditeeManageRequest = ({
         <Tooltip.Content side="top" align="end">
           <div className="bg-dark shadow rounded-lg cursor-default min-w-48">
             <div className="p-2">
-              As the Auditee, you can verify or reject the auditors requesting to conduct this audit
+              If there are auditors you have rejected, or auditors who have requested, you can
+              manage these requests.
             </div>
           </div>
         </Tooltip.Content>
@@ -245,13 +246,14 @@ const AuditeeLockAudit = ({
         <Tooltip.Trigger>
           <Info height="1rem" width="1rem" />
         </Tooltip.Trigger>
-        <Tooltip.Content side="top" align="end">
+        <Tooltip.Content side="top" align="end" className="w-60">
           <div className="bg-dark shadow rounded-lg cursor-default min-w-48">
             <div className="p-2">
-              As the Auditee, you can move this audit to Locked, meaning that no one can request to
-              join the audit, and you cannot add additional auditors. This moves the audit into the
-              Attestation period. This is reversible, however all Auditors who were previously
-              rejected can now re-request to join.
+              If you have submitted the Audit details, and there is at least 1 verified auditor, you
+              can lock this audit. This moves the audit into the Attestation period, and means that
+              no one can request to join the audit, and you cannot add additional auditors. This is
+              reversible, however all Auditors who were previously rejected can now re-request to
+              join.
             </div>
           </div>
         </Tooltip.Content>
@@ -279,21 +281,22 @@ const AuditOpenActions = ({
   const [disabled, setDisabled] = useState(false);
 
   const isTheAuditee = audit.auditeeId === user.id;
-  const isAnAuditor = verifiedAuditors.filter((auditor) => auditor.userId == user.id).length > 0;
-  const isRequestor = requestedAuditors.filter((auditor) => auditor.userId == user.id).length > 0;
-  const isRejected = rejectedAuditors.filter((auditor) => auditor.userId == user.id).length > 0;
+  const isAnAuditor = verifiedAuditors.findIndex((auditor) => auditor.userId == user.id) > -1;
+  const isRequestor = requestedAuditors.findIndex((auditor) => auditor.userId == user.id) > -1;
+  const isRejected = rejectedAuditors.findIndex((auditor) => auditor.userId == user.id) > -1;
+  const canManage = requestedAuditors.length > 0 || rejectedAuditors.length > 0;
   const canLock = verifiedAuditors.length > 0 && !!audit.details;
 
   if (isTheAuditee) {
     return (
       <Column className="gap-2 items-end w-fit *:w-full">
         <AuditeeEditAudit id={audit.id} />
-        {(requestedAuditors.length > 0 || rejectedAuditors.length > 0) && (
-          <AuditeeManageRequest audit={audit} disabled={disabled} />
-        )}
-        {canLock && (
-          <AuditeeLockAudit auditId={audit.id} disabled={disabled} setDisabled={setDisabled} />
-        )}
+        <AuditeeManageRequest audit={audit} disabled={!canManage || disabled} />
+        <AuditeeLockAudit
+          auditId={audit.id}
+          disabled={!canLock || disabled}
+          setDisabled={setDisabled}
+        />
       </Column>
     );
   }

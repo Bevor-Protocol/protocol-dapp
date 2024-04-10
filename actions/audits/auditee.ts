@@ -317,6 +317,17 @@ export const reopenAudit = async (id: string): Promise<GenericUpdateI<Audits>> =
       },
       data: {
         status: AuditStatus.OPEN,
+        auditors: {
+          updateMany: {
+            where: {
+              auditId: id,
+            },
+            data: {
+              acceptedTerms: false,
+              attestedTerms: false,
+            },
+          },
+        },
       },
     })
     .then((data) => {
