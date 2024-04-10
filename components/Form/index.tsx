@@ -15,6 +15,7 @@ interface InputI extends React.InputHTMLAttributes<HTMLInputElement> {
 interface DropI extends React.InputHTMLAttributes<HTMLInputElement> {
   className?: string;
   extensions?: string[];
+  text?: string;
   selected: File | undefined;
   setSelected: React.Dispatch<React.SetStateAction<File | undefined>>;
 }
@@ -139,6 +140,7 @@ export const Image: React.FC<ImageI> = ({
 export const Dropbox: React.FC<DropI> = ({
   className,
   disabled,
+  text,
   extensions = ["md"],
   selected,
   setSelected,
@@ -161,7 +163,7 @@ export const Dropbox: React.FC<DropI> = ({
 
   return (
     <label className={cn("w-full block *:text-sm", className)}>
-      <p className="my-2">Audit Details</p>
+      {text && <p className="my-2">{text}</p>}
       <Column
         className={cn(
           "w-80 h-28 transition-colors justify-center items-center relative",

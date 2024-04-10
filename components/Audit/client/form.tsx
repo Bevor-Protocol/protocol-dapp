@@ -121,6 +121,7 @@ const AuditFormEntries = ({
         />
         <Form.Dropbox
           name="details"
+          text="Audit Details"
           disabled={query.isPending}
           aria-disabled={query.isPending}
           selected={selectedFile}

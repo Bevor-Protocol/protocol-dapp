@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 
-import { getAudits } from "@/actions/audits/get";
+import { getAudits } from "@/actions/audits/general";
 import { Column, Row } from "@/components/Box";
 import { AuditCard } from "@/components/Audit";
 import { Toggle } from "@/components/Toggle";

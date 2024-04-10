@@ -3,7 +3,7 @@ import { AuditorStatus, AuditStatus } from "@prisma/client";
 
 import AuditPage from "@/components/screens/audits/view";
 import AuditMarkdown from "@/components/screens/audits/view/markdown";
-import { getAudit, getMarkdown } from "@/actions/audits/get";
+import { getAudit, getMarkdown } from "@/actions/audits/general";
 import { MarkdownAuditsI } from "@/lib/types";
 import { LoaderFill } from "@/components/Loader";
 

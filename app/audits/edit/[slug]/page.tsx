@@ -2,7 +2,7 @@ import { Suspense } from "react";
 
 import { LoaderFill } from "@/components/Loader";
 import AuditEditWrapper from "@/components/screens/audits/edit";
-import { getAudit } from "@/actions/audits/get";
+import { getAudit } from "@/actions/audits/general";
 
 const Fetcher = async ({ auditId }: { auditId: string }): Promise<JSX.Element> => {
   const audit = await getAudit(auditId);

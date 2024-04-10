@@ -52,7 +52,13 @@ const AuditDashboardActions = ({
   }
 
   if (audit.status === AuditStatus.ONGOING) {
-    return <AuditOngoingActions user={user} verifiedAuditors={verifiedAuditors} />;
+    return (
+      <AuditOngoingActions
+        auditId={audit.id}
+        userId={user.id}
+        verifiedAuditors={verifiedAuditors}
+      />
+    );
   }
 
   return <AuditFinalActions />;

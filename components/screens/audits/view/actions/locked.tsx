@@ -6,8 +6,8 @@ import { useMutation } from "@tanstack/react-query";
 
 import { AuditViewDetailedI } from "@/lib/types";
 import { useModal } from "@/lib/hooks";
-import { reopenAudit } from "@/actions/audits/update";
-import { auditDeleteRequest } from "@/actions/audits/requests";
+import { reopenAudit } from "@/actions/audits/auditee";
+import { leaveAudit } from "@/actions/audits/auditor";
 import { Row, Column } from "@/components/Box";
 import { Button } from "@/components/Button";
 import DynamicLink from "@/components/Link";
@@ -90,7 +90,7 @@ const AuditorRemoveVerification = ({
   setDisabled: React.Dispatch<React.SetStateAction<boolean>>;
 }): JSX.Element => {
   const { mutate } = useMutation({
-    mutationFn: () => auditDeleteRequest(auditId, userId),
+    mutationFn: () => leaveAudit(auditId, userId),
     onMutate: () => setDisabled(true),
     onSettled: (data) => {
       setDisabled(false);

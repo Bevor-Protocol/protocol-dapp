@@ -7,7 +7,7 @@ import { useModal } from "@/lib/hooks";
 import { Column, Row } from "@/components/Box";
 import { AuditViewDetailedI } from "@/lib/types";
 // import * as Form from "@/components/Form";
-import { auditUpdateApprovalStatus } from "@/actions/audits/requests";
+import { auditUpdateApprovalStatus } from "@/actions/audits/auditee";
 import { Auditors, AuditorStatus } from "@prisma/client";
 import { AuditorItem } from "@/components/Audit";
 import { Button } from "@/components/Button";

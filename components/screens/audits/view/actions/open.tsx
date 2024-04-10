@@ -5,8 +5,8 @@ import { useMutation } from "@tanstack/react-query";
 
 import { AuditViewDetailedI } from "@/lib/types";
 import { useModal } from "@/lib/hooks";
-import { auditAddRequest, auditDeleteRequest } from "@/actions/audits/requests";
-import { lockAudit } from "@/actions/audits/update";
+import { auditAddRequest, auditDeleteRequest } from "@/actions/audits/user";
+import { lockAudit } from "@/actions/audits/auditee";
 import { Row, Column } from "@/components/Box";
 import { Button } from "@/components/Button";
 import DynamicLink from "@/components/Link";

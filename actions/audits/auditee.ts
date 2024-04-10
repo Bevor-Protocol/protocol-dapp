@@ -1,13 +1,103 @@
 "use server";
-import { prisma } from "@/db/prisma.server";
-import { z } from "zod";
 
-import { AuditViewDetailedI, GenericUpdateI } from "@/lib/types";
+import { AuditorStatus, Audits, Users, AuditStatus, Prisma, Auditors } from "@prisma/client";
 import { revalidatePath } from "next/cache";
-import { AuditorStatus, Audits, AuditStatus, Prisma, Users, Auditors } from "@prisma/client";
+import { z } from "zod";
+import { prisma } from "@/db/prisma.server";
+
+import { GenericUpdateI, AuditViewDetailedI } from "@/lib/types";
 import { auditFormSchema } from "@/lib/validations";
 import { putBlob } from "@/actions/blobs";
-import { getAudit } from "@/actions/audits/get";
+import { getAudit } from "@/actions/audits/general";
+
+const createAuditIso = (
+  id: string,
+  auditData: {
+    title: string;
+    description: string;
+    details?: string;
+    price: number;
+    duration: number;
+  },
+  auditors: Users[],
+): Promise<Audits> => {
+  const auditorsCreate = auditors.map((auditor) => {
+    return {
+      status: AuditorStatus.VERIFIED,
+      user: {
+        connect: {
+          id: auditor.id,
+        },
+      },
+    };
+  });
+
+  return prisma.audits.create({
+    data: {
+      auditee: {
+        connect: {
+          id,
+        },
+      },
+      ...auditData,
+      auditors: {
+        create: auditorsCreate,
+      },
+    },
+  });
+};
+
+export const createAudit = (
+  id: string,
+  audit: FormData,
+  auditors: Users[],
+): Promise<GenericUpdateI<Audits>> => {
+  // This function doesn't require "requests" or "termsAccepted" connections/creations.
+  // However, you can create a function with explicit auditors, who bypass the need for requests.
+  const form = Object.fromEntries(audit);
+  const formParsed = auditFormSchema.safeParse(form);
+  if (!formParsed.success) {
+    const formattedErrors: Record<string, string> = {};
+    formParsed.error.errors.forEach((error) => {
+      formattedErrors[error.path[0]] = error.message;
+    });
+    return Promise.resolve({
+      success: false,
+      error: "zod",
+      validationErrors: formattedErrors,
+    });
+  }
+  const { details, ...rest } = formParsed.data as z.infer<typeof auditFormSchema>;
+
+  return putBlob("audit-details", details)
+    .then((result) => {
+      const { data, success } = result;
+      if (success && data) {
+        return createAuditIso(
+          id,
+          {
+            ...rest,
+            details: data.url,
+          },
+          auditors,
+        );
+      }
+      return createAuditIso(id, { ...rest }, auditors);
+    })
+    .then((data) => {
+      revalidatePath(`{/user/${id}}`);
+      return {
+        success: true,
+        data,
+      };
+    })
+    .catch((error) => {
+      return {
+        success: false,
+        error: error.name,
+      };
+    });
+};
 
 const updateAuditIso = (
   id: string,
@@ -113,7 +203,7 @@ export const updateAudit = async (
     .then((result) => {
       const { data, success } = result;
       if (success && data) {
-        dataPass.details = result.data.url;
+        dataPass.details = data.url;
       }
       return updateAuditIso(id, { ...dataPass }, auditors, currentAudit);
     })
@@ -133,6 +223,9 @@ export const updateAudit = async (
 };
 
 export const lockAudit = async (id: string): Promise<GenericUpdateI<Audits>> => {
+  // 1) check assertions, can only be performed on an OPEN audit
+  // 2) move the audit to the ATTESTATION period
+  // 3) remove unverified auditors... if reopened, they'll be able to re-request.
   const currentAudit = await getAudit(id);
 
   if (!currentAudit) {
@@ -241,29 +334,46 @@ export const reopenAudit = async (id: string): Promise<GenericUpdateI<Audits>> =
     });
 };
 
-export const attestToTerms = (
+export const auditUpdateRequestors = (
   id: string,
-  userId: string,
-  status: boolean,
-): Promise<GenericUpdateI<Auditors>> => {
-  return prisma.auditors
-    .update({
-      where: {
-        auditId_userId: {
-          auditId: id,
-          userId,
-        },
+  auditors: Auditors[],
+  status: AuditorStatus,
+): Promise<Prisma.BatchPayload> => {
+  // To be called by the Auditee on a batch basis. Can approve or reject auditors,
+  // but it won't hard delete them.
+
+  const auditorIds = auditors.map((auditor) => auditor.userId);
+
+  return prisma.auditors.updateMany({
+    where: {
+      auditId: id,
+      userId: {
+        in: auditorIds,
       },
-      data: {
-        acceptedTerms: status,
-        attestedTerms: true,
-      },
-    })
+    },
+    data: {
+      status,
+    },
+  });
+};
+
+export const auditUpdateApprovalStatus = (
+  id: string,
+  auditorsApprove: Auditors[],
+  auditorsReject: Auditors[],
+): Promise<GenericUpdateI<{ rejected: number; verified: number }>> => {
+  return Promise.all([
+    auditUpdateRequestors(id, auditorsReject, AuditorStatus.REJECTED),
+    auditUpdateRequestors(id, auditorsApprove, AuditorStatus.VERIFIED),
+  ])
     .then((data) => {
-      revalidatePath(`{/audits/view/${id}}`);
+      revalidatePath(`/audits/view/${id}`);
       return {
         success: true,
-        data,
+        data: {
+          rejected: data[0].count,
+          verified: data[1].count,
+        },
       };
     })
     .catch((error) => {

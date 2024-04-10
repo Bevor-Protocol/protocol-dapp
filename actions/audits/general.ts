@@ -9,24 +9,15 @@ import { AuditViewI, AuditViewDetailedI } from "@/lib/types";
 import { AuditorStatus, AuditStatus } from "@prisma/client";
 
 export const getAudits = (status?: string): Promise<AuditViewI[]> => {
-  let statusFilter;
-  switch (status) {
-    case "locked":
-      statusFilter = AuditStatus.ATTESTATION;
-      break;
-    case "ongoing":
-      statusFilter = AuditStatus.ONGOING;
-      break;
-    case "completed":
-      statusFilter = AuditStatus.FINAL;
-      break;
-    default:
-      statusFilter = AuditStatus.OPEN;
-      break;
-  }
+  const statusFilter: Record<string, AuditStatus> = {
+    locked: AuditStatus.ATTESTATION,
+    ongoing: AuditStatus.ONGOING,
+    completed: AuditStatus.FINAL,
+    open: AuditStatus.OPEN,
+  };
   return prisma.audits.findMany({
     where: {
-      status: statusFilter,
+      status: statusFilter[status ?? "open"],
     },
     include: {
       auditee: true,
