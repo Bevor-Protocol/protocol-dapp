@@ -67,3 +67,11 @@ export const HomeStatSkeleton = (): JSX.Element => {
     </Card.Main>
   );
 };
+
+export const LoaderFill = ({ className }: { className?: string }): JSX.Element => {
+  return (
+    <Column className="h-full justify-center">
+      <Loader className={className ?? "h-12"} />
+    </Column>
+  );
+};

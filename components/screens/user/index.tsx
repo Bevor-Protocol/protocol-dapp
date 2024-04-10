@@ -1,34 +1,24 @@
-import UserNotExist from "./onboard";
+import { Users } from "@prisma/client";
+
 import UserAudits from "./audits";
 import UserProfileActions from "./actions";
-import { getUserProfile, getUserStats } from "@/actions/users";
 import { Loader } from "@/components/Loader";
 import { Suspense } from "react";
 import { Column, Row } from "@/components/Box";
 import { Icon } from "@/components/Icon";
 import { trimAddress } from "@/lib/utils";
 import * as Form from "@/components/Form";
+import { UserStats } from "@/lib/types";
 
-const UserContent = async ({ address }: { address: string }): Promise<JSX.Element> => {
-  /* 
-  User does not exist:
-    If not connected:
-      Display that this isn't a user of Bevor
-    If connected:
-      If address == connected address:
-        Allow for onboarding flow
-      Else:
-        Display that this isn't a user of Bevor
-  Else:
-    Show user profile. If owner, allow for edit.
-  */
-  const user = await getUserProfile(address);
-
-  if (!user) {
-    return <UserNotExist address={address} />;
-  }
-  const stats = await getUserStats(address);
-
+const UserContent = async ({
+  address,
+  user,
+  stats,
+}: {
+  address: string;
+  user: Users;
+  stats: UserStats;
+}): Promise<JSX.Element> => {
   return (
     <Column className="items-start w-full max-w-[1000px] py-8">
       <Row className="justify-between w-full">

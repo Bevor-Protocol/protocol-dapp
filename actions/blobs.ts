@@ -15,19 +15,15 @@ export const putBlob = (
       error: "no file exists",
     });
   }
-  return put(`${folder}/${file.name}`, file, { access: "public" })
-    .then((data) => {
-      return {
-        success: true,
-        data,
-      };
-    })
-    .catch((error) => {
-      return {
-        success: false,
-        error: error.name,
-      };
-    });
+  // Don't need an explicit catch here, as it is always chained into a thenable
+  // and will be caught regardless.
+
+  return put(`${folder}/${file.name}`, file, { access: "public" }).then((data) => {
+    return {
+      success: true,
+      data,
+    };
+  });
 };
 
 export const deleteBlob = async (url: string): Promise<void> => {
