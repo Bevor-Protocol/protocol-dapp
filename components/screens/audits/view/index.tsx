@@ -7,6 +7,7 @@ import { Icon } from "@/components/Icon";
 import { AuditAuditor } from "@/components/Audit/client";
 import { AuditViewDetailedI } from "@/lib/types";
 import AuditDashboardActions from "./actions";
+import Withdraw from "./actions/withdraw";
 
 const AuditPage = ({ audit }: { audit: AuditViewDetailedI }): JSX.Element => {
   const verifiedAuditors = audit.auditors.filter(
@@ -37,8 +38,10 @@ const AuditPage = ({ audit }: { audit: AuditViewDetailedI }): JSX.Element => {
             <span>{trimAddress(audit.auditee.address)}</span>
           </p>
         </div>
+
         <div>
           <p className="text-lg font-bold">{audit.title}</p>
+
           <p className="text-base my-2">{audit.description}</p>
         </div>
         <div>
@@ -138,6 +141,7 @@ const AuditPage = ({ audit }: { audit: AuditViewDetailedI }): JSX.Element => {
           )}
         </div>
       </Column>
+      <Column className="gap-2 w-[40%]">{audit.status == AuditStatus.FINAL && <Withdraw />}</Column>
       <Column className="gap-6 justify-between items-end">
         <div>
           <p className="text-right text-lg">

@@ -36,7 +36,6 @@ export const AuditCard = ({ audit }: { audit: AuditViewI }): JSX.Element => {
           <Icon image={audit.auditee.image} seed={audit.auditee.address} size="lg" />
         </DynamicLink>
         <Column className="justify-start items-start overflow-hidden w-full">
-          <p className="text-lg font-bold">{audit.title}</p>
           <p className="text-ellipsis overflow-hidden w-full text-base line-clamp-2">
             {audit.description}
           </p>
