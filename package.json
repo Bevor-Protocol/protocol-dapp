@@ -47,6 +47,7 @@
     "encoding": "^0.1.13",
     "eslint": "8.57.0",
     "eslint-config-next": "14.1.4",
+    "ethers": "^6.11.1",
     "gray-matter": "^4.0.3",
     "lokijs": "^1.5.12",
     "next": "14.1.4",
