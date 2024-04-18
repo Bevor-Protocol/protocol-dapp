@@ -78,6 +78,35 @@ const AuditeeReopenAudit = ({
   );
 };
 
+const AuditeeInitiateAudit = ({ disabled }: { disabled: boolean }): JSX.Element => {
+  const tempAlert = (): void => {
+    alert(
+      "This is where the Auditee posts a TXN on-chain\nIncluding audit details, terms, and auditors",
+    );
+  };
+
+  return (
+    <Row className="items-center gap-4">
+      <Button disabled={disabled} onClick={tempAlert} className="flex-1">
+        Kick Off Audit
+      </Button>
+      <Tooltip.Reference>
+        <Tooltip.Trigger>
+          <Info height="1rem" width="1rem" />
+        </Tooltip.Trigger>
+        <Tooltip.Content side="top" align="end">
+          <div className="bg-dark shadow rounded-lg cursor-default min-w-48">
+            <div className="p-2">
+              As the Auditee, once all parties attest and accept the terms, you can kick off the
+              audit period. This requires posting data on-chain.
+            </div>
+          </div>
+        </Tooltip.Content>
+      </Tooltip.Reference>
+    </Row>
+  );
+};
+
 const AuditorRemoveVerification = ({
   auditId,
   userId,
@@ -182,12 +211,15 @@ const AuditLockedActions = ({
       }
       return false;
     }) > -1;
+  const allAttested =
+    verifiedAuditors.filter((auditor) => auditor.acceptedTerms).length == verifiedAuditors.length;
 
   if (isTheAuditee) {
     return (
       <Column className="gap-2 items-end w-fit *:w-full">
         <AuditeeEditAudit id={audit.id} />
         <AuditeeReopenAudit id={audit.id} disabled={disabled} setDisabled={setDisabled} />
+        <AuditeeInitiateAudit disabled={!allAttested || disabled} />
       </Column>
     );
   }
