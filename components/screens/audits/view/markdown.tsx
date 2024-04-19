@@ -5,6 +5,7 @@ import { Row } from "@/components/Box";
 import { Toggle } from "@/components/Toggle";
 import { MarkdownAuditsI } from "@/lib/types";
 import { AuditorItem } from "@/components/Audit";
+import DynamicLink from "@/components/Link";
 
 const AuditMarkdown = ({
   markdownObject,
@@ -56,10 +57,12 @@ const AuditMarkdown = ({
       {active == "findings" && (
         <Row className="items-center gap-4">
           <p>Auditor:</p>
-          <AuditorItem
-            auditor={markdownObject.findings[findingsActive].user}
-            className="my-4 gap-2 items-center"
-          />
+          <DynamicLink href={`/user/${markdownObject.findings[findingsActive].user.address}`}>
+            <AuditorItem
+              auditor={markdownObject.findings[findingsActive].user}
+              className="my-4 gap-2 items-center"
+            />
+          </DynamicLink>
         </Row>
       )}
       {active == "details" && markdownObject.details && (

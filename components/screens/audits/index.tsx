@@ -8,11 +8,11 @@ import { Column, Row } from "@/components/Box";
 import { AuditCard } from "@/components/Audit";
 import { Toggle } from "@/components/Toggle";
 import { AuditsSkeleton } from "@/components/Loader";
-import { AuditListDetailedI } from "@/lib/types";
+import { AuditDetailedI } from "@/lib/types";
 
 const statuses = ["open", "locked", "ongoing", "challengeable", "completed"];
 
-const Audits = ({ initialData }: { initialData: AuditListDetailedI[] }): JSX.Element => {
+const Audits = ({ initialData }: { initialData: AuditDetailedI[] }): JSX.Element => {
   const [display, setDisplay] = useState("open");
 
   const { data, isFetching } = useQuery({

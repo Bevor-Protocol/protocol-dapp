@@ -1,10 +1,10 @@
 "use client";
 
 import { useState } from "react";
-import { Auditors, Users } from "@prisma/client";
+import { Users } from "@prisma/client";
 import { useMutation } from "@tanstack/react-query";
 
-import { AuditViewI } from "@/lib/types";
+import { AuditI, AuditStateI } from "@/lib/types";
 import { useModal } from "@/lib/hooks";
 import { reopenAudit } from "@/actions/audits/auditee";
 import { leaveAudit } from "@/actions/audits/auditor";
@@ -156,7 +156,7 @@ const AuditorAttestTerms = ({
   disabled,
 }: {
   user: Users;
-  audit: AuditViewI;
+  audit: AuditI;
   disabled: boolean;
 }): JSX.Element => {
   const { toggleOpen, setContent } = useModal();
@@ -191,40 +191,26 @@ const AuditorAttestTerms = ({
 const AuditLockedActions = ({
   user,
   audit,
-  verifiedAuditors,
+  actionData,
 }: {
   user: Users;
-  audit: AuditViewI;
-  verifiedAuditors: Auditors[];
+  audit: AuditI;
+  actionData: AuditStateI;
 }): JSX.Element => {
   // I'll set a global disabled state for all mutations within children.
   const [disabled, setDisabled] = useState(false);
 
-  const isTheAuditee = audit.auditeeId === user.id;
-  const isAnAuditor = verifiedAuditors.findIndex((auditor) => auditor.userId == user.id) > -1;
-  const hasAttested =
-    verifiedAuditors.findIndex((auditor) => {
-      if (auditor.userId == user.id) {
-        if (auditor.attestedTerms) {
-          return true;
-        }
-      }
-      return false;
-    }) > -1;
-  const allAttested =
-    verifiedAuditors.filter((auditor) => auditor.acceptedTerms).length == verifiedAuditors.length;
-
-  if (isTheAuditee) {
+  if (actionData.isTheAuditee) {
     return (
       <Column className="gap-2 items-end w-fit *:w-full">
         <AuditeeEditAudit id={audit.id} />
         <AuditeeReopenAudit id={audit.id} disabled={disabled} setDisabled={setDisabled} />
-        <AuditeeInitiateAudit disabled={!allAttested || disabled} />
+        <AuditeeInitiateAudit disabled={!actionData.allAttested || disabled} />
       </Column>
     );
   }
 
-  if (isAnAuditor) {
+  if (actionData.isAnAuditor) {
     return (
       <Column className="gap-2 items-end w-fit *:w-full">
         <AuditorRemoveVerification
@@ -233,7 +219,11 @@ const AuditLockedActions = ({
           disabled={disabled}
           setDisabled={setDisabled}
         />
-        <AuditorAttestTerms audit={audit} user={user} disabled={hasAttested || disabled} />
+        <AuditorAttestTerms
+          audit={audit}
+          user={user}
+          disabled={actionData.userAttested || disabled}
+        />
       </Column>
     );
   }

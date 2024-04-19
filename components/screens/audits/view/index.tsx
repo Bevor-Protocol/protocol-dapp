@@ -5,11 +5,11 @@ import DynamicLink from "@/components/Link";
 import { trimAddress } from "@/lib/utils";
 import { Icon } from "@/components/Icon";
 import { AuditAuditor } from "@/components/Audit/client";
-import { AuditViewI } from "@/lib/types";
+import { AuditI } from "@/lib/types";
 import AuditDashboardActions from "./actions";
 import Withdraw from "./actions/withdraw";
 
-const AuditPage = ({ audit }: { audit: AuditViewI }): JSX.Element => {
+const AuditPage = ({ audit }: { audit: AuditI }): JSX.Element => {
   const verifiedAuditors = audit.auditors.filter(
     (auditor) => auditor.status == AuditorStatus.VERIFIED,
   );
@@ -160,12 +160,7 @@ const AuditPage = ({ audit }: { audit: AuditViewI }): JSX.Element => {
         {(audit.status == AuditStatus.CHALLENGEABLE || audit.status == AuditStatus.FINALIZED) && (
           <Withdraw />
         )}
-        <AuditDashboardActions
-          audit={audit}
-          verifiedAuditors={verifiedAuditors}
-          requestedAuditors={requestedAuditors}
-          rejectedAuditors={rejectedAuditors}
-        />
+        <AuditDashboardActions audit={audit} />
       </Column>
     </Row>
   );

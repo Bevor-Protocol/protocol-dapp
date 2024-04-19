@@ -3,12 +3,12 @@ import { Users } from "@prisma/client";
 import * as Card from "@/components/Card";
 import { Icon } from "@/components/Icon";
 import DynamicLink from "@/components/Link";
-import { AuditListDetailedI, AuditListTruncatedI } from "@/lib/types";
+import { AuditDetailedI, AuditTruncatedI } from "@/lib/types";
 import { Column, Row } from "@/components/Box";
 import { trimAddress, cn } from "@/lib/utils";
 import { AuditAuditor } from "./client";
 
-export const AuditCardTruncated = ({ audit }: { audit: AuditListTruncatedI }): JSX.Element => {
+export const AuditCardTruncated = ({ audit }: { audit: AuditTruncatedI }): JSX.Element => {
   return (
     <div className="w-1/2 p-2">
       <DynamicLink href={`/audits/view/${audit.id}`} className="w-full">
@@ -28,7 +28,7 @@ export const AuditCardTruncated = ({ audit }: { audit: AuditListTruncatedI }): J
   );
 };
 
-export const AuditCard = ({ audit }: { audit: AuditListDetailedI }): JSX.Element => {
+export const AuditCard = ({ audit }: { audit: AuditDetailedI }): JSX.Element => {
   return (
     <Card.Main className="w-full">
       <Card.Content className="gap-4">
