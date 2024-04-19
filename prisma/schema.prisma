@@ -24,10 +24,11 @@ model Users {
 }
 
 enum AuditStatus {
-  OPEN // auditors can join + leave
-  ATTESTATION // attestation period
-  ONGOING // terms are locked, audit is ongoing 
-  FINAL // handoff occurred, audit is complete -> push onchain.
+  DISCOVERY // discovery phase
+  ATTESTATION // audit is locked, auditors attest to terms
+  AUDITING // auditors are auditing, can submit findings. Auditee implements findings
+  CHALLENGEABLE // vesting has begun, users can challenge status
+  FINALIZED // audit is complete and cannot be challenged
 }
 
 model Audits {
@@ -39,7 +40,7 @@ model Audits {
   details     String? // references blob storage URL
   price       Int         @default(0)
   duration    Int         @default(6) // duration in months
-  status      AuditStatus @default(OPEN)
+  status      AuditStatus @default(DISCOVERY)
   auditors    Auditors[]
   createdAt   DateTime    @default(now())
   updatedAt   DateTime    @updatedAt

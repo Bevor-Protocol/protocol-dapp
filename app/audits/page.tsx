@@ -1,11 +1,11 @@
 import { Suspense } from "react";
 
 import { Loader } from "@/components/Loader";
-import { getAudits } from "@/actions/audits/general";
+import { getAuditsDetailed } from "@/actions/audits/general";
 import Audits from "@/components/screens/audits";
 
 const Fetcher = async (): Promise<JSX.Element> => {
-  const data = await getAudits("open");
+  const data = await getAuditsDetailed("open");
   return <Audits initialData={data} />;
 };
 

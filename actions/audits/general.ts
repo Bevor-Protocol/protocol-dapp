@@ -1,25 +1,34 @@
 "use server";
-import { prisma } from "@/db/prisma.server";
+
+import { Auditors, AuditorStatus, AuditStatus } from "@prisma/client";
 import { remark } from "remark";
 import html from "remark-html";
 import remarkGfm from "remark-gfm";
 import matter from "gray-matter";
+import { prisma } from "@/db/prisma.server";
 
-import { AuditViewI, AuditViewDetailedI } from "@/lib/types";
-import { AuditorStatus, AuditStatus } from "@prisma/client";
+import { AuditDetailedI, AuditStateI, AuditI, MarkdownAuditsI } from "@/lib/types";
 
-export const getAudits = (status?: string): Promise<AuditViewI[]> => {
-  const statusFilter: Record<string, AuditStatus> = {
-    locked: AuditStatus.ATTESTATION,
-    ongoing: AuditStatus.ONGOING,
-    completed: AuditStatus.FINAL,
-    open: AuditStatus.OPEN,
-  };
+const statusFilter: Record<string, AuditStatus> = {
+  open: AuditStatus.DISCOVERY,
+  locked: AuditStatus.ATTESTATION,
+  ongoing: AuditStatus.AUDITING,
+  challengeable: AuditStatus.CHALLENGEABLE,
+  completed: AuditStatus.FINALIZED,
+};
+
+export const getAuditsDetailed = (status?: string): Promise<AuditDetailedI[]> => {
   return prisma.audits.findMany({
     where: {
       status: statusFilter[status ?? "open"],
     },
-    include: {
+    select: {
+      id: true,
+      title: true,
+      description: true,
+      price: true,
+      duration: true,
+      createdAt: true,
       auditee: true,
       auditors: {
         where: {
@@ -36,24 +45,111 @@ export const getAudits = (status?: string): Promise<AuditViewI[]> => {
   });
 };
 
-export const getAudit = (id: string): Promise<AuditViewDetailedI | null> => {
-  // A more detailed view. Will show verified, rejected, and requested auditors as well.
+export const getAudit = (id: string): Promise<AuditI | null> => {
   return prisma.audits.findUnique({
     where: {
       id,
     },
-    include: {
+    select: {
+      id: true,
+      title: true,
+      description: true,
+      price: true,
+      duration: true,
+      createdAt: true,
+      status: true,
+      details: true,
       auditee: true,
       auditors: {
-        include: {
+        select: {
           user: true,
+          status: true,
+          attestedTerms: true,
+          acceptedTerms: true,
         },
       },
     },
   });
 };
 
-export const getMarkdown = (path: string): Promise<string> => {
+export const getAuditState = (
+  auditId: string,
+  userId: string | undefined,
+): Promise<AuditStateI> => {
+  // Pushed the conditional logic for button actions to server-side
+  const objOut = {
+    isTheAuditee: false,
+    isAnAuditor: false,
+    userIsVerified: false,
+    userIsRequested: false,
+    userIsRejected: false,
+    auditeeCanManageAuditors: false,
+    auditeeCanLock: false,
+    userAttested: false,
+    userAccepted: false,
+    userSubmitted: false,
+    allAttested: false,
+    allSubmitted: false,
+  };
+  return prisma.audits
+    .findUnique({
+      where: {
+        id: auditId,
+      },
+      include: {
+        auditors: {
+          include: {
+            user: true,
+          },
+        },
+        auditee: true,
+      },
+    })
+    .then((result) => {
+      if (!result) return objOut;
+
+      const verifiedAuditors = result.auditors.filter(
+        (auditor) => auditor.status == AuditorStatus.VERIFIED,
+      );
+      const requestedAuditors = result.auditors.filter(
+        (auditor) => auditor.status == AuditorStatus.REQUESTED,
+      );
+      const rejectedAuditors = result.auditors.filter(
+        (auditor) => auditor.status == AuditorStatus.REJECTED,
+      );
+
+      const userAuditor: Auditors | undefined = result.auditors.find(
+        (auditor) => auditor.userId == userId,
+      );
+
+      objOut.isTheAuditee = result.auditeeId == userId;
+
+      if (userAuditor) {
+        objOut.isAnAuditor = true;
+        objOut.userIsVerified = userAuditor.status == AuditorStatus.VERIFIED;
+        objOut.userIsRequested = userAuditor.status == AuditorStatus.REQUESTED;
+        objOut.userIsRejected = userAuditor.status == AuditorStatus.REJECTED;
+
+        objOut.userAttested = userAuditor.attestedTerms;
+        objOut.userAccepted = userAuditor.acceptedTerms;
+        objOut.userSubmitted = !!userAuditor.findings;
+      }
+
+      objOut.auditeeCanManageAuditors = requestedAuditors.length > 0 || rejectedAuditors.length > 0;
+      objOut.auditeeCanLock = verifiedAuditors.length > 0 && !!result.details;
+
+      objOut.allAttested =
+        verifiedAuditors.filter((auditor) => auditor.acceptedTerms).length ==
+        verifiedAuditors.length;
+
+      objOut.allSubmitted =
+        verifiedAuditors.filter((auditor) => !!auditor.findings).length == verifiedAuditors.length;
+
+      return objOut;
+    });
+};
+
+export const parseMarkdown = (path: string): Promise<string> => {
   // I should move this to inside Audit Page, since we're already fetching the Audit, which is what
   // we'd do here.
   return fetch(path)
@@ -70,4 +166,59 @@ export const getMarkdown = (path: string): Promise<string> => {
     .then((contents) => {
       return contents.toString();
     });
+};
+
+export const safeGetMarkdown = async (
+  auditId: string,
+  userId: string | undefined,
+): Promise<MarkdownAuditsI> => {
+  const markdownObject: MarkdownAuditsI = {
+    details: "",
+    findings: {},
+  };
+
+  const state = await getAuditState(auditId, userId);
+
+  const audit = await prisma.audits.findUnique({
+    where: {
+      id: auditId,
+    },
+    include: {
+      auditors: {
+        include: {
+          user: true,
+        },
+      },
+    },
+  });
+
+  if (!audit) return markdownObject;
+
+  if (audit.details) {
+    markdownObject.details = await parseMarkdown(audit.details);
+  }
+
+  const shouldReveal =
+    audit.status == AuditStatus.CHALLENGEABLE ||
+    audit.status == AuditStatus.FINALIZED ||
+    (audit.status == AuditStatus.AUDITING && state.userSubmitted);
+  if (!shouldReveal) {
+    return markdownObject;
+  }
+
+  for (const auditor of audit.auditors) {
+    if (auditor.status === AuditorStatus.VERIFIED) {
+      const user = auditor.user;
+      let markdown = "";
+      if (auditor.findings) {
+        markdown = await parseMarkdown(auditor.findings);
+      }
+      markdownObject.findings[auditor.user.address] = {
+        user,
+        markdown,
+      };
+    }
+  }
+
+  return markdownObject;
 };

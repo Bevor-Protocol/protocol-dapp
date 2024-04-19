@@ -1,9 +1,8 @@
 "use client";
 
-import { Auditors, Users } from "@prisma/client";
 import { useMutation } from "@tanstack/react-query";
 
-import { AuditViewDetailedI } from "@/lib/types";
+import { AuditI, AuditStateI } from "@/lib/types";
 import { useModal } from "@/lib/hooks";
 import { auditAddRequest, auditDeleteRequest } from "@/actions/audits/user";
 import { lockAudit } from "@/actions/audits/auditee";
@@ -14,6 +13,7 @@ import RequestsEdit from "@/components/Modal/Content/requestsEdit";
 import * as Tooltip from "@/components/Tooltip";
 import { Info } from "@/assets";
 import { useState } from "react";
+import { Users } from "@prisma/client";
 
 const AuditeeEditAudit = ({ id }: { id: string }): JSX.Element => {
   return (
@@ -39,7 +39,7 @@ const AuditeeManageRequest = ({
   audit,
   disabled,
 }: {
-  audit: AuditViewDetailedI;
+  audit: AuditI;
   disabled: boolean;
 }): JSX.Element => {
   const { toggleOpen, setContent } = useModal();
@@ -265,43 +265,35 @@ const AuditeeLockAudit = ({
 const AuditOpenActions = ({
   user,
   audit,
-  verifiedAuditors,
-  rejectedAuditors,
-  requestedAuditors,
+  actionData,
 }: {
   user: Users;
-  audit: AuditViewDetailedI;
-  verifiedAuditors: Auditors[];
-  rejectedAuditors: Auditors[];
-  requestedAuditors: Auditors[];
+  audit: AuditI;
+  actionData: AuditStateI;
 }): JSX.Element => {
   // All of the possible audit actions to take for OPEN audits.
 
   // I'll set a global disabled state for all mutations within children.
   const [disabled, setDisabled] = useState(false);
 
-  const isTheAuditee = audit.auditeeId === user.id;
-  const isAnAuditor = verifiedAuditors.findIndex((auditor) => auditor.userId == user.id) > -1;
-  const isRequestor = requestedAuditors.findIndex((auditor) => auditor.userId == user.id) > -1;
-  const isRejected = rejectedAuditors.findIndex((auditor) => auditor.userId == user.id) > -1;
-  const canManage = requestedAuditors.length > 0 || rejectedAuditors.length > 0;
-  const canLock = verifiedAuditors.length > 0 && !!audit.details;
-
-  if (isTheAuditee) {
+  if (actionData.isTheAuditee) {
     return (
       <Column className="gap-2 items-end w-fit *:w-full">
         <AuditeeEditAudit id={audit.id} />
-        <AuditeeManageRequest audit={audit} disabled={!canManage || disabled} />
+        <AuditeeManageRequest
+          audit={audit}
+          disabled={!actionData.auditeeCanManageAuditors || disabled}
+        />
         <AuditeeLockAudit
           auditId={audit.id}
-          disabled={!canLock || disabled}
+          disabled={!actionData.auditeeCanLock || disabled}
           setDisabled={setDisabled}
         />
       </Column>
     );
   }
 
-  if (isAnAuditor) {
+  if (actionData.isAnAuditor) {
     return (
       <Column className="gap-2 items-end w-fit *:w-full">
         <AuditorRemoveVerification
@@ -314,7 +306,7 @@ const AuditOpenActions = ({
     );
   }
 
-  if (isRequestor) {
+  if (actionData.userIsRequested) {
     return (
       <Column className="gap-2 items-end w-fit *:w-full">
         <AuditorRemoveRequest
@@ -327,7 +319,7 @@ const AuditOpenActions = ({
     );
   }
 
-  if (isRejected) {
+  if (actionData.userIsRejected) {
     return (
       <Column className="gap-2 items-end w-fit *:w-full">
         <AuditorRejected />

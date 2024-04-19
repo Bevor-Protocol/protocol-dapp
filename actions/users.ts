@@ -4,7 +4,7 @@ import { prisma } from "@/db/prisma.server";
 import { AuditorStatus, AuditStatus, Prisma, Users } from "@prisma/client";
 import { z } from "zod";
 
-import type { UserWithCount, UserStats, AuditViewI, GenericUpdateI } from "@/lib/types";
+import type { UserWithCount, UserStats, AuditTruncatedI, GenericUpdateI } from "@/lib/types";
 import { userSchema, userSchemaCreate } from "@/lib/validations";
 import { putBlob } from "./blobs";
 
@@ -40,7 +40,7 @@ export const getLeaderboard = (key?: string, order?: string): Promise<UserWithCo
             status: AuditorStatus.VERIFIED,
             audit: {
               status: {
-                not: AuditStatus.OPEN,
+                not: AuditStatus.DISCOVERY,
               },
             },
           },
@@ -56,19 +56,22 @@ export const getLeaderboard = (key?: string, order?: string): Promise<UserWithCo
         const { auditors, ...rest } = user;
 
         const valuePotential = auditors.reduce((acc, auditor) => {
-          return acc + Number(auditor.audit.status != AuditStatus.FINAL) * auditor.audit.price;
+          const include =
+            auditor.audit.status == AuditStatus.AUDITING ||
+            auditor.audit.status == AuditStatus.CHALLENGEABLE;
+          return acc + Number(include) * auditor.audit.price;
         }, 0);
 
         const valueComplete = auditors.reduce((acc, auditor) => {
-          return acc + Number(auditor.audit.status == AuditStatus.FINAL) * auditor.audit.price;
+          return acc + Number(auditor.audit.status == AuditStatus.FINALIZED) * auditor.audit.price;
         }, 0);
 
         const numActive = auditors.filter(
-          (auditor) => auditor.audit.status !== AuditStatus.FINAL,
+          (auditor) => auditor.audit.status !== AuditStatus.FINALIZED,
         ).length;
 
         const numComplete = auditors.filter(
-          (auditor) => auditor.audit.status === AuditStatus.FINAL,
+          (auditor) => auditor.audit.status === AuditStatus.FINALIZED,
         ).length;
 
         return {
@@ -115,28 +118,27 @@ export const getUserProfile = (address: string): Promise<Users | null> => {
   });
 };
 
-export const getUserAuditsAuditee = (address: string): Promise<AuditViewI[]> => {
+export const getUserAuditsAuditee = (address: string): Promise<AuditTruncatedI[]> => {
   return prisma.audits.findMany({
     where: {
       auditee: {
         address,
       },
     },
-    include: {
+    select: {
+      id: true,
+      title: true,
+      description: true,
+      status: true,
       auditee: true,
-      auditors: {
-        where: {
-          status: AuditorStatus.VERIFIED,
-        },
-        include: {
-          user: true,
-        },
-      },
+    },
+    orderBy: {
+      createdAt: "desc",
     },
   });
 };
 
-export const getUserAuditsVerifiedAuditor = (address: string): Promise<AuditViewI[]> => {
+export const getUserAuditsVerifiedAuditor = (address: string): Promise<AuditTruncatedI[]> => {
   return prisma.audits.findMany({
     where: {
       auditors: {
@@ -148,16 +150,12 @@ export const getUserAuditsVerifiedAuditor = (address: string): Promise<AuditView
         },
       },
     },
-    include: {
+    select: {
+      id: true,
+      title: true,
+      description: true,
+      status: true,
       auditee: true,
-      auditors: {
-        where: {
-          status: AuditorStatus.VERIFIED,
-        },
-        include: {
-          user: true,
-        },
-      },
     },
     orderBy: {
       createdAt: "desc",

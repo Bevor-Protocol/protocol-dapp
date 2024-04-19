@@ -10,7 +10,7 @@ import { Button } from "@/components/Button";
 import * as Form from "@/components/Form";
 import { Loader } from "@/components/Loader";
 import { searchAuditors } from "@/actions/users";
-import { AuditViewDetailedI } from "@/lib/types";
+import { AuditI } from "@/lib/types";
 import { AuditorItem } from "@/components/Audit";
 
 const AuditFormEntries = ({
@@ -27,7 +27,7 @@ const AuditFormEntries = ({
   query: any;
   auditors: Users[];
   setAuditors: React.Dispatch<React.SetStateAction<Users[]>>;
-  initialState?: AuditViewDetailedI;
+  initialState?: AuditI;
   initialAuditors?: Users[];
   errors: Record<string, string>;
 }): JSX.Element => {
@@ -84,7 +84,7 @@ const AuditFormEntries = ({
           (auditor) =>
             auditor.status === AuditorStatus.REQUESTED || auditor.status === AuditorStatus.REJECTED,
         )
-        .map((auditor) => auditor.userId) || [];
+        .map((auditor) => auditor.user.id) || [];
     // also want to exclude auditors who has previously requested to audit. Managing those will
     // be a different task.
     return (

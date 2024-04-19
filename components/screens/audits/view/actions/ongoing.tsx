@@ -1,13 +1,12 @@
 "use client";
 
-import { Auditors } from "@prisma/client";
-
 import { Row, Column } from "@/components/Box";
 import { Button } from "@/components/Button";
 import * as Tooltip from "@/components/Tooltip";
 import { Info } from "@/assets";
 import { useModal } from "@/lib/hooks";
 import UploadFindings from "@/components/Modal/Content/uploadFindings";
+import { AuditStateI } from "@/lib/types";
 
 const AuditorSubmitFindings = ({
   auditId,
@@ -28,43 +27,6 @@ const AuditorSubmitFindings = ({
     <Row className="items-center gap-4">
       <Button className="flex-1" onClick={handleUploadModal} disabled={disabled}>
         Submit Findings
-      </Button>
-      <Tooltip.Reference>
-        <Tooltip.Trigger>
-          <Info height="1rem" width="1rem" />
-        </Tooltip.Trigger>
-        <Tooltip.Content side="top" align="end">
-          <div className="bg-dark shadow rounded-lg cursor-default min-w-48">
-            <div className="p-2">
-              Submit your findings. The Auditee will not be able to see these yet until the
-              selective disclosure period.
-            </div>
-          </div>
-        </Tooltip.Content>
-      </Tooltip.Reference>
-    </Row>
-  );
-};
-
-const AuditorUpdateFindings = ({
-  auditId,
-  userId,
-  disabled,
-}: {
-  auditId: string;
-  userId: string;
-  disabled: boolean;
-}): JSX.Element => {
-  const { toggleOpen, setContent } = useModal();
-
-  const handleUploadModal = (): void => {
-    setContent(<UploadFindings auditId={auditId} userId={userId} initial />);
-    toggleOpen();
-  };
-  return (
-    <Row className="items-center gap-4">
-      <Button className="flex-1" onClick={handleUploadModal} disabled={disabled}>
-        Update Findings
       </Button>
       <Tooltip.Reference>
         <Tooltip.Trigger>
@@ -105,33 +67,70 @@ const AuditeePendingFindings = (): JSX.Element => {
   );
 };
 
+const AuditeeLockStake = (): JSX.Element => {
+  const handleClick = (): void => {
+    alert(
+      "All findings were submitted, Auditee can post on-chain\nRequires locking assets to reveal findings",
+    );
+  };
+
+  return (
+    <Row className="items-center gap-4">
+      <Button onClick={handleClick} className="flex-1">
+        Unlock Findings
+      </Button>
+      <Tooltip.Reference>
+        <Tooltip.Trigger>
+          <Info height="1rem" width="1rem" />
+        </Tooltip.Trigger>
+        <Tooltip.Content side="top" align="end">
+          <div className="bg-dark shadow rounded-lg cursor-default min-w-48">
+            <div className="p-2">
+              All auditors have submitted their audit. In order to view them, you must put up your
+              stake. You will have a period of time to implement the findings before the findings
+              become visible to everyone. Do NOT share the findings with anyone, this will only put
+              your protocol at risk.
+            </div>
+          </div>
+        </Tooltip.Content>
+      </Tooltip.Reference>
+    </Row>
+  );
+};
+
 const AuditOngoingActions = ({
   auditId,
   userId,
-  verifiedAuditors,
+  actionData,
 }: {
   auditId: string;
   userId: string;
-  verifiedAuditors: Auditors[];
+  actionData: AuditStateI;
 }): JSX.Element => {
-  const isAnAuditor = verifiedAuditors.findIndex((auditor) => auditor.userId == userId) > -1;
-  const auditorSubmitted =
-    verifiedAuditors.findIndex((auditor) => auditor.userId == userId && !!auditor.findings) > -1;
-  const auditorNotSubmitted =
-    verifiedAuditors.findIndex((auditor) => auditor.userId == userId && !auditor.findings) > -1;
-
-  if (isAnAuditor) {
+  if (actionData.isAnAuditor) {
     return (
       <Column className="gap-2 items-end w-fit *:w-full">
-        <AuditorSubmitFindings auditId={auditId} userId={userId} disabled={!auditorNotSubmitted} />
-        <AuditorUpdateFindings auditId={auditId} userId={userId} disabled={!auditorSubmitted} />
+        <AuditorSubmitFindings
+          auditId={auditId}
+          userId={userId}
+          disabled={actionData.userSubmitted}
+        />
+      </Column>
+    );
+  }
+
+  if (actionData.isTheAuditee) {
+    return (
+      <Column className="gap-2 items-end w-fit *:w-full">
+        {!actionData.allSubmitted && <AuditeePendingFindings />}
+        {actionData.allSubmitted && <AuditeeLockStake />}
       </Column>
     );
   }
 
   return (
     <Column className="gap-2 items-end w-fit *:w-full">
-      <AuditeePendingFindings />
+      <Button disabled>Ongoing Audit</Button>
     </Column>
   );
 };

@@ -5,11 +5,11 @@ import DynamicLink from "@/components/Link";
 import { trimAddress } from "@/lib/utils";
 import { Icon } from "@/components/Icon";
 import { AuditAuditor } from "@/components/Audit/client";
-import { AuditViewDetailedI } from "@/lib/types";
+import { AuditI } from "@/lib/types";
 import AuditDashboardActions from "./actions";
 import Withdraw from "./actions/withdraw";
 
-const AuditPage = ({ audit }: { audit: AuditViewDetailedI }): JSX.Element => {
+const AuditPage = ({ audit }: { audit: AuditI }): JSX.Element => {
   const verifiedAuditors = audit.auditors.filter(
     (auditor) => auditor.status == AuditorStatus.VERIFIED,
   );
@@ -43,7 +43,7 @@ const AuditPage = ({ audit }: { audit: AuditViewDetailedI }): JSX.Element => {
           <p className="text-base my-2">{audit.description}</p>
         </div>
         <div>
-          {audit.status === AuditStatus.OPEN && (
+          {audit.status === AuditStatus.DISCOVERY && (
             <>
               <Row className="items-center gap-4 h-[32px] md:h-[27px]">
                 <p className="w-40">Verified to Audit:</p>
@@ -123,7 +123,7 @@ const AuditPage = ({ audit }: { audit: AuditViewDetailedI }): JSX.Element => {
               </Row>
             </>
           )}
-          {(audit.status === AuditStatus.ONGOING || audit.status === AuditStatus.FINAL) && (
+          {audit.status !== AuditStatus.DISCOVERY && audit.status !== AuditStatus.ATTESTATION && (
             <Row className="items-center gap-4 h-[32px] md:h-[27px]">
               <p className="w-40">Auditors:</p>
               {verifiedAuditors.length > 0 ? (
@@ -157,13 +157,10 @@ const AuditPage = ({ audit }: { audit: AuditViewDetailedI }): JSX.Element => {
             <span className="float-right">{new Date(audit.createdAt).toLocaleDateString()}</span>
           </p>
         </div>
-        {audit.status == AuditStatus.FINAL && <Withdraw />}
-        <AuditDashboardActions
-          audit={audit}
-          verifiedAuditors={verifiedAuditors}
-          requestedAuditors={requestedAuditors}
-          rejectedAuditors={rejectedAuditors}
-        />
+        {(audit.status == AuditStatus.CHALLENGEABLE || audit.status == AuditStatus.FINALIZED) && (
+          <Withdraw />
+        )}
+        <AuditDashboardActions audit={audit} />
       </Column>
     </Row>
   );

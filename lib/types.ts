@@ -15,14 +15,6 @@ export type SortLeaderI = {
   arr: LeaderboardI[];
 };
 
-export type AuditI = {
-  auditee: string;
-  auditors: string[];
-  money: number;
-  description: string;
-  status: string;
-};
-
 export type MarkdownAuditsI = {
   details: string;
   findings: Record<
@@ -32,10 +24,6 @@ export type MarkdownAuditsI = {
       markdown: string;
     }
   >;
-};
-
-export type AuditSSRI = {
-  auditShow: AuditI[];
 };
 
 export type AuditDashI = {
@@ -52,7 +40,7 @@ export type AuditDashI = {
   // duration of a slice period for the vesting in seconds
   slicePeriodSeconds: number;
   // whether the vesting is revocable
-  withdrawlPaused: boolean;
+  withdrawalPaused: boolean;
   // total amount of tokens to be released at the end of the vesting
   amountTotal: number;
   // amount of tokens withdrawn
@@ -95,41 +83,69 @@ export interface UserWithCount extends Users {
   };
 }
 
-export type AuditViewDetailedI = Prisma.AuditsGetPayload<{
-  include: {
-    auditee: true;
-    auditors: {
-      include: {
-        user: true;
-      };
-    };
-  };
-}>;
-
-export type AuditViewI = Prisma.AuditsGetPayload<{
-  include: {
-    auditee: true;
-    auditors: {
-      select: {
-        user: true;
-      };
-    };
-  };
-}>;
-
-export type UserAuditsI = Prisma.UsersGetPayload<{
+export type AuditTruncatedI = Prisma.AuditsGetPayload<{
   select: {
-    auditees: {
+    id: true;
+    title: true;
+    description: true;
+    status: true;
+    auditee: true;
+  };
+}>;
+
+export type AuditDetailedI = Prisma.AuditsGetPayload<{
+  select: {
+    id: true;
+    title: true;
+    description: true;
+    price: true;
+    duration: true;
+    createdAt: true;
+    auditee: true;
+    auditors: {
       select: {
-        auditors: {
-          include: {
-            user: true;
-          };
-        };
+        user: true;
       };
     };
   };
 }>;
+
+export type AuditI = Prisma.AuditsGetPayload<{
+  select: {
+    id: true;
+    title: true;
+    description: true;
+    price: true;
+    duration: true;
+    createdAt: true;
+    status: true;
+    auditee: true;
+    details: true;
+    auditors: {
+      select: {
+        user: true;
+        status: true;
+        attestedTerms: true;
+        acceptedTerms: true;
+      };
+    };
+  };
+}>;
+
+export type AuditStateI = {
+  isTheAuditee: boolean;
+  isAnAuditor: boolean;
+  userIsVerified: boolean;
+  userIsRequested: boolean;
+  userIsRejected: boolean;
+  auditeeCanManageAuditors: boolean;
+  auditeeCanLock: boolean;
+  userAttested: boolean;
+  userAccepted: boolean;
+  userSubmitted: boolean;
+  allAttested: boolean;
+  allSubmitted: boolean;
+};
 
 export interface UserStats {
   moneyPaid: number;

@@ -16,6 +16,9 @@ const seed = async (): Promise<void> => {
   if (!MY_WALLET1 || !MY_WALLET2) {
     throw new Error("must set 2 wallets in the .env file");
   }
+  if (!process.env.BLOB_URL) {
+    throw new Error("must set the BLOB_URL (vercel blob url prefix)");
+  }
 
   const userData = [
     {
@@ -84,8 +87,7 @@ const seed = async (): Promise<void> => {
       description: "Open, 1 requestor, no auditors, details provided",
       price: 10_000,
       duration: 3,
-      details:
-        "https://v0ycfji0st2gd9rf.public.blob.vercel-storage.com/audit-details/example-7Ap1GR49l2yVbJtvIJ0dVnleKuM8pj.md",
+      details: `${process.env.BLOB_URL}}/audit-details/example-7Ap1GR49l2yVbJtvIJ0dVnleKuM8pj.md`,
       auditee: {
         connect: {
           address: MY_WALLET1,
@@ -134,8 +136,7 @@ const seed = async (): Promise<void> => {
       description: "Locked, 1 auditor, has not attested, details provided",
       price: 20_000,
       duration: 5,
-      details:
-        "https://v0ycfji0st2gd9rf.public.blob.vercel-storage.com/audit-details/example-7Ap1GR49l2yVbJtvIJ0dVnleKuM8pj.md",
+      details: `${process.env.BLOB_URL}}/audit-details/example-7Ap1GR49l2yVbJtvIJ0dVnleKuM8pj.md`,
       status: AuditStatus.ATTESTATION,
       auditee: {
         connect: {
@@ -161,8 +162,7 @@ const seed = async (): Promise<void> => {
       description: "Locked, 1 auditor, rejected terms, detailed provided.",
       price: 20_000,
       duration: 5,
-      details:
-        "https://v0ycfji0st2gd9rf.public.blob.vercel-storage.com/audit-details/example-7Ap1GR49l2yVbJtvIJ0dVnleKuM8pj.md",
+      details: `${process.env.BLOB_URL}}/audit-details/example-7Ap1GR49l2yVbJtvIJ0dVnleKuM8pj.md`,
       status: AuditStatus.ATTESTATION,
       auditee: {
         connect: {
@@ -191,8 +191,7 @@ const seed = async (): Promise<void> => {
       status: AuditStatus.ATTESTATION,
       price: 20_000,
       duration: 5,
-      details:
-        "https://v0ycfji0st2gd9rf.public.blob.vercel-storage.com/audit-details/example-7Ap1GR49l2yVbJtvIJ0dVnleKuM8pj.md",
+      details: `${process.env.BLOB_URL}}/audit-details/example-7Ap1GR49l2yVbJtvIJ0dVnleKuM8pj.md`,
       auditee: {
         connect: {
           address: MY_WALLET1,
@@ -217,11 +216,10 @@ const seed = async (): Promise<void> => {
     data: {
       title: "Auditor Audit - Locked, Accepted, 1 Findings Submitted",
       description: "Ongoing, 2 auditors, 1 findings submitted, 1 pending.",
-      status: AuditStatus.ONGOING,
+      status: AuditStatus.AUDITING,
       price: 20_000,
       duration: 5,
-      details:
-        "https://v0ycfji0st2gd9rf.public.blob.vercel-storage.com/audit-details/example-7Ap1GR49l2yVbJtvIJ0dVnleKuM8pj.md",
+      details: `${process.env.BLOB_URL}}/audit-details/example-7Ap1GR49l2yVbJtvIJ0dVnleKuM8pj.md`,
       auditee: {
         connect: {
           address: MY_WALLET1,
@@ -248,8 +246,7 @@ const seed = async (): Promise<void> => {
                 address: "0x73F4aC126bF12DCe39080457FABdce9a43Bd1f70",
               },
             },
-            findings:
-              "https://v0ycfji0st2gd9rf.public.blob.vercel-storage.com/audit-findings/example-q0D5zQMv65hQJ4mWfJfstcnagI5kUI.md",
+            findings: `${process.env.BLOB_URL}/audit-findings/example-q0D5zQMv65hQJ4mWfJfstcnagI5kUI.md`,
           },
         ],
       },
@@ -260,11 +257,10 @@ const seed = async (): Promise<void> => {
     data: {
       title: "Auditor Audit - Ready for on-chain",
       description: "Ongoing, all parties submitted findings. Can be pushed on-chain",
-      status: AuditStatus.ONGOING,
+      status: AuditStatus.AUDITING,
       price: 20_000,
       duration: 5,
-      details:
-        "https://v0ycfji0st2gd9rf.public.blob.vercel-storage.com/audit-details/example-7Ap1GR49l2yVbJtvIJ0dVnleKuM8pj.md",
+      details: `${process.env.BLOB_URL}}/audit-details/example-7Ap1GR49l2yVbJtvIJ0dVnleKuM8pj.md`,
       auditee: {
         connect: {
           address: MY_WALLET1,
@@ -281,8 +277,7 @@ const seed = async (): Promise<void> => {
                 address: MY_WALLET2,
               },
             },
-            findings:
-              "https://v0ycfji0st2gd9rf.public.blob.vercel-storage.com/audit-findings/example-q0D5zQMv65hQJ4mWfJfstcnagI5kUI.md",
+            findings: `${process.env.BLOB_URL}/audit-findings/example-q0D5zQMv65hQJ4mWfJfstcnagI5kUI.md`,
           },
           {
             status: AuditorStatus.VERIFIED,
@@ -293,8 +288,7 @@ const seed = async (): Promise<void> => {
                 address: "0x73F4aC126bF12DCe39080457FABdce9a43Bd1f70",
               },
             },
-            findings:
-              "https://v0ycfji0st2gd9rf.public.blob.vercel-storage.com/audit-findings/example-q0D5zQMv65hQJ4mWfJfstcnagI5kUI.md",
+            findings: `${process.env.BLOB_URL}/audit-findings/example-q0D5zQMv65hQJ4mWfJfstcnagI5kUI.md`,
           },
         ],
       },
@@ -319,8 +313,7 @@ const seed = async (): Promise<void> => {
       description: "Open, 1 requestor, 1 auditor, details provided",
       price: 10_000,
       duration: 3,
-      details:
-        "https://v0ycfji0st2gd9rf.public.blob.vercel-storage.com/audit-details/example-7Ap1GR49l2yVbJtvIJ0dVnleKuM8pj.md",
+      details: `${process.env.BLOB_URL}}/audit-details/example-7Ap1GR49l2yVbJtvIJ0dVnleKuM8pj.md`,
       auditee: {
         connect: {
           address: "0xc0ffee254729296a45a3885639AC7E10F9d54979",
@@ -356,8 +349,7 @@ const seed = async (): Promise<void> => {
       status: AuditStatus.ATTESTATION,
       price: 10_000,
       duration: 3,
-      details:
-        "https://v0ycfji0st2gd9rf.public.blob.vercel-storage.com/audit-details/example-7Ap1GR49l2yVbJtvIJ0dVnleKuM8pj.md",
+      details: `${process.env.BLOB_URL}}/audit-details/example-7Ap1GR49l2yVbJtvIJ0dVnleKuM8pj.md`,
       auditee: {
         connect: {
           address: "0xc0ffee254729296a45a3885639AC7E10F9d54979",
@@ -382,11 +374,10 @@ const seed = async (): Promise<void> => {
     data: {
       title: "Completed audit",
       description: "Kicked off, 1 auditor completed audit, 1 has not",
-      status: AuditStatus.ONGOING,
+      status: AuditStatus.AUDITING,
       price: 2_000,
       duration: 5,
-      details:
-        "https://v0ycfji0st2gd9rf.public.blob.vercel-storage.com/audit-details/example-7Ap1GR49l2yVbJtvIJ0dVnleKuM8pj.md",
+      details: `${process.env.BLOB_URL}}/audit-details/example-7Ap1GR49l2yVbJtvIJ0dVnleKuM8pj.md`,
       auditee: {
         connect: {
           address: "0x999999cf1046e68e36E1aA2E0E07105eDDD1f08E",
@@ -403,8 +394,7 @@ const seed = async (): Promise<void> => {
                 address: "0xc0ffee254729296a45a3885639AC7E10F9d54979",
               },
             },
-            findings:
-              "https://v0ycfji0st2gd9rf.public.blob.vercel-storage.com/audit-findings/example-q0D5zQMv65hQJ4mWfJfstcnagI5kUI.md",
+            findings: `${process.env.BLOB_URL}/audit-findings/example-q0D5zQMv65hQJ4mWfJfstcnagI5kUI.md`,
           },
           {
             status: AuditorStatus.VERIFIED,
@@ -427,11 +417,10 @@ const seed = async (): Promise<void> => {
       description:
         "This audit is closed and will be viewable. Doesn't tell us if challengeable, \
 that needs to come from on-chain",
-      status: AuditStatus.FINAL,
+      status: AuditStatus.CHALLENGEABLE,
       price: 2_000,
       duration: 5,
-      details:
-        "https://v0ycfji0st2gd9rf.public.blob.vercel-storage.com/audit-details/example-7Ap1GR49l2yVbJtvIJ0dVnleKuM8pj.md",
+      details: `${process.env.BLOB_URL}}/audit-details/example-7Ap1GR49l2yVbJtvIJ0dVnleKuM8pj.md`,
       auditee: {
         connect: {
           address: "0x999999cf1046e68e36E1aA2E0E07105eDDD1f08E",
@@ -448,8 +437,7 @@ that needs to come from on-chain",
                 address: "0xc0ffee254729296a45a3885639AC7E10F9d54979",
               },
             },
-            findings:
-              "https://v0ycfji0st2gd9rf.public.blob.vercel-storage.com/audit-findings/example-q0D5zQMv65hQJ4mWfJfstcnagI5kUI.md",
+            findings: `${process.env.BLOB_URL}/audit-findings/example-q0D5zQMv65hQJ4mWfJfstcnagI5kUI.md`,
           },
           {
             status: AuditorStatus.VERIFIED,
@@ -460,8 +448,51 @@ that needs to come from on-chain",
                 address: "0x3A1D14c5B007f2aC5a5e174663Eb3e69C78ADbB5",
               },
             },
-            findings:
-              "https://v0ycfji0st2gd9rf.public.blob.vercel-storage.com/audit-findings/example-q0D5zQMv65hQJ4mWfJfstcnagI5kUI.md",
+            findings: `${process.env.BLOB_URL}/audit-findings/example-q0D5zQMv65hQJ4mWfJfstcnagI5kUI.md`,
+          },
+        ],
+      },
+    },
+  });
+
+  await prisma.audits.create({
+    data: {
+      title: "Completed audit",
+      description:
+        "This audit is closed and will be viewable, is not challengeable. Doesn't tell us if challengeable, \
+that needs to come from on-chain",
+      status: AuditStatus.FINALIZED,
+      price: 2_000,
+      duration: 5,
+      details: `${process.env.BLOB_URL}}/audit-details/example-7Ap1GR49l2yVbJtvIJ0dVnleKuM8pj.md`,
+      auditee: {
+        connect: {
+          address: "0x999999cf1046e68e36E1aA2E0E07105eDDD1f08E",
+        },
+      },
+      auditors: {
+        create: [
+          {
+            status: AuditorStatus.VERIFIED,
+            attestedTerms: true,
+            acceptedTerms: true,
+            user: {
+              connect: {
+                address: "0xc0ffee254729296a45a3885639AC7E10F9d54979",
+              },
+            },
+            findings: `${process.env.BLOB_URL}/audit-findings/example-q0D5zQMv65hQJ4mWfJfstcnagI5kUI.md`,
+          },
+          {
+            status: AuditorStatus.VERIFIED,
+            attestedTerms: true,
+            acceptedTerms: true,
+            user: {
+              connect: {
+                address: "0x3A1D14c5B007f2aC5a5e174663Eb3e69C78ADbB5",
+              },
+            },
+            findings: `${process.env.BLOB_URL}/audit-findings/example-q0D5zQMv65hQJ4mWfJfstcnagI5kUI.md`,
           },
         ],
       },

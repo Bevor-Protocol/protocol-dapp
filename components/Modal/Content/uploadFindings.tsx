@@ -52,9 +52,8 @@ const UploadFindings = ({
       </div>
       <p>Upload your Findings</p>
       <p className="text-sm my-2">
-        Make sure you review the provided audit details and your submitted findings thoroughly. You
-        will be able to update this, but there is no guarantee that the Auditee will not finalize
-        the auditing process and begin the vesting period prior to your next upload.
+        Make sure you review the provided audit details and your submitted findings thoroughly. To
+        ensure consistency, this report is FINAL. Be absolutely certain before you submit.
       </p>
       <hr className="w-full h-[1px] border-gray-200/20 my-4" />
       <form onSubmit={handleSubmit} onChange={() => setErrors({})}>
