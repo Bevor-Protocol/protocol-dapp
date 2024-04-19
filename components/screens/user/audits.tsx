@@ -29,7 +29,7 @@ const UserAudits = async ({ address }: { address: string }): Promise<JSX.Element
     <Column className="gap-8 w-full items-stretch">
       {auditsAuditee.length > 0 && (
         <Column className="gap-2">
-          <h2 className="text-lg">As Auditee::</h2>
+          <h2 className="text-lg">As Auditee:</h2>
           {audits.auditee.open.length > 0 && (
             <div className="w-full">
               <p className="my-2">Open:</p>
@@ -62,7 +62,7 @@ const UserAudits = async ({ address }: { address: string }): Promise<JSX.Element
           )}
           {audits.auditee.challengeable.length > 0 && (
             <div className="w-full">
-              <p className="my-2">Closed:</p>
+              <p className="my-2">Challengeable:</p>
               <Row className="w-full justify-start flex-wrap">
                 {audits.auditee.challengeable.map((audit, ind) => (
                   <AuditCardTruncated key={ind} audit={audit} />
@@ -117,7 +117,7 @@ const UserAudits = async ({ address }: { address: string }): Promise<JSX.Element
           )}
           {audits.auditor.challengeable.length > 0 && (
             <div className="w-full">
-              <p className="my-2">Closed:</p>
+              <p className="my-2">Challengeable:</p>
               <Row className="w-full justify-start flex-wrap">
                 {audits.auditor.challengeable.map((audit, ind) => (
                   <AuditCardTruncated key={ind} audit={audit} />

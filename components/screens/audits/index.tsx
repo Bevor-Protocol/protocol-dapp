@@ -10,7 +10,7 @@ import { Toggle } from "@/components/Toggle";
 import { AuditsSkeleton } from "@/components/Loader";
 import { AuditListDetailedI } from "@/lib/types";
 
-const statuses = ["open", "locked", "ongoing", "completed"];
+const statuses = ["open", "locked", "ongoing", "challengeable", "completed"];
 
 const Audits = ({ initialData }: { initialData: AuditListDetailedI[] }): JSX.Element => {
   const [display, setDisplay] = useState("open");
@@ -20,8 +20,6 @@ const Audits = ({ initialData }: { initialData: AuditListDetailedI[] }): JSX.Ele
     queryFn: () => getAuditsDetailed(display),
     initialData,
   });
-
-  console.log(data);
 
   return (
     <Column className="gap-4 py-8 justify-start items-center w-full max-w-[1000px]">
