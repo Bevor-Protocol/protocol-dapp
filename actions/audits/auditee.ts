@@ -1,11 +1,11 @@
 "use server";
 
-import { AuditorStatus, Audits, Users, AuditStatus, Prisma, Auditors } from "@prisma/client";
+import { AuditorStatus, Audits, Users, AuditStatus, Prisma } from "@prisma/client";
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
 import { prisma } from "@/db/prisma.server";
 
-import { GenericUpdateI, AuditViewI } from "@/lib/types";
+import { GenericUpdateI, AuditI } from "@/lib/types";
 import { auditFormSchema } from "@/lib/validations";
 import { putBlob } from "@/actions/blobs";
 import { getAudit } from "@/actions/audits/general";
@@ -103,7 +103,7 @@ const updateAuditIso = (
   id: string,
   auditData: Prisma.AuditsUpdateInput,
   auditors: Users[],
-  currentAudit: AuditViewI,
+  currentAudit: AuditI,
 ): Promise<Audits> => {
   // 1) Create newly verified auditors
   // 2) Remove auditors completely that were verified and are now not -> can still request to audit.
@@ -350,19 +350,17 @@ export const reopenAudit = async (id: string): Promise<GenericUpdateI<Audits>> =
 
 export const auditUpdateRequestors = (
   id: string,
-  auditors: Auditors[],
+  auditors: string[],
   status: AuditorStatus,
 ): Promise<Prisma.BatchPayload> => {
   // To be called by the Auditee on a batch basis. Can approve or reject auditors,
   // but it won't hard delete them.
 
-  const auditorIds = auditors.map((auditor) => auditor.userId);
-
   return prisma.auditors.updateMany({
     where: {
       auditId: id,
       userId: {
-        in: auditorIds,
+        in: auditors,
       },
     },
     data: {
@@ -373,8 +371,8 @@ export const auditUpdateRequestors = (
 
 export const auditUpdateApprovalStatus = (
   id: string,
-  auditorsApprove: Auditors[],
-  auditorsReject: Auditors[],
+  auditorsApprove: string[],
+  auditorsReject: string[],
 ): Promise<GenericUpdateI<{ rejected: number; verified: number }>> => {
   return Promise.all([
     auditUpdateRequestors(id, auditorsReject, AuditorStatus.REJECTED),

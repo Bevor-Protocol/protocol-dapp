@@ -1,4 +1,4 @@
-import { Auditors, AuditStatus, Prisma, Users } from "@prisma/client";
+import { Prisma, Users } from "@prisma/client";
 import { Address } from "viem";
 
 export type LeaderboardI = {
@@ -88,6 +88,7 @@ export type AuditTruncatedI = Prisma.AuditsGetPayload<{
     id: true;
     title: true;
     description: true;
+    status: true;
     auditee: true;
   };
 }>;
@@ -119,6 +120,7 @@ export type AuditI = Prisma.AuditsGetPayload<{
     createdAt: true;
     status: true;
     auditee: true;
+    details: true;
     auditors: {
       select: {
         user: true;
@@ -143,18 +145,6 @@ export type AuditStateI = {
   userSubmitted: boolean;
   allAttested: boolean;
   allSubmitted: boolean;
-};
-
-export type AuditViewI = {
-  title: string;
-  description: string;
-  details: string | null;
-  price: number;
-  duration: number;
-  status: AuditStatus;
-  auditee: Users;
-  auditors: Auditors[];
-  allFindingsExist: boolean;
 };
 
 export type UserAuditsI = Prisma.UsersGetPayload<{

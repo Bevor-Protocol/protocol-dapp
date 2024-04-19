@@ -7,7 +7,7 @@ import remarkGfm from "remark-gfm";
 import matter from "gray-matter";
 import { prisma } from "@/db/prisma.server";
 
-import { AuditDetailedI, AuditTruncatedI, AuditStateI, AuditI } from "@/lib/types";
+import { AuditDetailedI, AuditStateI, AuditI } from "@/lib/types";
 
 const statusFilter: Record<string, AuditStatus> = {
   open: AuditStatus.DISCOVERY,
@@ -45,23 +45,6 @@ export const getAuditsDetailed = (status?: string): Promise<AuditDetailedI[]> =>
   });
 };
 
-export const getAuditsTruncated = (status?: string): Promise<AuditTruncatedI[]> => {
-  return prisma.audits.findMany({
-    where: {
-      status: statusFilter[status ?? "open"],
-    },
-    select: {
-      id: true,
-      title: true,
-      description: true,
-      auditee: true,
-    },
-    orderBy: {
-      createdAt: "desc",
-    },
-  });
-};
-
 export const getAudit = (id: string): Promise<AuditI | null> => {
   return prisma.audits.findUnique({
     where: {
@@ -75,6 +58,7 @@ export const getAudit = (id: string): Promise<AuditI | null> => {
       duration: true,
       createdAt: true,
       status: true,
+      details: true,
       auditee: true,
       auditors: {
         select: {

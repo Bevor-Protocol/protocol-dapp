@@ -8,11 +8,11 @@ import { AuditorStatus, Users } from "@prisma/client";
 
 import { LoaderFill } from "@/components/Loader";
 import { useUser } from "@/lib/hooks";
-import { AuditViewI } from "@/lib/types";
+import { AuditI } from "@/lib/types";
 import { updateAudit } from "@/actions/audits/auditee";
 import AuditFormEntries from "@/components/Audit/client/form";
 
-const AuditEditWrapper = ({ audit }: { audit: AuditViewI }): JSX.Element => {
+const AuditEditWrapper = ({ audit }: { audit: AuditI }): JSX.Element => {
   // only show the selected auditors that were already verified.
   const initialAuditors = audit.auditors
     .filter((auditor) => auditor.status === AuditorStatus.VERIFIED)
@@ -55,7 +55,7 @@ const AuditEditWrapper = ({ audit }: { audit: AuditViewI }): JSX.Element => {
 
   if (!isFetchedAfterMount || isPending) return <LoaderFill />;
 
-  if (audit.auditeeId !== user?.id) return <p>You do not own this audit</p>;
+  if (audit.auditee.id !== user?.id) return <p>You do not own this audit</p>;
 
   return (
     <form onSubmit={handleSubmit} className="max-w-full w-[700px]" onChange={() => setErrors({})}>

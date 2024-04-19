@@ -8,7 +8,7 @@ import { Column, Row } from "@/components/Box";
 import { AuditI } from "@/lib/types";
 // import * as Form from "@/components/Form";
 import { auditUpdateApprovalStatus } from "@/actions/audits/auditee";
-import { Auditors, AuditorStatus } from "@prisma/client";
+import { AuditorStatus } from "@prisma/client";
 import { AuditorItem } from "@/components/Audit";
 import { Button } from "@/components/Button";
 import { X } from "@/assets";
@@ -34,8 +34,8 @@ const RequestsEdit = ({ audit }: { audit: AuditI }): JSX.Element => {
   const { mutate, isPending } = useMutation({
     mutationFn: (variables: {
       id: string;
-      auditorsApprove: Auditors[];
-      auditorsReject: Auditors[];
+      auditorsApprove: string[];
+      auditorsReject: string[];
     }) => {
       return auditUpdateApprovalStatus(
         variables.id,
@@ -52,8 +52,12 @@ const RequestsEdit = ({ audit }: { audit: AuditI }): JSX.Element => {
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>): void => {
     e.preventDefault();
     // Need to explicitly control for checkbox inputs, especially those that can be disabled.
-    const toApprove = requestedAuditors.filter((_, ind) => checked[ind] == 1);
-    const toReject = requestedAuditors.filter((_, ind) => checked[ind] == -1);
+    const toApprove = requestedAuditors
+      .filter((_, ind) => checked[ind] == 1)
+      .map((auditor) => auditor.user.id);
+    const toReject = requestedAuditors
+      .filter((_, ind) => checked[ind] == -1)
+      .map((auditor) => auditor.user.id);
     mutate({ id: audit.id, auditorsApprove: toApprove, auditorsReject: toReject });
   };
 

@@ -4,7 +4,7 @@ import { prisma } from "@/db/prisma.server";
 import { AuditorStatus, AuditStatus, Prisma, Users } from "@prisma/client";
 import { z } from "zod";
 
-import type { UserWithCount, UserStats, AuditViewI, GenericUpdateI } from "@/lib/types";
+import type { UserWithCount, UserStats, AuditTruncatedI, GenericUpdateI } from "@/lib/types";
 import { userSchema, userSchemaCreate } from "@/lib/validations";
 import { putBlob } from "./blobs";
 
@@ -118,28 +118,27 @@ export const getUserProfile = (address: string): Promise<Users | null> => {
   });
 };
 
-export const getUserAuditsAuditee = (address: string): Promise<AuditViewI[]> => {
+export const getUserAuditsAuditee = (address: string): Promise<AuditTruncatedI[]> => {
   return prisma.audits.findMany({
     where: {
       auditee: {
         address,
       },
     },
-    include: {
+    select: {
+      id: true,
+      title: true,
+      description: true,
+      status: true,
       auditee: true,
-      auditors: {
-        where: {
-          status: AuditorStatus.VERIFIED,
-        },
-        include: {
-          user: true,
-        },
-      },
+    },
+    orderBy: {
+      createdAt: "desc",
     },
   });
 };
 
-export const getUserAuditsVerifiedAuditor = (address: string): Promise<AuditViewI[]> => {
+export const getUserAuditsVerifiedAuditor = (address: string): Promise<AuditTruncatedI[]> => {
   return prisma.audits.findMany({
     where: {
       auditors: {
@@ -151,16 +150,12 @@ export const getUserAuditsVerifiedAuditor = (address: string): Promise<AuditView
         },
       },
     },
-    include: {
+    select: {
+      id: true,
+      title: true,
+      description: true,
+      status: true,
       auditee: true,
-      auditors: {
-        where: {
-          status: AuditorStatus.VERIFIED,
-        },
-        include: {
-          user: true,
-        },
-      },
     },
     orderBy: {
       createdAt: "desc",
