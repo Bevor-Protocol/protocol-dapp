@@ -10,16 +10,18 @@ const UserAudits = async ({ address }: { address: string }): Promise<JSX.Element
   ]);
   const audits = {
     auditor: {
-      open: auditsAuditor.filter((audit) => audit.status === AuditStatus.OPEN),
+      open: auditsAuditor.filter((audit) => audit.status === AuditStatus.DISCOVERY),
       locked: auditsAuditor.filter((audit) => audit.status === AuditStatus.ATTESTATION),
-      ongoing: auditsAuditor.filter((audit) => audit.status === AuditStatus.ONGOING),
-      final: auditsAuditor.filter((audit) => audit.status === AuditStatus.FINAL),
+      ongoing: auditsAuditor.filter((audit) => audit.status === AuditStatus.AUDITING),
+      challengeable: auditsAuditor.filter((audit) => audit.status === AuditStatus.CHALLENGEABLE),
+      completed: auditsAuditor.filter((audit) => audit.status === AuditStatus.FINALIZED),
     },
     auditee: {
-      open: auditsAuditee.filter((audit) => audit.status === AuditStatus.OPEN),
+      open: auditsAuditee.filter((audit) => audit.status === AuditStatus.DISCOVERY),
       locked: auditsAuditee.filter((audit) => audit.status === AuditStatus.ATTESTATION),
-      ongoing: auditsAuditee.filter((audit) => audit.status === AuditStatus.ONGOING),
-      final: auditsAuditee.filter((audit) => audit.status === AuditStatus.FINAL),
+      ongoing: auditsAuditee.filter((audit) => audit.status === AuditStatus.AUDITING),
+      challengeable: auditsAuditee.filter((audit) => audit.status === AuditStatus.CHALLENGEABLE),
+      completed: auditsAuditee.filter((audit) => audit.status === AuditStatus.FINALIZED),
     },
   };
 
@@ -58,11 +60,21 @@ const UserAudits = async ({ address }: { address: string }): Promise<JSX.Element
               </Row>
             </div>
           )}
-          {audits.auditee.final.length > 0 && (
+          {audits.auditee.challengeable.length > 0 && (
             <div className="w-full">
               <p className="my-2">Closed:</p>
               <Row className="w-full justify-start flex-wrap">
-                {audits.auditee.final.map((audit, ind) => (
+                {audits.auditee.challengeable.map((audit, ind) => (
+                  <AuditCardTruncated key={ind} audit={audit} />
+                ))}
+              </Row>
+            </div>
+          )}
+          {audits.auditee.completed.length > 0 && (
+            <div className="w-full">
+              <p className="my-2">Closed:</p>
+              <Row className="w-full justify-start flex-wrap">
+                {audits.auditee.completed.map((audit, ind) => (
                   <AuditCardTruncated key={ind} audit={audit} />
                 ))}
               </Row>
@@ -103,11 +115,21 @@ const UserAudits = async ({ address }: { address: string }): Promise<JSX.Element
               </Row>
             </div>
           )}
-          {audits.auditor.final.length > 0 && (
+          {audits.auditor.challengeable.length > 0 && (
             <div className="w-full">
               <p className="my-2">Closed:</p>
               <Row className="w-full justify-start flex-wrap">
-                {audits.auditor.final.map((audit, ind) => (
+                {audits.auditor.challengeable.map((audit, ind) => (
+                  <AuditCardTruncated key={ind} audit={audit} />
+                ))}
+              </Row>
+            </div>
+          )}
+          {audits.auditor.completed.length > 0 && (
+            <div className="w-full">
+              <p className="my-2">Closed:</p>
+              <Row className="w-full justify-start flex-wrap">
+                {audits.auditor.completed.map((audit, ind) => (
                   <AuditCardTruncated key={ind} audit={audit} />
                 ))}
               </Row>

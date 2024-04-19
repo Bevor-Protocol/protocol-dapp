@@ -175,10 +175,13 @@ export const updateAudit = async (
     });
   }
 
-  if (currentAudit.status == AuditStatus.ONGOING || currentAudit.status == AuditStatus.FINAL) {
+  if (
+    currentAudit.status != AuditStatus.DISCOVERY &&
+    currentAudit.status != AuditStatus.ATTESTATION
+  ) {
     return Promise.resolve({
       success: false,
-      error: "you can't update an ongoing or final audit",
+      error: "you can only update audits in the discovery or attestion periods",
     });
   }
 
@@ -234,7 +237,7 @@ export const lockAudit = async (id: string): Promise<GenericUpdateI<Audits>> => 
       error: "This audit does not exist",
     });
   }
-  if (currentAudit.status !== AuditStatus.OPEN) {
+  if (currentAudit.status !== AuditStatus.DISCOVERY) {
     return Promise.resolve({
       success: false,
       error: "This audit cannot be locked, as it's not OPEN",
@@ -316,7 +319,7 @@ export const reopenAudit = async (id: string): Promise<GenericUpdateI<Audits>> =
         id,
       },
       data: {
-        status: AuditStatus.OPEN,
+        status: AuditStatus.DISCOVERY,
         auditors: {
           updateMany: {
             where: {

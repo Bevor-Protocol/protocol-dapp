@@ -40,7 +40,7 @@ export const getLeaderboard = (key?: string, order?: string): Promise<UserWithCo
             status: AuditorStatus.VERIFIED,
             audit: {
               status: {
-                not: AuditStatus.OPEN,
+                not: AuditStatus.DISCOVERY,
               },
             },
           },
@@ -56,19 +56,22 @@ export const getLeaderboard = (key?: string, order?: string): Promise<UserWithCo
         const { auditors, ...rest } = user;
 
         const valuePotential = auditors.reduce((acc, auditor) => {
-          return acc + Number(auditor.audit.status != AuditStatus.FINAL) * auditor.audit.price;
+          const include =
+            auditor.audit.status == AuditStatus.AUDITING ||
+            auditor.audit.status == AuditStatus.CHALLENGEABLE;
+          return acc + Number(include) * auditor.audit.price;
         }, 0);
 
         const valueComplete = auditors.reduce((acc, auditor) => {
-          return acc + Number(auditor.audit.status == AuditStatus.FINAL) * auditor.audit.price;
+          return acc + Number(auditor.audit.status == AuditStatus.FINALIZED) * auditor.audit.price;
         }, 0);
 
         const numActive = auditors.filter(
-          (auditor) => auditor.audit.status !== AuditStatus.FINAL,
+          (auditor) => auditor.audit.status !== AuditStatus.FINALIZED,
         ).length;
 
         const numComplete = auditors.filter(
-          (auditor) => auditor.audit.status === AuditStatus.FINAL,
+          (auditor) => auditor.audit.status === AuditStatus.FINALIZED,
         ).length;
 
         return {

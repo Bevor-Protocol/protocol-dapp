@@ -43,7 +43,7 @@ const AuditPage = ({ audit }: { audit: AuditViewI }): JSX.Element => {
           <p className="text-base my-2">{audit.description}</p>
         </div>
         <div>
-          {audit.status === AuditStatus.OPEN && (
+          {audit.status === AuditStatus.DISCOVERY && (
             <>
               <Row className="items-center gap-4 h-[32px] md:h-[27px]">
                 <p className="w-40">Verified to Audit:</p>
@@ -123,7 +123,7 @@ const AuditPage = ({ audit }: { audit: AuditViewI }): JSX.Element => {
               </Row>
             </>
           )}
-          {(audit.status === AuditStatus.ONGOING || audit.status === AuditStatus.FINAL) && (
+          {audit.status !== AuditStatus.DISCOVERY && audit.status !== AuditStatus.ATTESTATION && (
             <Row className="items-center gap-4 h-[32px] md:h-[27px]">
               <p className="w-40">Auditors:</p>
               {verifiedAuditors.length > 0 ? (
@@ -157,7 +157,9 @@ const AuditPage = ({ audit }: { audit: AuditViewI }): JSX.Element => {
             <span className="float-right">{new Date(audit.createdAt).toLocaleDateString()}</span>
           </p>
         </div>
-        {audit.status == AuditStatus.FINAL && <Withdraw />}
+        {(audit.status == AuditStatus.CHALLENGEABLE || audit.status == AuditStatus.FINALIZED) && (
+          <Withdraw />
+        )}
         <AuditDashboardActions
           audit={audit}
           verifiedAuditors={verifiedAuditors}

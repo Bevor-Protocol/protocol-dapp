@@ -9,14 +9,15 @@ import { prisma } from "@/db/prisma.server";
 
 import { AuditListDetailedI, AuditListTruncatedI, AuditViewI } from "@/lib/types";
 
-export const getAuditsDetailed = (status?: string): Promise<AuditListDetailedI[]> => {
-  const statusFilter: Record<string, AuditStatus> = {
-    locked: AuditStatus.ATTESTATION,
-    ongoing: AuditStatus.ONGOING,
-    completed: AuditStatus.FINAL,
-    open: AuditStatus.OPEN,
-  };
+const statusFilter: Record<string, AuditStatus> = {
+  open: AuditStatus.DISCOVERY,
+  locked: AuditStatus.ATTESTATION,
+  ongoing: AuditStatus.AUDITING,
+  challengeable: AuditStatus.CHALLENGEABLE,
+  completed: AuditStatus.FINALIZED,
+};
 
+export const getAuditsDetailed = (status?: string): Promise<AuditListDetailedI[]> => {
   return prisma.audits.findMany({
     where: {
       status: statusFilter[status ?? "open"],
@@ -50,13 +51,6 @@ export const getAuditsDetailed = (status?: string): Promise<AuditListDetailedI[]
 };
 
 export const getAuditsTruncated = (status?: string): Promise<AuditListTruncatedI[]> => {
-  const statusFilter: Record<string, AuditStatus> = {
-    locked: AuditStatus.ATTESTATION,
-    ongoing: AuditStatus.ONGOING,
-    completed: AuditStatus.FINAL,
-    open: AuditStatus.OPEN,
-  };
-
   return prisma.audits.findMany({
     where: {
       status: statusFilter[status ?? "open"],

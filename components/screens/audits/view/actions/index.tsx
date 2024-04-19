@@ -35,7 +35,7 @@ const AuditDashboardActions = ({
 
   if (!user) return <></>;
 
-  if (audit.status === AuditStatus.OPEN) {
+  if (audit.status === AuditStatus.DISCOVERY) {
     return (
       <AuditOpenActions
         user={user}
@@ -51,7 +51,7 @@ const AuditDashboardActions = ({
     return <AuditLockedActions user={user} audit={audit} verifiedAuditors={verifiedAuditors} />;
   }
 
-  if (audit.status === AuditStatus.ONGOING) {
+  if (audit.status === AuditStatus.AUDITING) {
     return (
       <AuditOngoingActions
         auditId={audit.id}

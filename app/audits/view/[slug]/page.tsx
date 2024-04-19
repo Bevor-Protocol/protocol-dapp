@@ -1,5 +1,5 @@
 import { Suspense } from "react";
-import { AuditorStatus, AuditStatus } from "@prisma/client";
+// import { AuditorStatus, AuditStatus } from "@prisma/client";
 
 import AuditPage from "@/components/screens/audits/view";
 import AuditMarkdown from "@/components/screens/audits/view/markdown";
@@ -22,28 +22,29 @@ const Fetcher = async ({ auditId }: { auditId: string }): Promise<JSX.Element> =
     markdownObject.details = await getMarkdown(audit.details);
   }
 
-  if (audit.status === AuditStatus.ONGOING || audit.status === AuditStatus.FINAL) {
-    for (const auditor of audit.auditors) {
-      if (auditor.status === AuditorStatus.VERIFIED) {
-        const user = auditor.user;
-        let markdown = "";
-        if (auditor.findings) {
-          markdown = await getMarkdown(auditor.findings);
-        }
-        markdownObject.findings[auditor.user.address] = {
-          user,
-          markdown,
-        };
-      }
-    }
-  }
+  // if (audit.status === AuditStatus.ONGOING || audit.status === AuditStatus.FINAL) {
+  //   for (const auditor of audit.auditors) {
+  //     if (auditor.status === AuditorStatus.VERIFIED) {
+  //       const user = auditor.user;
+  //       let markdown = "";
+  //       if (auditor.findings) {
+  //         markdown = await getMarkdown(auditor.findings);
+  //       }
+  //       markdownObject.findings[auditor.user.address] = {
+  //         user,
+  //         markdown,
+  //       };
+  //     }
+  //   }
+  // }
   return (
     <div className="w-full max-w-[1000px] py-8">
       <AuditPage audit={audit} />
       <hr className="w-full h-[1px] border-gray-200/20 my-4" />
       <AuditMarkdown
         markdownObject={markdownObject}
-        showFindings={audit.status === AuditStatus.ONGOING || audit.status === AuditStatus.FINAL}
+        // showFindings={audit.status === AuditStatus.ONGOING || audit.status === AuditStatus.FINAL}
+        showFindings={false}
       />
     </div>
   );
