@@ -7,7 +7,7 @@ import remarkGfm from "remark-gfm";
 import matter from "gray-matter";
 import { prisma } from "@/db/prisma.server";
 
-import { AuditDetailedI, AuditStateI, AuditI } from "@/lib/types";
+import { AuditDetailedI, AuditStateI, AuditI, MarkdownAuditsI } from "@/lib/types";
 
 const statusFilter: Record<string, AuditStatus> = {
   open: AuditStatus.DISCOVERY,
@@ -76,6 +76,7 @@ export const getAuditState = (
   auditId: string,
   userId: string | undefined,
 ): Promise<AuditStateI> => {
+  // Pushed the conditional logic for button actions to server-side
   const objOut = {
     isTheAuditee: false,
     isAnAuditor: false,
@@ -148,7 +149,7 @@ export const getAuditState = (
     });
 };
 
-export const getMarkdown = (path: string): Promise<string> => {
+export const parseMarkdown = (path: string): Promise<string> => {
   // I should move this to inside Audit Page, since we're already fetching the Audit, which is what
   // we'd do here.
   return fetch(path)
@@ -165,4 +166,59 @@ export const getMarkdown = (path: string): Promise<string> => {
     .then((contents) => {
       return contents.toString();
     });
+};
+
+export const safeGetMarkdown = async (
+  auditId: string,
+  userId: string | undefined,
+): Promise<MarkdownAuditsI> => {
+  const markdownObject: MarkdownAuditsI = {
+    details: "",
+    findings: {},
+  };
+
+  const state = await getAuditState(auditId, userId);
+
+  const audit = await prisma.audits.findUnique({
+    where: {
+      id: auditId,
+    },
+    include: {
+      auditors: {
+        include: {
+          user: true,
+        },
+      },
+    },
+  });
+
+  if (!audit) return markdownObject;
+
+  if (audit.details) {
+    markdownObject.details = await parseMarkdown(audit.details);
+  }
+
+  const shouldReveal =
+    audit.status == AuditStatus.CHALLENGEABLE ||
+    audit.status == AuditStatus.FINALIZED ||
+    (audit.status == AuditStatus.AUDITING && state.userSubmitted);
+  if (!shouldReveal) {
+    return markdownObject;
+  }
+
+  for (const auditor of audit.auditors) {
+    if (auditor.status === AuditorStatus.VERIFIED) {
+      const user = auditor.user;
+      let markdown = "";
+      if (auditor.findings) {
+        markdown = await parseMarkdown(auditor.findings);
+      }
+      markdownObject.findings[auditor.user.address] = {
+        user,
+        markdown,
+      };
+    }
+  }
+
+  return markdownObject;
 };

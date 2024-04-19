@@ -40,7 +40,7 @@ export type AuditDashI = {
   // duration of a slice period for the vesting in seconds
   slicePeriodSeconds: number;
   // whether the vesting is revocable
-  withdrawlPaused: boolean;
+  withdrawalPaused: boolean;
   // total amount of tokens to be released at the end of the vesting
   amountTotal: number;
   // amount of tokens withdrawn
@@ -146,20 +146,6 @@ export type AuditStateI = {
   allAttested: boolean;
   allSubmitted: boolean;
 };
-
-export type UserAuditsI = Prisma.UsersGetPayload<{
-  select: {
-    auditees: {
-      select: {
-        auditors: {
-          include: {
-            user: true;
-          };
-        };
-      };
-    };
-  };
-}>;
 
 export interface UserStats {
   moneyPaid: number;
