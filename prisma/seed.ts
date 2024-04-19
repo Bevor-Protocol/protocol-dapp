@@ -217,7 +217,7 @@ const seed = async (): Promise<void> => {
     data: {
       title: "Auditor Audit - Locked, Accepted, 1 Findings Submitted",
       description: "Ongoing, 2 auditors, 1 findings submitted, 1 pending.",
-      status: AuditStatus.ONGOING,
+      status: AuditStatus.AUDITING,
       price: 20_000,
       duration: 5,
       details:
@@ -260,7 +260,7 @@ const seed = async (): Promise<void> => {
     data: {
       title: "Auditor Audit - Ready for on-chain",
       description: "Ongoing, all parties submitted findings. Can be pushed on-chain",
-      status: AuditStatus.ONGOING,
+      status: AuditStatus.AUDITING,
       price: 20_000,
       duration: 5,
       details:
@@ -382,7 +382,7 @@ const seed = async (): Promise<void> => {
     data: {
       title: "Completed audit",
       description: "Kicked off, 1 auditor completed audit, 1 has not",
-      status: AuditStatus.ONGOING,
+      status: AuditStatus.AUDITING,
       price: 2_000,
       duration: 5,
       details:
@@ -427,7 +427,54 @@ const seed = async (): Promise<void> => {
       description:
         "This audit is closed and will be viewable. Doesn't tell us if challengeable, \
 that needs to come from on-chain",
-      status: AuditStatus.FINAL,
+      status: AuditStatus.CHALLENGEABLE,
+      price: 2_000,
+      duration: 5,
+      details:
+        "https://v0ycfji0st2gd9rf.public.blob.vercel-storage.com/audit-details/example-7Ap1GR49l2yVbJtvIJ0dVnleKuM8pj.md",
+      auditee: {
+        connect: {
+          address: "0x999999cf1046e68e36E1aA2E0E07105eDDD1f08E",
+        },
+      },
+      auditors: {
+        create: [
+          {
+            status: AuditorStatus.VERIFIED,
+            attestedTerms: true,
+            acceptedTerms: true,
+            user: {
+              connect: {
+                address: "0xc0ffee254729296a45a3885639AC7E10F9d54979",
+              },
+            },
+            findings:
+              "https://v0ycfji0st2gd9rf.public.blob.vercel-storage.com/audit-findings/example-q0D5zQMv65hQJ4mWfJfstcnagI5kUI.md",
+          },
+          {
+            status: AuditorStatus.VERIFIED,
+            attestedTerms: true,
+            acceptedTerms: true,
+            user: {
+              connect: {
+                address: "0x3A1D14c5B007f2aC5a5e174663Eb3e69C78ADbB5",
+              },
+            },
+            findings:
+              "https://v0ycfji0st2gd9rf.public.blob.vercel-storage.com/audit-findings/example-q0D5zQMv65hQJ4mWfJfstcnagI5kUI.md",
+          },
+        ],
+      },
+    },
+  });
+
+  await prisma.audits.create({
+    data: {
+      title: "Completed audit",
+      description:
+        "This audit is closed and will be viewable, is not challengeable. Doesn't tell us if challengeable, \
+that needs to come from on-chain",
+      status: AuditStatus.FINALIZED,
       price: 2_000,
       duration: 5,
       details:
