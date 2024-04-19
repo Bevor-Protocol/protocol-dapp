@@ -4,7 +4,7 @@ import { useState } from "react";
 import { Auditors, Users } from "@prisma/client";
 import { useMutation } from "@tanstack/react-query";
 
-import { AuditViewDetailedI } from "@/lib/types";
+import { AuditViewI } from "@/lib/types";
 import { useModal } from "@/lib/hooks";
 import { reopenAudit } from "@/actions/audits/auditee";
 import { leaveAudit } from "@/actions/audits/auditor";
@@ -156,7 +156,7 @@ const AuditorAttestTerms = ({
   disabled,
 }: {
   user: Users;
-  audit: AuditViewDetailedI;
+  audit: AuditViewI;
   disabled: boolean;
 }): JSX.Element => {
   const { toggleOpen, setContent } = useModal();
@@ -194,7 +194,7 @@ const AuditLockedActions = ({
   verifiedAuditors,
 }: {
   user: Users;
-  audit: AuditViewDetailedI;
+  audit: AuditViewI;
   verifiedAuditors: Auditors[];
 }): JSX.Element => {
   // I'll set a global disabled state for all mutations within children.

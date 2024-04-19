@@ -10,7 +10,7 @@ import { Button } from "@/components/Button";
 import * as Form from "@/components/Form";
 import { Loader } from "@/components/Loader";
 import { searchAuditors } from "@/actions/users";
-import { AuditViewDetailedI } from "@/lib/types";
+import { AuditViewI } from "@/lib/types";
 import { AuditorItem } from "@/components/Audit";
 
 const AuditFormEntries = ({
@@ -27,7 +27,7 @@ const AuditFormEntries = ({
   query: any;
   auditors: Users[];
   setAuditors: React.Dispatch<React.SetStateAction<Users[]>>;
-  initialState?: AuditViewDetailedI;
+  initialState?: AuditViewI;
   initialAuditors?: Users[];
   errors: Record<string, string>;
 }): JSX.Element => {

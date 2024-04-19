@@ -1,26 +1,39 @@
 "use server";
-import { prisma } from "@/db/prisma.server";
+
+import { AuditorStatus, AuditStatus } from "@prisma/client";
 import { remark } from "remark";
 import html from "remark-html";
 import remarkGfm from "remark-gfm";
 import matter from "gray-matter";
+import { prisma } from "@/db/prisma.server";
 
-import { AuditViewI, AuditViewDetailedI } from "@/lib/types";
-import { AuditorStatus, AuditStatus } from "@prisma/client";
+import { AuditListDetailedI, AuditListTruncatedI, AuditViewI } from "@/lib/types";
 
-export const getAudits = (status?: string): Promise<AuditViewI[]> => {
+export const getAuditsDetailed = (status?: string): Promise<AuditListDetailedI[]> => {
   const statusFilter: Record<string, AuditStatus> = {
     locked: AuditStatus.ATTESTATION,
     ongoing: AuditStatus.ONGOING,
     completed: AuditStatus.FINAL,
     open: AuditStatus.OPEN,
   };
+
   return prisma.audits.findMany({
     where: {
       status: statusFilter[status ?? "open"],
     },
-    include: {
-      auditee: true,
+    select: {
+      id: true,
+      title: true,
+      description: true,
+      price: true,
+      duration: true,
+      createdAt: true,
+      auditee: {
+        select: {
+          address: true,
+          image: true,
+        },
+      },
       auditors: {
         where: {
           status: AuditorStatus.VERIFIED,
@@ -36,7 +49,36 @@ export const getAudits = (status?: string): Promise<AuditViewI[]> => {
   });
 };
 
-export const getAudit = (id: string): Promise<AuditViewDetailedI | null> => {
+export const getAuditsTruncated = (status?: string): Promise<AuditListTruncatedI[]> => {
+  const statusFilter: Record<string, AuditStatus> = {
+    locked: AuditStatus.ATTESTATION,
+    ongoing: AuditStatus.ONGOING,
+    completed: AuditStatus.FINAL,
+    open: AuditStatus.OPEN,
+  };
+
+  return prisma.audits.findMany({
+    where: {
+      status: statusFilter[status ?? "open"],
+    },
+    select: {
+      id: true,
+      title: true,
+      description: true,
+      auditee: {
+        select: {
+          address: true,
+          image: true,
+        },
+      },
+    },
+    orderBy: {
+      createdAt: "desc",
+    },
+  });
+};
+
+export const getAudit = (id: string): Promise<AuditViewI | null> => {
   // A more detailed view. Will show verified, rejected, and requested auditors as well.
   return prisma.audits.findUnique({
     where: {

@@ -5,7 +5,7 @@ import { useMutation } from "@tanstack/react-query";
 
 import { useModal } from "@/lib/hooks";
 import { Column, Row } from "@/components/Box";
-import { AuditViewDetailedI } from "@/lib/types";
+import { AuditViewI } from "@/lib/types";
 // import * as Form from "@/components/Form";
 import { auditUpdateApprovalStatus } from "@/actions/audits/auditee";
 import { Auditors, AuditorStatus } from "@prisma/client";
@@ -13,7 +13,7 @@ import { AuditorItem } from "@/components/Audit";
 import { Button } from "@/components/Button";
 import { X } from "@/assets";
 
-const RequestsEdit = ({ audit }: { audit: AuditViewDetailedI }): JSX.Element => {
+const RequestsEdit = ({ audit }: { audit: AuditViewI }): JSX.Element => {
   const requestedAuditors = audit.auditors.filter(
     (auditor) => auditor.status !== AuditorStatus.VERIFIED,
   );

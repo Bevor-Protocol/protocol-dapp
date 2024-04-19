@@ -5,7 +5,7 @@ import { revalidatePath } from "next/cache";
 import { z } from "zod";
 import { prisma } from "@/db/prisma.server";
 
-import { GenericUpdateI, AuditViewDetailedI } from "@/lib/types";
+import { GenericUpdateI, AuditViewI } from "@/lib/types";
 import { auditFormSchema } from "@/lib/validations";
 import { putBlob } from "@/actions/blobs";
 import { getAudit } from "@/actions/audits/general";
@@ -103,7 +103,7 @@ const updateAuditIso = (
   id: string,
   auditData: Prisma.AuditsUpdateInput,
   auditors: Users[],
-  currentAudit: AuditViewDetailedI,
+  currentAudit: AuditViewI,
 ): Promise<Audits> => {
   // 1) Create newly verified auditors
   // 2) Remove auditors completely that were verified and are now not -> can still request to audit.

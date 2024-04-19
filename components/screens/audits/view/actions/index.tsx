@@ -2,7 +2,7 @@
 
 import { Auditors, AuditStatus } from "@prisma/client";
 
-import { AuditViewDetailedI } from "@/lib/types";
+import { AuditViewI } from "@/lib/types";
 import { useUser } from "@/lib/hooks";
 import { Column } from "@/components/Box";
 import { Skeleton } from "@/components/Loader";
@@ -17,7 +17,7 @@ const AuditDashboardActions = ({
   rejectedAuditors,
   requestedAuditors,
 }: {
-  audit: AuditViewDetailedI;
+  audit: AuditViewI;
   verifiedAuditors: Auditors[];
   rejectedAuditors: Auditors[];
   requestedAuditors: Auditors[];

@@ -3,7 +3,7 @@
 import { Auditors, Users } from "@prisma/client";
 import { useMutation } from "@tanstack/react-query";
 
-import { AuditViewDetailedI } from "@/lib/types";
+import { AuditViewI } from "@/lib/types";
 import { useModal } from "@/lib/hooks";
 import { auditAddRequest, auditDeleteRequest } from "@/actions/audits/user";
 import { lockAudit } from "@/actions/audits/auditee";
@@ -39,7 +39,7 @@ const AuditeeManageRequest = ({
   audit,
   disabled,
 }: {
-  audit: AuditViewDetailedI;
+  audit: AuditViewI;
   disabled: boolean;
 }): JSX.Element => {
   const { toggleOpen, setContent } = useModal();
@@ -270,7 +270,7 @@ const AuditOpenActions = ({
   requestedAuditors,
 }: {
   user: Users;
-  audit: AuditViewDetailedI;
+  audit: AuditViewI;
   verifiedAuditors: Auditors[];
   rejectedAuditors: Auditors[];
   requestedAuditors: Auditors[];

@@ -4,20 +4,14 @@ import { useMutation } from "@tanstack/react-query";
 
 import { useModal } from "@/lib/hooks";
 import { Row } from "@/components/Box";
-import { AuditViewDetailedI } from "@/lib/types";
+import { AuditViewI } from "@/lib/types";
 // import * as Form from "@/components/Form";
 import { attestToTerms } from "@/actions/audits/auditor";
 import { Users } from "@prisma/client";
 import { Button } from "@/components/Button";
 import { X } from "@/assets";
 
-const AuditorAttest = ({
-  audit,
-  user,
-}: {
-  audit: AuditViewDetailedI;
-  user: Users;
-}): JSX.Element => {
+const AuditorAttest = ({ audit, user }: { audit: AuditViewI; user: Users }): JSX.Element => {
   const { toggleOpen } = useModal(); // const [showRejected, setShowRejected] = useState(false);
 
   const { mutate, isPending } = useMutation({

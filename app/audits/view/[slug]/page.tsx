@@ -17,6 +17,7 @@ const Fetcher = async ({ auditId }: { auditId: string }): Promise<JSX.Element> =
     findings: {},
   };
 
+  // will likely push this client side to be dependent on userId.
   if (audit.details) {
     markdownObject.details = await getMarkdown(audit.details);
   }

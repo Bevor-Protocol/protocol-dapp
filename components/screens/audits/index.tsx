@@ -3,23 +3,25 @@
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 
-import { getAudits } from "@/actions/audits/general";
+import { getAuditsDetailed } from "@/actions/audits/general";
 import { Column, Row } from "@/components/Box";
 import { AuditCard } from "@/components/Audit";
 import { Toggle } from "@/components/Toggle";
 import { AuditsSkeleton } from "@/components/Loader";
-import { AuditViewI } from "@/lib/types";
+import { AuditListDetailedI } from "@/lib/types";
 
 const statuses = ["open", "locked", "ongoing", "completed"];
 
-const Audits = ({ initialData }: { initialData: AuditViewI[] }): JSX.Element => {
+const Audits = ({ initialData }: { initialData: AuditListDetailedI[] }): JSX.Element => {
   const [display, setDisplay] = useState("open");
 
   const { data, isFetching } = useQuery({
     queryKey: ["audits", display],
-    queryFn: () => getAudits(display),
+    queryFn: () => getAuditsDetailed(display),
     initialData,
   });
+
+  console.log(data);
 
   return (
     <Column className="gap-4 py-8 justify-start items-center w-full max-w-[1000px]">

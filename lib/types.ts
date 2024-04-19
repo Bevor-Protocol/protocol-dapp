@@ -95,11 +95,36 @@ export interface UserWithCount extends Users {
   };
 }
 
-export type AuditViewDetailedI = Prisma.AuditsGetPayload<{
-  include: {
-    auditee: true;
+export type AuditListTruncatedI = Prisma.AuditsGetPayload<{
+  select: {
+    id: true;
+    title: true;
+    description: true;
+    auditee: {
+      select: {
+        address: true;
+        image: true;
+      };
+    };
+  };
+}>;
+
+export type AuditListDetailedI = Prisma.AuditsGetPayload<{
+  select: {
+    id: true;
+    title: true;
+    description: true;
+    price: true;
+    duration: true;
+    createdAt: true;
+    auditee: {
+      select: {
+        address: true;
+        image: true;
+      };
+    };
     auditors: {
-      include: {
+      select: {
         user: true;
       };
     };
@@ -110,7 +135,7 @@ export type AuditViewI = Prisma.AuditsGetPayload<{
   include: {
     auditee: true;
     auditors: {
-      select: {
+      include: {
         user: true;
       };
     };

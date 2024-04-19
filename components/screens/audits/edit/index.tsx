@@ -8,11 +8,11 @@ import { AuditorStatus, Users } from "@prisma/client";
 
 import { LoaderFill } from "@/components/Loader";
 import { useUser } from "@/lib/hooks";
-import { AuditViewDetailedI } from "@/lib/types";
+import { AuditViewI } from "@/lib/types";
 import { updateAudit } from "@/actions/audits/auditee";
 import AuditFormEntries from "@/components/Audit/client/form";
 
-const AuditEditWrapper = ({ audit }: { audit: AuditViewDetailedI }): JSX.Element => {
+const AuditEditWrapper = ({ audit }: { audit: AuditViewI }): JSX.Element => {
   // only show the selected auditors that were already verified.
   const initialAuditors = audit.auditors
     .filter((auditor) => auditor.status === AuditorStatus.VERIFIED)
