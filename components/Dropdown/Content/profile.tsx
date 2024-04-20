@@ -2,7 +2,7 @@
 import { useState } from "react";
 import { useAccount, useDisconnect } from "wagmi";
 
-import { trimAddress } from "@/lib/utils";
+import { cn, trimAddress } from "@/lib/utils";
 import { Copy, Logout } from "@/assets";
 import { Button } from "@/components/Button";
 import { Column, Row } from "@/components/Box";
@@ -48,8 +48,14 @@ const Profile = (): JSX.Element => {
       <Card.Footer className="justify-between p-2 text-white/60">
         <p>Network:</p>
         <p>
-          <span className="inline-block h-1 w-1 bg-green-400 rounded-full mr-1 align-middle" />
           <span>{chain?.name}</span>
+          <span
+            className={cn(
+              "inline-block h-1 w-1 rounded-full ml-1 align-middle",
+              chain && "bg-green-400",
+              !chain && "bg-red-400",
+            )}
+          />
         </p>
       </Card.Footer>
     </Card.Main>

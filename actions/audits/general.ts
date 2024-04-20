@@ -174,7 +174,8 @@ export const safeGetMarkdown = async (
 ): Promise<MarkdownAuditsI> => {
   const markdownObject: MarkdownAuditsI = {
     details: "",
-    findings: {},
+    globalReveal: false,
+    findings: [],
   };
 
   const state = await getAuditState(auditId, userId);
@@ -198,25 +199,33 @@ export const safeGetMarkdown = async (
     markdownObject.details = await parseMarkdown(audit.details);
   }
 
-  const shouldReveal =
-    audit.status == AuditStatus.CHALLENGEABLE ||
-    audit.status == AuditStatus.FINALIZED ||
-    (audit.status == AuditStatus.AUDITING && state.userSubmitted);
-  if (!shouldReveal) {
+  if (audit.status == AuditStatus.DISCOVERY || audit.status == AuditStatus.ATTESTATION) {
     return markdownObject;
   }
+
+  const globalReveal =
+    audit.status == AuditStatus.CHALLENGEABLE || audit.status == AuditStatus.FINALIZED;
+  markdownObject.globalReveal = globalReveal;
 
   for (const auditor of audit.auditors) {
     if (auditor.status === AuditorStatus.VERIFIED) {
       const user = auditor.user;
+      const submitted = !!auditor.findings;
+      const owner = auditor.userId === userId;
+      const reveal = globalReveal || (state.userSubmitted && owner);
+
       let markdown = "";
-      if (auditor.findings) {
-        markdown = await parseMarkdown(auditor.findings);
+      if (submitted && reveal) {
+        markdown = await parseMarkdown(auditor.findings as string);
       }
-      markdownObject.findings[auditor.user.address] = {
+
+      markdownObject.findings.push({
         user,
+        owner,
+        reveal,
+        submitted,
         markdown,
-      };
+      });
     }
   }
 

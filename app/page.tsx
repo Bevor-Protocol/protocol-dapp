@@ -12,12 +12,12 @@ const Page = (): JSX.Element => {
         <Column className="items-start gap-8 text-left md:text-center md:items-center">
           <div className="grad-light text-grad">
             <h1 className="text-6xl font-bold md:text-5xl leading-[normal] md:leading-[normal]">
-              Ensuring <br /> quality audits
+              Facilitating <br /> quality audits
             </h1>
           </div>
           <p className="font-medium">
-            On-chain solution for establishing terms and carrying out smart contract audits.
-            Register as an auditee, auditor, or DAO participant.
+            An on-chain solution for facilitating smart contract audits in an efficient, fair, and
+            robust manner. Register as an auditee, auditor, or DAO participant.
           </p>
           <Row className="flex-nowrap align-middle justify-center gap-2">
             <DynamicLink href="/leaderboard" asButton>
