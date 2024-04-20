@@ -13,7 +13,7 @@ export const Footer = (): JSX.Element => {
   return (
     <footer>
       <Column className="gap-4 w-full py-7 text-center text-xs md:hidden">
-        <p className="opacity-disable">de-risk. incentivize. audit. decentralize.</p>
+        <p className="opacity-disable">audit. incentivize. de-risk. decentralize.</p>
         <span className="opacity-disable">Bevor &copy; {`${new Date().getFullYear()}`}</span>
       </Column>
     </footer>
