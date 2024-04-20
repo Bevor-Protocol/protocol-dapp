@@ -17,13 +17,14 @@ export type SortLeaderI = {
 
 export type MarkdownAuditsI = {
   details: string;
-  findings: Record<
-    string,
-    {
-      user: Users;
-      markdown: string;
-    }
-  >;
+  globalReveal: boolean;
+  findings: {
+    user: Users;
+    submitted: boolean;
+    owner: boolean;
+    reveal: boolean;
+    markdown: string;
+  }[];
 };
 
 export type AuditDashI = {

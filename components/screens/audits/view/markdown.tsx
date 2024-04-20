@@ -16,56 +16,59 @@ const AuditMarkdown = ({ audit }: { audit: AuditI }): JSX.Element => {
 
   const { data, isPending } = useQuery({
     queryKey: ["markdown", audit.id, user?.id ?? ""],
-    queryFn: () => {
-      return safeGetMarkdown(audit.id, user?.id);
-    },
+    queryFn: () => safeGetMarkdown(audit.id, user?.id),
   });
 
   const [active, setActive] = useState("details");
-  const [findingsActive, setFindingsActive] = useState("");
+  const [findingsActive, setFindingsActive] = useState(0);
 
   if (!isFetchedAfterMount || isPending || !data) {
     return <Loader className="h-12 w-12" />;
   }
 
-  const handleToggle = (userId?: string): void => {
-    if (Object.keys(data.findings).length > 0) setActive("findings");
-    if (userId) {
-      setFindingsActive(userId);
-    } else {
-      setFindingsActive(Object.keys(data.findings)[0]);
-    }
+  const handleToggle = (index: number): void => {
+    if (data.findings.length > 0) setActive("findings");
+    setFindingsActive(index);
   };
   const handleDetails = (): void => {
     setActive("details");
-    setFindingsActive("");
+    setFindingsActive(0);
   };
 
   return (
     <div>
       <Row className="gap-4 justify-start">
         <Toggle active={active === "details"} title={"details"} onClick={handleDetails} />
-        {Object.keys(data.findings).length > 0 && (
+        {data.findings.length > 0 && (
           <Toggle
             active={active === "findings"}
             title={"findings"}
-            onClick={() => handleToggle()}
+            onClick={() => handleToggle(0)}
           />
         )}
         {active == "findings" && (
           <>
-            {Object.keys(data.findings).map((userId, ind) => (
+            {data.findings.map((_, ind) => (
               <Toggle
-                active={active === "findings" && findingsActive == userId}
+                active={active === "findings" && findingsActive == ind}
                 title={`findings-${ind + 1}`}
-                key={userId}
-                onClick={() => handleToggle(userId)}
+                key={ind}
+                onClick={() => handleToggle(ind)}
               />
             ))}
           </>
         )}
       </Row>
-      {!data.details && active == "details" && <p className="my-4">No details to show</p>}
+      {active == "details" && !data.details && <p className="my-4">No details to show</p>}
+      {active == "details" && data.details && (
+        <div className="markdown" dangerouslySetInnerHTML={{ __html: data.details }} />
+      )}
+      {active == "findings" && data.findings[findingsActive].owner && (
+        <p className="my-2">your submission</p>
+      )}
+      {active == "findings" && !data.globalReveal && data.findings[findingsActive].owner && (
+        <p className="my-2">currently only visible to you</p>
+      )}
       {active == "findings" && (
         <Row className="items-center gap-4">
           <p>Auditor:</p>
@@ -77,18 +80,27 @@ const AuditMarkdown = ({ audit }: { audit: AuditI }): JSX.Element => {
           </DynamicLink>
         </Row>
       )}
-      {active == "details" && data.details && (
-        <div className="markdown" dangerouslySetInnerHTML={{ __html: data.details }} />
-      )}
-      {active == "findings" && data.findings[findingsActive].markdown && (
-        <div
-          className="markdown"
-          dangerouslySetInnerHTML={{ __html: data.findings[findingsActive].markdown }}
-        />
-      )}
-      {active == "findings" && !data.findings[findingsActive].markdown && (
-        <p className="my-4">Waiting on findings</p>
-      )}
+      {active === "findings" &&
+        !data.findings[findingsActive].reveal &&
+        data.findings[findingsActive].submitted && (
+          <p className="my-4">Auditor submitted findings. Pending reveal.</p>
+        )}
+      {active === "findings" &&
+        !data.findings[findingsActive].reveal &&
+        !data.findings[findingsActive].submitted && (
+          <p className="my-4">Auditor has not submitted findings.</p>
+        )}
+      {active === "findings" &&
+        data.findings[findingsActive].reveal &&
+        !data.findings[findingsActive].submitted && <p className="my-4">Waiting on findings</p>}
+      {active === "findings" &&
+        data.findings[findingsActive].reveal &&
+        data.findings[findingsActive].submitted && (
+          <div
+            className="markdown"
+            dangerouslySetInnerHTML={{ __html: data.findings[findingsActive].markdown }}
+          />
+        )}
     </div>
   );
 };
