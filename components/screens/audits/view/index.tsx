@@ -8,6 +8,7 @@ import { AuditAuditor } from "@/components/Audit/client";
 import { AuditI } from "@/lib/types";
 import AuditDashboardActions from "./actions";
 import Withdraw from "./actions/withdraw";
+import HistoryDiv from "./history";
 
 const AuditPage = ({ audit }: { audit: AuditI }): JSX.Element => {
   const verifiedAuditors = audit.auditors.filter(
@@ -27,7 +28,7 @@ const AuditPage = ({ audit }: { audit: AuditI }): JSX.Element => {
   );
 
   return (
-    <Row className="justify-between items-stretch">
+    <Row className="justify-between items-stretch relative">
       <Column className="items-stretch gap-4">
         <div>
           <DynamicLink href={`/user/${audit.auditee.address}`}>
@@ -162,6 +163,7 @@ const AuditPage = ({ audit }: { audit: AuditI }): JSX.Element => {
         )}
         <AuditDashboardActions audit={audit} />
       </Column>
+      <HistoryDiv audit={audit} />
     </Row>
   );
 };

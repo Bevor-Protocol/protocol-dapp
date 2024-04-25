@@ -130,6 +130,24 @@ export type AuditI = Prisma.AuditsGetPayload<{
         acceptedTerms: true;
       };
     };
+    history: {
+      select: {
+        action: true;
+        userType: true;
+        comment: true;
+        createdAt: true;
+        audit: {
+          select: {
+            auditee: true;
+          };
+        };
+        auditor: {
+          select: {
+            user: true;
+          };
+        };
+      };
+    };
   };
 }>;
 

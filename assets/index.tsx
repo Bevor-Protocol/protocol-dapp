@@ -12,6 +12,7 @@ import Search from "./search";
 import X from "./x";
 import Info from "./info";
 import File from "./file";
+import History from "./history";
 
 export {
   Gitbook,
@@ -28,4 +29,5 @@ export {
   X,
   Info,
   File,
+  History,
 };
