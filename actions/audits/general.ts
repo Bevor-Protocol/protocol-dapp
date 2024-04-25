@@ -70,6 +70,7 @@ export const getAudit = (id: string): Promise<AuditI | null> => {
       },
       history: {
         select: {
+          id: true,
           action: true,
           userType: true,
           comment: true,

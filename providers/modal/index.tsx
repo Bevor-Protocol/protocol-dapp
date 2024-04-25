@@ -52,12 +52,12 @@ const ModalProvider = ({ children }: { children: React.ReactNode }): JSX.Element
   }, [panelRef]);
 
   useEffect(() => {
-    if (isOpen) {
+    if (isOpen || isPanelOpen) {
       document.body.classList.add("modal-show");
     } else {
       document.body.classList.remove("modal-show");
     }
-  }, [isOpen]);
+  }, [isOpen, isPanelOpen]);
 
   const modalState: ModalStateI = {
     toggleOpen,

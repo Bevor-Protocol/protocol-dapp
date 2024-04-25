@@ -100,8 +100,8 @@ export const AuditorItem: React.FC<AuditorItemI> = ({
       <span
         className={cn(
           "h-1 w-1 rounded-full mb-auto",
-          auditor.available && " bg-green-400",
-          !auditor.available && " bg-gray-600",
+          auditor.available && "bg-green-400",
+          !auditor.available && "bg-gray-600",
         )}
       />
       <Icon image={auditor.image} seed={auditor.address} size="sm" />
@@ -117,6 +117,25 @@ export const AuditorItem: React.FC<AuditorItemI> = ({
         </p>
       </div>
       {canClose && <span className="absolute -right-1 -top-1 text-xs">x</span>}
+    </Row>
+  );
+};
+
+export const AuditorItemSimple: React.FC<{ auditor: Users }> = ({ auditor }) => {
+  return (
+    <Row className="gap-1 h-[32px] min-h-[32px] items-center">
+      <Icon image={auditor.image} seed={auditor.address} size="sm" />
+      <div className="overflow-hidden">
+        <p className="text-xs text-ellipsis overflow-hidden">
+          <span>{trimAddress(auditor.address)}</span>
+          {auditor.name && (
+            <>
+              <span className="mx-1">|</span>
+              <span className="whitespace-nowrap overflow-ellipsis m-w-full">{auditor.name}</span>
+            </>
+          )}
+        </p>
+      </div>
     </Row>
   );
 };

@@ -9,7 +9,7 @@ export const Wrapper = forwardRef<HTMLDivElement, Props>(({ children, open, ...r
   if (!open) return <></>;
   return (
     <div
-      className="fixed inset-y-0 right-0 z-[999] bg-black w-72 p-4 animate-panel"
+      className="fixed inset-y-0 right-0 z-[999] bg-black w-80 pl-4 py-4 animate-panel"
       ref={ref}
       {...rest}
     >

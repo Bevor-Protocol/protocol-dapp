@@ -134,6 +134,7 @@ export type AuditI = Prisma.AuditsGetPayload<{
     };
     history: {
       select: {
+        id: true;
         action: true;
         userType: true;
         comment: true;
@@ -154,13 +155,14 @@ export type AuditI = Prisma.AuditsGetPayload<{
 }>;
 
 export type HistoryI = {
+  id: string;
   action: HistoryAction;
   userType: UserType;
   comment: string | null;
   createdAt: Date;
   audit: {
     auditee: Users;
-  } | null;
+  };
   auditor: {
     user: Users;
   } | null;
