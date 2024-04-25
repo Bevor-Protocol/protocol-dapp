@@ -2,7 +2,7 @@ import { http, cookieStorage, createStorage, createConfig } from "wagmi";
 // import { walletConnect, injected, coinbaseWallet } from "wagmi/connectors";
 import { injected } from "wagmi/connectors";
 
-import { goerli, polygonMumbai } from "wagmi/chains";
+import { goerli, polygonMumbai, localhost } from "wagmi/chains";
 
 const projectId = process.env.NEXT_PUBLIC_WC_PROJECT_ID as string;
 
@@ -20,10 +20,11 @@ if (!projectId) throw new Error("Project ID is not defined");
 // so maybe come back to this. I think the web3modal config was the cause of some
 // server vs. client side errors.
 const config = createConfig({
-  chains: [goerli, polygonMumbai],
+  chains: [goerli, polygonMumbai, localhost],
   transports: {
     [goerli.id]: http(),
     [polygonMumbai.id]: http(),
+    [localhost.id]: http(),
   },
   connectors: [
     // walletConnect({ projectId, metadata, showQrModal: false }),
