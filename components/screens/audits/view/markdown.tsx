@@ -4,19 +4,18 @@ import { useQuery } from "@tanstack/react-query";
 
 import { Row } from "@/components/Box";
 import { Toggle } from "@/components/Toggle";
-import { AuditI } from "@/lib/types";
 import { AuditorItem } from "@/components/Audit";
 import DynamicLink from "@/components/Link";
 import { useUser } from "@/lib/hooks";
 import { safeGetMarkdown } from "@/actions/audits/general";
 import { Loader } from "@/components/Loader";
 
-const AuditMarkdown = ({ audit }: { audit: AuditI }): JSX.Element => {
+const AuditMarkdown = ({ auditId }: { auditId: string }): JSX.Element => {
   const { user, isFetchedAfterMount } = useUser();
 
   const { data, isPending } = useQuery({
-    queryKey: ["markdown", audit.id, user?.id ?? ""],
-    queryFn: () => safeGetMarkdown(audit.id, user?.id),
+    queryKey: ["markdown", auditId, user?.id ?? ""],
+    queryFn: () => safeGetMarkdown(auditId, user?.id),
   });
 
   const [active, setActive] = useState("details");

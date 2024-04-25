@@ -1,18 +1,24 @@
 "use client";
 
 import { History } from "@/assets";
-import { AuditI } from "@/lib/types";
+import { HistoryI } from "@/lib/types";
 
-const HistoryDiv = ({ audit }: { audit: AuditI }): JSX.Element => {
+import { useModal } from "@/lib/hooks";
+
+const AuditHistory = ({ history }: { history: HistoryI[] }): JSX.Element => {
+  const { togglePanelOpen, setPanelContent } = useModal();
+
   const handleClick = (): void => {
-    console.log(audit.history.length);
+    console.log(history);
+    setPanelContent(<div>testing</div>);
+    togglePanelOpen();
   };
 
   return (
-    <div className="absolute -right-6 -top-6 cursor-pointer" onClick={handleClick}>
+    <div className="absolute -right-10 top-0 cursor-pointer" onClick={handleClick}>
       <History height="1.5rem" width="1.5rem" fill="white" />
     </div>
   );
 };
 
-export default HistoryDiv;
+export default AuditHistory;
