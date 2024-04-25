@@ -42,6 +42,7 @@ model Audits {
   duration    Int         @default(6) // duration in months
   status      AuditStatus @default(DISCOVERY)
   auditors    Auditors[]
+  history     History[]
   createdAt   DateTime    @default(now())
   updatedAt   DateTime    @updatedAt
 }
@@ -53,14 +54,48 @@ enum AuditorStatus {
 }
 
 model Auditors {
+  id            String        @id @default(cuid())
   auditId       String
   audit         Audits        @relation(fields: [auditId], references: [id], onDelete: Cascade)
   userId        String
   user          Users         @relation(fields: [userId], references: [id], onDelete: Cascade)
   status        AuditorStatus
+  history       History[]
   attestedTerms Boolean       @default(false)
   acceptedTerms Boolean       @default(false)
   findings      String? // references blob storage URL
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
 
   @@unique([auditId, userId])
+}
+
+enum HistoryAction {
+  APPROVED
+  REJECTED
+  LEFT
+  LOCKED
+  OPENED
+  EDITED
+  FINDINGS
+}
+
+enum UserType {
+  AUDITEE
+  AUDITOR
+}
+
+model History {
+  id        String        @id @default(cuid())
+  auditId   String
+  audit     Audits        @relation(fields: [auditId], references: [id], onDelete: Cascade)
+  auditorId String?
+  auditor   Auditors?     @relation(fields: [auditorId], references: [id], onDelete: Cascade)
+  action    HistoryAction
+  userType  UserType
+  comment   String?
+  createdAt DateTime      @default(now())
+
+  @@index([auditId], name: "idx_history_audit")
+  @@index([auditorId], name: "idx_history_auditor")
 }
