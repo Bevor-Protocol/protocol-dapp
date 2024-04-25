@@ -1,6 +1,6 @@
 "use server";
 
-import { Auditors, Audits } from "@prisma/client";
+import { Auditors, Audits, AuditStatus, HistoryAction, UserType } from "@prisma/client";
 import { revalidatePath } from "next/cache";
 import { prisma } from "@/db/prisma.server";
 import { z } from "zod";
@@ -12,9 +12,31 @@ export const attestToTerms = (
   id: string,
   userId: string,
   status: boolean,
+  comment: string,
 ): Promise<GenericUpdateI<Auditors>> => {
   // will always mark "attested" as true, but the fct passes "status" to tell us if they
   // accepted or rejected.
+
+  if (comment.length > 160) {
+    return Promise.resolve({
+      success: false,
+      error: "zod",
+      validationErrors: {
+        comment: "cannot be more thant 160 character",
+      },
+    });
+  }
+
+  if (!status && !comment) {
+    return Promise.resolve({
+      success: false,
+      error: "zod",
+      validationErrors: {
+        comment: "must include a comment if you are rejecting the terms",
+      },
+    });
+  }
+
   return prisma.auditors
     .update({
       where: {
@@ -26,10 +48,22 @@ export const attestToTerms = (
       data: {
         acceptedTerms: status,
         attestedTerms: true,
+        history: {
+          create: {
+            userType: UserType.AUDITOR,
+            action: status ? HistoryAction.APPROVED : HistoryAction.REJECTED,
+            comment: comment.length > 0 ? comment : null,
+            audit: {
+              connect: {
+                id,
+              },
+            },
+          },
+        },
       },
     })
     .then((data) => {
-      revalidatePath(`{/audits/view/${id}}`);
+      revalidatePath(`/audits/view/${id}`);
       return {
         success: true,
         data,
@@ -43,9 +77,27 @@ export const attestToTerms = (
     });
 };
 
-export const leaveAudit = (id: string, userId: string): Promise<GenericUpdateI<Audits>> => {
+export const leaveAudit = async (id: string, userId: string): Promise<GenericUpdateI<Audits>> => {
   // Hard delete the request. Will no longer be in the Database.
   // Will also reset attestations for other auditors.
+  const audit = await prisma.audits.findUnique({ where: { id } });
+  let historyObj = {};
+  if (audit!.status == AuditStatus.AUDITING) {
+    historyObj = {
+      history: {
+        create: {
+          userType: UserType.AUDITOR,
+          action: HistoryAction.LEFT,
+          auditor: {
+            connect: {
+              id,
+            },
+          },
+        },
+      },
+    };
+  }
+
   return prisma.audits
     .update({
       where: {
@@ -69,10 +121,11 @@ export const leaveAudit = (id: string, userId: string): Promise<GenericUpdateI<A
             },
           },
         },
+        ...historyObj,
       },
     })
     .then((data) => {
-      revalidatePath(`{/audits/view/${id}}`);
+      revalidatePath(`/audits/view/${id}`);
       return {
         success: true,
         data,
@@ -127,13 +180,24 @@ export const addAuditFindings = (
           },
           data: {
             findings: data.url,
+            history: {
+              create: {
+                userType: UserType.AUDITOR,
+                action: HistoryAction.FINDINGS,
+                audit: {
+                  connect: {
+                    id: auditId,
+                  },
+                },
+              },
+            },
           },
         });
       }
       throw new Error("could not parse input file");
     })
     .then((data) => {
-      revalidatePath(`{/audits/view/${auditId}}`);
+      revalidatePath(`/audits/view/${auditId}`);
       return {
         success: true,
         data,

@@ -27,7 +27,7 @@ const AuditPage = ({ audit }: { audit: AuditI }): JSX.Element => {
   );
 
   return (
-    <Row className="justify-between items-stretch">
+    <Row className="justify-between items-stretch relative">
       <Column className="items-stretch gap-4">
         <div>
           <DynamicLink href={`/user/${audit.auditee.address}`}>

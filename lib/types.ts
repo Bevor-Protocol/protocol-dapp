@@ -1,4 +1,4 @@
-import { Prisma, Users } from "@prisma/client";
+import { HistoryAction, Prisma, Users, UserType } from "@prisma/client";
 import { Address } from "viem";
 
 export type LeaderboardI = {
@@ -64,6 +64,8 @@ export type HomeStatI = {
 export type ModalStateI = {
   toggleOpen: () => void;
   setContent: (content: React.ReactNode) => void;
+  togglePanelOpen: () => void;
+  setPanelContent: (content: React.ReactNode) => void;
 };
 
 export type UserStateI = {
@@ -130,8 +132,41 @@ export type AuditI = Prisma.AuditsGetPayload<{
         acceptedTerms: true;
       };
     };
+    history: {
+      select: {
+        id: true;
+        action: true;
+        userType: true;
+        comment: true;
+        createdAt: true;
+        audit: {
+          select: {
+            auditee: true;
+          };
+        };
+        auditor: {
+          select: {
+            user: true;
+          };
+        };
+      };
+    };
   };
 }>;
+
+export type HistoryI = {
+  id: string;
+  action: HistoryAction;
+  userType: UserType;
+  comment: string | null;
+  createdAt: Date;
+  audit: {
+    auditee: Users;
+  };
+  auditor: {
+    user: Users;
+  } | null;
+};
 
 export type AuditStateI = {
   isTheAuditee: boolean;

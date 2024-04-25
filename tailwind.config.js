@@ -61,10 +61,19 @@ module.exports = {
             transform: "scale(1)",
           },
         },
+        panel: {
+          "0%": {
+            transform: "translateX(100%)",
+          },
+          "100%": {
+            transform: "translateX(0%)",
+          },
+        },
       },
       animation: {
         shrink: "shrink 1s infinite",
         appear: "appear 0.15s",
+        panel: "panel 0.15s",
       },
       colors: {
         dark: "#121212",

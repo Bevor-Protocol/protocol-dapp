@@ -68,6 +68,28 @@ export const getAudit = (id: string): Promise<AuditI | null> => {
           acceptedTerms: true,
         },
       },
+      history: {
+        select: {
+          id: true,
+          action: true,
+          userType: true,
+          comment: true,
+          createdAt: true,
+          audit: {
+            select: {
+              auditee: true,
+            },
+          },
+          auditor: {
+            select: {
+              user: true,
+            },
+          },
+        },
+        orderBy: {
+          createdAt: "asc",
+        },
+      },
     },
   });
 };
