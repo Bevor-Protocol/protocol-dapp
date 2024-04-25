@@ -12,9 +12,31 @@ export const attestToTerms = (
   id: string,
   userId: string,
   status: boolean,
+  comment: string,
 ): Promise<GenericUpdateI<Auditors>> => {
   // will always mark "attested" as true, but the fct passes "status" to tell us if they
   // accepted or rejected.
+
+  if (comment.length > 160) {
+    return Promise.resolve({
+      success: false,
+      error: "zod",
+      validationErrors: {
+        comment: "cannot be more thant 160 character",
+      },
+    });
+  }
+
+  if (!status && !comment) {
+    return Promise.resolve({
+      success: false,
+      error: "zod",
+      validationErrors: {
+        comment: "must include a comment if you are rejecting the terms",
+      },
+    });
+  }
+
   return prisma.auditors
     .update({
       where: {
@@ -30,6 +52,7 @@ export const attestToTerms = (
           create: {
             userType: UserType.AUDITOR,
             action: status ? HistoryAction.APPROVED : HistoryAction.REJECTED,
+            comment: comment.length > 0 ? comment : null,
             audit: {
               connect: {
                 id,

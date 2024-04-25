@@ -1,28 +1,43 @@
 "use client";
 
+import { useState } from "react";
 import { useMutation } from "@tanstack/react-query";
 
 import { useModal } from "@/lib/hooks";
 import { Row } from "@/components/Box";
 import { AuditI } from "@/lib/types";
-// import * as Form from "@/components/Form";
+import * as Form from "@/components/Form";
 import { attestToTerms } from "@/actions/audits/auditor";
 import { Users } from "@prisma/client";
 import { Button } from "@/components/Button";
 import { X } from "@/assets";
+import React from "react";
+import { cn } from "@/lib/utils";
 
 const AuditorAttest = ({ audit, user }: { audit: AuditI; user: Users }): JSX.Element => {
   const { toggleOpen } = useModal(); // const [showRejected, setShowRejected] = useState(false);
+  const [comment, setComment] = useState("");
+  const [errors, setErrors] = useState<Record<string, string>>({});
 
   const { mutate, isPending } = useMutation({
-    mutationFn: (variables: { id: string; userId: string; status: boolean }) => {
-      return attestToTerms(variables.id, variables.userId, variables.status);
+    mutationFn: (variables: { status: boolean }) => {
+      return attestToTerms(audit.id, user.id, variables.status, comment);
     },
     onSettled: (data) => {
       console.log(data);
-      toggleOpen();
+      if (data?.success) {
+        toggleOpen();
+      }
+      if (!data?.success && data?.validationErrors) {
+        setErrors(data.validationErrors);
+      }
     },
   });
+
+  const handleChange = (e: React.ChangeEvent<HTMLTextAreaElement>): void => {
+    setErrors({});
+    setComment(e.currentTarget.value);
+  };
 
   return (
     <div>
@@ -38,20 +53,41 @@ const AuditorAttest = ({ audit, user }: { audit: AuditI; user: Users }): JSX.Ele
         attestation statuses will be reset for everyone as well.
       </p>
       <hr className="w-full h-[1px] border-gray-200/20 my-4" />
-      <Row className="gap-4 justify-end">
+      <div className="relative">
+        <Form.TextArea
+          name="comment"
+          text="Comment"
+          placeholder="Leave a comment"
+          value={comment}
+          onChange={handleChange}
+          isError={"comment" in errors}
+        />
+        <div
+          className={cn("absolute top-1 right-0 text-xs", comment.length > 160 && "text-red-500")}
+        >
+          {comment.length} / 160
+        </div>
+      </div>
+      <Row className="gap-4 justify-end my-4">
         <Button
-          onClick={() => mutate({ id: audit.id, userId: user.id, status: true })}
-          disabled={isPending}
+          onClick={() => mutate({ status: true })}
+          disabled={isPending || comment.length > 160}
         >
           Accept Terms
         </Button>
         <Button
-          onClick={() => mutate({ id: audit.id, userId: user.id, status: false })}
-          disabled={isPending}
+          onClick={() => mutate({ status: false })}
+          disabled={isPending || comment.length > 160}
         >
           Reject Terms
         </Button>
       </Row>
+      {errors &&
+        Object.values(errors).map((error, ind) => (
+          <p key={ind} className="text-xs text-red-500">
+            {error}
+          </p>
+        ))}
     </div>
   );
 };
