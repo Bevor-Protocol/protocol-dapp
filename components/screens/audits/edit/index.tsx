@@ -38,6 +38,7 @@ const AuditEditWrapper = ({ audit }: { audit: AuditI }): JSX.Element => {
     mutationFn: (variables: { formData: FormData }) =>
       updateAudit(audit.id, variables.formData, auditors),
     onSettled: (data) => {
+      console.log(data);
       if (data?.success) {
         router.push(`/audits/view/${audit.id}`);
       }

@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 
 import { useModal } from "@/lib/hooks";
 import { Row } from "@/components/Box";
@@ -18,14 +18,15 @@ const AuditorAttest = ({ audit, user }: { audit: AuditI; user: Users }): JSX.Ele
   const { toggleOpen } = useModal(); // const [showRejected, setShowRejected] = useState(false);
   const [comment, setComment] = useState("");
   const [errors, setErrors] = useState<Record<string, string>>({});
+  const queryClient = useQueryClient();
 
   const { mutate, isPending } = useMutation({
     mutationFn: (variables: { status: boolean }) => {
       return attestToTerms(audit.id, user.id, variables.status, comment);
     },
     onSettled: (data) => {
-      console.log(data);
       if (data?.success) {
+        queryClient.invalidateQueries({ queryKey: ["actions"] });
         toggleOpen();
       }
       if (!data?.success && data?.validationErrors) {

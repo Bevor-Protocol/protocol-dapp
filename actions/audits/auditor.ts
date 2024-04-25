@@ -63,7 +63,7 @@ export const attestToTerms = (
       },
     })
     .then((data) => {
-      revalidatePath(`{/audits/view/${id}}`);
+      revalidatePath(`/audits/view/${id}`);
       return {
         success: true,
         data,
@@ -125,7 +125,7 @@ export const leaveAudit = async (id: string, userId: string): Promise<GenericUpd
       },
     })
     .then((data) => {
-      revalidatePath(`{/audits/view/${id}}`);
+      revalidatePath(`/audits/view/${id}`);
       return {
         success: true,
         data,
@@ -197,7 +197,7 @@ export const addAuditFindings = (
       throw new Error("could not parse input file");
     })
     .then((data) => {
-      revalidatePath(`{/audits/view/${auditId}}`);
+      revalidatePath(`/audits/view/${auditId}`);
       return {
         success: true,
         data,
