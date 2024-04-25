@@ -1,6 +1,14 @@
 "use server";
 
-import { AuditorStatus, Audits, Users, AuditStatus, Prisma } from "@prisma/client";
+import {
+  AuditorStatus,
+  Audits,
+  Users,
+  AuditStatus,
+  Prisma,
+  UserType,
+  HistoryAction,
+} from "@prisma/client";
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
 import { prisma } from "@/db/prisma.server";
@@ -151,6 +159,12 @@ const updateAuditIso = (
           },
         },
       },
+      history: {
+        create: {
+          userType: UserType.AUDITEE,
+          action: HistoryAction.EDITED,
+        },
+      },
     },
   });
 };
@@ -276,6 +290,12 @@ export const lockAudit = async (id: string): Promise<GenericUpdateI<Audits>> => 
             },
           },
         },
+        history: {
+          create: {
+            action: HistoryAction.LOCKED,
+            userType: UserType.AUDITEE,
+          },
+        },
       },
     })
     .then((data) => {
@@ -329,6 +349,12 @@ export const reopenAudit = async (id: string): Promise<GenericUpdateI<Audits>> =
               acceptedTerms: false,
               attestedTerms: false,
             },
+          },
+        },
+        history: {
+          create: {
+            userType: UserType.AUDITEE,
+            action: HistoryAction.OPENED,
           },
         },
       },

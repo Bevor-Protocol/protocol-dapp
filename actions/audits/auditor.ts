@@ -1,6 +1,6 @@
 "use server";
 
-import { Auditors, Audits } from "@prisma/client";
+import { Auditors, Audits, AuditStatus, HistoryAction, UserType } from "@prisma/client";
 import { revalidatePath } from "next/cache";
 import { prisma } from "@/db/prisma.server";
 import { z } from "zod";
@@ -26,6 +26,17 @@ export const attestToTerms = (
       data: {
         acceptedTerms: status,
         attestedTerms: true,
+        history: {
+          create: {
+            userType: UserType.AUDITOR,
+            action: status ? HistoryAction.APPROVED : HistoryAction.REJECTED,
+            audit: {
+              connect: {
+                id,
+              },
+            },
+          },
+        },
       },
     })
     .then((data) => {
@@ -43,9 +54,27 @@ export const attestToTerms = (
     });
 };
 
-export const leaveAudit = (id: string, userId: string): Promise<GenericUpdateI<Audits>> => {
+export const leaveAudit = async (id: string, userId: string): Promise<GenericUpdateI<Audits>> => {
   // Hard delete the request. Will no longer be in the Database.
   // Will also reset attestations for other auditors.
+  const audit = await prisma.audits.findUnique({ where: { id } });
+  let historyObj = {};
+  if (audit!.status == AuditStatus.AUDITING) {
+    historyObj = {
+      history: {
+        create: {
+          userType: UserType.AUDITOR,
+          action: HistoryAction.LEFT,
+          auditor: {
+            connect: {
+              id,
+            },
+          },
+        },
+      },
+    };
+  }
+
   return prisma.audits
     .update({
       where: {
@@ -69,6 +98,7 @@ export const leaveAudit = (id: string, userId: string): Promise<GenericUpdateI<A
             },
           },
         },
+        ...historyObj,
       },
     })
     .then((data) => {
@@ -127,6 +157,17 @@ export const addAuditFindings = (
           },
           data: {
             findings: data.url,
+            history: {
+              create: {
+                userType: UserType.AUDITOR,
+                action: HistoryAction.FINDINGS,
+                audit: {
+                  connect: {
+                    id: auditId,
+                  },
+                },
+              },
+            },
           },
         });
       }
