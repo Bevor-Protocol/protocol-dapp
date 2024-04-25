@@ -35,7 +35,10 @@ const Networks = ({ close }: { close?: () => void }): JSX.Element => {
             <Icon
               size="sm"
               image={ChainPresets[chain && chain.id in ChainPresets ? chain.id : 99999]}
-              className={cn(currentChain?.id == chain.id && "opacity-disable")}
+              className={cn(
+                currentChain?.id == chain.id && "opacity-disable",
+                chain.name === "Localhost" && "!bg-auto",
+              )}
             />
             <span
               className={cn("whitespace-nowrap", currentChain?.id == chain.id && "opacity-disable")}

@@ -8,7 +8,7 @@ const provider = new JsonRpcProvider(process.env.RPC_URL);
 const signer = await provider.getSigner();
 const vestingContract = new Contract(VESTING_ADDRESS, vestingContractAbi, signer);
 
-export async function withdraw(vestingScheduleId: string) {
+export const withdraw = async (vestingScheduleId: string): Promise<void> => {
   try {
     const tx = await vestingContract.withdraw(vestingScheduleId);
     await tx.wait();
@@ -16,9 +16,9 @@ export async function withdraw(vestingScheduleId: string) {
   } catch (error) {
     console.error("Withdrawal failed", error);
   }
-}
+};
 
-export async function createVestingSchedule(
+export const createVestingSchedule = async (
   _auditor: string,
   _start: number,
   _cliff: number,
@@ -27,7 +27,7 @@ export async function createVestingSchedule(
   _amount: string,
   _token: string,
   _tokenId: string,
-) {
+): Promise<void> => {
   try {
     const tx = await vestingContract.createVestingSchedule(
       _auditor,
@@ -44,9 +44,12 @@ export async function createVestingSchedule(
   } catch (error) {
     console.error("Vesting schedule creation failed", error);
   }
-}
+};
 
-export async function proposeCancelVesting(vestingScheduleId: string, calldata: string) {
+export const proposeCancelVesting = async (
+  vestingScheduleId: string,
+  calldata: string,
+): Promise<void> => {
   try {
     const tx = await vestingContract.proposeCancelVesting(vestingScheduleId, calldata);
     await tx.wait();
@@ -54,9 +57,8 @@ export async function proposeCancelVesting(vestingScheduleId: string, calldata: 
   } catch (error) {
     console.error("Vesting cancellation proposal failed", error);
   }
-}
-
-export async function invalidateAudit(vestingScheduleId: string) {
+};
+export const invalidateAudit = async (vestingScheduleId: string): Promise<void> => {
   try {
     const tx = await vestingContract.invalidateAudit(vestingScheduleId);
     await tx.wait();
@@ -64,4 +66,4 @@ export async function invalidateAudit(vestingScheduleId: string) {
   } catch (error) {
     console.error("Audit invalidation failed", error);
   }
-}
+};
