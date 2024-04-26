@@ -10,7 +10,7 @@ import { Skeleton } from "@/components/Loader";
 import AuditOpenActions from "./open";
 import AuditLockedActions from "./locked";
 import AuditOngoingActions from "./ongoing";
-import AuditFinalActions from "./final";
+import AuditChallengeableActions from "./challengeable";
 import { getAuditState } from "@/actions/audits/general";
 
 const AuditDashboardActions = ({ audit }: { audit: AuditI }): JSX.Element => {
@@ -45,7 +45,11 @@ const AuditDashboardActions = ({ audit }: { audit: AuditI }): JSX.Element => {
     return <AuditOngoingActions auditId={audit.id} userId={user.id} actionData={data} />;
   }
 
-  return <AuditFinalActions />;
+  if (audit.status === AuditStatus.CHALLENGEABLE) {
+    return <AuditChallengeableActions />;
+  }
+
+  return <></>;
 };
 
 export default AuditDashboardActions;
