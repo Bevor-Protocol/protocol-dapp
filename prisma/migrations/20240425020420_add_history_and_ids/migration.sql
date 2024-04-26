@@ -6,7 +6,7 @@
 
 */
 -- CreateEnum
-CREATE TYPE "HistoryAction" AS ENUM ('APPROVED', 'REJECTED', 'LEFT', 'LOCKED', 'OPENED');
+CREATE TYPE "HistoryAction" AS ENUM ('APPROVED', 'REJECTED', 'LEFT', 'LOCKED', 'OPENED', 'EDITED', 'FINALIZED', 'FINDINGS');
 
 -- CreateEnum
 CREATE TYPE "UserType" AS ENUM ('AUDITEE', 'AUDITOR');

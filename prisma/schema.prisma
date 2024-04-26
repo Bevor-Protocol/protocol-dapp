@@ -77,6 +77,7 @@ enum HistoryAction {
   LOCKED
   OPENED
   EDITED
+  FINALIZED
   FINDINGS
 }
 
