@@ -62,10 +62,8 @@ export type HomeStatI = {
 };
 
 export type ModalStateI = {
-  toggleOpen: () => void;
+  toggleOpen: (s?: string) => void;
   setContent: (content: React.ReactNode) => void;
-  togglePanelOpen: () => void;
-  setPanelContent: (content: React.ReactNode) => void;
 };
 
 export type UserStateI = {

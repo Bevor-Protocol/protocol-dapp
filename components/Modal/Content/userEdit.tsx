@@ -49,7 +49,10 @@ const UserEdit = ({ user, stats }: { user: Users; stats: UserStats }): JSX.Eleme
     <form onSubmit={handleSubmit} onReset={handleReset} onChange={() => setErrors({})}>
       <p>Update Profile</p>
       <hr className="w-full h-[1px] border-gray-200/20 my-4" />
-      <div onClick={toggleOpen} className="absolute top-4 right-4 w-5 h-5 cursor-pointer z-10">
+      <div
+        onClick={(): void => toggleOpen()}
+        className="absolute top-4 right-4 w-5 h-5 cursor-pointer z-10"
+      >
         <X height="1rem" width="1rem" />
       </div>
       <Row className="justify-center items-center gap-8">

@@ -17,7 +17,10 @@ const GenericConfirmation = ({
   const { toggleOpen } = useModal();
   return (
     <div>
-      <div onClick={toggleOpen} className="absolute top-4 right-4 w-5 h-5 cursor-pointer z-10">
+      <div
+        onClick={(): void => toggleOpen()}
+        className="absolute top-4 right-4 w-5 h-5 cursor-pointer z-10"
+      >
         <X height="1rem" width="1rem" />
       </div>
       <p>{title}</p>
@@ -25,7 +28,7 @@ const GenericConfirmation = ({
       <hr className="w-full h-[1px] border-gray-200/20 my-4" />
       <Row className="gap-4 justify-end">
         <Button onClick={action}>Submit</Button>
-        <Button onClick={toggleOpen}>Cancel</Button>
+        <Button onClick={(): void => toggleOpen()}>Cancel</Button>
       </Row>
     </div>
   );

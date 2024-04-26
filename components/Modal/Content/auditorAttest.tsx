@@ -42,7 +42,10 @@ const AuditorAttest = ({ audit, user }: { audit: AuditI; user: Users }): JSX.Ele
 
   return (
     <div>
-      <div onClick={toggleOpen} className="absolute top-4 right-4 w-5 h-5 cursor-pointer z-10">
+      <div
+        onClick={(): void => toggleOpen()}
+        className="absolute top-4 right-4 w-5 h-5 cursor-pointer z-10"
+      >
         <X height="1rem" width="1rem" />
       </div>
       <p>Attest to the Terms</p>

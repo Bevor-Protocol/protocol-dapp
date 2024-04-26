@@ -7,11 +7,11 @@ import { AuditorItemSimple } from "@/components/Audit";
 import { HistoryAction, UserType } from "@prisma/client";
 
 export const HistoryPanel = ({ history }: { history: HistoryI[] }): JSX.Element => {
-  const { togglePanelOpen } = useModal();
+  const { toggleOpen } = useModal();
 
   return (
     <Column className="relative max-h-full">
-      <div onClick={togglePanelOpen} className="w-fit ml-auto mr-4 cursor-pointer">
+      <div onClick={(): void => toggleOpen()} className="w-fit ml-auto mr-4 cursor-pointer">
         <X height="1.25rem" width="1.25rem" />
       </div>
       <div className="mb-4">Audit History</div>
@@ -30,7 +30,7 @@ export const HistoryPanel = ({ history }: { history: HistoryI[] }): JSX.Element 
             {item.userType == UserType.AUDITOR && (
               <AuditorItemSimple auditor={item.auditor!.user} />
             )}
-            <Row className="bg-dark shadow rounded-lg p-1 w-fit text-xs items-center gap-1">
+            <Row className="bg-dark shadow rounded-lg p-1 w-fit text-xs items-center gap-1 m-1">
               <span
                 className={cn(
                   "h-1 w-1 rounded-full mb-auto",
@@ -41,6 +41,7 @@ export const HistoryPanel = ({ history }: { history: HistoryI[] }): JSX.Element 
                   item.action == HistoryAction.FINDINGS && "bg-green-600",
                   item.action == HistoryAction.LOCKED && "bg-gray-600",
                   item.action == HistoryAction.OPENED && "bg-gray-600",
+                  item.action == HistoryAction.FINALIZED && "bg-green-600",
                 )}
               />
               <span>
@@ -51,6 +52,7 @@ export const HistoryPanel = ({ history }: { history: HistoryI[] }): JSX.Element 
                 {item.action == HistoryAction.FINDINGS && "Submitted Findings"}
                 {item.action == HistoryAction.LOCKED && "Locked Audit"}
                 {item.action == HistoryAction.OPENED && "Re-Opened Audit"}
+                {item.action == HistoryAction.FINALIZED && "Kicked off Audit (on-chain)"}
               </span>
             </Row>
             {item.comment && <div className="text-xs text-white/60 mt-2">{item.comment}</div>}

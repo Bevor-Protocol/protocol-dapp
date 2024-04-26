@@ -21,7 +21,7 @@ const Withdraw = (): JSX.Element => {
         ></div>
       </div>
       <div className="flex justify-center mt-4 mb-2 w-full">
-        <Button type="reset" onClick={withdraw} variant="gradient" className="max-w-[200px]">
+        <Button type="reset" onClick={withdraw}>
           Withdraw
         </Button>
       </div>

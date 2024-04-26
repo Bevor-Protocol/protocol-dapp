@@ -140,22 +140,24 @@ const AuditPage = ({ audit }: { audit: AuditI }): JSX.Element => {
         </div>
       </Column>
       <Column className="gap-6 justify-between items-end">
-        <div className="w-[105%]">
+        <div>
           <p className="text-right text-lg">
             Audit is <span className="uppercase">{audit.status}</span>
           </p>
-          <p>
-            <span className="inline-block w-36 text-right mr-4">Prize Pool: </span>
-            <span className="float-right">${audit.price.toLocaleString()}</span>
-          </p>
-          <p>
-            <span className="inline-block w-36 text-right mr-4">Vesting Duration: </span>
-            <span className="float-right">{audit.duration || "TBD"} month(s)</span>
-          </p>
-          <p>
-            <span className="inline-block w-36 text-right mr-4">Created: </span>
-            <span className="float-right">{new Date(audit.createdAt).toLocaleDateString()}</span>
-          </p>
+          <Row className="gap-4">
+            <div className="inline-block w-36 text-right">Prize Pool: </div>
+            <div className="flex-1 text-right">${audit.price.toLocaleString()}</div>
+          </Row>
+          <Row className="gap-4">
+            <div className="inline-block w-36 text-right">Vesting Duration: </div>
+            <div className="flex-1 text-right">{audit.duration || "TBD"} month(s)</div>
+          </Row>
+          <Row className="gap-4">
+            <div className="inline-block w-36 text-right">Created: </div>
+            <div className="flex-1 text-right">
+              {new Date(audit.createdAt).toLocaleDateString()}
+            </div>
+          </Row>
         </div>
         {(audit.status == AuditStatus.CHALLENGEABLE || audit.status == AuditStatus.FINALIZED) && (
           <Withdraw />
