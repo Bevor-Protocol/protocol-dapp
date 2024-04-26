@@ -6,11 +6,11 @@ import { useModal } from "@/lib/hooks";
 import { HistoryPanel } from "@/components/Panel/Content/history";
 
 const AuditHistory = ({ history }: { history: HistoryI[] }): JSX.Element => {
-  const { togglePanelOpen, setPanelContent } = useModal();
+  const { toggleOpen, setContent } = useModal();
 
   const handleClick = (): void => {
-    setPanelContent(<HistoryPanel history={history} />);
-    togglePanelOpen();
+    setContent(<HistoryPanel history={history} />);
+    toggleOpen("panel");
   };
 
   return (

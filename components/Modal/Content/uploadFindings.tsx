@@ -47,7 +47,10 @@ const UploadFindings = ({
 
   return (
     <div>
-      <div onClick={toggleOpen} className="absolute top-4 right-4 w-5 h-5 cursor-pointer z-10">
+      <div
+        onClick={(): void => toggleOpen()}
+        className="absolute top-4 right-4 w-5 h-5 cursor-pointer z-10"
+      >
         <X height="1rem" width="1rem" />
       </div>
       <p>Upload your Findings</p>
@@ -68,7 +71,7 @@ const UploadFindings = ({
           <Button disabled={isPending} type="submit">
             Upload Findings
           </Button>
-          <Button disabled={isPending} onClick={toggleOpen}>
+          <Button disabled={isPending} onClick={(): void => toggleOpen()}>
             Cancel
           </Button>
         </Row>
