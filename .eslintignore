@@ -11,3 +11,4 @@ tailwind.config.js
 cypress.config.ts
 *.cy.ts
 cypress/*
+contracts/abis/*

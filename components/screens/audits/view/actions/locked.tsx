@@ -3,6 +3,8 @@
 import { useState } from "react";
 import { Users } from "@prisma/client";
 import { useMutation } from "@tanstack/react-query";
+import { useWriteContract } from "wagmi";
+import type { Abi, Address } from "viem";
 
 import { AuditI, AuditStateI } from "@/lib/types";
 import { useModal } from "@/lib/hooks";
@@ -14,6 +16,7 @@ import DynamicLink from "@/components/Link";
 import AuditorAttest from "@/components/Modal/Content/auditorAttest";
 import * as Tooltip from "@/components/Tooltip";
 import { Info } from "@/assets";
+import AuditPaymentABI from "@/contracts/abis/AuditPayment";
 
 const AuditeeEditAudit = ({ id }: { id: string }): JSX.Element => {
   return (
@@ -78,16 +81,42 @@ const AuditeeReopenAudit = ({
   );
 };
 
-const AuditeeInitiateAudit = ({ disabled }: { disabled: boolean }): JSX.Element => {
-  const tempAlert = (): void => {
-    alert(
-      "This is where the Auditee posts a TXN on-chain\nIncluding audit details, terms, and auditors",
-    );
+const AuditeeInitiateAudit = ({
+  audit,
+  disabled,
+}: {
+  audit: AuditI;
+  disabled: boolean;
+}): JSX.Element => {
+  const auditorsPass: Address[] = audit.auditors
+    .filter((auditor) => auditor.acceptedTerms)
+    .map((auditor) => auditor.user.address as Address);
+
+  const { writeContract, isError, isPending, isSuccess } = useWriteContract({
+    mutation: {
+      onSettled(data) {
+        console.log(data);
+      },
+      onError(data) {
+        console.log(data);
+      },
+    },
+  });
+
+  const handleSubmit = (): void => {
+    writeContract({
+      abi: AuditPaymentABI.abi as Abi,
+      address: process.env.CONTRACT_AUDIT_PAYMENT as Address,
+      functionName: "createVestingSchedule",
+      args: [auditorsPass[0], 0, 0, 10, 1, 100, "0x0000000000000000000000000000000000000000", 12],
+    });
   };
+
+  console.log(isError, isPending, isSuccess);
 
   return (
     <Row className="items-center gap-4">
-      <Button disabled={disabled} onClick={tempAlert} className="flex-1">
+      <Button disabled={disabled} onClick={handleSubmit} className="flex-1">
         Kick Off Audit
       </Button>
       <Tooltip.Reference>
@@ -205,7 +234,7 @@ const AuditLockedActions = ({
       <Column className="gap-2 items-end w-fit *:w-full">
         <AuditeeEditAudit id={audit.id} />
         <AuditeeReopenAudit id={audit.id} disabled={disabled} setDisabled={setDisabled} />
-        <AuditeeInitiateAudit disabled={!actionData.allAttested || disabled} />
+        <AuditeeInitiateAudit audit={audit} disabled={!actionData.allAttested || disabled} />
       </Column>
     );
   }
