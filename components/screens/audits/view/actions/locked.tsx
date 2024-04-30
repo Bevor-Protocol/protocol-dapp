@@ -18,10 +18,10 @@ import * as Tooltip from "@/components/Tooltip";
 import { Info } from "@/assets";
 import AuditPaymentABI from "@/contracts/abis/AuditPayment";
 
-const AuditeeEditAudit = ({ id }: { id: string }): JSX.Element => {
+const AuditeeEditAudit = ({ id, disabled }: { id: string; disabled: boolean }): JSX.Element => {
   return (
     <Row className="items-center gap-4">
-      <DynamicLink href={`/audits/edit/${id}`} asButton className="flex-1">
+      <DynamicLink href={`/audits/edit/${id}`} asButton className="flex-1" disabled={disabled}>
         <Row className="btn-outline">Edit Audit</Row>
       </DynamicLink>
       <Tooltip.Reference>
@@ -84,9 +84,11 @@ const AuditeeReopenAudit = ({
 const AuditeeInitiateAudit = ({
   audit,
   disabled,
+  setDisabled,
 }: {
   audit: AuditI;
   disabled: boolean;
+  setDisabled: React.Dispatch<React.SetStateAction<boolean>>;
 }): JSX.Element => {
   const auditorsPass: Address[] = audit.auditors
     .filter((auditor) => auditor.acceptedTerms)
@@ -94,21 +96,33 @@ const AuditeeInitiateAudit = ({
 
   const { writeContract, isError, isPending, isSuccess } = useWriteContract({
     mutation: {
-      onSettled(data) {
+      onSettled: (data) => {
+        setDisabled(false);
         console.log(data);
       },
-      onError(data) {
+      onError: (data) => {
         console.log(data);
       },
+      onMutate: () => setDisabled(true),
     },
   });
 
+  // FAILS DUE TO INSUFFICIENT BALANCE
   const handleSubmit = (): void => {
     writeContract({
       abi: AuditPaymentABI.abi as Abi,
-      address: process.env.CONTRACT_AUDIT_PAYMENT as Address,
+      address: process.env.NEXT_PUBLIC_CONTRACT_AUDIT_PAYMENT as Address,
       functionName: "createVestingSchedule",
-      args: [auditorsPass[0], 0, 0, 10, 1, 100, "0x0000000000000000000000000000000000000000", 12],
+      args: [
+        auditorsPass,
+        1622551248,
+        0,
+        1000,
+        1,
+        100,
+        process.env.NEXT_PUBLIC_CONTRACT_TEST_TOKEN,
+        process.env.NEXT_PUBLIC_CONTRACT_TEST_TOKEN,
+      ],
     });
   };
 
@@ -232,9 +246,13 @@ const AuditLockedActions = ({
   if (actionData.isTheAuditee) {
     return (
       <Column className="gap-2 items-end w-fit *:w-full">
-        <AuditeeEditAudit id={audit.id} />
+        <AuditeeEditAudit id={audit.id} disabled={disabled} />
         <AuditeeReopenAudit id={audit.id} disabled={disabled} setDisabled={setDisabled} />
-        <AuditeeInitiateAudit audit={audit} disabled={!actionData.allAttested || disabled} />
+        <AuditeeInitiateAudit
+          audit={audit}
+          disabled={!actionData.allAttested || disabled}
+          setDisabled={setDisabled}
+        />
       </Column>
     );
   }
