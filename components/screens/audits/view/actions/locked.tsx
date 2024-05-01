@@ -17,6 +17,7 @@ import AuditorAttest from "@/components/Modal/Content/auditorAttest";
 import * as Tooltip from "@/components/Tooltip";
 import { Info } from "@/assets";
 import AuditPaymentABI from "@/contracts/abis/AuditPayment";
+import ERC20ABI from "@/contracts/abis/ERC20Token";
 
 const AuditeeEditAudit = ({ id, disabled }: { id: string; disabled: boolean }): JSX.Element => {
   return (
@@ -109,6 +110,16 @@ const AuditeeInitiateAudit = ({
 
   // FAILS DUE TO INSUFFICIENT BALANCE
   const handleSubmit = (): void => {
+    // Make async so that all subsequent calls/event listens can wait on each other.
+    writeContract({
+      abi: ERC20ABI.abi as Abi,
+      address: process.env.NEXT_PUBLIC_CONTRACT_TEST_TOKEN as Address,
+      functionName: "approve",
+      args: [process.env.NEXT_PUBLIC_CONTRACT_AUDIT_PAYMENT, 1000],
+    });
+    // Listen for event here and call createVestingSchedule after.
+    // Also can check for approval amount in view function from token contract to see if it
+    // matches.
     writeContract({
       abi: AuditPaymentABI.abi as Abi,
       address: process.env.NEXT_PUBLIC_CONTRACT_AUDIT_PAYMENT as Address,
