@@ -2,6 +2,7 @@ const ABI = {
   _format: "hh-sol-artifact-1",
   contractName: "AuditPayment",
   sourceName: "contracts/AuditPayment.sol",
+  address: "0xd1b517bc7650eeca3499f8a7b4683ea2d4639109",
   abi: [
     {
       inputs: [

@@ -113,27 +113,18 @@ const AuditeeInitiateAudit = ({
     // Make async so that all subsequent calls/event listens can wait on each other.
     writeContract({
       abi: ERC20ABI.abi as Abi,
-      address: process.env.NEXT_PUBLIC_CONTRACT_TEST_TOKEN as Address,
+      address: ERC20ABI.address as Address,
       functionName: "approve",
-      args: [process.env.NEXT_PUBLIC_CONTRACT_AUDIT_PAYMENT, 1000],
+      args: [AuditPaymentABI.address, 1000],
     });
     // Listen for event here and call createVestingSchedule after.
     // Also can check for approval amount in view function from token contract to see if it
     // matches.
     writeContract({
       abi: AuditPaymentABI.abi as Abi,
-      address: process.env.NEXT_PUBLIC_CONTRACT_AUDIT_PAYMENT as Address,
+      address: AuditPaymentABI.address as Address,
       functionName: "createVestingSchedule",
-      args: [
-        auditorsPass,
-        1622551248,
-        0,
-        1000,
-        1,
-        100,
-        process.env.NEXT_PUBLIC_CONTRACT_TEST_TOKEN,
-        process.env.NEXT_PUBLIC_CONTRACT_TEST_TOKEN,
-      ],
+      args: [auditorsPass, 1622551248, 0, 1000, 1, 100, ERC20ABI.address, ERC20ABI.address],
     });
   };
 

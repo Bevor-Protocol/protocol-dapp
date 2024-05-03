@@ -2,6 +2,7 @@ const ABI = {
   _format: "hh-sol-artifact-1",
   contractName: "ERC20Token",
   sourceName: "contracts/ERC20Token.sol",
+  address: "0x7fee5c8dc3bb4740f9d945941fddb4288e25fe50",
   abi: [
     {
       inputs: [
