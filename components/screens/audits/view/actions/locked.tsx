@@ -3,6 +3,8 @@
 import { useState } from "react";
 import { Users } from "@prisma/client";
 import { useMutation } from "@tanstack/react-query";
+import { useWatchContractEvent, useWriteContract, useReadContract } from "wagmi";
+import type { Abi, Address } from "viem";
 
 import { AuditI, AuditStateI } from "@/lib/types";
 import { useModal } from "@/lib/hooks";
@@ -14,11 +16,13 @@ import DynamicLink from "@/components/Link";
 import AuditorAttest from "@/components/Modal/Content/auditorAttest";
 import * as Tooltip from "@/components/Tooltip";
 import { Info } from "@/assets";
+import AuditPaymentABI from "@/contracts/abis/AuditPayment";
+import ERC20ABI from "@/contracts/abis/ERC20Token";
 
-const AuditeeEditAudit = ({ id }: { id: string }): JSX.Element => {
+const AuditeeEditAudit = ({ id, disabled }: { id: string; disabled: boolean }): JSX.Element => {
   return (
     <Row className="items-center gap-4">
-      <DynamicLink href={`/audits/edit/${id}`} asButton className="flex-1">
+      <DynamicLink href={`/audits/edit/${id}`} asButton className="flex-1" disabled={disabled}>
         <Row className="btn-outline">Edit Audit</Row>
       </DynamicLink>
       <Tooltip.Reference>
@@ -78,16 +82,75 @@ const AuditeeReopenAudit = ({
   );
 };
 
-const AuditeeInitiateAudit = ({ disabled }: { disabled: boolean }): JSX.Element => {
-  const tempAlert = (): void => {
-    alert(
-      "This is where the Auditee posts a TXN on-chain\nIncluding audit details, terms, and auditors",
-    );
+const AuditeeInitiateAudit = ({
+  audit,
+  disabled,
+  setDisabled,
+}: {
+  audit: AuditI;
+  disabled: boolean;
+  setDisabled: React.Dispatch<React.SetStateAction<boolean>>;
+}): JSX.Element => {
+  const auditorsPass: Address[] = audit.auditors
+    .filter((auditor) => auditor.acceptedTerms)
+    .map((auditor) => auditor.user.address as Address);
+
+  const { data: allowance } = useReadContract({
+    abi: ERC20ABI.abi as Abi,
+    address: ERC20ABI.address as Address,
+    functionName: "allowance",
+    args: [audit.auditee.address, AuditPaymentABI.address],
+  });
+
+  console.log(allowance);
+
+  const { writeContractAsync } = useWriteContract({
+    mutation: {
+      onSettled: (data) => {
+        setDisabled(false);
+        console.log(data);
+      },
+      onError: (data) => {
+        console.log(data);
+      },
+      onMutate: () => setDisabled(true),
+    },
+  });
+
+  useWatchContractEvent({
+    abi: AuditPaymentABI.abi as Abi,
+    address: AuditPaymentABI.address as Address,
+    eventName: "VestingScheduleCreated",
+    onLogs: (logs) => {
+      console.log(logs);
+    },
+  });
+
+  // FAILS DUE TO INSUFFICIENT BALANCE
+  const handleSubmit = async (): Promise<void> => {
+    // FAILS, likely because approval was already granted?
+    // await writeContractAsync({
+    //   abi: ERC20ABI.abi as Abi,
+    //   address: ERC20ABI.address as Address,
+    //   functionName: "approve",
+    //   args: [AuditPaymentABI.address, 1000],
+    // });
+    // Listen for event here and call createVestingSchedule after.
+    // Also can check for approval amount in view function from token contract to see if it
+    // matches.
+    await writeContractAsync({
+      abi: AuditPaymentABI.abi as Abi,
+      address: AuditPaymentABI.address as Address,
+      functionName: "createVestingSchedule",
+      args: [auditorsPass, 1622551248, 0, 1000, 1, 100, ERC20ABI.address, ERC20ABI.address],
+    });
   };
+
+  // console.log(isError, isPending, isSuccess);
 
   return (
     <Row className="items-center gap-4">
-      <Button disabled={disabled} onClick={tempAlert} className="flex-1">
+      <Button disabled={disabled} onClick={handleSubmit} className="flex-1">
         Kick Off Audit
       </Button>
       <Tooltip.Reference>
@@ -203,9 +266,13 @@ const AuditLockedActions = ({
   if (actionData.isTheAuditee) {
     return (
       <Column className="gap-2 items-end w-fit *:w-full">
-        <AuditeeEditAudit id={audit.id} />
+        <AuditeeEditAudit id={audit.id} disabled={disabled} />
         <AuditeeReopenAudit id={audit.id} disabled={disabled} setDisabled={setDisabled} />
-        <AuditeeInitiateAudit disabled={!actionData.allAttested || disabled} />
+        <AuditeeInitiateAudit
+          audit={audit}
+          disabled={!actionData.allAttested || disabled}
+          setDisabled={setDisabled}
+        />
       </Column>
     );
   }

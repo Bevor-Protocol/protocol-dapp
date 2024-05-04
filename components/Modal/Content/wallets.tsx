@@ -1,8 +1,9 @@
 "use client";
 import React, { useState, useEffect } from "react";
 import { useConnect } from "wagmi";
-import { config } from "@/providers/wallet/config";
+// import { recoverMessageAddress } from "viem";
 
+import { config } from "@/providers/wallet/config";
 import { useModal } from "@/lib/hooks";
 import { sortWallets } from "@/lib/utils";
 import { Icon } from "@/components/Icon";
@@ -17,10 +18,33 @@ const IconMapper: Record<string, React.ReactNode> = {
 const Wallets = (): JSX.Element => {
   const [recentConnector, setRecentConnector] = useState("");
   const { toggleOpen } = useModal();
+
+  // const { signMessage } = useSignMessage({
+  //   mutation: {
+  //     onSettled: async (data, error, variables) => {
+  //       // not actually doing anything with this yet.
+  //       const test = await recoverMessageAddress({
+  //         message: variables.message,
+  //         signature: data!,
+  //       });
+  //       console.log(data);
+  //       console.log(test);
+  //       toggleOpen();
+  //     },
+  //   },
+  // });
   const { connect, connectors } = useConnect({
     mutation: {
       // Close the modal even if user denies request.
       onSettled: () => toggleOpen(),
+      // onSuccess: () => {
+      //   signMessage({
+      //     message: "Requesting connection, authenticate that you own this wallet.",
+      //   });
+      // },
+      // onError: () => {
+      //   toggleOpen();
+      // },
     },
   });
 

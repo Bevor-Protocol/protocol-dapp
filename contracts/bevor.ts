@@ -1,5 +1,5 @@
 import { Contract, JsonRpcProvider } from "ethers";
-import vestingContractJSON from "./abis/AuditPayment.json";
+import vestingContractJSON from "./abis/AuditPayment";
 
 const VESTING_ADDRESS = process.env.TOKENVESTING_ADDRESS || "";
 const vestingContractAbi = vestingContractJSON.abi;

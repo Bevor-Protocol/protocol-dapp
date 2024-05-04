@@ -32,7 +32,7 @@ We rely on Neon's serverless postgresql DB + Prisma ORM client. Neon separates s
 
 To set the DB up, make sure the environment variables are set. For local testing, we can rely on a local connection.
 
-Run `yarn run db:generate`, which will re-run the existing migration history and generate the prisma client. **This will only be run in development**. On first pass, there will be no new migrations to generate (assuming you hadn't touched the schema.prisma file), so it'll just apply existing migrations to your local DB. Also, it'll seed the DB under the hood.
+Run `yarn run db:generate`, which will re-run the existing migration history and generate the prisma client. **This will only be run in development**. On first pass, there will be no new migrations to generate (assuming you hadn't touched the schema.prisma file), so it'll just apply existing migrations to your local DB. Also, it'll seed the DB under the hood. Note: whenever breaking changes are made to the schema run the generate command and re-run `yarn dev`.
 
 Seeding occurs whenever you manually tell it to `yarn run db:seed`, or automatically when running `yarn run db:migrate` (when there are history conflicts / DB schema drift) and `yarn run db:reset`. If this is your first pass, just run `yarn run db:seed`.
 
