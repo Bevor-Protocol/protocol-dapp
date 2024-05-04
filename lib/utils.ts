@@ -1,6 +1,9 @@
 import { Children, ReactNode, isValidElement, ReactElement } from "react";
 import { Address } from "viem";
 import { Connector } from "wagmi";
+import { SiweMessage } from "siwe";
+
+import { nonce } from "@/actions/siwe";
 
 export const cn = (...args: unknown[]): string => {
   return args
@@ -68,4 +71,19 @@ export const timeSince = (time: Date): string => {
     return Math.floor(interval) + " mins ago";
   }
   return Math.floor(seconds) + " secs ago";
+};
+
+export const createSiweMessage = async (address: string, chainId: number): Promise<string> => {
+  const nonceRes = await nonce();
+  const message = new SiweMessage({
+    domain: window.location.host,
+    address,
+    statement: "Sign in with Ethereum.",
+    uri: window.location.origin,
+    version: "1",
+    chainId,
+    nonce: nonceRes,
+    // expirationTime
+  });
+  return message.prepareMessage();
 };
