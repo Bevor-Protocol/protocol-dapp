@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { Users } from "@prisma/client";
 import { useMutation } from "@tanstack/react-query";
-import { useWriteContract } from "wagmi";
+import { useWatchContractEvent, useWriteContract, useReadContract } from "wagmi";
 import type { Abi, Address } from "viem";
 
 import { AuditI, AuditStateI } from "@/lib/types";
@@ -95,7 +95,16 @@ const AuditeeInitiateAudit = ({
     .filter((auditor) => auditor.acceptedTerms)
     .map((auditor) => auditor.user.address as Address);
 
-  const { writeContract, isError, isPending, isSuccess } = useWriteContract({
+  const { data: allowance } = useReadContract({
+    abi: ERC20ABI.abi as Abi,
+    address: ERC20ABI.address as Address,
+    functionName: "allowance",
+    args: [audit.auditee.address, AuditPaymentABI.address],
+  });
+
+  console.log(allowance);
+
+  const { writeContractAsync } = useWriteContract({
     mutation: {
       onSettled: (data) => {
         setDisabled(false);
@@ -108,19 +117,28 @@ const AuditeeInitiateAudit = ({
     },
   });
 
+  useWatchContractEvent({
+    abi: AuditPaymentABI.abi as Abi,
+    address: AuditPaymentABI.address as Address,
+    eventName: "VestingScheduleCreated",
+    onLogs: (logs) => {
+      console.log(logs);
+    },
+  });
+
   // FAILS DUE TO INSUFFICIENT BALANCE
-  const handleSubmit = (): void => {
-    // Make async so that all subsequent calls/event listens can wait on each other.
-    writeContract({
-      abi: ERC20ABI.abi as Abi,
-      address: ERC20ABI.address as Address,
-      functionName: "approve",
-      args: [AuditPaymentABI.address, 1000],
-    });
+  const handleSubmit = async (): Promise<void> => {
+    // FAILS, likely because approval was already granted?
+    // await writeContractAsync({
+    //   abi: ERC20ABI.abi as Abi,
+    //   address: ERC20ABI.address as Address,
+    //   functionName: "approve",
+    //   args: [AuditPaymentABI.address, 1000],
+    // });
     // Listen for event here and call createVestingSchedule after.
     // Also can check for approval amount in view function from token contract to see if it
     // matches.
-    writeContract({
+    await writeContractAsync({
       abi: AuditPaymentABI.abi as Abi,
       address: AuditPaymentABI.address as Address,
       functionName: "createVestingSchedule",
@@ -128,7 +146,7 @@ const AuditeeInitiateAudit = ({
     });
   };
 
-  console.log(isError, isPending, isSuccess);
+  // console.log(isError, isPending, isSuccess);
 
   return (
     <Row className="items-center gap-4">
