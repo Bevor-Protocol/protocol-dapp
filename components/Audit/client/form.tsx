@@ -15,7 +15,7 @@ import { AuditorItem } from "@/components/Audit";
 
 const AuditFormEntries = ({
   address,
-  query,
+  disabled,
   auditors,
   setAuditors,
   initialState,
@@ -24,7 +24,7 @@ const AuditFormEntries = ({
 }: {
   address: string;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  query: any;
+  disabled: boolean;
   auditors: Users[];
   setAuditors: React.Dispatch<React.SetStateAction<Users[]>>;
   initialState?: AuditI;
@@ -107,7 +107,7 @@ const AuditFormEntries = ({
           name="title"
           text="Title"
           defaultValue={initialState?.title}
-          disabled={query.isPending}
+          disabled={disabled}
           isError={"title" in errors}
         />
         <Form.TextArea
@@ -116,14 +116,14 @@ const AuditFormEntries = ({
           name="description"
           text="Description"
           defaultValue={initialState?.description}
-          disabled={query.isPending}
+          disabled={disabled}
           isError={"description" in errors}
         />
         <Form.Dropbox
           name="details"
           text="Audit Details"
-          disabled={query.isPending}
-          aria-disabled={query.isPending}
+          disabled={disabled}
+          aria-disabled={disabled}
           selected={selectedFile}
           setSelected={setSelectedFile}
         />
@@ -133,9 +133,9 @@ const AuditFormEntries = ({
           <p>Selected Verified Auditors:</p>
         </Row>
         <Row className="gap-2">
-          <Form.Search disabled={query.isPending} onChange={handleChange}>
+          <Form.Search disabled={disabled} onChange={handleChange}>
             <Column
-              className="w-full overflow-scroll px-2 min-h-[32px] justify-center"
+              className="w-full overflow-scroll px-2 min-h-[32px] justify-start"
               style={{ maxHeight: "calc(5 * 32px)" }}
             >
               {(isPending || timoutPending) && <Loader className="h-5 w-5 self-center" />}
@@ -146,6 +146,7 @@ const AuditFormEntries = ({
                   <AuditorItem
                     key={auditor.id}
                     auditor={auditor}
+                    disabled={disabled}
                     onClick={() => addAuditorSet(auditor)}
                     hover
                   />
@@ -160,6 +161,7 @@ const AuditFormEntries = ({
               <AuditorItem
                 key={auditor.id}
                 auditor={auditor}
+                disabled={disabled}
                 onClick={() => removeAuditorSet(auditor.id)}
                 canClose
               />
@@ -177,7 +179,7 @@ const AuditFormEntries = ({
           name="price"
           text="Total Price ($)"
           defaultValue={initialState?.price}
-          disabled={query.isPending}
+          disabled={disabled}
           isError={"price" in errors}
         />
         <Form.Input
@@ -187,17 +189,17 @@ const AuditFormEntries = ({
           name="duration"
           text="Vesting Duration (months)"
           defaultValue={initialState?.duration}
-          disabled={query.isPending}
+          disabled={disabled}
           isError={"duration" in errors}
         />
       </Row>
       <hr className="border-gray-200/20 my-4" />
       <Row className="my-4 gap-4">
-        <Button type="submit" variant="gradient">
+        <Button type="submit" variant="gradient" disabled={disabled}>
           Submit
         </Button>
         {/* combines both controlled and uncontrolled elements */}
-        <Button type="reset" onClick={uncontrolledReset} variant="gradient">
+        <Button type="reset" onClick={uncontrolledReset} variant="gradient" disabled={disabled}>
           Reset
         </Button>
       </Row>

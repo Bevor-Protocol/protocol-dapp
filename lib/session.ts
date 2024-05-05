@@ -1,5 +1,5 @@
 import type { SessionOptions } from "iron-session";
-import { SiweMessage } from "siwe";
+import type { SiweMessage } from "siwe";
 
 export const sessionOptions: SessionOptions = {
   password: process.env.COOKIE_PSWD as string,

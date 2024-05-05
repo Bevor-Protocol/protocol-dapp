@@ -7,6 +7,7 @@ import { z } from "zod";
 import type { UserWithCount, UserStats, AuditTruncatedI, GenericUpdateI } from "@/lib/types";
 import { userSchema, userSchemaCreate } from "@/lib/validations";
 import { putBlob } from "./blobs";
+import { getUser } from "./siwe";
 
 export const getLeaderboard = (key?: string, order?: string): Promise<UserWithCount[]> => {
   // Can't currently sort on aggregations or further filtered counts of relations...
@@ -116,6 +117,22 @@ export const getUserProfile = (address: string): Promise<Users | null> => {
       address,
     },
   });
+};
+
+export const getCurrentUser = (): Promise<{ address: string; user: Users | null }> => {
+  return getUser()
+    .then(({ address, success }) => {
+      if (!success) {
+        throw new Error("not authenticated");
+      }
+      return getUserProfile(address!).then((user) => {
+        return { address: address!, user };
+      });
+    })
+    .catch((error) => {
+      console.log(error);
+      return { address: "", user: null };
+    });
 };
 
 export const getUserAuditsAuditee = (address: string): Promise<AuditTruncatedI[]> => {

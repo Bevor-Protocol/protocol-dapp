@@ -33,10 +33,12 @@ export const verify = async ({
 
   return siweMessage
     .verify({ signature, nonce: session.nonce })
-    .then(({ data }) => {
+    .then(({ data, success }) => {
+      if (!success) {
+        throw new Error("Unsuccessful verification");
+      }
       session.siwe = data;
       return session.save();
-      // saveSession(session, { expires: new Date(data.expirationTime!) });
     })
     .then(() => {
       return true;
@@ -63,6 +65,6 @@ export const getUser = async (): Promise<{ success: boolean; address?: string }>
 
 export const logout = async (): Promise<boolean> => {
   const session = await getSession();
-  await session.destroy();
+  session.destroy();
   return true;
 };
