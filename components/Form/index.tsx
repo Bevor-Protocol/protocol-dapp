@@ -162,7 +162,7 @@ export const Dropbox: React.FC<DropI> = ({
   };
 
   return (
-    <label className={cn("w-full block *:text-sm", className)}>
+    <label className={cn("w-full block *:text-sm pointer-events-none", className)}>
       {text && <p className="my-2">{text}</p>}
       <Column
         className={cn(
@@ -196,7 +196,7 @@ export const Dropbox: React.FC<DropI> = ({
           accept=".md, .markdown"
           className={cn(
             "absolute inset-0 appearance-none cursor-pointer opacity-0",
-            "disabled:cursor-default",
+            "disabled:cursor-default pointer-events-auto",
           )}
           onChange={handleChange}
           disabled={disabled}
