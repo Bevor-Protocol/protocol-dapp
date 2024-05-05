@@ -1,12 +1,11 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useAccount } from "wagmi";
 import { useMutation } from "@tanstack/react-query";
 import { AuditorStatus, Users } from "@prisma/client";
 
-import { LoaderFill } from "@/components/Loader";
 import { useUser } from "@/lib/hooks";
 import { AuditI } from "@/lib/types";
 import { updateAudit } from "@/actions/audits/auditee";
@@ -20,25 +19,14 @@ const AuditEditWrapper = ({ audit }: { audit: AuditI }): JSX.Element => {
 
   const { address } = useAccount();
   const router = useRouter();
-  const { user, isFetchedAfterMount, isPending } = useUser();
+  const { isPending: authPending, isAuthenticated } = useUser();
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [auditors, setAuditors] = useState<Users[]>([...initialAuditors]);
 
-  useEffect(() => {
-    if (!isFetchedAfterMount || isPending) return;
-    if (!address) {
-      router.push("/");
-    }
-    if (!user) {
-      router.push(`/user/${address}`);
-    }
-  }, [isFetchedAfterMount, isPending, router, user, address]);
-
-  const query = useMutation({
+  const { mutate, isPending } = useMutation({
     mutationFn: (variables: { formData: FormData }) =>
       updateAudit(audit.id, variables.formData, auditors),
     onSettled: (data) => {
-      console.log(data);
       if (data?.success) {
         router.push(`/audits/view/${audit.id}`);
       }
@@ -49,14 +37,11 @@ const AuditEditWrapper = ({ audit }: { audit: AuditI }): JSX.Element => {
   });
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>): void => {
+    if (authPending || !isAuthenticated) return;
     e.preventDefault();
     const formData = new FormData(e.currentTarget);
-    query.mutate({ formData });
+    mutate({ formData });
   };
-
-  if (!isFetchedAfterMount || isPending) return <LoaderFill />;
-
-  if (audit.auditee.id !== user?.id) return <p>You do not own this audit</p>;
 
   return (
     <form onSubmit={handleSubmit} className="max-w-full w-[700px]" onChange={() => setErrors({})}>
@@ -71,7 +56,7 @@ const AuditEditWrapper = ({ audit }: { audit: AuditI }): JSX.Element => {
         that from the main audit view.
       </p>
       <AuditFormEntries
-        query={query}
+        disabled={isPending || authPending}
         address={address as string}
         auditors={auditors}
         setAuditors={setAuditors}
