@@ -1,4 +1,4 @@
-import { AuditorStatus, AuditStatus } from "@prisma/client";
+import { AuditorStatus, AuditStatus, Users } from "@prisma/client";
 
 import { Column, Row } from "@/components/Box";
 import DynamicLink from "@/components/Link";
@@ -9,7 +9,7 @@ import { AuditI } from "@/lib/types";
 import AuditDashboardActions from "./actions";
 import Withdraw from "./actions/withdraw";
 
-const AuditPage = ({ audit }: { audit: AuditI }): JSX.Element => {
+const AuditPage = ({ audit, user }: { audit: AuditI; user: Users | null }): JSX.Element => {
   const verifiedAuditors = audit.auditors.filter(
     (auditor) => auditor.status == AuditorStatus.VERIFIED,
   );
@@ -49,8 +49,12 @@ const AuditPage = ({ audit }: { audit: AuditI }): JSX.Element => {
                 <p className="w-40">Verified to Audit:</p>
                 {verifiedAuditors.length > 0 ? (
                   <Row>
-                    {verifiedAuditors.map(({ user }, ind2) => (
-                      <AuditAuditor position={`-${ind2 * 12.5}px`} key={ind2} auditor={user} />
+                    {verifiedAuditors.map((auditor, ind2) => (
+                      <AuditAuditor
+                        position={`-${ind2 * 12.5}px`}
+                        key={ind2}
+                        auditor={auditor.user}
+                      />
                     ))}
                   </Row>
                 ) : (
@@ -61,8 +65,12 @@ const AuditPage = ({ audit }: { audit: AuditI }): JSX.Element => {
                 <p className="w-40">Requested to Audit:</p>
                 {requestedAuditors.length > 0 ? (
                   <Row>
-                    {requestedAuditors.map(({ user }, ind2) => (
-                      <AuditAuditor position={`-${ind2 * 12.5}px`} key={ind2} auditor={user} />
+                    {requestedAuditors.map((auditor, ind2) => (
+                      <AuditAuditor
+                        position={`-${ind2 * 12.5}px`}
+                        key={ind2}
+                        auditor={auditor.user}
+                      />
                     ))}
                   </Row>
                 ) : (
@@ -73,8 +81,12 @@ const AuditPage = ({ audit }: { audit: AuditI }): JSX.Element => {
                 <p className="w-40">Rejected to Audit:</p>
                 {rejectedAuditors.length > 0 ? (
                   <Row>
-                    {rejectedAuditors.map(({ user }, ind2) => (
-                      <AuditAuditor position={`-${ind2 * 12.5}px`} key={ind2} auditor={user} />
+                    {rejectedAuditors.map((auditor, ind2) => (
+                      <AuditAuditor
+                        position={`-${ind2 * 12.5}px`}
+                        key={ind2}
+                        auditor={auditor.user}
+                      />
                     ))}
                   </Row>
                 ) : (
@@ -89,8 +101,12 @@ const AuditPage = ({ audit }: { audit: AuditI }): JSX.Element => {
                 <p className="w-44">Pending Attestation:</p>
                 {attestationPending.length > 0 ? (
                   <Row>
-                    {attestationPending.map(({ user }, ind2) => (
-                      <AuditAuditor position={`-${ind2 * 12.5}px`} key={ind2} auditor={user} />
+                    {attestationPending.map((auditor, ind2) => (
+                      <AuditAuditor
+                        position={`-${ind2 * 12.5}px`}
+                        key={ind2}
+                        auditor={auditor.user}
+                      />
                     ))}
                   </Row>
                 ) : (
@@ -101,8 +117,12 @@ const AuditPage = ({ audit }: { audit: AuditI }): JSX.Element => {
                 <p className="w-44">Attested + Accepted:</p>
                 {attestationAccepted.length > 0 ? (
                   <Row>
-                    {attestationAccepted.map(({ user }, ind2) => (
-                      <AuditAuditor position={`-${ind2 * 12.5}px`} key={ind2} auditor={user} />
+                    {attestationAccepted.map((auditor, ind2) => (
+                      <AuditAuditor
+                        position={`-${ind2 * 12.5}px`}
+                        key={ind2}
+                        auditor={auditor.user}
+                      />
                     ))}
                   </Row>
                 ) : (
@@ -113,8 +133,12 @@ const AuditPage = ({ audit }: { audit: AuditI }): JSX.Element => {
                 <p className="w-44">Attested + Rejected:</p>
                 {attestationRejected.length > 0 ? (
                   <Row>
-                    {attestationRejected.map(({ user }, ind2) => (
-                      <AuditAuditor position={`-${ind2 * 12.5}px`} key={ind2} auditor={user} />
+                    {attestationRejected.map((auditor, ind2) => (
+                      <AuditAuditor
+                        position={`-${ind2 * 12.5}px`}
+                        key={ind2}
+                        auditor={auditor.user}
+                      />
                     ))}
                   </Row>
                 ) : (
@@ -128,8 +152,12 @@ const AuditPage = ({ audit }: { audit: AuditI }): JSX.Element => {
               <p className="w-40">Auditors:</p>
               {verifiedAuditors.length > 0 ? (
                 <Row>
-                  {verifiedAuditors.map(({ user }, ind2) => (
-                    <AuditAuditor position={`-${ind2 * 12.5}px`} key={ind2} auditor={user} />
+                  {verifiedAuditors.map((auditor, ind2) => (
+                    <AuditAuditor
+                      position={`-${ind2 * 12.5}px`}
+                      key={ind2}
+                      auditor={auditor.user}
+                    />
                   ))}
                 </Row>
               ) : (
@@ -162,7 +190,7 @@ const AuditPage = ({ audit }: { audit: AuditI }): JSX.Element => {
         {(audit.status == AuditStatus.CHALLENGEABLE || audit.status == AuditStatus.FINALIZED) && (
           <Withdraw />
         )}
-        <AuditDashboardActions audit={audit} />
+        {user && <AuditDashboardActions audit={audit} user={user} />}
       </Column>
     </Row>
   );

@@ -6,13 +6,11 @@ import { Row } from "@/components/Box";
 import { Toggle } from "@/components/Toggle";
 import { AuditorItem } from "@/components/Audit";
 import DynamicLink from "@/components/Link";
-import { useUser } from "@/lib/hooks";
 import { safeGetMarkdown } from "@/actions/audits/general";
 import { Loader } from "@/components/Loader";
+import { Users } from "@prisma/client";
 
-const AuditMarkdown = ({ auditId }: { auditId: string }): JSX.Element => {
-  const { user, isFetchedAfterMount } = useUser();
-
+const AuditMarkdown = ({ auditId, user }: { auditId: string; user: Users | null }): JSX.Element => {
   const { data, isPending } = useQuery({
     queryKey: ["markdown", auditId, user?.id ?? ""],
     queryFn: () => safeGetMarkdown(auditId, user?.id),
@@ -21,7 +19,7 @@ const AuditMarkdown = ({ auditId }: { auditId: string }): JSX.Element => {
   const [active, setActive] = useState("details");
   const [findingsActive, setFindingsActive] = useState(0);
 
-  if (!isFetchedAfterMount || isPending || !data) {
+  if (isPending || !data) {
     return <Loader className="h-12 w-12" />;
   }
 

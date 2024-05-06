@@ -2,7 +2,7 @@ import { Suspense } from "react";
 
 import { Loader } from "@/components/Loader";
 import UserContent from "@/components/screens/user";
-import { getUserProfile, getUserStats } from "@/actions/users";
+import { getCurrentUser, getUserProfile, getUserStats } from "@/actions/users";
 import UserNotExist from "@/components/screens/user/onboard";
 
 const Fetcher = async ({ address }: { address: string }): Promise<JSX.Element> => {
@@ -14,8 +14,11 @@ const Fetcher = async ({ address }: { address: string }): Promise<JSX.Element> =
     return <UserNotExist address={address} />;
   }
   const stats = await getUserStats(address);
+  const currentUser = await getCurrentUser();
 
-  return <UserContent address={address} user={user} stats={stats} />;
+  const isOwner = currentUser.address === address;
+
+  return <UserContent address={address} user={user} stats={stats} isOwner={isOwner} />;
 };
 
 const UserPage = ({ params }: { params: { slug: string } }): JSX.Element => {

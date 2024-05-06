@@ -1,5 +1,6 @@
 import { HistoryAction, Prisma, Users, UserType } from "@prisma/client";
 import { Address } from "viem";
+import { Connector } from "wagmi";
 
 export type LeaderboardI = {
   name: string;
@@ -67,12 +68,10 @@ export type ModalStateI = {
 };
 
 export type UserStateI = {
-  user: Users | null | undefined;
-  isLoading: boolean;
-  isFetching: boolean;
+  isAuthenticated: boolean;
+  login: ({ connector, callback }: { connector: Connector; callback: () => void }) => void;
+  logout: () => void;
   isPending: boolean;
-  isFetched: boolean;
-  isFetchedAfterMount: boolean;
 };
 
 export interface UserWithCount extends Users {

@@ -14,10 +14,12 @@ const UserContent = async ({
   address,
   user,
   stats,
+  isOwner,
 }: {
   address: string;
   user: Users;
   stats: UserStats;
+  isOwner: boolean;
 }): Promise<JSX.Element> => {
   return (
     <Column className="items-start w-full max-w-[1000px] py-8">
@@ -77,7 +79,7 @@ const UserContent = async ({
           </p>
         </Column>
       </Row>
-      <UserProfileActions user={user} stats={stats} />
+      {isOwner && <UserProfileActions user={user} stats={stats} />}
       <hr className="w-full h-[1px] border-gray-200/20 my-4" />
       <Suspense fallback={<Loader className="h-12" />}>
         <UserAudits address={address} />

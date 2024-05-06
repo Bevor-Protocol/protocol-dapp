@@ -80,20 +80,25 @@ export const AuditCard = ({ audit }: { audit: AuditDetailedI }): JSX.Element => 
 interface AuditorItemI extends React.HTMLAttributes<HTMLDivElement> {
   auditor: Users;
   hover?: boolean;
+  disabled?: boolean;
   canClose?: boolean;
 }
 
 export const AuditorItem: React.FC<AuditorItemI> = ({
   auditor,
   hover = false,
+  disabled = false,
   canClose = false,
   ...rest
 }) => {
   return (
     <Row
       className={cn(
-        "px-1 cursor-pointer gap-1 h-[32px] min-h-[32px] items-center relative",
-        hover && "items-center relative rounded-lg transition-colors hover:bg-dark-primary-30",
+        "px-1 gap-1 h-[32px] min-h-[32px] items-center relative",
+        !disabled && "cursor-pointer",
+        disabled && "pointer-events-none",
+        hover && "items-center relative rounded-lg transition-colors",
+        hover && !disabled && "hover:bg-dark-primary-30",
       )}
       {...rest}
     >

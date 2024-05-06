@@ -5,6 +5,7 @@ import AuditMarkdown from "@/components/screens/audits/view/markdown";
 import { getAudit } from "@/actions/audits/general";
 import { LoaderFill } from "@/components/Loader";
 import AuditHistory from "@/components/screens/audits/view/history";
+import { getCurrentUser } from "@/actions/users";
 
 const Fetcher = async ({ auditId }: { auditId: string }): Promise<JSX.Element> => {
   // Parsed this into 3 separate requests.
@@ -14,12 +15,14 @@ const Fetcher = async ({ auditId }: { auditId: string }): Promise<JSX.Element> =
 
   if (!audit) return <h2>This audit does not exist</h2>;
 
+  const { user } = await getCurrentUser();
+
   return (
     <div className="w-full max-w-[1000px] py-8 relative">
-      <AuditPage audit={audit} />
+      <AuditPage audit={audit} user={user} />
       <AuditHistory history={audit.history} />
       <hr className="w-full h-[1px] border-gray-200/20 my-4" />
-      <AuditMarkdown auditId={audit.id} />
+      <AuditMarkdown auditId={audit.id} user={user} />
     </div>
   );
 };

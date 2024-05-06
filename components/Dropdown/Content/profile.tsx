@@ -1,6 +1,6 @@
 "use client";
 import { useState } from "react";
-import { useAccount, useDisconnect } from "wagmi";
+import { useAccount } from "wagmi";
 
 import { cn, trimAddress } from "@/lib/utils";
 import { Copy, Logout } from "@/assets";
@@ -8,11 +8,12 @@ import { Button } from "@/components/Button";
 import { Column, Row } from "@/components/Box";
 import * as Card from "@/components/Card";
 import { Social } from "@/components/Icon";
+import { useUser } from "@/lib/hooks";
 
 const Profile = (): JSX.Element => {
   const [copied, setCopied] = useState(false);
   const { address, chain, connector } = useAccount();
-  const { disconnect } = useDisconnect();
+  const { logout } = useUser();
 
   const handleClick = (): void => {
     setCopied(true);
@@ -40,7 +41,7 @@ const Profile = (): JSX.Element => {
         </Row>
         <p>{trimAddress(address)}</p>
         <p className="text-white/60">{connector?.name}</p>
-        <Button onClick={(): void => disconnect()} className="text-xs mt-2" variant="gradient">
+        <Button onClick={(): void => logout()} className="text-xs mt-2" variant="gradient">
           <Logout height="0.75rem" width="0.75rem" />
           <span>Disconnect</span>
         </Button>
