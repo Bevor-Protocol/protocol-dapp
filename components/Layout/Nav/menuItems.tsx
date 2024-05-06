@@ -1,10 +1,8 @@
 "use client";
 
 import { usePathname } from "next/navigation";
-import { useAccount } from "wagmi";
 
 import DynamicLink from "@/components/Link";
-import { useIsMounted } from "@/lib/hooks";
 import { Arrow, Twitter, Discord, Github } from "@/assets";
 import { Social } from "@/components/Icon";
 import { Row, HoverItem, Column } from "@/components/Box";
@@ -13,13 +11,11 @@ import * as Dropdown from "@/components/Dropdown";
 import * as Card from "@/components/Card";
 import { cn } from "@/lib/utils";
 
-export const NavDashboard = (): JSX.Element => {
+export const NavDashboard = ({ address }: { address: string }): JSX.Element => {
   const pathname = usePathname();
-  const mounted = useIsMounted();
-  const { address } = useAccount();
 
   return (
-    <DynamicLink href={mounted && address ? `/user/${address}` : "/"}>
+    <DynamicLink href={address ? `/user/${address}` : "/"}>
       <HoverItem className="h-12 px-2">
         <span
           className={cn(
