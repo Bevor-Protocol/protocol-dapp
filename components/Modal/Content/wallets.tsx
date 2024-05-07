@@ -10,6 +10,7 @@ import { CoinbaseWallet, WalletConnect } from "@/assets/wallets";
 import { Column, Row } from "@/components/Box";
 import { Loader } from "@/components/Loader";
 import Image from "next/image";
+import { Button } from "@/components/Button";
 
 const IconMapper: Record<string, React.ReactNode> = {
   walletConnect: <WalletConnect height="20" width="20" />,
@@ -18,9 +19,9 @@ const IconMapper: Record<string, React.ReactNode> = {
 
 const Wallets = (): JSX.Element => {
   const [recentConnector, setRecentConnector] = useState("");
-  const { connector: activeConnector } = useAccount();
+  const { address, connector: activeConnector } = useAccount();
   const { toggleOpen } = useModal();
-  const { login, isPending } = useUser();
+  const { login, authenticate, isPending, isAuthenticated, isRejected } = useUser();
   const connectors = useConnectors();
 
   useEffect(() => {
@@ -33,7 +34,30 @@ const Wallets = (): JSX.Element => {
     getRecent();
   }, []);
 
+  useEffect(() => {
+    if (isAuthenticated || isRejected) toggleOpen();
+  }, [isAuthenticated, isRejected, toggleOpen]);
+
   const walletsShow = sortWallets([...connectors], recentConnector, true);
+
+  if (!!address && !isAuthenticated) {
+    return (
+      <Column className="items-center justify-center">
+        <div className="aspect-[1091/1685] relative h-20">
+          <Image src="/logo.png" alt="brand logo" fill={true} sizes="any" />
+        </div>
+        <p className="font-bold text-xl mt-4">Authenticate your account</p>
+        <hr className="border-gray-200/20 my-2 w-1/2" />
+        <p className="text-sm my-4 text-center">
+          This is purely an off-chain interaction. It does not give us permissions, but it is
+          required to verify that you own this account
+        </p>
+        <Button variant="gradient" onClick={() => authenticate()}>
+          Sign In
+        </Button>
+      </Column>
+    );
+  }
 
   return (
     <Column className="items-center justify-center">
@@ -46,7 +70,7 @@ const Wallets = (): JSX.Element => {
         {walletsShow.map((connector) => (
           <Row
             key={connector.uid}
-            onClick={(): void => login({ connector, callback: toggleOpen })}
+            onClick={(): void => login({ connector })}
             className="justify-start items-center rounded-lg gap-2 relative
 px-2 py-1 border border-transparent transition-colors hover:bg-dark-primary-30 cursor-pointer"
           >

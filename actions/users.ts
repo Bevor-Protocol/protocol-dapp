@@ -120,17 +120,19 @@ export const getUserProfile = (address: string): Promise<Users | null> => {
 };
 
 export const getCurrentUser = (): Promise<{ address: string; user: Users | null }> => {
+  let curAddress = "";
   return getUser()
     .then(({ address, success }) => {
       if (!success) {
         throw new Error("not authenticated");
       }
-      return getUserProfile(address!).then((user) => {
-        return { address: address!, user };
-      });
+      curAddress = address!;
+      return getUserProfile(curAddress);
     })
-    .catch((error) => {
-      console.log(error);
+    .then((user) => {
+      return { address: curAddress, user };
+    })
+    .catch(() => {
       return { address: "", user: null };
     });
 };

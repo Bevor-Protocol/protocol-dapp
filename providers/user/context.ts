@@ -6,8 +6,10 @@ import { UserStateI } from "@/lib/types";
 const UserContext = createContext<UserStateI>({
   login: () => {},
   logout: () => {},
+  authenticate: () => {},
   isAuthenticated: false,
   isPending: false,
+  isRejected: false,
 });
 
 export default UserContext;

@@ -14,6 +14,7 @@ import { Button } from "@/components/Button";
 import { Row } from "@/components/Box";
 import * as Dropdown from "@/components/Dropdown";
 import * as Tooltip from "@/components/Tooltip";
+import { Users } from "@prisma/client";
 
 const Web3Network = (): JSX.Element => {
   const { chain } = useAccount();
@@ -79,7 +80,7 @@ const Web3Profile = (): JSX.Element => {
   );
 };
 
-const Web3Holder = (): JSX.Element => {
+const Web3Holder = ({ user }: { user: Users | null }): JSX.Element => {
   const { isConnected } = useAccount();
   const { setContent, toggleOpen } = useModal();
 
@@ -90,11 +91,12 @@ const Web3Holder = (): JSX.Element => {
 
   return (
     <Row className="gap-2 items-center relative">
-      {isConnected && <Web3Network />}
-      {isConnected && <Web3Profile />}
-      {!isConnected && (
+      {!!user && <Web3Network />}
+      {!!user && <Web3Profile />}
+      {!user && (
         <Button onClick={handleWalletModal}>
-          <span>connect</span>
+          {isConnected && <span>authenticate</span>}
+          {!isConnected && <span>connect</span>}
         </Button>
       )}
     </Row>

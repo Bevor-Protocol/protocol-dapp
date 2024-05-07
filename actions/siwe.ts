@@ -26,27 +26,20 @@ export const verify = async ({
 }: {
   message: string;
   signature: string;
-}): Promise<boolean> => {
+}): Promise<void> => {
   const session = await getSession();
 
   const siweMessage = new SiweMessage(message);
 
   return siweMessage
     .verify({ signature, nonce: session.nonce })
-    .then(({ data, success }) => {
+    .then(({ data, success, error }) => {
       if (!success) {
-        throw new Error("Unsuccessful verification");
+        session.destroy();
+        throw error;
       }
       session.siwe = data;
       return session.save();
-    })
-    .then(() => {
-      return true;
-    })
-    .catch((error) => {
-      console.log(error);
-      session.destroy();
-      return false;
     });
 };
 

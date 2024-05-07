@@ -23,7 +23,7 @@ export const Footer = (): JSX.Element => {
 };
 
 export const Nav = async (): Promise<JSX.Element> => {
-  const { address } = await getCurrentUser();
+  const { address, user } = await getCurrentUser();
   return (
     <nav className="py-6 w-full flex flex-row justify-between items-center md:py-4">
       <Row className="gap-6">
@@ -40,7 +40,9 @@ export const Nav = async (): Promise<JSX.Element> => {
           <NavDropdown />
         </Row>
       </Row>
-      <NavWeb3 />
+      <Suspense>
+        <NavWeb3 user={user} />
+      </Suspense>
     </nav>
   );
 };

@@ -68,10 +68,12 @@ export type ModalStateI = {
 };
 
 export type UserStateI = {
-  isAuthenticated: boolean;
-  login: ({ connector, callback }: { connector: Connector; callback: () => void }) => void;
+  login: ({ connector }: { connector: Connector }) => void;
   logout: () => void;
+  authenticate: () => void;
   isPending: boolean;
+  isAuthenticated: boolean;
+  isRejected: boolean;
 };
 
 export interface UserWithCount extends Users {
