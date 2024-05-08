@@ -6,6 +6,10 @@ import { ModalStateI } from "@/lib/types";
 import * as Modal from "@/components/Modal";
 import * as Panel from "@/components/Panel";
 import ModalContext from "./context";
+import { getUser } from "@/actions/siwe";
+import { useAccount } from "wagmi";
+import { useUser } from "@/lib/hooks";
+import RequestAccountChange from "@/components/Modal/Content/requestAccountChange";
 
 const reducer = (state: string, action?: string): string => {
   if (state == "none") {
@@ -18,6 +22,9 @@ const reducer = (state: string, action?: string): string => {
 const ModalProvider = ({ children }: { children: React.ReactNode }): JSX.Element => {
   const [open, toggleOpen] = useReducer(reducer, "none");
   const [content, setContent] = useState<React.ReactNode>(null);
+
+  const { address, isConnected } = useAccount();
+  const { logout, setIsAuthenticated, setIsRequestingAccountChange } = useUser();
 
   const contentRef = useRef<HTMLDivElement>(null);
   const handlerRef = useRef<undefined | (() => void)>(undefined);
@@ -50,6 +57,43 @@ const ModalProvider = ({ children }: { children: React.ReactNode }): JSX.Element
 
     return (): void => document.removeEventListener("mousedown", handleClickOutside);
   }, [contentRef, panelRef]);
+
+  useEffect(() => {
+    // MUST CALL THIS WITHIN THIS CONTEXT, SO IT CAN ACCESS BOTH toggleOpen()
+    // AND the user context.
+
+    // If a user is connected, then every time the address changes (excluding initial connection)
+    // present them with the option to switch back to verified account, or log out.
+    // This useEffect will also capture instances where they do switch back to the verified acct,
+    // in this case, just mark it as authenticated and return.
+    const handleChange = (): void => {
+      // on account change, except initial connection, re-authenticate.
+      getUser().then((user) => {
+        if (user.success && user.address) {
+          if (user.address === address) {
+            // captures case where user switched back to authenticated account.
+            setIsRequestingAccountChange(false);
+            setIsAuthenticated(true);
+            toggleOpen();
+            return;
+          }
+          if (!address) {
+            // captures case where user manually disconnected account.
+            return logout();
+          }
+          // user WAS authenticated, but switched accounts. Present modal.
+          setIsRequestingAccountChange(true);
+          setContent(<RequestAccountChange verifiedAddress={user.address} />);
+          toggleOpen();
+        }
+      });
+    };
+
+    handleChange();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [address]);
+
+  console.log(address, isConnected);
 
   const modalState: ModalStateI = {
     toggleOpen,

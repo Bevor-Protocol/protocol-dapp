@@ -10,18 +10,17 @@ import { CoinbaseWallet, WalletConnect } from "@/assets/wallets";
 import { Column, Row } from "@/components/Box";
 import { Loader } from "@/components/Loader";
 import Image from "next/image";
-import { Button } from "@/components/Button";
 
 const IconMapper: Record<string, React.ReactNode> = {
   walletConnect: <WalletConnect height="20" width="20" />,
   coinbaseWalletSDK: <CoinbaseWallet height="20" width="20" />,
 };
 
-const Wallets = (): JSX.Element => {
+const SignIn = (): JSX.Element => {
   const [recentConnector, setRecentConnector] = useState("");
-  const { address, connector: activeConnector } = useAccount();
+  const { connector: activeConnector } = useAccount();
   const { toggleOpen } = useModal();
-  const { login, authenticate, isPending, isAuthenticated, isRejected } = useUser();
+  const { login, isPendingSign, isAuthenticated, isRejected } = useUser();
   const connectors = useConnectors();
 
   useEffect(() => {
@@ -40,21 +39,29 @@ const Wallets = (): JSX.Element => {
 
   const walletsShow = sortWallets([...connectors], recentConnector, true);
 
-  if (!!address && !isAuthenticated) {
+  if (isPendingSign && !!activeConnector) {
     return (
       <Column className="items-center justify-center">
         <div className="aspect-[1091/1685] relative h-20">
           <Image src="/logo.png" alt="brand logo" fill={true} sizes="any" />
         </div>
-        <p className="font-bold text-xl mt-4">Authenticate your account</p>
-        <hr className="border-gray-200/20 my-2 w-1/2" />
+        <p className="font-bold text-xl my-4">Sign</p>
+        <div className="relative">
+          {activeConnector.icon ? (
+            <Icon
+              image={activeConnector.icon}
+              size="md"
+              className="absolute -translate-x-1/2 -translate-y-1/2 left-1/2 top-1/2"
+            />
+          ) : (
+            <div className="h-10 w-10">{IconMapper[activeConnector.id]}</div>
+          )}
+          <Loader className="h-14 w-14" />
+        </div>
         <p className="text-sm my-4 text-center">
-          This is purely an off-chain interaction. It does not give us permissions, but it is
-          required to verify that you own this account
+          This is purely an off-chain interaction. It does not give us permissions, but it confirms
+          that you own this account
         </p>
-        <Button variant="gradient" onClick={() => authenticate()}>
-          Sign In
-        </Button>
       </Column>
     );
   }
@@ -70,7 +77,10 @@ const Wallets = (): JSX.Element => {
         {walletsShow.map((connector) => (
           <Row
             key={connector.uid}
-            onClick={(): void => login({ connector })}
+            onClick={(): void => {
+              console.log("clicked");
+              return login({ connector });
+            }}
             className="justify-start items-center rounded-lg gap-2 relative
 px-2 py-1 border border-transparent transition-colors hover:bg-dark-primary-30 cursor-pointer"
           >
@@ -85,9 +95,6 @@ px-2 py-1 border border-transparent transition-colors hover:bg-dark-primary-30 c
                 <span className="text-blue-600 text-xxs">recent</span>
               </div>
             )}
-            {activeConnector && activeConnector.id == connector.id && isPending && (
-              <Loader className="h-4 w-4 absolute -right-6" />
-            )}
           </Row>
         ))}
       </Column>
@@ -95,4 +102,4 @@ px-2 py-1 border border-transparent transition-colors hover:bg-dark-primary-30 c
   );
 };
 
-export default Wallets;
+export default SignIn;
