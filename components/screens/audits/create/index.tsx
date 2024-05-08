@@ -13,7 +13,7 @@ import { useUser } from "@/lib/hooks";
 const AuditCreation = ({ user }: { user: Users }): JSX.Element => {
   const { address } = useAccount();
   const router = useRouter();
-  const { isAuthenticated, isPending: authPending } = useUser();
+  const { isAuthenticated } = useUser();
   const [auditors, setAuditors] = useState<Users[]>([]);
   const [errors, setErrors] = useState<Record<string, string>>({});
 
@@ -31,7 +31,7 @@ const AuditCreation = ({ user }: { user: Users }): JSX.Element => {
   });
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>): void => {
-    if (authPending || !isAuthenticated) return;
+    if (!isAuthenticated) return;
     e.preventDefault();
     if (!user) return;
     const formData = new FormData(e.currentTarget);
@@ -51,7 +51,7 @@ const AuditCreation = ({ user }: { user: Users }): JSX.Element => {
         default ones be used.
       </p>
       <AuditFormEntries
-        disabled={isPending || authPending}
+        disabled={isPending}
         address={address as string}
         auditors={auditors}
         setAuditors={setAuditors}

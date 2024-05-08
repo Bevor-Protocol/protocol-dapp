@@ -5,7 +5,7 @@ import { useModal } from "@/lib/hooks";
 import { Chevron } from "@/assets";
 import { Icon } from "@/components/Icon";
 import { ChainPresets } from "@/lib/constants";
-import Wallets from "@/components/Modal/Content/wallets";
+import SignIn from "@/components/Modal/Content/signin";
 import Networks from "@/components/Dropdown/Content/networks";
 import Profile from "@/components/Dropdown/Content/profile";
 import { trimAddress } from "@/lib/utils";
@@ -14,6 +14,7 @@ import { Button } from "@/components/Button";
 import { Row } from "@/components/Box";
 import * as Dropdown from "@/components/Dropdown";
 import * as Tooltip from "@/components/Tooltip";
+import { Users } from "@prisma/client";
 
 const Web3Network = (): JSX.Element => {
   const { chain } = useAccount();
@@ -53,9 +54,7 @@ const Web3Network = (): JSX.Element => {
   );
 };
 
-const Web3Profile = (): JSX.Element => {
-  const { address } = useAccount();
-
+const Web3Profile = ({ user }: { user: Users }): JSX.Element => {
   return (
     <Dropdown.Main
       className="flex flex-row relative cursor-pointer rounded-lg focus-border"
@@ -68,35 +67,34 @@ const Web3Profile = (): JSX.Element => {
             "hover:bg-dark-primary-30 gap-2 text-sm px-2",
           )}
         >
-          <Icon size="md" seed={address} />
-          <span className="lg:hidden">{trimAddress(address)}</span>
+          <Icon size="md" image={user.image} seed={user.address} />
+          <span className="lg:hidden">{trimAddress(user.address)}</span>
         </Row>
       </Dropdown.Trigger>
       <Dropdown.Content className="top-full right-0 w-40">
-        <Profile />
+        <Profile address={user.address} />
       </Dropdown.Content>
     </Dropdown.Main>
   );
 };
 
-const Web3Holder = (): JSX.Element => {
-  const { isConnected } = useAccount();
+const Web3Holder = ({ user }: { user: Users | null }): JSX.Element => {
   const { setContent, toggleOpen } = useModal();
 
   const handleWalletModal = (): void => {
-    setContent(<Wallets />);
+    setContent(<SignIn />);
     toggleOpen();
   };
 
   return (
     <Row className="gap-2 items-center relative">
-      {isConnected && <Web3Network />}
-      {isConnected && <Web3Profile />}
-      {!isConnected && (
-        <Button onClick={handleWalletModal}>
-          <span>connect</span>
-        </Button>
+      {!!user && (
+        <>
+          <Web3Network />
+          <Web3Profile user={user} />
+        </>
       )}
+      {!user && <Button onClick={handleWalletModal}>connect</Button>}
     </Row>
   );
 };

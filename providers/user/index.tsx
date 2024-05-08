@@ -1,91 +1,104 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useAccount, useConnect, useDisconnect, useSignMessage } from "wagmi";
-import type { Connector } from "wagmi";
+import { Connector, useAccount, useConnect, useDisconnect, useSignMessage } from "wagmi";
 
 import { UserStateI } from "@/lib/types";
 import UserContext from "./context";
 import { createSiweMessage } from "@/lib/utils";
 import { verify, logout as siweLogout, getUser } from "@/actions/siwe";
+import { Address } from "viem";
 
 const UserProvider = ({ children }: { children: React.ReactNode }): JSX.Element => {
-  const { address, chainId } = useAccount();
-  const { connectAsync } = useConnect();
-  const { signMessageAsync } = useSignMessage();
+  /* 
+  Controls the lifecyle of connections + SIWE.
+  FLOW is:
+    - Upon initial connection, require signing to authenticate
+      - If user rejects request, forcefully disconnect (the session won't be set)
+      - If user acceptes request, allow connection and authenticate
+      - If authentication fails, forcefully disconnect
+    - If user is authenticated, and tries to change accounts, prompt them to logout (reset SIWE)
+    or to switch back to authenticated account (pulled from SIWE)
+  */
+  const { connectAsync, isPending: isPendingConnect } = useConnect();
+  const { signMessageAsync, isPending: isPendingSign } = useSignMessage();
   const { disconnect } = useDisconnect();
+  const { address, chainId } = useAccount();
 
-  const [isPending, setIsPending] = useState(false);
-  const [listenForChange, setListenForChange] = useState(true);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [isRejected, setIsRejected] = useState(false);
+  const [isRequestingAccountChange, setIsRequestingAccountChange] = useState(false);
 
   const logout = (): void => {
-    siweLogout().then(() => disconnect());
+    siweLogout().then(() => {
+      disconnect();
+      setIsAuthenticated(false);
+    });
   };
 
-  const requireSigning = (addressSign: string, chainIdSign: number): Promise<void> => {
-    setIsPending(true);
-    return createSiweMessage(addressSign, chainIdSign)
+  const requireSigning = (
+    addressUse: Address | undefined,
+    chainIdUse: number | undefined,
+  ): void => {
+    if (!addressUse || !chainIdUse) return;
+    let messageParsed = "";
+    setIsRejected(false);
+    createSiweMessage(addressUse, chainIdUse)
       .then((message) => {
-        return signMessageAsync({ message }).then((signature) => verify({ message, signature }));
+        messageParsed = message;
+        return signMessageAsync({ message });
       })
-      .then((verified) => {
-        setIsPending(false);
-        if (!verified) {
-          throw new Error("not verified");
-        }
+      .then((signature) => {
+        return verify({ message: messageParsed, signature });
+      })
+      .then(() => {
         setIsAuthenticated(true);
+      })
+      .catch((error) => {
+        console.log(error);
+        setIsAuthenticated(false);
+        setIsRejected(true);
+        logout();
       });
   };
 
   useEffect(() => {
-    // If a user if connected, then every time the address changes (including initial connection)
-    // require signed verification, unless the current verification already exists for that
-    // specific wallet.
-    if (!chainId || !address || !listenForChange) return;
     const handleChange = (): void => {
-      getUser()
-        .then((user) => {
-          if (user.success && user.address === address) {
-            setIsAuthenticated(true);
-            return;
+      getUser().then((user) => {
+        if (!user.success && !user.address) {
+          if (address && !isPendingSign && !isPendingConnect) {
+            return requireSigning(address, chainId);
           }
-          return requireSigning(address as string, chainId);
-        })
-        .catch((error) => {
-          // error with signing, or user rejected the request. Wipe cookie + disconnect
-          console.log(error);
-          logout();
-          setIsAuthenticated(false);
-        });
+        }
+      });
     };
 
     handleChange();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [address]);
 
-  const login = ({ connector, callback }: { connector: Connector; callback: () => void }): void => {
-    setListenForChange(false);
-    setIsPending(true);
+  const login = ({ connector }: { connector: Connector }): void => {
+    // on initial login, we only connect the account. Then we explicitly ask for signing
+    // permission. On account changes, we automatically ask for signing permission.
     connectAsync({ connector })
-      .then((account) => {
-        return requireSigning(account.accounts[0], account.chainId);
+      .then((data) => {
+        return requireSigning(data.accounts[0], data.chainId);
       })
-      .catch((error) => {
-        console.log(error);
-        logout();
-      })
-      .finally(() => {
-        setListenForChange(true);
-        callback();
+      .catch(() => {
+        setIsRejected(true);
       });
   };
 
   const userState: UserStateI = {
-    isAuthenticated,
     login,
     logout,
-    isPending,
+    isAuthenticated,
+    isPendingSign,
+    isPendingConnect,
+    isRequestingAccountChange,
+    isRejected,
+    setIsAuthenticated,
+    setIsRequestingAccountChange,
   };
 
   return <UserContext.Provider value={userState}>{children}</UserContext.Provider>;

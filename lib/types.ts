@@ -68,10 +68,15 @@ export type ModalStateI = {
 };
 
 export type UserStateI = {
-  isAuthenticated: boolean;
-  login: ({ connector, callback }: { connector: Connector; callback: () => void }) => void;
+  login: ({ connector }: { connector: Connector }) => void;
   logout: () => void;
-  isPending: boolean;
+  isPendingSign: boolean;
+  isPendingConnect: boolean;
+  isAuthenticated: boolean;
+  isRequestingAccountChange: boolean;
+  isRejected: boolean;
+  setIsAuthenticated: React.Dispatch<React.SetStateAction<boolean>>;
+  setIsRequestingAccountChange: React.Dispatch<React.SetStateAction<boolean>>;
 };
 
 export interface UserWithCount extends Users {

@@ -6,8 +6,13 @@ import { UserStateI } from "@/lib/types";
 const UserContext = createContext<UserStateI>({
   login: () => {},
   logout: () => {},
+  setIsAuthenticated: () => {},
+  setIsRequestingAccountChange: () => {},
   isAuthenticated: false,
-  isPending: false,
+  isPendingSign: false,
+  isPendingConnect: false,
+  isRequestingAccountChange: false,
+  isRejected: false,
 });
 
 export default UserContext;
