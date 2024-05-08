@@ -3,7 +3,8 @@
 import { useState } from "react";
 import { Users } from "@prisma/client";
 import { useMutation } from "@tanstack/react-query";
-import { useWatchContractEvent, useWriteContract, useReadContract } from "wagmi";
+import { useWatchContractEvent, useWriteContract, useClient } from "wagmi";
+import { readContract } from "viem/actions";
 import type { Abi, Address } from "viem";
 
 import { AuditI, AuditStateI } from "@/lib/types";
@@ -16,7 +17,7 @@ import DynamicLink from "@/components/Link";
 import AuditorAttest from "@/components/Modal/Content/auditorAttest";
 import * as Tooltip from "@/components/Tooltip";
 import { Info } from "@/assets";
-import AuditPaymentABI from "@/contracts/abis/AuditPayment";
+import AuditABI from "@/contracts/abis/Audit";
 import ERC20ABI from "@/contracts/abis/ERC20Token";
 
 const AuditeeEditAudit = ({ id, disabled }: { id: string; disabled: boolean }): JSX.Element => {
@@ -95,58 +96,81 @@ const AuditeeInitiateAudit = ({
     .filter((auditor) => auditor.acceptedTerms)
     .map((auditor) => auditor.user.address as Address);
 
-  const { data: allowance } = useReadContract({
-    abi: ERC20ABI.abi as Abi,
-    address: ERC20ABI.address as Address,
-    functionName: "allowance",
-    args: [audit.auditee.address, AuditPaymentABI.address],
-  });
+  const args = [
+    auditorsPass,
+    audit.auditee.address,
+    audit.details,
+    0,
+    0,
+    audit.duration,
+    0,
+    0,
+    audit.price,
+    0,
+    ERC20ABI.address,
+    0,
+    0,
+  ];
 
-  console.log(allowance);
+  const client = useClient();
+  const [isPending, setIsPending] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isSuccess, setIsSuccess] = useState(false);
+  const [isError, setIsError] = useState(false);
+  const [txnHash, setTxnHash] = useState("");
 
-  const { writeContractAsync } = useWriteContract({
-    mutation: {
-      onSettled: (data) => {
-        setDisabled(false);
-        console.log(data);
-      },
-      onError: (data) => {
-        console.log(data);
-      },
-      onMutate: () => setDisabled(true),
-    },
-  });
+  const { writeContractAsync } = useWriteContract();
 
   useWatchContractEvent({
-    abi: AuditPaymentABI.abi as Abi,
-    address: AuditPaymentABI.address as Address,
-    eventName: "VestingScheduleCreated",
+    abi: AuditABI.abi as Abi,
+    address: AuditABI.address as Address,
+    eventName: "AuditCreated",
     onLogs: (logs) => {
-      console.log(logs);
+      console.log("WATCH", logs[0].transactionHash);
+      setIsSubmitting(false);
+      setIsSuccess(true);
     },
   });
 
   // FAILS DUE TO INSUFFICIENT BALANCE
   const handleSubmit = async (): Promise<void> => {
-    // FAILS, likely because approval was already granted?
-    // await writeContractAsync({
-    //   abi: ERC20ABI.abi as Abi,
-    //   address: ERC20ABI.address as Address,
-    //   functionName: "approve",
-    //   args: [AuditPaymentABI.address, 1000],
-    // });
-    // Listen for event here and call createVestingSchedule after.
-    // Also can check for approval amount in view function from token contract to see if it
-    // matches.
-    await writeContractAsync({
-      abi: AuditPaymentABI.abi as Abi,
-      address: AuditPaymentABI.address as Address,
-      functionName: "createVestingSchedule",
-      args: [auditorsPass, 1622551248, 0, 1000, 1, 100, ERC20ABI.address, ERC20ABI.address],
-    });
+    if (!client) return;
+    setIsPending(true);
+    setDisabled(true);
+    setIsError(false);
+    // call the pure on-chain fct to generate the AuditId
+    readContract(client, {
+      address: AuditABI.address as Address,
+      abi: AuditABI.abi as Abi,
+      functionName: "generateAuditId",
+      args,
+    })
+      .then((auditId) => {
+        // POST THE AUDITID OFF-CHAIN.
+        setIsSubmitting(true);
+        return writeContractAsync({
+          abi: AuditABI.abi as Abi,
+          address: AuditABI.address as Address,
+          functionName: "createAudit",
+          args: [auditId],
+        });
+      })
+      .then((result) => {
+        setTxnHash(result);
+        setIsPending(false);
+      })
+      .catch((error) => {
+        console.log(error);
+        setIsPending(false);
+        setIsError(true);
+        setIsSuccess(false);
+      })
+      .finally(() => {
+        setDisabled(false);
+      });
   };
 
-  // console.log(isError, isPending, isSuccess);
+  console.log(isPending, isSubmitting, isSuccess, isError, txnHash);
 
   return (
     <Row className="items-center gap-4">
