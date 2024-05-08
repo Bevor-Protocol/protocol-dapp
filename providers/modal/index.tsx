@@ -69,7 +69,6 @@ const ModalProvider = ({ children }: { children: React.ReactNode }): JSX.Element
     const handleChange = (): void => {
       // on account change, except initial connection, re-authenticate.
       getUser().then((user) => {
-        console.log(user.address, address, open);
         if (user.success && user.address) {
           if (user.address === address) {
             // captures case where user switched back to authenticated account.
@@ -90,7 +89,6 @@ const ModalProvider = ({ children }: { children: React.ReactNode }): JSX.Element
           // to navigate the site authenticated as once user, while being connected
           // as a different user.
           if (open == "none") toggleOpen();
-          console.log("should toggle open");
         }
       });
     };
