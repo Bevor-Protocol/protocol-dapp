@@ -19,7 +19,7 @@ const AuditEditWrapper = ({ audit }: { audit: AuditI }): JSX.Element => {
 
   const { address } = useAccount();
   const router = useRouter();
-  const { isPending: authPending, isAuthenticated } = useUser();
+  const { isAuthenticated } = useUser();
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [auditors, setAuditors] = useState<Users[]>([...initialAuditors]);
 
@@ -37,7 +37,7 @@ const AuditEditWrapper = ({ audit }: { audit: AuditI }): JSX.Element => {
   });
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>): void => {
-    if (authPending || !isAuthenticated) return;
+    if (!isAuthenticated) return;
     e.preventDefault();
     const formData = new FormData(e.currentTarget);
     mutate({ formData });
@@ -56,7 +56,7 @@ const AuditEditWrapper = ({ audit }: { audit: AuditI }): JSX.Element => {
         that from the main audit view.
       </p>
       <AuditFormEntries
-        disabled={isPending || authPending}
+        disabled={isPending}
         address={address as string}
         auditors={auditors}
         setAuditors={setAuditors}
