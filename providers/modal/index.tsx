@@ -23,7 +23,7 @@ const ModalProvider = ({ children }: { children: React.ReactNode }): JSX.Element
   const [open, toggleOpen] = useReducer(reducer, "none");
   const [content, setContent] = useState<React.ReactNode>(null);
 
-  const { address, isConnected } = useAccount();
+  const { address } = useAccount();
   const { logout, setIsAuthenticated, setIsRequestingAccountChange } = useUser();
 
   const contentRef = useRef<HTMLDivElement>(null);
@@ -69,12 +69,13 @@ const ModalProvider = ({ children }: { children: React.ReactNode }): JSX.Element
     const handleChange = (): void => {
       // on account change, except initial connection, re-authenticate.
       getUser().then((user) => {
+        console.log(user.address, address, open);
         if (user.success && user.address) {
           if (user.address === address) {
             // captures case where user switched back to authenticated account.
             setIsRequestingAccountChange(false);
             setIsAuthenticated(true);
-            toggleOpen();
+            if (open == "modal") toggleOpen();
             return;
           }
           if (!address) {
@@ -84,16 +85,19 @@ const ModalProvider = ({ children }: { children: React.ReactNode }): JSX.Element
           // user WAS authenticated, but switched accounts. Present modal.
           setIsRequestingAccountChange(true);
           setContent(<RequestAccountChange verifiedAddress={user.address} />);
-          toggleOpen();
+
+          // This effectively prevents the modal from being closed and allowing for a user
+          // to navigate the site authenticated as once user, while being connected
+          // as a different user.
+          if (open == "none") toggleOpen();
+          console.log("should toggle open");
         }
       });
     };
 
     handleChange();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [address]);
-
-  console.log(address, isConnected);
+  }, [address, open]);
 
   const modalState: ModalStateI = {
     toggleOpen,

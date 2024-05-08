@@ -85,7 +85,6 @@ const UserProvider = ({ children }: { children: React.ReactNode }): JSX.Element 
         return requireSigning(data.accounts[0], data.chainId);
       })
       .catch(() => {
-        console.log("rejectected connection");
         setIsRejected(true);
       });
   };

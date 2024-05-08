@@ -10,9 +10,9 @@ import * as Card from "@/components/Card";
 import { Social } from "@/components/Icon";
 import { useUser } from "@/lib/hooks";
 
-const Profile = (): JSX.Element => {
+const Profile = ({ address }: { address: string }): JSX.Element => {
   const [copied, setCopied] = useState(false);
-  const { address, chain, connector } = useAccount();
+  const { chain, connector } = useAccount();
   const { logout } = useUser();
 
   const handleClick = (): void => {
