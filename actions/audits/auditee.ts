@@ -456,3 +456,39 @@ export const auditAddAuditInfoId = (
       };
     });
 };
+
+export const auditAddNftInfoId = (
+  id: string,
+  auditNftId: string,
+): Promise<GenericUpdateI<Audits>> => {
+  console.log(id, auditNftId);
+  return prisma.audits
+    .update({
+      where: {
+        id,
+      },
+      data: {
+        onchainNftId: auditNftId,
+        status: AuditStatus.CHALLENGEABLE,
+        history: {
+          create: {
+            userType: UserType.AUDITEE,
+            action: HistoryAction.MINTED,
+          },
+        },
+      },
+    })
+    .then((data) => {
+      revalidatePath(`/audits/view/${id}`);
+      return {
+        success: true,
+        data,
+      };
+    })
+    .catch((error) => {
+      return {
+        success: false,
+        error: error,
+      };
+    });
+};

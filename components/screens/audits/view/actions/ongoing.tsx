@@ -1,12 +1,22 @@
 "use client";
 
+import { Abi, Address } from "viem";
+import { useClient } from "wagmi";
+import { Users } from "@prisma/client";
+
 import { Row, Column } from "@/components/Box";
 import { Button } from "@/components/Button";
 import * as Tooltip from "@/components/Tooltip";
 import { Info } from "@/assets";
-import { useModal } from "@/lib/hooks";
+import { useContractWriteListen, useModal } from "@/lib/hooks";
 import UploadFindings from "@/components/Modal/Content/uploadFindings";
-import { AuditStateI } from "@/lib/types";
+import { AuditI, AuditStateI } from "@/lib/types";
+import { readContract } from "viem/actions";
+import { getAuditFindings } from "@/actions/audits/general";
+
+import AuditABI from "@/contracts/abis/Audit";
+import ERC20ABI from "@/contracts/abis/ERC20Token";
+import { auditAddNftInfoId } from "@/actions/audits/auditee";
 
 const AuditorSubmitFindings = ({
   auditId,
@@ -67,16 +77,107 @@ const AuditeePendingFindings = (): JSX.Element => {
   );
 };
 
-const AuditeeLockStake = (): JSX.Element => {
-  const handleClick = (): void => {
-    alert(
-      "All findings were submitted, Auditee can post on-chain\nRequires locking assets to reveal findings",
-    );
+const AuditeeLockStake = ({
+  audit,
+  user,
+  // disabled,
+  // setDisabled,
+}: {
+  audit: AuditI;
+  user: Users;
+  // disabled: boolean;
+  // setDisabled: React.Dispatch<React.SetStateAction<boolean>>;
+}): JSX.Element => {
+  const client = useClient();
+
+  const { state, writeContractWithEvents, txn } = useContractWriteListen({
+    abi: AuditABI.abi as Abi,
+    address: AuditABI.address as Address,
+    eventName: "Transfer",
+    functionName: "mint",
+  });
+
+  // currently requires 2-3 signs. Update the contracts.
+  const handleSubmit = async (): Promise<void> => {
+    if (!client) return;
+    if (user.address !== audit.auditee.address) return;
+    let tokenIdGenerated = BigInt(0);
+    let auditIdGenerated = "";
+    // setDisabled(true);
+    getAuditFindings(audit.id)
+      .then((result) => {
+        if (!result) return;
+        const auditorsPass = result.auditors.map((auditor) => auditor.user.address);
+        const findingsConcat = result.auditors
+          .map((auditor) => {
+            const finding = auditor.findings!;
+            return finding.substring(finding.lastIndexOf("/") + 1).replace(".md", "");
+          })
+          .join("|");
+        auditIdGenerated = result.onchainAuditInfoId as string;
+
+        return readContract(client, {
+          address: AuditABI.address as Address,
+          abi: AuditABI.abi as Abi,
+          functionName: "generateTokenId",
+          args: [
+            auditorsPass,
+            audit.auditee.address,
+            findingsConcat,
+            0,
+            0,
+            result.duration,
+            0,
+            0,
+            result.price,
+            0,
+            ERC20ABI.address,
+            result.onchainAuditInfoId,
+            0,
+          ],
+        });
+      })
+      .then((tokenId) => {
+        tokenIdGenerated = tokenId as bigint;
+        return writeContractWithEvents([user.address, auditIdGenerated, tokenIdGenerated]);
+      })
+      .then(() => {
+        console.log("MINT SUCCESS", BigInt(tokenIdGenerated as bigint).toString());
+        return auditAddNftInfoId(audit.id, BigInt(tokenIdGenerated as bigint).toString());
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+
+    // call the pure on-chain fct to generate the AuditId
+    // readContract(client, {
+    //   address: AuditABI.address as Address,
+    //   abi: AuditABI.abi as Abi,
+    //   functionName: "generateAuditId",
+    //   args: readArgs,
+    // })
+    //   .then((auditId) => {
+    //     console.log(auditId);
+    //     tokenIdGenerated = auditId as bigint;
+    //     // POST THE AUDITID OFF-CHAIN.
+    //     return writeContractWithEvents([auditId]);
+    //   })
+    //   // .then(() => {
+    //   //   return auditAddAuditInfoId(audit.id, BigInt(auditIdGenerated as bigint).toString());
+    //   // })
+    //   .catch((error) => {
+    //     console.log(error);
+    //   })
+    //   .finally(() => {
+    //     setDisabled(false);
+    //   });
   };
+
+  console.log(state, txn);
 
   return (
     <Row className="items-center gap-4">
-      <Button onClick={handleClick} className="flex-1">
+      <Button onClick={handleSubmit} className="flex-1">
         Unlock Findings
       </Button>
       <Tooltip.Reference>
@@ -99,20 +200,20 @@ const AuditeeLockStake = (): JSX.Element => {
 };
 
 const AuditOngoingActions = ({
-  auditId,
-  userId,
+  user,
+  audit,
   actionData,
 }: {
-  auditId: string;
-  userId: string;
+  user: Users;
+  audit: AuditI;
   actionData: AuditStateI;
 }): JSX.Element => {
   if (actionData.isAnAuditor) {
     return (
       <Column className="gap-2 items-end w-fit *:w-full">
         <AuditorSubmitFindings
-          auditId={auditId}
-          userId={userId}
+          auditId={audit.id}
+          userId={user.id}
           disabled={actionData.userSubmitted}
         />
       </Column>
@@ -123,7 +224,7 @@ const AuditOngoingActions = ({
     return (
       <Column className="gap-2 items-end w-fit *:w-full">
         {!actionData.allSubmitted && <AuditeePendingFindings />}
-        {actionData.allSubmitted && <AuditeeLockStake />}
+        {actionData.allSubmitted && <AuditeeLockStake user={user} audit={audit} />}
       </Column>
     );
   }

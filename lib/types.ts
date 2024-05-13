@@ -88,6 +88,24 @@ export interface UserWithCount extends Users {
   };
 }
 
+export type AuditFindingsI = Prisma.AuditsGetPayload<{
+  select: {
+    onchainAuditInfoId: true;
+    duration: true;
+    price: true;
+    auditors: {
+      select: {
+        findings: true;
+        user: {
+          select: {
+            address: true;
+          };
+        };
+      };
+    };
+  };
+}>;
+
 export type AuditTruncatedI = Prisma.AuditsGetPayload<{
   select: {
     id: true;

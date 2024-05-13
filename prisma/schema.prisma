@@ -81,6 +81,7 @@ enum HistoryAction {
   EDITED
   FINALIZED
   FINDINGS
+  MINTED
 }
 
 enum UserType {

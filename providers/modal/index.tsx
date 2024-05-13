@@ -48,10 +48,7 @@ const ModalProvider = ({ children }: { children: React.ReactNode }): JSX.Element
     const handleClickOutside = (e: MouseEvent): void => {
       if (preventClose) return;
       if (contentRef.current && !contentRef.current.contains(e.target as Node)) {
-        if (handlerRef.current) {
-          console.log("fired", preventClose);
-          handlerRef.current();
-        }
+        if (handlerRef.current) handlerRef.current();
       }
       if (panelRef.current && !panelRef.current.contains(e.target as Node)) {
         if (handlerPanelRef.current) handlerPanelRef.current();
@@ -99,7 +96,7 @@ const ModalProvider = ({ children }: { children: React.ReactNode }): JSX.Element
 
     handleChange();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [address, open]);
+  }, [address]);
 
   const modalState: ModalStateI = {
     toggleOpen,

@@ -122,7 +122,6 @@ const AuditeeInitiateAudit = ({
     functionName: "createAudit",
   });
 
-  // FAILS DUE TO INSUFFICIENT BALANCE
   const handleSubmit = async (): Promise<void> => {
     if (!client) return;
     let auditIdGenerated = BigInt(0);

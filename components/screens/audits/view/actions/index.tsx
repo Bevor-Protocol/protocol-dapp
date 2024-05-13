@@ -28,7 +28,7 @@ const AuditDashboardActions = ({ audit, user }: { audit: AuditI; user: Users }):
   }
 
   if (audit.status === AuditStatus.AUDITING) {
-    return <AuditOngoingActions auditId={audit.id} userId={user.id} actionData={data} />;
+    return <AuditOngoingActions audit={audit} user={user} actionData={data} />;
   }
 
   if (audit.status === AuditStatus.CHALLENGEABLE) {
