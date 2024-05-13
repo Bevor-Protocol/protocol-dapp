@@ -1,6 +1,6 @@
 "use server";
 
-import { cookies } from "next/headers";
+import { cookies, headers } from "next/headers";
 import { generateNonce, SiweMessage } from "siwe";
 import { getIronSession, type IronSession } from "iron-session";
 
@@ -28,11 +28,12 @@ export const verify = async ({
   signature: string;
 }): Promise<void> => {
   const session = await getSession();
+  const domain = headers().get("x-forwarded-host") ?? "";
 
   const siweMessage = new SiweMessage(message);
 
   return siweMessage
-    .verify({ signature, nonce: session.nonce })
+    .verify({ signature, nonce: session.nonce, domain })
     .then(({ data, success, error }) => {
       if (!success) {
         session.destroy();
@@ -45,6 +46,7 @@ export const verify = async ({
 
 export const getUser = async (): Promise<{ success: boolean; address?: string }> => {
   const session = await getSession();
+
   if (!session.siwe) {
     return {
       success: false,
