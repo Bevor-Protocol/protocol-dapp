@@ -461,7 +461,6 @@ export const auditAddNftInfoId = (
   id: string,
   auditNftId: string,
 ): Promise<GenericUpdateI<Audits>> => {
-  console.log(id, auditNftId);
   return prisma.audits
     .update({
       where: {
