@@ -421,3 +421,38 @@ export const auditUpdateApprovalStatus = (
       };
     });
 };
+
+export const auditAddAuditInfoId = (
+  id: string,
+  auditInfoId: string,
+): Promise<GenericUpdateI<Audits>> => {
+  return prisma.audits
+    .update({
+      where: {
+        id,
+      },
+      data: {
+        onchainAuditInfoId: auditInfoId,
+        status: AuditStatus.AUDITING,
+        history: {
+          create: {
+            userType: UserType.AUDITEE,
+            action: HistoryAction.FINALIZED,
+          },
+        },
+      },
+    })
+    .then((data) => {
+      revalidatePath(`/audits/view/${id}`);
+      return {
+        success: true,
+        data,
+      };
+    })
+    .catch((error) => {
+      return {
+        success: false,
+        error: error,
+      };
+    });
+};

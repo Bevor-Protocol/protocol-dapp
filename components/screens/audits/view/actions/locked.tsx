@@ -3,13 +3,13 @@
 import { useState } from "react";
 import { Users } from "@prisma/client";
 import { useMutation } from "@tanstack/react-query";
-import { useWatchContractEvent, useWriteContract, useClient } from "wagmi";
+import { useClient } from "wagmi";
 import { readContract } from "viem/actions";
 import type { Abi, Address } from "viem";
 
 import { AuditI, AuditStateI } from "@/lib/types";
 import { useModal } from "@/lib/hooks";
-import { reopenAudit } from "@/actions/audits/auditee";
+import { auditAddAuditInfoId, reopenAudit } from "@/actions/audits/auditee";
 import { leaveAudit } from "@/actions/audits/auditor";
 import { Row, Column } from "@/components/Box";
 import { Button } from "@/components/Button";
@@ -19,6 +19,7 @@ import * as Tooltip from "@/components/Tooltip";
 import { Info } from "@/assets";
 import AuditABI from "@/contracts/abis/Audit";
 import ERC20ABI from "@/contracts/abis/ERC20Token";
+import { useContractWriteListen } from "@/lib/hooks";
 
 const AuditeeEditAudit = ({ id, disabled }: { id: string; disabled: boolean }): JSX.Element => {
   return (
@@ -96,7 +97,7 @@ const AuditeeInitiateAudit = ({
     .filter((auditor) => auditor.acceptedTerms)
     .map((auditor) => auditor.user.address as Address);
 
-  const args = [
+  const readArgs = [
     auditorsPass,
     audit.auditee.address,
     audit.details,
@@ -113,64 +114,44 @@ const AuditeeInitiateAudit = ({
   ];
 
   const client = useClient();
-  const [isPending, setIsPending] = useState(false);
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [isSuccess, setIsSuccess] = useState(false);
-  const [isError, setIsError] = useState(false);
-  const [txnHash, setTxnHash] = useState("");
 
-  const { writeContractAsync } = useWriteContract();
-
-  useWatchContractEvent({
+  const { state, writeContractWithEvents, txn } = useContractWriteListen({
     abi: AuditABI.abi as Abi,
     address: AuditABI.address as Address,
     eventName: "AuditCreated",
-    onLogs: (logs) => {
-      console.log("WATCH", logs[0].transactionHash);
-      setIsSubmitting(false);
-      setIsSuccess(true);
-    },
+    functionName: "createAudit",
   });
 
   // FAILS DUE TO INSUFFICIENT BALANCE
   const handleSubmit = async (): Promise<void> => {
     if (!client) return;
-    setIsPending(true);
+    let auditIdGenerated = BigInt(0);
     setDisabled(true);
-    setIsError(false);
     // call the pure on-chain fct to generate the AuditId
     readContract(client, {
       address: AuditABI.address as Address,
       abi: AuditABI.abi as Abi,
       functionName: "generateAuditId",
-      args,
+      args: readArgs,
     })
       .then((auditId) => {
+        console.log(auditId);
+        auditIdGenerated = auditId as bigint;
         // POST THE AUDITID OFF-CHAIN.
-        setIsSubmitting(true);
-        return writeContractAsync({
-          abi: AuditABI.abi as Abi,
-          address: AuditABI.address as Address,
-          functionName: "createAudit",
-          args: [auditId],
-        });
+        return writeContractWithEvents([auditId]);
       })
-      .then((result) => {
-        setTxnHash(result);
-        setIsPending(false);
+      .then(() => {
+        return auditAddAuditInfoId(audit.id, BigInt(auditIdGenerated as bigint).toString());
       })
       .catch((error) => {
         console.log(error);
-        setIsPending(false);
-        setIsError(true);
-        setIsSuccess(false);
       })
       .finally(() => {
         setDisabled(false);
       });
   };
 
-  console.log(isPending, isSubmitting, isSuccess, isError, txnHash);
+  console.log(state, txn);
 
   return (
     <Row className="items-center gap-4">
