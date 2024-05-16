@@ -30,14 +30,12 @@ const RevealAudit = ({ audit, user }: { audit: AuditI; user: Users }): JSX.Eleme
   const { state: stateApproval, writeContractWithEvents: writeApproval } = useContractWriteListen({
     abi: ERC20ABI.abi as Abi,
     address: ERC20ABI.address as Address,
-    eventName: "Approval",
     functionName: "approve",
   });
 
   const { state, writeContractWithEvents } = useContractWriteListen({
     abi: BevorABI.abi as Abi,
     address: BevorABI.address as Address,
-    eventName: "Transfer",
     functionName: "revealFindings",
   });
 

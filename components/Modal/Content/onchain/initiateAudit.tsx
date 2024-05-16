@@ -32,7 +32,6 @@ const InitiateAudit = ({
   const { state, writeContractWithEvents } = useContractWriteListen({
     abi: BevorABI.abi as Abi,
     address: BevorABI.address as Address,
-    eventName: "AuditCreated",
     functionName: "prepareAudit",
   });
 
