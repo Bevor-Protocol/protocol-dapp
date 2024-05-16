@@ -5,6 +5,7 @@ import UserContext from "@/providers/user/context";
 import ModalContext from "@/providers/modal/context";
 import { useWatchContractEvent, useWriteContract } from "wagmi";
 import { Abi, Address } from "viem";
+import { localhost } from "viem/chains";
 
 export const useModal = (): ModalStateI => useContext(ModalContext);
 export const useUser = (): UserStateI => useContext(UserContext);
@@ -103,6 +104,7 @@ export const useContractWriteListen = ({
       address,
       functionName,
       args: writeArgs,
+      chainId: localhost.id,
     })
       .then((data) => {
         setTxn(data);

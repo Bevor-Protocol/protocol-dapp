@@ -1,6 +1,3 @@
-"use client";
-
-import { useQuery } from "@tanstack/react-query";
 import { AuditStatus, Users } from "@prisma/client";
 
 import { AuditI } from "@/lib/types";
@@ -10,14 +7,14 @@ import AuditOngoingActions from "./ongoing";
 import AuditChallengeableActions from "./challengeable";
 import { getAuditState } from "@/actions/audits/general";
 
-const AuditDashboardActions = ({ audit, user }: { audit: AuditI; user: Users }): JSX.Element => {
-  const { data, isFetched } = useQuery({
-    queryKey: ["actions", audit.id, user.id],
-    queryFn: () => getAuditState(audit.id, user?.id),
-    refetchOnWindowFocus: false,
-  });
-
-  if (!isFetched || !data) return <></>;
+const AuditDashboardActions = async ({
+  audit,
+  user,
+}: {
+  audit: AuditI;
+  user: Users;
+}): Promise<JSX.Element> => {
+  const data = await getAuditState(audit.id, user?.id);
 
   if (audit.status === AuditStatus.DISCOVERY) {
     return <AuditOpenActions user={user} audit={audit} actionData={data} />;

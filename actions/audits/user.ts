@@ -68,7 +68,7 @@ export const auditDeleteRequest = (
       },
     })
     .then((data) => {
-      revalidatePath(`{/audits/view/${id}}`);
+      revalidatePath(`/audits/view/${id}`);
       return {
         success: true,
         data,
