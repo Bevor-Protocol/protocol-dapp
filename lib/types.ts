@@ -144,6 +144,8 @@ export type AuditI = Prisma.AuditsGetPayload<{
     status: true;
     auditee: true;
     details: true;
+    onchainAuditInfoId: true;
+    onchainNftId: true;
     auditors: {
       select: {
         user: true;

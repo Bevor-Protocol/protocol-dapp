@@ -60,6 +60,8 @@ export const getAudit = (id: string): Promise<AuditI | null> => {
       status: true,
       details: true,
       auditee: true,
+      onchainAuditInfoId: true,
+      onchainNftId: true,
       auditors: {
         select: {
           user: true,

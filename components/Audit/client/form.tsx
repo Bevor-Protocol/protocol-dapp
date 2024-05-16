@@ -184,10 +184,10 @@ const AuditFormEntries = ({
         />
         <Form.Input
           type="number"
-          placeholder="3"
+          placeholder="30"
           min={0}
           name="duration"
-          text="Vesting Duration (months)"
+          text="Vesting Duration (days)"
           defaultValue={initialState?.duration}
           disabled={disabled}
           isError={"duration" in errors}

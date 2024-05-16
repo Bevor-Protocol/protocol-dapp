@@ -17,7 +17,7 @@ import DynamicLink from "@/components/Link";
 import AuditorAttest from "@/components/Modal/Content/auditorAttest";
 import * as Tooltip from "@/components/Tooltip";
 import { Info } from "@/assets";
-import AuditABI from "@/contracts/abis/Audit";
+import BevorABI from "@/contracts/abis/BevorProtocol";
 import ERC20ABI from "@/contracts/abis/ERC20Token";
 import { useContractWriteListen } from "@/lib/hooks";
 
@@ -97,29 +97,30 @@ const AuditeeInitiateAudit = ({
     .filter((auditor) => auditor.acceptedTerms)
     .map((auditor) => auditor.user.address as Address);
 
+  const DETAILS = audit.details!.substring(audit.details!.lastIndexOf("/") + 1).replace(".md", "");
+
+  const DURATION = audit.duration * 24 * 60 * 60; // convert to seconds.
+  // hardcode this for now (allow X seconds before vesting occurs). Just make it 10% of duration;
+  const CLIFF = Math.round((100 * DURATION) / 10) / 100;
+
   const readArgs = [
-    auditorsPass,
     audit.auditee.address,
-    audit.details,
-    0,
-    0,
-    audit.duration,
-    0,
-    0,
+    auditorsPass,
+    CLIFF,
+    DURATION,
+    DETAILS,
     audit.price,
-    0,
     ERC20ABI.address,
-    0,
-    0,
+    "I am salt",
   ];
 
   const client = useClient();
 
   const { state, writeContractWithEvents, txn } = useContractWriteListen({
-    abi: AuditABI.abi as Abi,
-    address: AuditABI.address as Address,
+    abi: BevorABI.abi as Abi,
+    address: BevorABI.address as Address,
     eventName: "AuditCreated",
-    functionName: "createAudit",
+    functionName: "prepareAudit",
   });
 
   const handleSubmit = async (): Promise<void> => {
@@ -128,8 +129,8 @@ const AuditeeInitiateAudit = ({
     setDisabled(true);
     // call the pure on-chain fct to generate the AuditId
     readContract(client, {
-      address: AuditABI.address as Address,
-      abi: AuditABI.abi as Abi,
+      address: BevorABI.address as Address,
+      abi: BevorABI.abi as Abi,
       functionName: "generateAuditId",
       args: readArgs,
     })
@@ -137,7 +138,15 @@ const AuditeeInitiateAudit = ({
         console.log(auditId);
         auditIdGenerated = auditId as bigint;
         // POST THE AUDITID OFF-CHAIN.
-        return writeContractWithEvents([auditId]);
+        return writeContractWithEvents([
+          auditorsPass,
+          CLIFF,
+          DURATION,
+          DETAILS,
+          audit.price,
+          ERC20ABI.address,
+          "I am salt",
+        ]);
       })
       .then(() => {
         return auditAddAuditInfoId(audit.id, BigInt(auditIdGenerated as bigint).toString());

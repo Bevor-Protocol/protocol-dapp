@@ -178,7 +178,7 @@ const AuditPage = ({ audit, user }: { audit: AuditI; user: Users | null }): JSX.
           </Row>
           <Row className="gap-4">
             <div className="inline-block w-36 text-right">Vesting Duration: </div>
-            <div className="flex-1 text-right">{audit.duration || "TBD"} month(s)</div>
+            <div className="flex-1 text-right">{audit.duration || "TBD"} days</div>
           </Row>
           <Row className="gap-4">
             <div className="inline-block w-36 text-right">Created: </div>
@@ -188,7 +188,7 @@ const AuditPage = ({ audit, user }: { audit: AuditI; user: Users | null }): JSX.
           </Row>
         </div>
         {(audit.status == AuditStatus.CHALLENGEABLE || audit.status == AuditStatus.FINALIZED) && (
-          <Withdraw />
+          <Withdraw audit={audit} />
         )}
         {user && <AuditDashboardActions audit={audit} user={user} />}
       </Column>
