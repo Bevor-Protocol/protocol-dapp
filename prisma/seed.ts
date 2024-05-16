@@ -1,11 +1,22 @@
 // import { Role, Prisma } from "@prisma/client";
 import { prisma } from "@/db/prisma.server";
 import { AuditorStatus, AuditStatus, HistoryAction, UserType } from "@prisma/client";
+import { ethers } from "ethers";
+
+import ERC20Abi from "@/contracts/abis/ERC20Token";
+import BevorProtocolAbi from "@/contracts/abis/BevorProtocol";
 
 const seed = async (): Promise<void> => {
   // In practice, users will only be created once they've gotten a role
   // asigned. Anyone can visit the application, but we won't need a dashboard
   // page for these users.
+
+  const provider = new ethers.JsonRpcProvider();
+  const signer = await provider.getSigner();
+  const accounts = await provider.listAccounts();
+
+  const tokenContract = new ethers.Contract(ERC20Abi.address, ERC20Abi.abi, signer);
+  const bevorContract = new ethers.Contract(BevorProtocolAbi.address, BevorProtocolAbi.abi, signer);
 
   if (!process.env.BLOB_URL) {
     throw new Error("must set the BLOB_URL (vercel blob url prefix)");
@@ -14,18 +25,13 @@ const seed = async (): Promise<void> => {
   // Wallets used align with the hardhat dev config, which are consistent given the mnemonic in the config.
   // Check bevor-v1 repo. We'll use the first 10 returned addresses.
 
-  const WALLETS = [
-    "0x97a25B755D6Df6e171d03B46F16D9b806827fcCd",
-    "0x371dD800749329f81Ca39AFD856f90419C62Be16",
-    "0x9C3f8EF6079C493aD85D59D53E10995B934eEf1d",
-    "0x13F51E771343F775aEcECb1623C00514bB528da4",
-    "0x8Fd14efbD661B620AfAC161A75d91cF545D02352",
-    "0xA3c9AF67cFA0674B82A83d14Ac8e8c3564823462",
-    "0x7f0996884dBF28C113B0DE279c497085673Df52d",
-    "0xA02B5EFa27E9a0E1252f3304fB64D3A777747A16",
-    "0x7a622712648eDA8747f308132E874e8e53Ae2C09",
-    "0x4BBfBb6aa2C44bE94000aC443004ED8CBD5cc202",
-  ];
+  const WALLETS = accounts.slice(0, 10).map((acct) => acct.address);
+
+  // Since we don't have a means of distribution, just initially seed all accounts with
+  // some test token.
+  for (let i = 0; i < WALLETS.length; i++) {
+    await tokenContract.transfer(WALLETS[i], 25000);
+  }
 
   const userData = [
     {
@@ -108,7 +114,7 @@ const seed = async (): Promise<void> => {
       title: "Requested Audit - Open",
       description: "Open, 1 requestor, no auditors, details provided",
       price: 10_000,
-      duration: 3,
+      duration: 30,
       details: `${process.env.BLOB_URL}/audit-details/example-7Ap1GR49l2yVbJtvIJ0dVnleKuM8pj.md`,
       auditee: {
         connect: {
@@ -137,7 +143,7 @@ const seed = async (): Promise<void> => {
       title: "Auditor Audit - Open",
       description: "Open, 1 auditor, no details",
       price: 10_000,
-      duration: 3,
+      duration: 50,
       auditee: {
         connect: {
           address: WALLETS[0],
@@ -165,7 +171,7 @@ const seed = async (): Promise<void> => {
       title: "Auditor Audit - Locked",
       description: "Locked, 1 auditor, has not attested, details provided",
       price: 20_000,
-      duration: 5,
+      duration: 50,
       details: `${process.env.BLOB_URL}/audit-details/example-7Ap1GR49l2yVbJtvIJ0dVnleKuM8pj.md`,
       status: AuditStatus.ATTESTATION,
       auditee: {
@@ -203,7 +209,7 @@ const seed = async (): Promise<void> => {
       title: "Auditor Audit - Locked, Rejected",
       description: "Locked, 1 auditor, rejected terms, detailed provided.",
       price: 20_000,
-      duration: 5,
+      duration: 50,
       details: `${process.env.BLOB_URL}/audit-details/example-7Ap1GR49l2yVbJtvIJ0dVnleKuM8pj.md`,
       status: AuditStatus.ATTESTATION,
       auditee: {
@@ -233,6 +239,8 @@ const seed = async (): Promise<void> => {
     },
   });
 
+  // need to independently create the history objects for auditors.
+  // YOU'LL SEE THIS THROUGHOUT THE SEED SCRIPT.
   await prisma.auditors.update({
     where: {
       auditId_userId: {
@@ -266,7 +274,7 @@ const seed = async (): Promise<void> => {
       description: "Locked, 1 auditor, accepted terms, details provided. Can be kicked off.",
       status: AuditStatus.ATTESTATION,
       price: 20_000,
-      duration: 5,
+      duration: 50,
       details: `${process.env.BLOB_URL}/audit-details/example-7Ap1GR49l2yVbJtvIJ0dVnleKuM8pj.md`,
       auditee: {
         connect: {
@@ -320,6 +328,34 @@ const seed = async (): Promise<void> => {
   //////////////////////////////////////////////////////////////////////////////
   //////////////////////////////////////////////////////////////////////////////
   //////////////////////////////////////////////////////////////////////////////
+  let auditId;
+  let tokenId;
+
+  auditId = await bevorContract.generateAuditId(
+    accounts[0].address,
+    [accounts[1].address, accounts[4].address],
+    5 * 24 * 60 * 60,
+    50 * 24 * 60 * 60,
+    "example-7Ap1GR49l2yVbJtvIJ0dVnleKuM8pj",
+    20000,
+    ERC20Abi.address,
+    "I am salt",
+  );
+
+  await tokenContract.transfer(accounts[0].address, 20000);
+
+  await bevorContract
+    .connect(accounts[0])
+    // @ts-expect-error not recognized, but works.
+    .prepareAudit(
+      [accounts[1].address, accounts[4].address],
+      5 * 24 * 60 * 60,
+      50 * 24 * 60 * 60,
+      "example-7Ap1GR49l2yVbJtvIJ0dVnleKuM8pj",
+      20000,
+      ERC20Abi.address,
+      "I am salt",
+    );
 
   res = await prisma.audits.create({
     data: {
@@ -327,8 +363,9 @@ const seed = async (): Promise<void> => {
       description: "Ongoing, 2 auditors, 1 findings submitted, 1 pending.",
       status: AuditStatus.AUDITING,
       price: 20_000,
-      duration: 5,
+      duration: 50,
       details: `${process.env.BLOB_URL}/audit-details/example-7Ap1GR49l2yVbJtvIJ0dVnleKuM8pj.md`,
+      onchainAuditInfoId: BigInt(auditId as bigint).toString(),
       auditee: {
         connect: {
           address: WALLETS[0],
@@ -439,14 +476,41 @@ const seed = async (): Promise<void> => {
   //////////////////////////////////////////////////////////////////////////////
   //////////////////////////////////////////////////////////////////////////////
 
+  auditId = await bevorContract.generateAuditId(
+    accounts[0].address,
+    [accounts[1].address, accounts[4].address],
+    5 * 24 * 60 * 60,
+    50 * 24 * 60 * 60,
+    "example-7Ap1GR49l2yVbJtvIJ0dVnleKuM8pj",
+    20000,
+    ERC20Abi.address,
+    "I am salty",
+  );
+
+  await tokenContract.transfer(accounts[0].address, 20000);
+
+  await bevorContract
+    .connect(accounts[0])
+    // @ts-expect-error not recognized, but works.
+    .prepareAudit(
+      [accounts[1].address, accounts[4].address],
+      5 * 24 * 60 * 60,
+      50 * 24 * 60 * 60,
+      "example-7Ap1GR49l2yVbJtvIJ0dVnleKuM8pj",
+      20000,
+      ERC20Abi.address,
+      "I am salty",
+    );
+
   res = await prisma.audits.create({
     data: {
       title: "Auditor Audit - Ready for on-chain",
       description: "Ongoing, all parties submitted findings. Can be pushed on-chain",
       status: AuditStatus.AUDITING,
       price: 20_000,
-      duration: 5,
+      duration: 50,
       details: `${process.env.BLOB_URL}/audit-details/example-7Ap1GR49l2yVbJtvIJ0dVnleKuM8pj.md`,
+      onchainAuditInfoId: BigInt(auditId as bigint).toString(),
       auditee: {
         connect: {
           address: WALLETS[0],
@@ -592,7 +656,7 @@ const seed = async (): Promise<void> => {
       title: "Random Auditee Audit - Open",
       description: "Open, 1 requestor, 1 auditor, details provided",
       price: 10_000,
-      duration: 3,
+      duration: 30,
       details: `${process.env.BLOB_URL}/audit-details/example-7Ap1GR49l2yVbJtvIJ0dVnleKuM8pj.md`,
       auditee: {
         connect: {
@@ -642,6 +706,48 @@ const seed = async (): Promise<void> => {
   //////////////////////////////////////////////////////////////////////////////
   //////////////////////////////////////////////////////////////////////////////
 
+  auditId = await bevorContract.generateAuditId(
+    accounts[3].address,
+    [accounts[2].address, accounts[5].address],
+    5 * 24 * 60 * 60,
+    50 * 24 * 60 * 60,
+    "example-7Ap1GR49l2yVbJtvIJ0dVnleKuM8pj",
+    2000,
+    ERC20Abi.address,
+    "I am salt",
+  );
+
+  await tokenContract.transfer(accounts[3].address, 2000);
+
+  await bevorContract
+    .connect(accounts[3])
+    // @ts-expect-error not recognized, but works.
+    .prepareAudit(
+      [accounts[2].address, accounts[5].address],
+      5 * 24 * 60 * 60,
+      50 * 24 * 60 * 60,
+      "example-7Ap1GR49l2yVbJtvIJ0dVnleKuM8pj",
+      2000,
+      ERC20Abi.address,
+      "I am salt",
+    );
+
+  tokenId = await bevorContract.generateTokenId(auditId, [
+    "example-q0D5zQMv65hQJ4mWfJfstcnagI5kUI",
+    "example-q0D5zQMv65hQJ4mWfJfstcnagI5kUI",
+  ]);
+
+  // @ts-expect-error not recognized, but works.
+  await tokenContract.connect(accounts[3]).approve(BevorProtocolAbi.address, 2000);
+
+  await bevorContract
+    .connect(accounts[3])
+    // @ts-expect-error not recognized, but works.
+    .revealFindings(
+      ["example-q0D5zQMv65hQJ4mWfJfstcnagI5kUI", "example-q0D5zQMv65hQJ4mWfJfstcnagI5kUI"],
+      auditId,
+    );
+
   res = await prisma.audits.create({
     data: {
       title: "Completed audit",
@@ -650,8 +756,10 @@ const seed = async (): Promise<void> => {
 that needs to come from on-chain",
       status: AuditStatus.CHALLENGEABLE,
       price: 2_000,
-      duration: 5,
+      duration: 50,
       details: `${process.env.BLOB_URL}/audit-details/example-7Ap1GR49l2yVbJtvIJ0dVnleKuM8pj.md`,
+      onchainAuditInfoId: BigInt(auditId as bigint).toString(),
+      onchainNftId: BigInt(tokenId as bigint).toString(),
       auditee: {
         connect: {
           address: WALLETS[3],
@@ -776,6 +884,50 @@ that needs to come from on-chain",
   //////////////////////////////////////////////////////////////////////////////
   //////////////////////////////////////////////////////////////////////////////
 
+  // this one is finicky as we can't simulate a finished contract by fast-forwarding
+  // time in contract reads on the frontend (we can simulate it as a standalone script).
+  auditId = await bevorContract.generateAuditId(
+    accounts[3].address,
+    [accounts[2].address, accounts[5].address],
+    7 * 24 * 60 * 60,
+    70 * 24 * 60 * 60,
+    "example-7Ap1GR49l2yVbJtvIJ0dVnleKuM8pj",
+    2000,
+    ERC20Abi.address,
+    "I am salt",
+  );
+
+  await tokenContract.transfer(accounts[3].address, 2000);
+
+  await bevorContract
+    .connect(accounts[3])
+    // @ts-expect-error not recognized, but works.
+    .prepareAudit(
+      [accounts[2].address, accounts[5].address],
+      7 * 24 * 60 * 60,
+      70 * 24 * 60 * 60,
+      "example-7Ap1GR49l2yVbJtvIJ0dVnleKuM8pj",
+      2000,
+      ERC20Abi.address,
+      "I am salt",
+    );
+
+  tokenId = await bevorContract.generateTokenId(auditId, [
+    "example-q0D5zQMv65hQJ4mWfJfstcnagI5kUI",
+    "example-q0D5zQMv65hQJ4mWfJfstcnagI5kUI",
+  ]);
+
+  // @ts-expect-error not recognized, but works.
+  await tokenContract.connect(accounts[3]).approve(BevorProtocolAbi.address, 2000);
+
+  await bevorContract
+    .connect(accounts[3])
+    // @ts-expect-error not recognized, but works.
+    .revealFindings(
+      ["example-q0D5zQMv65hQJ4mWfJfstcnagI5kUI", "example-q0D5zQMv65hQJ4mWfJfstcnagI5kUI"],
+      auditId,
+    );
+
   res = await prisma.audits.create({
     data: {
       title: "Completed audit",
@@ -784,8 +936,10 @@ that needs to come from on-chain",
 that needs to come from on-chain, but I'll mark is as such",
       status: AuditStatus.FINALIZED,
       price: 2_000,
-      duration: 5,
+      duration: 70,
       details: `${process.env.BLOB_URL}/audit-details/example-7Ap1GR49l2yVbJtvIJ0dVnleKuM8pj.md`,
+      onchainAuditInfoId: BigInt(auditId as bigint).toString(),
+      onchainNftId: BigInt(tokenId as bigint).toString(),
       auditee: {
         connect: {
           address: WALLETS[3],

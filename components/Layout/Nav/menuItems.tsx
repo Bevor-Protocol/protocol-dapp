@@ -32,16 +32,17 @@ export const NavDashboard = ({ address }: { address: string }): JSX.Element => {
 
 export const NavMenuItems = (): JSX.Element => {
   const pathname = usePathname();
+  const route = pathname.split("/")[1];
   return (
     <>
       <DynamicLink href="/leaderboard">
         <HoverItem className="h-12 px-2">
-          <span className={cn(pathname !== "leaderboard" && "opacity-disable")}>leaderboard</span>
+          <span className={cn(route !== "leaderboard" && "opacity-disable")}>leaderboard</span>
         </HoverItem>
       </DynamicLink>
       <DynamicLink href="/audits">
         <HoverItem className="h-12 px-2">
-          <span className={cn(pathname !== "audits" && "opacity-disable")}>audits</span>
+          <span className={cn(route !== "audits" && "opacity-disable")}>audits</span>
         </HoverItem>
       </DynamicLink>
     </>

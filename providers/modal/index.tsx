@@ -22,6 +22,7 @@ const reducer = (state: string, action?: string): string => {
 const ModalProvider = ({ children }: { children: React.ReactNode }): JSX.Element => {
   const [open, toggleOpen] = useReducer(reducer, "none");
   const [content, setContent] = useState<React.ReactNode>(null);
+  const [preventClose, setPreventClose] = useState(false);
 
   const { address } = useAccount();
   const { logout, setIsAuthenticated, setIsRequestingAccountChange } = useUser();
@@ -45,6 +46,7 @@ const ModalProvider = ({ children }: { children: React.ReactNode }): JSX.Element
 
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent): void => {
+      if (preventClose) return;
       if (contentRef.current && !contentRef.current.contains(e.target as Node)) {
         if (handlerRef.current) handlerRef.current();
       }
@@ -56,7 +58,7 @@ const ModalProvider = ({ children }: { children: React.ReactNode }): JSX.Element
     document.addEventListener("mousedown", handleClickOutside);
 
     return (): void => document.removeEventListener("mousedown", handleClickOutside);
-  }, [contentRef, panelRef]);
+  }, [contentRef, panelRef, preventClose]);
 
   useEffect(() => {
     // MUST CALL THIS WITHIN THIS CONTEXT, SO IT CAN ACCESS BOTH toggleOpen()
@@ -74,28 +76,27 @@ const ModalProvider = ({ children }: { children: React.ReactNode }): JSX.Element
             // captures case where user switched back to authenticated account.
             setIsRequestingAccountChange(false);
             setIsAuthenticated(true);
+            setPreventClose(false);
             if (open == "modal") toggleOpen();
-            return;
-          }
-          if (!address) {
+          } else if (!address) {
             // captures case where user manually disconnected account.
-            return logout();
+            setPreventClose(false);
+            logout();
+          } else {
+            // user WAS authenticated, but switched accounts. Present modal.
+            // also block the clickOutside handler
+            setIsRequestingAccountChange(true);
+            setPreventClose(true);
+            setContent(<RequestAccountChange verifiedAddress={user.address} />);
+            if (open == "none") toggleOpen();
           }
-          // user WAS authenticated, but switched accounts. Present modal.
-          setIsRequestingAccountChange(true);
-          setContent(<RequestAccountChange verifiedAddress={user.address} />);
-
-          // This effectively prevents the modal from being closed and allowing for a user
-          // to navigate the site authenticated as once user, while being connected
-          // as a different user.
-          if (open == "none") toggleOpen();
         }
       });
     };
 
     handleChange();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [address, open]);
+  }, [address]);
 
   const modalState: ModalStateI = {
     toggleOpen,

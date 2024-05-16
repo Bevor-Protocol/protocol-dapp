@@ -77,10 +77,7 @@ const SignIn = (): JSX.Element => {
         {walletsShow.map((connector) => (
           <Row
             key={connector.uid}
-            onClick={(): void => {
-              console.log("clicked");
-              return login({ connector });
-            }}
+            onClick={(): void => login({ connector })}
             className="justify-start items-center rounded-lg gap-2 relative
 px-2 py-1 border border-transparent transition-colors hover:bg-dark-primary-30 cursor-pointer"
           >

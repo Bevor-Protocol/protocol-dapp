@@ -42,6 +42,7 @@ export const HistoryPanel = ({ history }: { history: HistoryI[] }): JSX.Element 
                   item.action == HistoryAction.LOCKED && "bg-gray-600",
                   item.action == HistoryAction.OPENED && "bg-gray-600",
                   item.action == HistoryAction.FINALIZED && "bg-green-600",
+                  item.action == HistoryAction.MINTED && "bg-green-600",
                 )}
               />
               <span>
@@ -53,6 +54,7 @@ export const HistoryPanel = ({ history }: { history: HistoryI[] }): JSX.Element 
                 {item.action == HistoryAction.LOCKED && "Locked Audit"}
                 {item.action == HistoryAction.OPENED && "Re-Opened Audit"}
                 {item.action == HistoryAction.FINALIZED && "Kicked off Audit (on-chain)"}
+                {item.action == HistoryAction.MINTED && "Requested to view Findings (on-chain)"}
               </span>
             </Row>
             {item.comment && <div className="text-xs text-white/60 mt-2">{item.comment}</div>}

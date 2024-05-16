@@ -48,7 +48,7 @@ export const AuditCard = ({ audit }: { audit: AuditDetailedI }): JSX.Element => 
           </p>
           <p>
             <span className="inline-block w-32 text-right mr-4">Vesting Duration: </span>
-            <span className="float-right">{audit.duration || "TBD"} month(s)</span>
+            <span className="float-right">{audit.duration.toLocaleString() || "TBD"} days</span>
           </p>
           <p>
             <span className="inline-block w-32 text-right mr-4">Created: </span>

@@ -69,5 +69,5 @@ export const auditFormSchema = z.object({
     })
     .optional(),
   price: z.coerce.number().min(0).default(1_000),
-  duration: z.coerce.number().min(0).default(3),
+  duration: z.coerce.number().min(0).default(30),
 });
