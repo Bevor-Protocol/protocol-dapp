@@ -1,33 +1,15 @@
-import Gitbook from "./gitbook";
-import Twitter from "./twitter";
-import Discord from "./discord";
-import Github from "./github";
-import Arrow from "./arrow";
-import Chevron from "./chevron";
-import Copy from "./copy";
-import Logout from "./logout";
-import Pencil from "./pencil";
-import Check from "./check";
-import Search from "./search";
-import X from "./x";
-import Info from "./info";
-import File from "./file";
-import History from "./history";
-
-export {
-  Gitbook,
-  Twitter,
-  Discord,
-  Github,
-  Arrow,
-  Chevron,
-  Copy,
-  Logout,
-  Pencil,
-  Check,
-  Search,
-  X,
-  Info,
-  File,
-  History,
-};
+export { default as Gitbook } from "./gitbook";
+export { default as Twitter } from "./twitter";
+export { default as Discord } from "./discord";
+export { default as Github } from "./github";
+export { default as Arrow } from "./arrow";
+export { default as Chevron } from "./chevron";
+export { default as Copy } from "./copy";
+export { default as Logout } from "./logout";
+export { default as Pencil } from "./pencil";
+export { default as Check } from "./check";
+export { default as Search } from "./search";
+export { default as X } from "./x";
+export { default as Info } from "./info";
+export { default as File } from "./file";
+export { default as History } from "./history";

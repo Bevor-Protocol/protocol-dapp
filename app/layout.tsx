@@ -9,6 +9,7 @@ import { Plus_Jakarta_Sans } from "next/font/google";
 import WalletProvider from "@/providers/wallet";
 import ModalProvider from "@/providers/modal";
 import UserProvider from "@/providers/user";
+import ToastProvider from "@/providers/events";
 import { config } from "@/providers/wallet/config";
 
 import { Layout, Footer, Nav } from "@/components/Layout";
@@ -82,13 +83,15 @@ const Page = ({ children }: { children: React.ReactNode }): JSX.Element => {
       <body className={jakarta.className}>
         <WalletProvider initialState={initialState}>
           <UserProvider>
-            <ModalProvider>
-              <Layout>
-                <Nav />
-                <main>{children}</main>
-                <Footer />
-              </Layout>
-            </ModalProvider>
+            <ToastProvider>
+              <ModalProvider>
+                <Layout>
+                  <Nav />
+                  <main>{children}</main>
+                  <Footer />
+                </Layout>
+              </ModalProvider>
+            </ToastProvider>
           </UserProvider>
         </WalletProvider>
         <Analytics />
