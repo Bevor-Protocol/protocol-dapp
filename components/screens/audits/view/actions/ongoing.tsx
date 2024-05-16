@@ -1,22 +1,16 @@
 "use client";
 
-import { Abi, Address } from "viem";
-import { useClient } from "wagmi";
 import { Users } from "@prisma/client";
 
 import { Row, Column } from "@/components/Box";
 import { Button } from "@/components/Button";
 import * as Tooltip from "@/components/Tooltip";
 import { Info } from "@/assets";
-import { useContractWriteListen, useModal } from "@/lib/hooks";
+import { useModal } from "@/lib/hooks";
 import UploadFindings from "@/components/Modal/Content/uploadFindings";
 import { AuditI, AuditStateI } from "@/lib/types";
-import { readContract } from "viem/actions";
-import { getAuditFindings } from "@/actions/audits/general";
 
-import BevorABI from "@/contracts/abis/BevorProtocol";
-import ERC20ABI from "@/contracts/abis/ERC20Token";
-import { auditAddNftInfoId } from "@/actions/audits/auditee";
+import RevealAudit from "@/components/Modal/Content/onchain/revealAudit";
 
 const AuditorSubmitFindings = ({
   auditId,
@@ -88,64 +82,12 @@ const AuditeeLockStake = ({
   // disabled: boolean;
   // setDisabled: React.Dispatch<React.SetStateAction<boolean>>;
 }): JSX.Element => {
-  const client = useClient();
+  const { toggleOpen, setContent } = useModal();
 
-  const { state, writeContractWithEvents, txn } = useContractWriteListen({
-    abi: BevorABI.abi as Abi,
-    address: BevorABI.address as Address,
-    eventName: "Transfer",
-    functionName: "revealFindings",
-  });
-
-  const { writeContractWithEvents: writeApproval } = useContractWriteListen({
-    abi: ERC20ABI.abi as Abi,
-    address: ERC20ABI.address as Address,
-    eventName: "Approval",
-    functionName: "approve",
-  });
-
-  const handleSubmit = async (): Promise<void> => {
-    if (!client) return;
-    if (user.address !== audit.auditee.address) return;
-    let tokenIdGenerated = BigInt(0);
-    let auditIdGenerated = "";
-    let findings: string[] = [];
-    let amount: bigint;
-
-    // setDisabled(true);
-    getAuditFindings(audit.id)
-      .then((result) => {
-        if (!result) return;
-        findings = result.auditors.map((auditor) => {
-          const finding = auditor.findings!;
-          return finding.substring(finding.lastIndexOf("/") + 1).replace(".md", "");
-        });
-        auditIdGenerated = result.onchainAuditInfoId as string;
-        amount = BigInt(result.price);
-
-        return readContract(client, {
-          address: BevorABI.address as Address,
-          abi: BevorABI.abi as Abi,
-          functionName: "generateTokenId",
-          args: [auditIdGenerated, findings],
-        });
-      })
-      .then((tokenId) => {
-        tokenIdGenerated = tokenId as bigint;
-        return writeApproval([BevorABI.address, amount]);
-      })
-      .then(() => {
-        return writeContractWithEvents([findings, auditIdGenerated]);
-      })
-      .then(() => {
-        return auditAddNftInfoId(audit.id, BigInt(tokenIdGenerated as bigint).toString());
-      })
-      .catch((error) => {
-        console.log(error);
-      });
+  const handleSubmit = (): void => {
+    setContent(<RevealAudit audit={audit} user={user} />);
+    toggleOpen();
   };
-
-  console.log(state, txn);
 
   return (
     <Row className="items-center gap-4">
