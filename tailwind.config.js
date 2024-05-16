@@ -69,11 +69,29 @@ module.exports = {
             transform: "translateX(0%)",
           },
         },
+        "toast-in": {
+          "0%": {
+            transform: "translateX(120%)",
+          },
+          "100%": {
+            transform: "translateX(0%)",
+          },
+        },
+        "toast-out": {
+          "0%": {
+            transform: "translateX(0%)",
+          },
+          "100%": {
+            transform: "translateX(120%)",
+          },
+        },
       },
       animation: {
         shrink: "shrink 1s infinite",
         appear: "appear 0.15s",
         panel: "panel 0.15s",
+        "toast-in": "toast-in 0.25s",
+        "toast-out": "toast-out 0.25s forwards 1s",
       },
       colors: {
         dark: "#121212",

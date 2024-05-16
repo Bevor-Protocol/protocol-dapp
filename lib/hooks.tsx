@@ -1,13 +1,16 @@
-import { useEffect, useRef, useState, useContext, useReducer } from "react";
+import { useEffect, useRef, useContext, useReducer } from "react";
 
-import { UserStateI, ModalStateI } from "./types";
+import { UserStateI, ModalStateI, EventStateI } from "./types";
 import UserContext from "@/providers/user/context";
 import ModalContext from "@/providers/modal/context";
+import EventContext from "@/providers/events/context";
 import { useWatchContractEvent, useWriteContract } from "wagmi";
 import { Abi, Address } from "viem";
+import { localhost } from "viem/chains";
 
 export const useModal = (): ModalStateI => useContext(ModalContext);
 export const useUser = (): UserStateI => useContext(UserContext);
+export const useEvent = (): EventStateI => useContext(EventContext);
 
 export const useClickOutside = (
   node: React.RefObject<HTMLElement | undefined>,
@@ -46,10 +49,8 @@ export const useContractWriteListen = ({
   writeContractWithEvents: (
     writeArgs: readonly unknown[],
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
   ) => Promise<any>;
   state: Record<string, boolean>;
-  txn: string;
 } => {
   const reducer = (
     state: Record<string, boolean>,
@@ -72,8 +73,8 @@ export const useContractWriteListen = ({
     isErrorWrite: false,
   };
 
+  const { txn, setTxn, setStatus } = useEvent();
   const [state, dispatch] = useReducer(reducer, { ...INITIAL_STATE });
-  const [txn, setTxn] = useState("");
 
   useWatchContractEvent({
     abi,
@@ -83,11 +84,13 @@ export const useContractWriteListen = ({
       if (logs[0].transactionHash === txn) {
         // Not sure if this is a local network issue, but it was firing immediately.
         console.log("WATCH SUCCESS", logs[0].transactionHash);
+        setStatus("success");
         dispatch({ isPendingWrite: false, isSuccessWrite: true });
       }
     },
     onError: (error) => {
       console.log("WATCH ERROR", error);
+      setStatus("error");
       dispatch({ isPendingWrite: false, isErrorWrite: true });
     },
   });
@@ -103,9 +106,11 @@ export const useContractWriteListen = ({
       address,
       functionName,
       args: writeArgs,
+      chainId: localhost.id,
     })
       .then((data) => {
-        setTxn(data);
+        setTxn(data as string);
+        setStatus("pending");
         dispatch({ isPendingSign: false, isSuccessSign: true, isPendingWrite: true });
       })
       .catch((error) => {
@@ -118,6 +123,5 @@ export const useContractWriteListen = ({
   return {
     writeContractWithEvents,
     state,
-    txn,
   };
 };

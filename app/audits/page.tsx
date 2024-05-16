@@ -6,6 +6,7 @@ import Audits from "@/components/screens/audits";
 
 const Fetcher = async (): Promise<JSX.Element> => {
   const data = await getAuditsDetailed("open");
+
   return <Audits initialData={data} />;
 };
 

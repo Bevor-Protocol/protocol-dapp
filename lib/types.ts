@@ -67,6 +67,12 @@ export type ModalStateI = {
   setContent: (content: React.ReactNode) => void;
 };
 
+export type EventStateI = {
+  setStatus: React.Dispatch<React.SetStateAction<string>>;
+  setTxn: React.Dispatch<React.SetStateAction<string>>;
+  txn: string;
+};
+
 export type UserStateI = {
   login: ({ connector }: { connector: Connector }) => void;
   logout: () => void;

@@ -3,23 +3,18 @@
 import { useState } from "react";
 import { Users } from "@prisma/client";
 import { useMutation } from "@tanstack/react-query";
-import { useClient } from "wagmi";
-import { readContract } from "viem/actions";
-import type { Abi, Address } from "viem";
 
 import { AuditI, AuditStateI } from "@/lib/types";
 import { useModal } from "@/lib/hooks";
-import { auditAddAuditInfoId, reopenAudit } from "@/actions/audits/auditee";
+import { reopenAudit } from "@/actions/audits/auditee";
 import { leaveAudit } from "@/actions/audits/auditor";
 import { Row, Column } from "@/components/Box";
 import { Button } from "@/components/Button";
 import DynamicLink from "@/components/Link";
 import AuditorAttest from "@/components/Modal/Content/auditorAttest";
+import InitiateAudit from "@/components/Modal/Content/onchain/initiateAudit";
 import * as Tooltip from "@/components/Tooltip";
 import { Info } from "@/assets";
-import BevorABI from "@/contracts/abis/BevorProtocol";
-import ERC20ABI from "@/contracts/abis/ERC20Token";
-import { useContractWriteListen } from "@/lib/hooks";
 
 const AuditeeEditAudit = ({ id, disabled }: { id: string; disabled: boolean }): JSX.Element => {
   return (
@@ -93,73 +88,13 @@ const AuditeeInitiateAudit = ({
   disabled: boolean;
   setDisabled: React.Dispatch<React.SetStateAction<boolean>>;
 }): JSX.Element => {
-  const auditorsPass: Address[] = audit.auditors
-    .filter((auditor) => auditor.acceptedTerms)
-    .map((auditor) => auditor.user.address as Address);
+  const { toggleOpen, setContent } = useModal();
 
-  const DETAILS = audit.details!.substring(audit.details!.lastIndexOf("/") + 1).replace(".md", "");
-
-  const DURATION = audit.duration * 24 * 60 * 60; // convert to seconds.
-  // hardcode this for now (allow X seconds before vesting occurs). Just make it 10% of duration;
-  const CLIFF = Math.round((100 * DURATION) / 10) / 100;
-
-  const readArgs = [
-    audit.auditee.address,
-    auditorsPass,
-    CLIFF,
-    DURATION,
-    DETAILS,
-    audit.price,
-    ERC20ABI.address,
-    "I am salt",
-  ];
-
-  const client = useClient();
-
-  const { state, writeContractWithEvents, txn } = useContractWriteListen({
-    abi: BevorABI.abi as Abi,
-    address: BevorABI.address as Address,
-    eventName: "AuditCreated",
-    functionName: "prepareAudit",
-  });
-
-  const handleSubmit = async (): Promise<void> => {
-    if (!client) return;
-    let auditIdGenerated = BigInt(0);
+  const handleSubmit = (): void => {
     setDisabled(true);
-    // call the pure on-chain fct to generate the AuditId
-    readContract(client, {
-      address: BevorABI.address as Address,
-      abi: BevorABI.abi as Abi,
-      functionName: "generateAuditId",
-      args: readArgs,
-    })
-      .then((auditId) => {
-        console.log(auditId);
-        auditIdGenerated = auditId as bigint;
-        // POST THE AUDITID OFF-CHAIN.
-        return writeContractWithEvents([
-          auditorsPass,
-          CLIFF,
-          DURATION,
-          DETAILS,
-          audit.price,
-          ERC20ABI.address,
-          "I am salt",
-        ]);
-      })
-      .then(() => {
-        return auditAddAuditInfoId(audit.id, BigInt(auditIdGenerated as bigint).toString());
-      })
-      .catch((error) => {
-        console.log(error);
-      })
-      .finally(() => {
-        setDisabled(false);
-      });
+    setContent(<InitiateAudit audit={audit} setDisabled={setDisabled} />);
+    toggleOpen();
   };
-
-  console.log(state, txn);
 
   return (
     <Row className="items-center gap-4">
