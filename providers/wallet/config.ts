@@ -4,9 +4,9 @@ import { injected } from "wagmi/connectors";
 
 import { goerli, polygonMumbai, localhost, Chain } from "wagmi/chains";
 
-const projectId = process.env.NEXT_PUBLIC_WC_PROJECT_ID as string;
+// const projectId = process.env.NEXT_PUBLIC_WC_PROJECT_ID as string;
 
-if (!projectId) throw new Error("Project ID is not defined");
+// if (!projectId) throw new Error("Project ID is not defined");
 
 let chains: readonly [Chain, ...Chain[]];
 let transports;
@@ -50,4 +50,5 @@ declare module "wagmi" {
   }
 }
 
-export { config, projectId };
+// export { config, projectId };
+export { config };

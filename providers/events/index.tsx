@@ -13,7 +13,6 @@ const EventProvider = ({ children }: { children: React.ReactNode }): JSX.Element
   const [status, setStatus] = useState("");
 
   useEffect(() => {
-    console.log("called");
     if (!status) return;
     if (status == "pending") {
       setOpen(true);

@@ -28,33 +28,6 @@ export type MarkdownAuditsI = {
   }[];
 };
 
-export type AuditDashI = {
-  // beneficiary of tokens after they are released
-  auditor: Address;
-  // beneficiary of tokens after they are released
-  auditee: Address;
-  // cliff period in seconds
-  cliff: number;
-  // start time of the vesting period
-  start: number;
-  // duration of the vesting period in seconds
-  duration: number;
-  // duration of a slice period for the vesting in seconds
-  slicePeriodSeconds: number;
-  // whether the vesting is revocable
-  withdrawalPaused: boolean;
-  // total amount of tokens to be released at the end of the vesting
-  amountTotal: number;
-  // amount of tokens withdrawn
-  withdrawn: number;
-  // amount of tokens in escrow for payment
-  auditInvalidated: boolean;
-  // address of the ERC20 token vesting
-  token: Address;
-  // address of the ERC721 audit NFT
-  tokenId: number;
-};
-
 export type HomeStatI = {
   action: () => Promise<number>;
   symbol?: string;
@@ -99,6 +72,7 @@ export type AuditFindingsI = Prisma.AuditsGetPayload<{
     onchainAuditInfoId: true;
     duration: true;
     price: true;
+    cliff: true;
     auditors: {
       select: {
         findings: true;
@@ -129,6 +103,7 @@ export type AuditDetailedI = Prisma.AuditsGetPayload<{
     description: true;
     price: true;
     duration: true;
+    cliff: true;
     createdAt: true;
     auditee: true;
     auditors: {
@@ -146,6 +121,7 @@ export type AuditI = Prisma.AuditsGetPayload<{
     description: true;
     price: true;
     duration: true;
+    cliff: true;
     createdAt: true;
     status: true;
     auditee: true;
@@ -232,3 +208,14 @@ interface GenericFailure {
 }
 
 export type GenericUpdateI<T> = GenericSuccess<T> | GenericFailure;
+
+export type AuditContractView = [
+  protocolOwner: Address,
+  token: Address,
+  amount: bigint,
+  duration: bigint,
+  cliff: bigint,
+  start: bigint,
+  invalidatingProposalId: bigint,
+  isActive: boolean,
+];

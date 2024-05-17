@@ -5,18 +5,32 @@ on: [push]
 jobs:
   cypress-run:
     runs-on: ubuntu-22.04
+    env:
+      NEXT_PUBLIC_WC_PROJECT_ID: ${{ secrets.NEXT_PUBLIC_WC_PROJECT_ID }}
+      DATABASE_URL_UNPOOLED: ${{ secrets.DATABASE_URL_UNPOOLED }}
+      VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-      # Install npm dependencies, cache them correctly
-      # and run all Cypress tests
+      
+      # Install npm dependencies
+      - name: Install dependencies
+        run: yarn install
+
+      # Generate Prisma Client to reflect latest database schema
+      - name: Generate Prisma Client
+        run: yarn prisma generate
+
+      - name: Deploy DB changes
+        run: yarn prisma migrate deploy
+
+      # Build the application
+      - name: Build
+        run: yarn build
+
       - name: Cypress run
         uses: cypress-io/github-action@v6
         with:
-          build: yarn build
           start: yarn start
           browser: chrome
           wait-on: "http://localhost:3000"
-        env:
-          NEXT_PUBLIC_WC_PROJECT_ID: ${{ secrets.NEXT_PUBLIC_WC_PROJECT_ID }}
-          DATABASE_URL_UNPOOLED: ${{ secrets.DATABASE_URL_UNPOOLED }}

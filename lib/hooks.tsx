@@ -4,9 +4,10 @@ import { UserStateI, ModalStateI, EventStateI } from "./types";
 import UserContext from "@/providers/user/context";
 import ModalContext from "@/providers/modal/context";
 import EventContext from "@/providers/events/context";
-import { useWatchContractEvent, useWriteContract } from "wagmi";
+import { useClient, useWriteContract } from "wagmi";
 import { Abi, Address } from "viem";
 import { localhost } from "viem/chains";
+import { waitForTransactionReceipt } from "viem/actions";
 
 export const useModal = (): ModalStateI => useContext(ModalContext);
 export const useUser = (): UserStateI => useContext(UserContext);
@@ -39,12 +40,10 @@ export const useContractWriteListen = ({
   abi,
   address,
   functionName,
-  eventName,
 }: {
   abi: Abi;
   address: Address;
   functionName: string;
-  eventName: string;
 }): {
   writeContractWithEvents: (
     writeArgs: readonly unknown[],
@@ -73,33 +72,16 @@ export const useContractWriteListen = ({
     isErrorWrite: false,
   };
 
-  const { txn, setTxn, setStatus } = useEvent();
+  const { setTxn, setStatus } = useEvent();
   const [state, dispatch] = useReducer(reducer, { ...INITIAL_STATE });
-
-  useWatchContractEvent({
-    abi,
-    address,
-    eventName,
-    onLogs: (logs) => {
-      if (logs[0].transactionHash === txn) {
-        // Not sure if this is a local network issue, but it was firing immediately.
-        console.log("WATCH SUCCESS", logs[0].transactionHash);
-        setStatus("success");
-        dispatch({ isPendingWrite: false, isSuccessWrite: true });
-      }
-    },
-    onError: (error) => {
-      console.log("WATCH ERROR", error);
-      setStatus("error");
-      dispatch({ isPendingWrite: false, isErrorWrite: true });
-    },
-  });
+  const client = useClient();
 
   // rather than using react-query mutations, I explicitly throw "callbacks" in the
   // thenable statements, for cleaner error handling.
   const { writeContractAsync } = useWriteContract();
 
   const writeContractWithEvents = (writeArgs: readonly unknown[]): Promise<void> => {
+    if (!client) return Promise.reject();
     dispatch({ ...INITIAL_STATE, isPendingSign: true });
     return writeContractAsync({
       abi,
@@ -108,14 +90,29 @@ export const useContractWriteListen = ({
       args: writeArgs,
       chainId: localhost.id,
     })
-      .then((data) => {
-        setTxn(data as string);
+      .then((hash) => {
+        setTxn(hash as string);
         setStatus("pending");
         dispatch({ isPendingSign: false, isSuccessSign: true, isPendingWrite: true });
+        return waitForTransactionReceipt(client, { hash });
+      })
+      .then((receipt) => {
+        console.log(receipt);
+        if (receipt.status === "success") {
+          setStatus("success");
+          dispatch({ isPendingWrite: false, isSuccessWrite: true });
+        } else {
+          setStatus("error");
+          dispatch({ isPendingWrite: false, isErrorWrite: true });
+          throw new Error("Transaction Error");
+        }
       })
       .catch((error) => {
-        dispatch({ isPendingSign: false, isErrorSign: true });
-        // Explicitly throw to make it thenable, and catchable by external fct calls.
+        // Come back to this.
+        if (error.message !== "Transaction Error") {
+          dispatch({ isPendingSign: false, isErrorSign: true });
+        }
+        // Explicitly throw (again) to make it thenable, and catchable by external fct calls.
         throw new Error(error);
       });
   };

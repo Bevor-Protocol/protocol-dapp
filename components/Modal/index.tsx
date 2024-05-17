@@ -12,7 +12,7 @@ export const Wrapper: React.FC<Props> = ({ children, open }) => {
   return (
     <div
       className={cn(
-        "fixed inset-0 flex justify-center items-center z-[999]",
+        "fixed inset-0 flex justify-center items-center z-[990]",
         "bg-black/70 backdrop-blur-[1px]",
       )}
     >

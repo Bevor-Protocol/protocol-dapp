@@ -8,6 +8,7 @@ import matter from "gray-matter";
 import { prisma } from "@/db/prisma.server";
 
 import { AuditDetailedI, AuditStateI, AuditI, MarkdownAuditsI, AuditFindingsI } from "@/lib/types";
+import * as ContractAPI from "../contractRead";
 
 const statusFilter: Record<string, AuditStatus> = {
   open: AuditStatus.DISCOVERY,
@@ -28,6 +29,7 @@ export const getAuditsDetailed = (status?: string): Promise<AuditDetailedI[]> =>
       description: true,
       price: true,
       duration: true,
+      cliff: true,
       createdAt: true,
       auditee: true,
       auditors: {
@@ -56,6 +58,7 @@ export const getAudit = (id: string): Promise<AuditI | null> => {
       description: true,
       price: true,
       duration: true,
+      cliff: true,
       createdAt: true,
       status: true,
       details: true,
@@ -105,6 +108,7 @@ export const getAuditFindings = (id: string): Promise<AuditFindingsI | null> => 
       onchainAuditInfoId: true,
       duration: true,
       price: true,
+      cliff: true,
       auditors: {
         where: {
           acceptedTerms: true,
@@ -225,6 +229,9 @@ export const safeGetMarkdown = async (
   auditId: string,
   userId: string | undefined,
 ): Promise<MarkdownAuditsI> => {
+  // Gathers the state of the audit from on + off-chain data, uses it
+  // to infer whether to show markdown to a specific user.
+
   const markdownObject: MarkdownAuditsI = {
     details: "",
     globalReveal: false,
@@ -248,16 +255,42 @@ export const safeGetMarkdown = async (
 
   if (!audit) return markdownObject;
 
+  // if details exist, get them.
   if (audit.details) {
     markdownObject.details = await parseMarkdown(audit.details);
   }
 
+  // can early stop
   if (audit.status == AuditStatus.DISCOVERY || audit.status == AuditStatus.ATTESTATION) {
     return markdownObject;
   }
 
-  const globalReveal =
-    audit.status == AuditStatus.CHALLENGEABLE || audit.status == AuditStatus.FINALIZED;
+  // if finalized, we'll reveal to everyone.
+  let globalReveal = audit.status == AuditStatus.FINALIZED;
+
+  // auditor can always see their own findings.
+  // Protocol owner can see once they put money in escrow.
+  const auditeeReveal =
+    audit.auditeeId == userId && (globalReveal || audit.status == AuditStatus.CHALLENGEABLE);
+
+  const now = Math.round(new Date().getTime() / 1000);
+  // fetch on-chain information to get audit start
+  if (audit.onchainAuditInfoId && audit.status == AuditStatus.CHALLENGEABLE) {
+    try {
+      const onchainAudit = await ContractAPI.getAudit(BigInt(audit.onchainAuditInfoId));
+      if (onchainAudit) {
+        const start = Number(onchainAudit[5]);
+        const cliff = Number(onchainAudit[4]);
+        if (now < start + cliff) {
+          globalReveal = false;
+        }
+      }
+    } catch (error) {
+      console.log(error);
+      globalReveal = false;
+    }
+  }
+
   markdownObject.globalReveal = globalReveal;
 
   for (const auditor of audit.auditors) {
@@ -265,7 +298,7 @@ export const safeGetMarkdown = async (
       const user = auditor.user;
       const submitted = !!auditor.findings;
       const owner = auditor.userId === userId;
-      const reveal = globalReveal || (state.userSubmitted && owner);
+      const reveal = globalReveal || (state.userSubmitted && owner) || auditeeReveal;
 
       let markdown = "";
       if (submitted && reveal) {
