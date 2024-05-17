@@ -46,11 +46,15 @@ export const AuditCard = ({ audit }: { audit: AuditDetailedI }): JSX.Element => 
             <span className="inline-block w-32 text-right mr-4">Prize Pool: </span>
             <span className="float-right">${audit.price.toLocaleString()}</span>
           </p>
-          <p>
+          <p className="text-white/60 text-xs">
             <span className="inline-block w-32 text-right mr-4">Vesting Duration: </span>
             <span className="float-right">{audit.duration.toLocaleString() || "TBD"} days</span>
           </p>
-          <p>
+          <p className="text-white/60 text-xs">
+            <span className="inline-block w-32 text-right mr-4">Vesting Cliff: </span>
+            <span className="float-right">{audit.cliff.toLocaleString() || "TBD"} days</span>
+          </p>
+          <p className="text-white/60 text-xs">
             <span className="inline-block w-32 text-right mr-4">Created: </span>
             <span className="float-right">{new Date(audit.createdAt).toLocaleDateString()}</span>
           </p>

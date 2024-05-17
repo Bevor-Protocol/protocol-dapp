@@ -169,18 +169,19 @@ const AuditPage = ({ audit, user }: { audit: AuditI; user: Users | null }): JSX.
       </Column>
       <Column className="gap-6 justify-between items-end">
         <div>
-          <p className="text-right text-lg">
-            Audit is <span className="uppercase">{audit.status}</span>
-          </p>
           <Row className="gap-4">
             <div className="inline-block w-36 text-right">Prize Pool: </div>
             <div className="flex-1 text-right">${audit.price.toLocaleString()}</div>
           </Row>
-          <Row className="gap-4">
+          <Row className="gap-4 text-sm text-white/60">
             <div className="inline-block w-36 text-right">Vesting Duration: </div>
-            <div className="flex-1 text-right">{audit.duration || "TBD"} days</div>
+            <div className="flex-1 text-right">{audit.duration.toLocaleString() || "TBD"} days</div>
           </Row>
-          <Row className="gap-4">
+          <Row className="gap-4 text-sm text-white/60">
+            <div className="inline-block w-36 text-right">Vesting Cliff: </div>
+            <div className="flex-1 text-right">{audit.cliff.toLocaleString() || "TBD"} days</div>
+          </Row>
+          <Row className="gap-4 text-sm text-white/60">
             <div className="inline-block w-36 text-right">Created: </div>
             <div className="flex-1 text-right">
               {new Date(audit.createdAt).toLocaleDateString()}

@@ -39,7 +39,8 @@ model Audits {
   description        String
   details            String? // references blob storage URL
   price              Int         @default(0)
-  duration           Int         @default(6) // duration in days
+  duration           Int         @default(30) // duration in days
+  cliff              Int         @default(3) // cliff duration in days (determines reveal).
   status             AuditStatus @default(DISCOVERY)
   auditors           Auditors[]
   history            History[]

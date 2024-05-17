@@ -3,6 +3,7 @@ import { localhost } from "viem/chains";
 
 import ERC20Abi from "@/contracts/abis/ERC20Token";
 import BevorABI from "@/contracts/abis/BevorProtocol";
+import { AuditContractView } from "@/lib/types";
 
 const publicClient = {
   localhost: createPublicClient({
@@ -25,5 +26,23 @@ export const getBalance = (): Promise<number> => {
     .catch((error) => {
       console.log(error);
       return 0;
+    });
+};
+
+export const getAudit = (auditId: bigint): Promise<AuditContractView | null> => {
+  return publicClient.localhost
+    .readContract({
+      address: BevorABI.address as Address,
+      abi: BevorABI.abi as Abi,
+      functionName: "audits",
+      args: [auditId],
+    })
+    .then((data) => {
+      const dataTyped = data as AuditContractView;
+      return dataTyped;
+    })
+    .catch((error) => {
+      console.log(error);
+      return null;
     });
 };

@@ -1,0 +1,3 @@
+-- AlterTable
+ALTER TABLE "Audits" ADD COLUMN     "cliff" INTEGER NOT NULL DEFAULT 3,
+ALTER COLUMN "duration" SET DEFAULT 30;

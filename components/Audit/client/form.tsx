@@ -192,6 +192,16 @@ const AuditFormEntries = ({
           disabled={disabled}
           isError={"duration" in errors}
         />
+        <Form.Input
+          type="number"
+          placeholder="3"
+          min={0}
+          name="cliff"
+          text="Vesting Cliff (days)"
+          defaultValue={initialState?.cliff}
+          disabled={disabled}
+          isError={"cliff" in errors}
+        />
       </Row>
       <hr className="border-gray-200/20 my-4" />
       <Row className="my-4 gap-4">
