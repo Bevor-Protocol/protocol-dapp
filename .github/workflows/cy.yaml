@@ -19,7 +19,10 @@ jobs:
 
       # Generate Prisma Client to reflect latest database schema
       - name: Generate Prisma Client
-        run: yarn prisma generate
+        run: yarn run prisma generate
+
+      - name: Deploy DB changes
+        run: yarn run migrate deploy
 
       # Build the application
       - name: Build
