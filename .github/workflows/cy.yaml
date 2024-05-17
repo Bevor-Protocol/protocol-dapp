@@ -13,7 +13,7 @@ jobs:
       - name: Cypress run
         uses: cypress-io/github-action@v6
         with:
-          build: npx prisma generate && yarn build
+          build: yarn prisma generate && yarn build
           start: yarn start
           browser: chrome
           wait-on: "http://localhost:3000"
