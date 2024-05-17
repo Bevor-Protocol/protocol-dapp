@@ -43,7 +43,7 @@ const InitiateAudit = ({
       .details!.substring(audit.details!.lastIndexOf("/") + 1)
       .replace(".md", "");
     const DURATION = audit.duration * 24 * 60 * 60;
-    const CLIFF = Math.round((100 * DURATION) / 10) / 100;
+    const CLIFF = audit.cliff * 24 * 60 * 60;
     return [
       audit.auditee.address,
       auditorsPass,
