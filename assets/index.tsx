@@ -13,3 +13,4 @@ export { default as X } from "./x";
 export { default as Info } from "./info";
 export { default as File } from "./file";
 export { default as History } from "./history";
+export { default as Bell } from "./bell";

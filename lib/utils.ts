@@ -4,7 +4,7 @@ import { Connector } from "wagmi";
 import { SiweMessage } from "siwe";
 
 import { nonce } from "@/actions/siwe";
-import { HistoryI } from "./types";
+import { AuditTruncatedI, HistoryI } from "./types";
 
 export const cn = (...args: unknown[]): string => {
   return args
@@ -120,6 +120,34 @@ export const checkLocalMostRecent = (
     }
   }
   return true;
+};
+
+export const checkLocalMostRecentMany = (
+  address: string,
+  audits: AuditTruncatedI[],
+): Record<string, boolean> | undefined => {
+  if (typeof window == undefined) return;
+  const localHistory = localStorage.getItem("history_noti") || "null";
+  const parsed = JSON.parse(localHistory);
+  const shouldSkip = !parsed || !(address in parsed); // no object exists for this user.
+  const out: Record<string, boolean> = {};
+  audits.forEach((audit) => {
+    const isHistory = audit.history.length > 0;
+    if (!isHistory) {
+      out[audit.id] = false;
+    } else {
+      if (shouldSkip) {
+        out[audit.id] = true;
+      } else {
+        if (audit.id in parsed[address]) {
+          out[audit.id] = parsed[address][audit.id] != audit.history[0].id;
+        } else {
+          out[audit.id] = true;
+        }
+      }
+    }
+  });
+  return out;
 };
 
 export const setLocalMostRecent = (
