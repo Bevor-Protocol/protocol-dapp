@@ -17,10 +17,27 @@ const Fetcher = async ({ auditId }: { auditId: string }): Promise<JSX.Element> =
 
   const { user } = await getCurrentUser();
 
+  let isMemberOfAudit = false;
+  if (user) {
+    if (user.address == audit.auditee.address) {
+      isMemberOfAudit = true;
+    } else {
+      const auditors = audit.auditors.map((auditor) => auditor.user.address);
+      if (auditors.includes(user.address)) {
+        isMemberOfAudit = true;
+      }
+    }
+  }
+
   return (
     <div className="w-full max-w-[1000px] py-8 relative">
       <AuditPage audit={audit} user={user} />
-      <AuditHistory history={audit.history} />
+      <AuditHistory
+        history={audit.history}
+        auditId={audit.id}
+        user={user?.address}
+        displayNotification={isMemberOfAudit}
+      />
       <hr className="w-full h-[1px] border-gray-200/20 my-4" />
       <AuditMarkdown auditId={audit.id} user={user} />
     </div>
