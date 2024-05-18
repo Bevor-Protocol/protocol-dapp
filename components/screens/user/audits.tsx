@@ -1,143 +1,116 @@
-import { getUserAuditsAuditee, getUserAuditsVerifiedAuditor } from "@/actions/users";
-import { AuditCardTruncated } from "@/components/Audit";
-import { Column, Row } from "@/components/Box";
+"use client";
+
+import { useEffect, useState } from "react";
 import { AuditStatus } from "@prisma/client";
 
-const UserAudits = async ({ address }: { address: string }): Promise<JSX.Element> => {
-  const [auditsAuditee, auditsAuditor] = await Promise.all([
-    getUserAuditsAuditee(address),
-    getUserAuditsVerifiedAuditor(address),
-  ]);
-  const audits = {
-    auditor: {
-      open: auditsAuditor.filter((audit) => audit.status === AuditStatus.DISCOVERY),
-      locked: auditsAuditor.filter((audit) => audit.status === AuditStatus.ATTESTATION),
-      ongoing: auditsAuditor.filter((audit) => audit.status === AuditStatus.AUDITING),
-      challengeable: auditsAuditor.filter((audit) => audit.status === AuditStatus.CHALLENGEABLE),
-      completed: auditsAuditor.filter((audit) => audit.status === AuditStatus.FINALIZED),
-    },
-    auditee: {
-      open: auditsAuditee.filter((audit) => audit.status === AuditStatus.DISCOVERY),
-      locked: auditsAuditee.filter((audit) => audit.status === AuditStatus.ATTESTATION),
-      ongoing: auditsAuditee.filter((audit) => audit.status === AuditStatus.AUDITING),
-      challengeable: auditsAuditee.filter((audit) => audit.status === AuditStatus.CHALLENGEABLE),
-      completed: auditsAuditee.filter((audit) => audit.status === AuditStatus.FINALIZED),
-    },
+import { AuditCardTruncated } from "@/components/Audit";
+import { Column, Row } from "@/components/Box";
+import { AuditTruncatedI } from "@/lib/types";
+import { checkLocalMostRecentMany } from "@/lib/utils";
+
+const UserAudits = ({
+  address,
+  audits,
+  isOwner,
+}: {
+  address: string;
+  audits: AuditTruncatedI[];
+  isOwner: boolean;
+}): JSX.Element => {
+  const auditsParsed = {
+    open: audits.filter((audit) => audit.status === AuditStatus.DISCOVERY),
+    locked: audits.filter((audit) => audit.status === AuditStatus.ATTESTATION),
+    ongoing: audits.filter((audit) => audit.status === AuditStatus.AUDITING),
+    challengeable: audits.filter((audit) => audit.status === AuditStatus.CHALLENGEABLE),
+    completed: audits.filter((audit) => audit.status === AuditStatus.FINALIZED),
   };
+
+  const [show, setShow] = useState<Record<string, boolean>>({});
+
+  useEffect(() => {
+    if (!isOwner) return;
+    const out = checkLocalMostRecentMany(address, audits);
+    if (out) setShow(out);
+  }, [isOwner, address, audits]);
 
   return (
     <Column className="gap-8 w-full items-stretch">
-      {auditsAuditee.length > 0 && (
-        <Column className="gap-2">
-          <h2 className="text-lg">As Auditee:</h2>
-          {audits.auditee.open.length > 0 && (
-            <div className="w-full">
-              <p className="my-2">Open:</p>
-              <Row className="w-full justify-start flex-wrap">
-                {audits.auditee.open.map((audit, ind) => (
-                  <AuditCardTruncated key={ind} audit={audit} />
-                ))}
-              </Row>
-            </div>
-          )}
-          {audits.auditee.locked.length > 0 && (
-            <div className="w-full">
-              <p className="my-2">Locked:</p>
-              <Row className="w-full justify-start flex-wrap">
-                {audits.auditee.locked.map((audit, ind) => (
-                  <AuditCardTruncated key={ind} audit={audit} />
-                ))}
-              </Row>
-            </div>
-          )}
-          {audits.auditee.ongoing.length > 0 && (
-            <div className="w-full">
-              <p className="my-2">Ongoing:</p>
-              <Row className="w-full justify-start flex-wrap">
-                {audits.auditee.ongoing.map((audit, ind) => (
-                  <AuditCardTruncated key={ind} audit={audit} />
-                ))}
-              </Row>
-            </div>
-          )}
-          {audits.auditee.challengeable.length > 0 && (
-            <div className="w-full">
-              <p className="my-2">Challengeable:</p>
-              <Row className="w-full justify-start flex-wrap">
-                {audits.auditee.challengeable.map((audit, ind) => (
-                  <AuditCardTruncated key={ind} audit={audit} />
-                ))}
-              </Row>
-            </div>
-          )}
-          {audits.auditee.completed.length > 0 && (
-            <div className="w-full">
-              <p className="my-2">Closed:</p>
-              <Row className="w-full justify-start flex-wrap">
-                {audits.auditee.completed.map((audit, ind) => (
-                  <AuditCardTruncated key={ind} audit={audit} />
-                ))}
-              </Row>
-            </div>
-          )}
-        </Column>
+      {auditsParsed.open.length > 0 && (
+        <div className="w-full">
+          <p className="my-2">Open:</p>
+          <Row className="w-full justify-start flex-wrap">
+            {auditsParsed.open.map((audit, ind) => (
+              <AuditCardTruncated
+                key={ind}
+                audit={audit}
+                isProtocolOwner={address == audit.auditee.address}
+                showNoti={show && show[audit.id]}
+              />
+            ))}
+          </Row>
+        </div>
       )}
-      {auditsAuditor.length > 0 && (
-        <Column className="gap-2">
-          <h2 className="text-lg">As Auditor:</h2>
-          {audits.auditor.open.length > 0 && (
-            <div className="w-full">
-              <p className="my-2">Open:</p>
-              <Row className="w-full justify-start flex-wrap">
-                {audits.auditor.open.map((audit, ind) => (
-                  <AuditCardTruncated key={ind} audit={audit} />
-                ))}
-              </Row>
-            </div>
-          )}
-          {audits.auditor.locked.length > 0 && (
-            <div className="w-full">
-              <p className="my-2">Locked:</p>
-              <Row className="w-full justify-start flex-wrap">
-                {audits.auditor.locked.map((audit, ind) => (
-                  <AuditCardTruncated key={ind} audit={audit} />
-                ))}
-              </Row>
-            </div>
-          )}
-          {audits.auditor.ongoing.length > 0 && (
-            <div className="w-full">
-              <p className="my-2">Ongoing:</p>
-              <Row className="w-full justify-start flex-wrap">
-                {audits.auditor.ongoing.map((audit, ind) => (
-                  <AuditCardTruncated key={ind} audit={audit} />
-                ))}
-              </Row>
-            </div>
-          )}
-          {audits.auditor.challengeable.length > 0 && (
-            <div className="w-full">
-              <p className="my-2">Challengeable:</p>
-              <Row className="w-full justify-start flex-wrap">
-                {audits.auditor.challengeable.map((audit, ind) => (
-                  <AuditCardTruncated key={ind} audit={audit} />
-                ))}
-              </Row>
-            </div>
-          )}
-          {audits.auditor.completed.length > 0 && (
-            <div className="w-full">
-              <p className="my-2">Closed:</p>
-              <Row className="w-full justify-start flex-wrap">
-                {audits.auditor.completed.map((audit, ind) => (
-                  <AuditCardTruncated key={ind} audit={audit} />
-                ))}
-              </Row>
-            </div>
-          )}
-        </Column>
+      {auditsParsed.locked.length > 0 && (
+        <div className="w-full">
+          <p className="my-2">Locked:</p>
+          <Row className="w-full justify-start flex-wrap">
+            {auditsParsed.locked.map((audit, ind) => (
+              <AuditCardTruncated
+                key={ind}
+                audit={audit}
+                isProtocolOwner={address == audit.auditee.address}
+                showNoti={show && show[audit.id]}
+              />
+            ))}
+          </Row>
+        </div>
       )}
-      {auditsAuditee.length + auditsAuditor.length == 0 && <h2>No Active Audits</h2>}
+      {auditsParsed.ongoing.length > 0 && (
+        <div className="w-full">
+          <p className="my-2">Ongoing:</p>
+          <Row className="w-full justify-start flex-wrap">
+            {auditsParsed.ongoing.map((audit, ind) => (
+              <AuditCardTruncated
+                key={ind}
+                audit={audit}
+                isProtocolOwner={address == audit.auditee.address}
+                showNoti={show && show[audit.id]}
+              />
+            ))}
+          </Row>
+        </div>
+      )}
+      {auditsParsed.challengeable.length > 0 && (
+        <div className="w-full">
+          <p className="my-2">Challengeable:</p>
+          <Row className="w-full justify-start flex-wrap">
+            {auditsParsed.challengeable.map((audit, ind) => (
+              <AuditCardTruncated
+                key={ind}
+                audit={audit}
+                isProtocolOwner={address == audit.auditee.address}
+                showNoti={show && show[audit.id]}
+              />
+            ))}
+          </Row>
+        </div>
+      )}
+      {auditsParsed.completed.length > 0 && (
+        <div className="w-full">
+          <p className="my-2">Closed:</p>
+          <Row className="w-full justify-start flex-wrap">
+            {auditsParsed.completed.map((audit, ind) => (
+              <AuditCardTruncated
+                key={ind}
+                audit={audit}
+                isProtocolOwner={address == audit.auditee.address}
+                showNoti={show && show[audit.id]}
+              />
+            ))}
+          </Row>
+        </div>
+      )}
+      {audits.length == 0 && <h2>No Active Audits</h2>}
     </Column>
   );
 };

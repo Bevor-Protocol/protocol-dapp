@@ -5,22 +5,40 @@ import { Icon } from "@/components/Icon";
 import DynamicLink from "@/components/Link";
 import { AuditDetailedI, AuditTruncatedI } from "@/lib/types";
 import { Column, Row } from "@/components/Box";
+import { Bell } from "@/assets";
 import { trimAddress, cn } from "@/lib/utils";
 import { AuditAuditor } from "./client";
 
-export const AuditCardTruncated = ({ audit }: { audit: AuditTruncatedI }): JSX.Element => {
+export const AuditCardTruncated = ({
+  audit,
+  isProtocolOwner,
+  showNoti,
+}: {
+  audit: AuditTruncatedI;
+  isProtocolOwner: boolean;
+  showNoti: boolean;
+}): JSX.Element => {
   return (
     <div className="w-1/2 p-2">
       <DynamicLink href={`/audits/view/${audit.id}`} className="w-full">
         <Card.Main className="w-full cursor-pointer transition-colors hover:bg-dark-primary-30">
-          <Card.Content className="gap-4">
+          <Card.Content className="gap-4 relative">
             <Icon image={audit.auditee.image} seed={audit.auditee.address} size="lg" />
             <Column className="justify-start items-start overflow-hidden w-full">
               <p className="text-lg font-bold line-clamp-1">{audit.title}</p>
-              <p className="text-ellipsis overflow-hidden w-full text-sm line-clamp-2">
+              <p className="text-ellipsis overflow-hidden w-full text-xs line-clamp-2">
                 {audit.description}
               </p>
             </Column>
+            <p className="w-full text-right text-white/60 text-xs absolute bottom-1 right-2">
+              {isProtocolOwner ? "Protocol Owner" : "Auditor"}
+            </p>
+            {showNoti && (
+              <div className="absolute top-2 right-2">
+                <Bell className="h-2 w-2" fill="currentColor" />
+                <span className="h-1 w-1 rounded-full mb-auto bg-red-400 absolute -top-1 -right-1" />
+              </div>
+            )}
           </Card.Content>
         </Card.Main>
       </DynamicLink>

@@ -93,6 +93,11 @@ export type AuditTruncatedI = Prisma.AuditsGetPayload<{
     description: true;
     status: true;
     auditee: true;
+    history: {
+      select: {
+        id: true;
+      };
+    };
   };
 }>;
 

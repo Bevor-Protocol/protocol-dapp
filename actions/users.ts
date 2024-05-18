@@ -137,37 +137,25 @@ export const getCurrentUser = (): Promise<{ address: string; user: Users | null 
     });
 };
 
-export const getUserAuditsAuditee = (address: string): Promise<AuditTruncatedI[]> => {
+export const getUserAudits = (address: string): Promise<AuditTruncatedI[]> => {
   return prisma.audits.findMany({
     where: {
-      auditee: {
-        address,
-      },
-    },
-    select: {
-      id: true,
-      title: true,
-      description: true,
-      status: true,
-      auditee: true,
-    },
-    orderBy: {
-      createdAt: "desc",
-    },
-  });
-};
-
-export const getUserAuditsVerifiedAuditor = (address: string): Promise<AuditTruncatedI[]> => {
-  return prisma.audits.findMany({
-    where: {
-      auditors: {
-        some: {
-          user: {
+      OR: [
+        {
+          auditee: {
             address,
           },
-          status: AuditorStatus.VERIFIED,
         },
-      },
+        {
+          auditors: {
+            some: {
+              user: {
+                address,
+              },
+            },
+          },
+        },
+      ],
     },
     select: {
       id: true,
@@ -175,6 +163,15 @@ export const getUserAuditsVerifiedAuditor = (address: string): Promise<AuditTrun
       description: true,
       status: true,
       auditee: true,
+      history: {
+        select: {
+          id: true,
+        },
+        take: 1,
+        orderBy: {
+          createdAt: "desc",
+        },
+      },
     },
     orderBy: {
       createdAt: "desc",
