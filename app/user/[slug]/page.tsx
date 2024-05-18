@@ -29,7 +29,10 @@ const Fetcher = async ({ address }: { address: string }): Promise<JSX.Element> =
   const isOwner = currentUser.address === address;
 
   let isWishlistedFlag = false;
-  const canWishlist = !isOwner && user.auditorRole && !!currentUser.user;
+  // constrain wishlist to authenicated Protocol Owners. Can only wishlist Auditors.
+  // If a user has both roles, wishlist will still appear.
+  const canWishlist =
+    !isOwner && user.auditorRole && !!currentUser.user && currentUser.user.auditeeRole;
   if (canWishlist) {
     isWishlistedFlag = await isWishlisted(currentUser.user!.id, user.id);
   }
