@@ -4,6 +4,7 @@ import { Connector } from "wagmi";
 import { SiweMessage } from "siwe";
 
 import { nonce } from "@/actions/siwe";
+import { HistoryI } from "./types";
 
 export const cn = (...args: unknown[]): string => {
   return args
@@ -90,4 +91,56 @@ export const createSiweMessage = async (address: string, chainId: number): Promi
     // expirationTime
   });
   return message.prepareMessage();
+};
+
+export const checkLocalMostRecent = (
+  history: HistoryI[],
+  auditId: string,
+  user: string | undefined,
+): boolean => {
+  /* 
+    localstorage of structure:
+    { address: { auditid: id }}
+  */
+
+  if (typeof window == undefined) return false;
+  if (history.length == 0) return false;
+  // We already don't display for non-members of an audit, but include this for type safety.
+  if (!user) return false;
+  const localHistory = localStorage.getItem("history_noti");
+  const mostRecent = history[history.length - 1].id;
+  if (localHistory) {
+    const parsed = JSON.parse(localHistory);
+    if (user in parsed) {
+      if (auditId in parsed[user]) {
+        if (parsed[user][auditId] == mostRecent) {
+          return false;
+        }
+      }
+    }
+  }
+  return true;
+};
+
+export const setLocalMostRecent = (
+  history: HistoryI[],
+  auditId: string,
+  user: string | undefined,
+): void => {
+  if (typeof window == undefined) return;
+  if (history.length == 0) return;
+  if (!user) return;
+  const localHistory = localStorage.getItem("history_noti");
+  const mostRecent = history[history.length - 1].id;
+  if (!localHistory) {
+    const toCreate = { [user]: { [auditId]: mostRecent } };
+    localStorage.setItem("history_noti", JSON.stringify(toCreate));
+  } else {
+    const parsed = JSON.parse(localHistory);
+    if (!(user in parsed)) {
+      parsed[user] = {};
+    }
+    parsed[user][auditId] = mostRecent;
+    localStorage.setItem("history_noti", JSON.stringify(parsed));
+  }
 };
