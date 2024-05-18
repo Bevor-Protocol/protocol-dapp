@@ -64,6 +64,7 @@ export interface UserWithCount extends Users {
     valueComplete: number;
     numActive: number;
     numComplete: number;
+    numWishlist: number;
   };
 }
 
@@ -197,6 +198,7 @@ export interface UserStats {
   moneyEarned: number;
   numAuditsCreated: number;
   numAuditsAudited: number;
+  numWishlist: number;
 }
 
 interface GenericSuccess<T> {

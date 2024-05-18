@@ -88,6 +88,26 @@ const seed = async (): Promise<void> => {
   );
   console.log("Seeded Users");
 
+  //////////////////////////////////////////////////////////////////////////////
+  // Create initial wishlist
+
+  await prisma.users.update({
+    where: {
+      id: users[0].id,
+    },
+    data: {
+      wishlistAsRequestor: {
+        create: {
+          receiver: {
+            connect: {
+              id: users[4].id,
+            },
+          },
+        },
+      },
+    },
+  });
+
   // NEWLY GENERATED AUDITS. NOT LOCKED, NOT FINAL
   // This is admittedly quite gross since History will be created in real time,
   // but here we're retrospectively creating these instances. So we need access to the

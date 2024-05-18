@@ -2,8 +2,17 @@ import { Suspense } from "react";
 
 import { Loader } from "@/components/Loader";
 import UserContent from "@/components/screens/user";
-import { getCurrentUser, getUserAudits, getUserProfile, getUserStats } from "@/actions/users";
+import {
+  getCurrentUser,
+  getUserAudits,
+  getUserProfile,
+  getUserStats,
+  isWishlisted,
+} from "@/actions/users";
 import UserNotExist from "@/components/screens/user/onboard";
+import UserAudits from "@/components/screens/user/audits";
+import UserProfileActions from "@/components/screens/user/actions";
+import UserWishlist from "@/components/screens/user/wishlist";
 
 const Fetcher = async ({ address }: { address: string }): Promise<JSX.Element> => {
   // this is already stored in a context, but since we conditionally fetch the stats server-side,
@@ -19,8 +28,26 @@ const Fetcher = async ({ address }: { address: string }): Promise<JSX.Element> =
 
   const isOwner = currentUser.address === address;
 
+  let isWishlistedFlag = false;
+  const canWishlist = !isOwner && user.auditorRole && !!currentUser.user;
+  if (canWishlist) {
+    isWishlistedFlag = await isWishlisted(currentUser.user!.id, user.id);
+  }
+
   return (
-    <UserContent address={address} user={user} stats={stats} isOwner={isOwner} audits={audits} />
+    <div className="w-full max-w-[1000px] py-8 relative">
+      <UserContent address={address} user={user} stats={stats} isOwner={isOwner} audits={audits} />
+      {isOwner && <UserProfileActions user={user} stats={stats} />}
+      {canWishlist && (
+        <UserWishlist
+          isWishlistedFlag={isWishlistedFlag}
+          requestor={currentUser.user!.id}
+          receiver={user.id}
+        />
+      )}
+      <hr className="w-full h-[1px] border-gray-200/20 my-4" />
+      <UserAudits address={address} audits={audits} isOwner={isOwner} />
+    </div>
   );
 };
 
