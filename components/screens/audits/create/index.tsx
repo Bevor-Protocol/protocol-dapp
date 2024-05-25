@@ -2,7 +2,6 @@
 
 import React, { useState } from "react";
 import { useRouter } from "next/navigation";
-import { useAccount } from "wagmi";
 import { useMutation } from "@tanstack/react-query";
 import { Users } from "@prisma/client";
 
@@ -11,7 +10,6 @@ import { createAudit } from "@/actions/audits/auditee";
 import { useUser } from "@/lib/hooks";
 
 const AuditCreation = ({ user }: { user: Users }): JSX.Element => {
-  const { address } = useAccount();
   const router = useRouter();
   const { isAuthenticated } = useUser();
   const [auditors, setAuditors] = useState<Users[]>([]);
@@ -22,7 +20,7 @@ const AuditCreation = ({ user }: { user: Users }): JSX.Element => {
       createAudit(user!.id, variables.formData, auditors),
     onSettled: (data) => {
       if (data?.success) {
-        router.push(`/user/${address}`);
+        router.push(`/user/${user.address}`);
       }
       if (!data?.success && data?.validationErrors) {
         setErrors(data.validationErrors);
@@ -52,7 +50,7 @@ const AuditCreation = ({ user }: { user: Users }): JSX.Element => {
       </p>
       <AuditFormEntries
         disabled={isPending}
-        address={address as string}
+        userId={user.id}
         auditors={auditors}
         setAuditors={setAuditors}
         errors={errors}
