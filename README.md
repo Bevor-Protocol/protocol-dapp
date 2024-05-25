@@ -1,22 +1,43 @@
-# Setup
+# Overview
 
-`yarn install`
+**Bevor** relies on several different components:
 
-The project is configured to use Husky + lint-staging for pre-commit hooks, which rely on prettier, eslint, and prisma for formatting the schema file. We use a postgres DB.
+1. NextJS application
+2. PostgreSQL + Prisma Client
+3. Vercel Blob Storage
+4. Smart Contracts + Blockchain Data
 
-`cp .env.example .env.local`
+1-3 are managed through this repository. 4 is managed through the `bevor-v1` repository.
 
-In `DATABASE_URL` you'll likely need to update `<username>` to be your device's username, run `whoami` to grab this. The `<db_name>` can be whatever you'd like as we'll only be running this locally, I used `bevor`. We'll by default run it on localhost port 5432.
+# Package + Env setup
 
-When running `prisma` cli scripts, we'll specify the `.env.local` file through the `dotenv-cli` tool to tell prisma where to look for the environment variables, this is all handled in the package.json file.
+1. Install packages
+   `yarn install`
 
-# Connecting to the Local DB
+2. Copy the example env variables to a local env
+   `cp .env.example .env.local`
 
-Make sure `postgresql` is installed. You can do this through `brew install postgresql@15`. The install will show you some instructions for adding psql to PATH. Also, it'll tell you how to start the postgres server using `brew services start postgresql`, which will run on localhost 5432. You can stop this process by running `brew services stop postgresql`.
+3. Configure the local env file
+   In `DATABASE_URL` you'll likely need to update `<username>` to be your device's username, run `whoami` to grab this. The `<db_name>` can be whatever you'd like for local development, I used `bevor`. We'll by default run it on localhost:5432.
 
-You can use `psql` to observe the DB locally. Running `psql -l` will show your databases.
+# DB setup
 
-There are 2 ways to connect to the DB instance:
+1. Make sure `psql` is installed:
+   Run `psql --version`. If it is installed, skip to (3)
+
+2. Install postgresql
+   Run `brew install postgresql@15`. The install will show you some instructions for adding psql to PATH. Make sure to follow that.
+
+3. Make sure postgresql is running locally
+   Run `brew services info --all`. If you see that `postgresql` is running and loaded, you can skip all remaining steps. Also, running `brew services list` will show which services homebrew manages and their corresponding statuses.
+
+4. Start the postgres server
+   Run `brew services start postgresql`. It will default run on localhost:5432. You can stop the service by running `brew services stop postgresql`
+
+_(Feel free to ignore this portion)_
+Once the postgres service is running, you can use `psql` to observe the DB locally. Running `psql -l` will show your databases.
+
+There are 2 ways to connect to the DB instance, if needed. `<username>` and `<dbname>` correspond to the values set in your .env.local file. If you had never started the server (and never created the DB instance for this project), these likely will not work:
 
 `psql -U <username> -d <dbname>`
 
@@ -24,26 +45,55 @@ There are 2 ways to connect to the DB instance:
 
 You can also use the prisma studio `yarn db:studio` to connect to a GUI on localhost:5555 to interact with the data.
 
-NEON will generate a new DB branch for each Vercel branch. Vercel's env config will update to reflect the new connection string for each DB branch. I DISABLED THIS INTEGRATION, WE NOW EXPLICITLY CREATE/DELETE BRANCHES AND UPDATE VERCEL ENV VARIABLES.
+In practice, we use Neon to manage our postgres database, but locally, we'll rely on the homebrew postgres instance.
 
-# DB Setup
+# Prisma Client setup
 
-We rely on Neon's serverless postgresql DB + Prisma ORM client. Neon separates storage + compute, and supports branching. Neon has support for Prisma for direct connections and pooled connections, which requires slightly more configuration.
+To set up the prisma client, make sure the environment variables are set. For local testing, we can rely on a local connection that was setup above.
 
-To set the DB up, make sure the environment variables are set. For local testing, we can rely on a local connection.
+**Generate the Prisma Client**
+Run `yarn run db:generate`, which will re-run the existing migration history and generate the prisma client. If it is your first pass at setting up the repository, you'll need to run this.
 
-Run `yarn run db:generate`, which will re-run the existing migration history and generate the prisma client. **This will only be run in development**. On first pass, there will be no new migrations to generate (assuming you hadn't touched the schema.prisma file), so it'll just apply existing migrations to your local DB. Also, it'll seed the DB under the hood. Note: whenever breaking changes are made to the schema run the generate command and re-run `yarn dev`.
+By default, the Prisma Client is generated into `./node_modules/.prisma/client`
 
-Seeding occurs whenever you manually tell it to `yarn run db:seed`, or automatically when running `yarn run db:migrate` (when there are history conflicts / DB schema drift) and `yarn run db:reset`. If this is your first pass, just run `yarn run db:seed`.
+**Seeding the DB**
+As we're integrating both off-chain (postgres) and on-chain (blockchain) data, seeding is a bit more confusing than normal. **Should only be used in local development**.
 
-If you are simply prototyping, you can use the following, which won't apply migrations to the DB. Use this until the schema + DB are in a state that you're comfortable with adding to the migration history.
-`yarn run db:push`
+#### Steps:
 
-If changes are made to the schema, we can run this to generate new migrations, apply changes to the DB and generate a new prisma client. Can run this once it's in a stable state (after `db:push` to test changes).
-`yarn run db:migrate`
+1. Open the `bevor-v1` repository in the terminal
+2. Start the local blockchain via hardhat
+3. Open a new terminal, deploy the smart contracts in `bevor-v1` to the local blockchain via hardhat
+4. Navigate back to this repository.
 
-Again, whenever you update the Prisma schema, you'll need to run `yarn run db:push` or `yarn run db:migrate` to updated the DB. It keeps the DB schema in sync with the Prisma schema, and both will generate the Prisma Client.
+**If it is your first time interacting with the repository, simply run `yarn db:seed`. Otherwise, follow below.**
+
+There are a few options that can be taken after this. Seeding is partitioned into 2 scripts: `prisma/seed-onchain.ts` and `prisma/seed-offchain.ts`. This is useful for preventing having to regenerate off-chain (postgres) data every time the local blockchain is reset.
+
+Running `prisma/seed-onchain.ts` when the local blockchain is not empty will result in failure.
+Running `prisma/seed-offchain.ts` when the local postgres instance is not empty will result in failure.
+
+**Option 1**:
+Run `yarn db:reset`. This will clear all existing data in the local postgres DB, then run the `prisma/seed.sh` script. This will seed off-chain data, then on-chain, sequentially.
+
+**Option 2**:
+Run `yarn db:seed`. This will do the same as above, without clearing initial data. This will fail if the data already exists, as we have unique constraints on certain fields. You can run `yarn db:clear` to wipe the DB, then `yarn db:seed`. Running these 2 has the same effect as Option 1. This option is only useful if the DB is initially empty.
+
+**Option 3**:
+If your off-chain data is already seeded, but the local blockchain had been reset, you can standalone run the on-chain seeding using `yarn db:seed:onchain`. This will execute on-chain transactions and populate the postgres instance with appropriate on-chain references.
+
+**Option 4**:
+Manually seed both off-chain and on-chain data, sequentially. Run `yarn db:seed:offchain` (this will fail if the postgres DB is already populated). Then run `yarn db:seed:onchain` (this will fail if the local blockchain had already run this seeding script's onchain txns). Running in the wrong order can lead to failures, as the postgres observations won't exist yet for the on-chain data to populate.
+
+_Note: whenever changes are made to the prisma schema, you need to run `yarn run db:generate` to update the Prisma Client._
+
+**Managing Changes**
+If changes are made to the Prisma schema during local development, you can run `yarn run db:push` to quickly iterate on syncing the prisma schema with the DB schema, without creating migrations.
+
+Once a desired "end state" is reached in development, you can actually create the necessary migrations by running `yarn run db:migrate`
+
+If you want to undo `yarn run db:push` experiments, you can run `yarn run db:reset`, which will also run the seed script. `yarn run db:clear` does the same, without seeding.
 
 # Notes
 
-When deploying Prisma to Vercel, Vercel automatically caches dependencies on deployment. This might result in an outdated version of the Prisma Client when the Prisma schema updates. To be safe, we add a `beforebuild` script to the package.json file to explicitly call `prisma generate` before the `next build` occurs. The build is followed by a `predeploy` script, which runs `prisma migrate deploy`.
+When deploying Prisma to Vercel, Vercel automatically caches dependencies on deployment. This might result in an outdated version of the Prisma Client when the Prisma schema updates. To be safe, we use the `vercel-build` script to the `package.json` file, where we generate the prisma client, deploy our migrations (if any new ones exist), THEN build the nextJS app.
