@@ -71,10 +71,12 @@ const UserContent = async ({
           <span className="inline-block w-32 text-right mr-4"># Audits Audited: </span>
           <span className="float-right">{stats.numAuditsAudited}</span>
         </p>
-        <p>
-          <span className="inline-block w-32 text-right mr-4"># Wishlists: </span>
-          <span className="float-right">{stats.numWishlist}</span>
-        </p>
+        {user.auditorRole && (
+          <p>
+            <span className="inline-block w-32 text-right mr-4"># Wishlists: </span>
+            <span className="float-right">{stats.numWishlist}</span>
+          </p>
+        )}
       </Column>
     </Row>
   );

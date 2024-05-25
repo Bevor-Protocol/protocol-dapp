@@ -4,7 +4,13 @@ import { prisma } from "@/db/prisma.server";
 import { AuditorStatus, AuditStatus, Prisma, Users } from "@prisma/client";
 import { z } from "zod";
 
-import type { UserWithCount, UserStats, AuditTruncatedI, GenericUpdateI } from "@/lib/types";
+import type {
+  UserWithCount,
+  UserStats,
+  AuditTruncatedI,
+  GenericUpdateI,
+  WishlistI,
+} from "@/lib/types";
 import { userSchema, userSchemaCreate } from "@/lib/validations";
 import { putBlob } from "./blobs";
 import { getUser } from "./siwe";
@@ -414,6 +420,17 @@ export const isWishlisted = (requestor: string, receiver: string): Promise<boole
       console.log(error);
       return false;
     });
+};
+
+export const getWishlist = (requestor: string): Promise<WishlistI[]> => {
+  return prisma.wishlist.findMany({
+    where: {
+      requestorId: requestor,
+    },
+    select: {
+      receiver: true,
+    },
+  });
 };
 
 export const addToWishlist = (requestor: string, receiver: string): Promise<boolean> => {

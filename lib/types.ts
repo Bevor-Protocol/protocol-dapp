@@ -178,6 +178,12 @@ export type HistoryI = {
   } | null;
 };
 
+export type WishlistI = Prisma.WishlistGetPayload<{
+  select: {
+    receiver: true;
+  };
+}>;
+
 export type AuditStateI = {
   isTheAuditee: boolean;
   isAnAuditor: boolean;

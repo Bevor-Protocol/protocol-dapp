@@ -72,7 +72,7 @@ const Web3Profile = ({ user }: { user: Users }): JSX.Element => {
         </Row>
       </Dropdown.Trigger>
       <Dropdown.Content className="top-full right-0 w-40">
-        <Profile address={user.address} />
+        <Profile user={user} />
       </Dropdown.Content>
     </Dropdown.Main>
   );

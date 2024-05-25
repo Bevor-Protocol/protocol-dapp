@@ -3,24 +3,32 @@ import { useState } from "react";
 import { useAccount } from "wagmi";
 
 import { cn, trimAddress } from "@/lib/utils";
-import { Copy, Logout } from "@/assets";
+import { Copy, Heart, Logout } from "@/assets";
 import { Button } from "@/components/Button";
 import { Column, Row } from "@/components/Box";
 import * as Card from "@/components/Card";
 import { Social } from "@/components/Icon";
-import { useUser } from "@/lib/hooks";
+import { useModal, useUser } from "@/lib/hooks";
+import { Users } from "@prisma/client";
+import { WishlistPanel } from "@/components/Panel/Content/wishlist";
 
-const Profile = ({ address }: { address: string }): JSX.Element => {
+const Profile = ({ user }: { user: Users }): JSX.Element => {
   const [copied, setCopied] = useState(false);
   const { chain, connector } = useAccount();
+  const { toggleOpen, setContent } = useModal();
   const { logout } = useUser();
 
   const handleClick = (): void => {
     setCopied(true);
-    navigator.clipboard.writeText(address as string);
+    navigator.clipboard.writeText(user.address as string);
     setTimeout(() => {
       setCopied(false);
     }, 1000);
+  };
+
+  const handleWishlist = (): void => {
+    setContent(<WishlistPanel userId={user.id} />);
+    toggleOpen("panel");
   };
 
   return (
@@ -39,14 +47,14 @@ const Profile = ({ address }: { address: string }): JSX.Element => {
             />
           </Social>
         </Row>
-        <p>{trimAddress(address)}</p>
+        <p>{trimAddress(user.address)}</p>
         <p className="text-white/60">{connector?.name}</p>
         <Button onClick={(): void => logout()} className="text-xs mt-2" variant="gradient">
           <Logout height="0.75rem" width="0.75rem" />
           <span>Disconnect</span>
         </Button>
       </Column>
-      <Card.Footer className="justify-between p-2 text-white/60">
+      <Card.Footer className="p-2 text-white/60">
         <p>Network:</p>
         <p>
           <span>{chain?.name}</span>
@@ -59,6 +67,14 @@ const Profile = ({ address }: { address: string }): JSX.Element => {
           />
         </p>
       </Card.Footer>
+      {user.auditeeRole && (
+        <Card.Footer className="p-2 text-white/60">
+          <Row className="gap-1 items-center cursor-pointer" onClick={handleWishlist}>
+            <Heart height="0.65rem" width="0.65rem" className="fill-gray-400" />
+            <p>see my wishlist</p>
+          </Row>
+        </Card.Footer>
+      )}
     </Card.Main>
   );
 };

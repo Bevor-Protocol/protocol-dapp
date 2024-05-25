@@ -148,9 +148,21 @@ export const AuditorItem: React.FC<AuditorItemI> = ({
   );
 };
 
-export const AuditorItemSimple: React.FC<{ auditor: Users }> = ({ auditor }) => {
+export const AuditorItemSimple: React.FC<{ auditor: Users; showStatus?: boolean }> = ({
+  auditor,
+  showStatus = false,
+}) => {
   return (
-    <Row className="gap-1 h-[32px] min-h-[32px] items-center">
+    <Row className="gap-1 h-[32px] min-h-[32px] items-center relative">
+      {showStatus && (
+        <span
+          className={cn(
+            "h-1 w-1 rounded-full mb-auto",
+            auditor.available && "bg-green-400",
+            !auditor.available && "bg-gray-600",
+          )}
+        />
+      )}
       <Icon image={auditor.image} seed={auditor.address} size="sm" />
       <div className="overflow-hidden">
         <p className="text-xs text-ellipsis overflow-hidden">
