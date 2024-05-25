@@ -10,17 +10,19 @@ datasource db {
 }
 
 model Users {
-  id          String     @id @default(cuid())
-  address     String     @unique
-  auditeeRole Boolean    @default(false)
-  auditorRole Boolean    @default(false)
-  name        String?
-  image       String?
-  available   Boolean    @default(false)
-  auditors    Auditors[]
-  auditees    Audits[]
-  updatedAt   DateTime   @updatedAt
-  createdAt   DateTime   @default(now())
+  id                  String     @id @default(cuid())
+  address             String     @unique
+  auditeeRole         Boolean    @default(false)
+  auditorRole         Boolean    @default(false)
+  name                String?
+  image               String?
+  available           Boolean    @default(false)
+  auditors            Auditors[]
+  auditees            Audits[]
+  wishlistAsRequestor Wishlist[] @relation("UserWishlist")
+  wishlistAsReceiver  Wishlist[] @relation("UserWishedBy")
+  updatedAt           DateTime   @updatedAt
+  createdAt           DateTime   @default(now())
 }
 
 enum AuditStatus {
@@ -103,4 +105,15 @@ model History {
 
   @@index([auditId], name: "idx_history_audit")
   @@index([auditorId], name: "idx_history_auditor")
+}
+
+model Wishlist {
+  id          String   @id @default(cuid())
+  requestorId String
+  receiverId  String
+  requestor   Users    @relation("UserWishlist", fields: [requestorId], references: [id], onDelete: Cascade)
+  receiver    Users    @relation("UserWishedBy", fields: [receiverId], references: [id], onDelete: Cascade)
+  createdAt   DateTime @default(now())
+
+  @@unique([requestorId, receiverId], name: "uniqueWishlistEntry")
 }

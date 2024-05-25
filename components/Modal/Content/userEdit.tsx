@@ -82,8 +82,8 @@ const UserEdit = ({ user, stats }: { user: Users; stats: UserStats }): JSX.Eleme
               name="available"
               text="is available"
               defaultChecked={user.available}
-              disabled={isPending}
-              aria-disabled={isPending}
+              disabled={isPending || !user.auditorRole}
+              aria-disabled={isPending || !user.auditorRole}
               isError={"available" in errors}
             />
             <Form.Radio
@@ -114,7 +114,7 @@ const UserEdit = ({ user, stats }: { user: Users; stats: UserStats }): JSX.Eleme
                 <div className="bg-dark shadow rounded-lg cursor-default min-w-48">
                   <div className="p-2">
                     Set your availability. This will be displayed to users and might impact whether
-                    you are selected to conduct an audit or not.
+                    you are selected to conduct an audit or not. Only used by Auditors.
                   </div>
                 </div>
               </Tooltip.Content>

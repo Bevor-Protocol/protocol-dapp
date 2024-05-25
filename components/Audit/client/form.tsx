@@ -9,12 +9,13 @@ import { Column, Row } from "@/components/Box";
 import { Button } from "@/components/Button";
 import * as Form from "@/components/Form";
 import { Loader } from "@/components/Loader";
-import { searchAuditors } from "@/actions/users";
+import { getWishlist, searchAuditors } from "@/actions/users";
 import { AuditI } from "@/lib/types";
 import { AuditorItem } from "@/components/Audit";
+import { cn } from "@/lib/utils";
 
 const AuditFormEntries = ({
-  address,
+  userId,
   disabled,
   auditors,
   setAuditors,
@@ -22,8 +23,7 @@ const AuditFormEntries = ({
   initialAuditors = [],
   errors,
 }: {
-  address: string;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  userId: string;
   disabled: boolean;
   auditors: Users[];
   setAuditors: React.Dispatch<React.SetStateAction<Users[]>>;
@@ -41,6 +41,11 @@ const AuditFormEntries = ({
   const { data, isPending } = useQuery({
     queryKey: ["auditors", queryString],
     queryFn: () => searchAuditors(queryString),
+  });
+
+  const { data: dataWishlist, isPending: isPendingWishlist } = useQuery({
+    queryKey: ["wishlist"],
+    queryFn: () => getWishlist(userId),
   });
 
   const addAuditorSet = (auditor: Users): void => {
@@ -91,12 +96,34 @@ const AuditFormEntries = ({
       data?.filter((item) => {
         return (
           !chosenAuditors.includes(item.id) &&
-          item.address !== address &&
+          item.id !== userId &&
           !alreadyRequested.includes(item.id)
         );
       }) || []
     );
-  }, [auditors, data, address, initialState]);
+  }, [auditors, data, userId, initialState]);
+
+  const wishlistShow = useMemo(() => {
+    const chosenAuditors = auditors.map((auditor) => auditor.id);
+    const alreadyRequested =
+      initialState?.auditors
+        .filter(
+          (auditor) =>
+            auditor.status === AuditorStatus.REQUESTED || auditor.status === AuditorStatus.REJECTED,
+        )
+        .map((auditor) => auditor.user.id) || [];
+    // also want to exclude auditors who has previously requested to audit. Managing those will
+    // be a different task.
+    return (
+      dataWishlist?.filter((item) => {
+        return (
+          !chosenAuditors.includes(item.receiver.id) &&
+          item.receiver.id !== userId &&
+          !alreadyRequested.includes(item.receiver.id)
+        );
+      }) || []
+    );
+  }, [auditors, dataWishlist, userId, initialState]);
 
   return (
     <>
@@ -130,13 +157,13 @@ const AuditFormEntries = ({
         <hr className="border-gray-200/20 my-4" />
         <Row className="text-sm gap-4">
           <p className="w-80">Find Auditors</p>
-          <p>Selected Verified Auditors:</p>
+          <p className="w-80">Your Wishlisted Auditors:</p>
         </Row>
         <Row className="gap-2">
           <Form.Search disabled={disabled} onChange={handleChange}>
             <Column
-              className="w-full overflow-scroll px-2 min-h-[32px] justify-start"
-              style={{ maxHeight: "calc(5 * 32px)" }}
+              className="w-full overflow-scroll px-2 justify-start"
+              style={{ maxHeight: "calc(5 * 32px)", height: "calc(5 * 32px)" }}
             >
               {(isPending || timoutPending) && <Loader className="h-5 w-5 self-center" />}
               {!isPending &&
@@ -156,7 +183,32 @@ const AuditFormEntries = ({
               )}
             </Column>
           </Form.Search>
-          <Row className="gap-x-4 gap-y-0 flex-wrap content-start">
+          <div className="border border-gray-200/20 rounded py-2 overflow-hidden w-80">
+            <Column
+              className={cn("overflow-scroll px-2 justify-start")}
+              style={{ maxHeight: "calc(6 * 32px)", height: "calc(6 * 32px)" }}
+            >
+              {isPendingWishlist && <Loader className="h-5 w-5 self-center" />}
+              {!isPendingWishlist &&
+                wishlistShow.length > 0 &&
+                wishlistShow.map((auditor) => (
+                  <AuditorItem
+                    key={auditor.receiver.id}
+                    auditor={auditor.receiver}
+                    disabled={disabled}
+                    onClick={() => addAuditorSet(auditor.receiver)}
+                    hover
+                  />
+                ))}
+              {!isPendingWishlist && wishlistShow.length == 0 && (
+                <p className="text-sm px-1">No results to show</p>
+              )}
+            </Column>
+          </div>
+        </Row>
+        <div>
+          <p className="my-2">Verified Auditors:</p>
+          <Row className="gap-x-4 gap-y-0 flex-wrap content-start min-h-6">
             {auditors.map((auditor) => (
               <AuditorItem
                 key={auditor.id}
@@ -167,7 +219,7 @@ const AuditFormEntries = ({
               />
             ))}
           </Row>
-        </Row>
+        </div>
       </Column>
       <hr className="border-gray-200/20 my-4" />
       <p>Terms:</p>

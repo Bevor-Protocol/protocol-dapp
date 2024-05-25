@@ -1,10 +1,16 @@
 "use server";
-import { revalidatePath } from "next/cache";
+import { revalidatePath, revalidateTag } from "next/cache";
 import { prisma } from "@/db/prisma.server";
 import { AuditorStatus, AuditStatus, Prisma, Users } from "@prisma/client";
 import { z } from "zod";
 
-import type { UserWithCount, UserStats, AuditTruncatedI, GenericUpdateI } from "@/lib/types";
+import type {
+  UserWithCount,
+  UserStats,
+  AuditTruncatedI,
+  GenericUpdateI,
+  WishlistI,
+} from "@/lib/types";
 import { userSchema, userSchemaCreate } from "@/lib/validations";
 import { putBlob } from "./blobs";
 import { getUser } from "./siwe";
@@ -49,12 +55,13 @@ export const getLeaderboard = (key?: string, order?: string): Promise<UserWithCo
             audit: true,
           },
         },
+        wishlistAsReceiver: true,
       },
       ...orderClause,
     })
     .then((users) => {
       const toReturn = users.map((user) => {
-        const { auditors, ...rest } = user;
+        const { auditors, wishlistAsReceiver, ...rest } = user;
 
         const valuePotential = auditors.reduce((acc, auditor) => {
           const include =
@@ -75,6 +82,8 @@ export const getLeaderboard = (key?: string, order?: string): Promise<UserWithCo
           (auditor) => auditor.audit.status === AuditStatus.FINALIZED,
         ).length;
 
+        const numWishlist = wishlistAsReceiver.length;
+
         return {
           ...rest,
           stats: {
@@ -82,6 +91,7 @@ export const getLeaderboard = (key?: string, order?: string): Promise<UserWithCo
             valueComplete,
             numActive,
             numComplete,
+            numWishlist,
           },
         };
       });
@@ -105,6 +115,11 @@ export const getLeaderboard = (key?: string, order?: string): Promise<UserWithCo
       if (key == "num_complete") {
         return toReturn.sort(
           (a, b) => (a.stats.numComplete - b.stats.numComplete) * (2 * Number(order == "asc") - 1),
+        );
+      }
+      if (key == "num_wishlist") {
+        return toReturn.sort(
+          (a, b) => (a.stats.numWishlist - b.stats.numWishlist) * (2 * Number(order == "asc") - 1),
         );
       }
       return toReturn;
@@ -222,31 +237,40 @@ const getUserMoneyEarned = (address: string): Promise<number> => {
 };
 
 export const getUserStats = async (address: string): Promise<UserStats> => {
-  const [moneyPaid, moneyEarned, numAuditsCreated, numAuditsAudited] = await Promise.all([
-    getUserMoneyPaid(address),
-    getUserMoneyEarned(address),
-    prisma.audits.count({
-      where: {
-        auditee: {
-          address,
+  const [moneyPaid, moneyEarned, numAuditsCreated, numAuditsAudited, numWishlist] =
+    await Promise.all([
+      getUserMoneyPaid(address),
+      getUserMoneyEarned(address),
+      prisma.audits.count({
+        where: {
+          auditee: {
+            address,
+          },
         },
-      },
-    }),
-    prisma.auditors.count({
-      where: {
-        user: {
-          address,
+      }),
+      prisma.auditors.count({
+        where: {
+          user: {
+            address,
+          },
+          status: AuditorStatus.VERIFIED,
         },
-        status: AuditorStatus.VERIFIED,
-      },
-    }),
-  ]);
+      }),
+      prisma.wishlist.count({
+        where: {
+          receiver: {
+            address,
+          },
+        },
+      }),
+    ]);
 
   return {
     moneyPaid,
     moneyEarned,
     numAuditsCreated,
     numAuditsAudited,
+    numWishlist,
   };
 };
 
@@ -375,4 +399,86 @@ export const searchAuditors = (query?: string): Promise<Users[]> => {
       ...search,
     },
   });
+};
+
+export const isWishlisted = (requestor: string, receiver: string): Promise<boolean> => {
+  return prisma.wishlist
+    .findUnique({
+      where: {
+        uniqueWishlistEntry: {
+          requestorId: requestor,
+          receiverId: receiver,
+        },
+      },
+    })
+    .then((data) => {
+      revalidateTag(`wishlist ${requestor} ${receiver}`);
+      if (data) return true;
+      return false;
+    })
+    .catch((error) => {
+      console.log(error);
+      return false;
+    });
+};
+
+export const getWishlist = (requestor: string): Promise<WishlistI[]> => {
+  return prisma.wishlist.findMany({
+    where: {
+      requestorId: requestor,
+    },
+    select: {
+      receiver: true,
+    },
+  });
+};
+
+export const addToWishlist = (requestor: string, receiver: string): Promise<boolean> => {
+  return prisma.users
+    .update({
+      where: {
+        id: requestor,
+      },
+      data: {
+        wishlistAsRequestor: {
+          create: {
+            receiver: {
+              connect: {
+                id: receiver,
+              },
+            },
+          },
+        },
+      },
+    })
+    .then((data) => {
+      revalidateTag(`wishlist ${requestor} ${receiver}`);
+      if (data) return true;
+      return false;
+    })
+    .catch((error) => {
+      console.log(error);
+      return false;
+    });
+};
+
+export const removeFromWishlist = (requestor: string, receiver: string): Promise<boolean> => {
+  return prisma.wishlist
+    .delete({
+      where: {
+        uniqueWishlistEntry: {
+          requestorId: requestor,
+          receiverId: receiver,
+        },
+      },
+    })
+    .then((data) => {
+      revalidateTag(`wishlist ${requestor} ${receiver}`);
+      if (data) return true;
+      return false;
+    })
+    .catch((error) => {
+      console.log(error);
+      return false;
+    });
 };

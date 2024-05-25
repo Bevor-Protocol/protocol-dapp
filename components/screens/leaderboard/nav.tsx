@@ -9,7 +9,7 @@ const headers = [
   { key: "value_complete", text: "$ completed" },
   { key: "num_active", text: "# active" },
   { key: "num_complete", text: "# completed" },
-  { key: "date", text: "joined" },
+  { key: "num_wishlist", text: "# wishlists" },
 ];
 
 const LeaderboardNav = ({

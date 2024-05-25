@@ -57,7 +57,7 @@ flex items-center gap-2 whitespace-nowrap max-w-full px-4 relative"
                   !item.available && " bg-gray-600",
                 )}
               />
-              <span>{item.createdAt.toLocaleDateString()}</span>
+              <span>{item.stats.numWishlist.toLocaleString()}</span>
             </li>
           </ul>
         </DynamicLink>

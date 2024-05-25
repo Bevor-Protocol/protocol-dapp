@@ -44,7 +44,7 @@ const Fetcher = async ({ auditId }: { auditId: string }): Promise<JSX.Element> =
     );
   }
 
-  if (address !== audit.auditee.address) {
+  if (user.id !== audit.auditee.id) {
     return (
       <Column className="items-center gap-4">
         <p>You cannot update this audit because you are not the owner of it</p>
@@ -58,7 +58,7 @@ const Fetcher = async ({ auditId }: { auditId: string }): Promise<JSX.Element> =
     );
   }
 
-  return <AuditEditWrapper audit={audit} />;
+  return <AuditEditWrapper audit={audit} user={user} />;
 };
 
 const EditAudit = ({ params }: { params: { slug: string } }): JSX.Element => {

@@ -2,7 +2,6 @@
 
 import React, { useState } from "react";
 import { useRouter } from "next/navigation";
-import { useAccount } from "wagmi";
 import { useMutation } from "@tanstack/react-query";
 import { AuditorStatus, Users } from "@prisma/client";
 
@@ -11,13 +10,12 @@ import { AuditI } from "@/lib/types";
 import { updateAudit } from "@/actions/audits/auditee";
 import AuditFormEntries from "@/components/Audit/client/form";
 
-const AuditEditWrapper = ({ audit }: { audit: AuditI }): JSX.Element => {
+const AuditEditWrapper = ({ audit, user }: { audit: AuditI; user: Users }): JSX.Element => {
   // only show the selected auditors that were already verified.
   const initialAuditors = audit.auditors
     .filter((auditor) => auditor.status === AuditorStatus.VERIFIED)
     .map((auditor) => auditor.user);
 
-  const { address } = useAccount();
   const router = useRouter();
   const { isAuthenticated } = useUser();
   const [errors, setErrors] = useState<Record<string, string>>({});
@@ -57,7 +55,7 @@ const AuditEditWrapper = ({ audit }: { audit: AuditI }): JSX.Element => {
       </p>
       <AuditFormEntries
         disabled={isPending}
-        address={address as string}
+        userId={user.id}
         auditors={auditors}
         setAuditors={setAuditors}
         initialState={audit}

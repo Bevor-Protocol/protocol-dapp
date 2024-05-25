@@ -64,6 +64,7 @@ export interface UserWithCount extends Users {
     valueComplete: number;
     numActive: number;
     numComplete: number;
+    numWishlist: number;
   };
 }
 
@@ -177,6 +178,12 @@ export type HistoryI = {
   } | null;
 };
 
+export type WishlistI = Prisma.WishlistGetPayload<{
+  select: {
+    receiver: true;
+  };
+}>;
+
 export type AuditStateI = {
   isTheAuditee: boolean;
   isAnAuditor: boolean;
@@ -197,6 +204,7 @@ export interface UserStats {
   moneyEarned: number;
   numAuditsCreated: number;
   numAuditsAudited: number;
+  numWishlist: number;
 }
 
 interface GenericSuccess<T> {
