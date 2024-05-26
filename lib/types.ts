@@ -19,6 +19,7 @@ export type SortLeaderI = {
 export type MarkdownAuditsI = {
   details: string;
   globalReveal: boolean;
+  pendingCliff: boolean;
   findings: {
     user: Users;
     submitted: boolean;
@@ -231,4 +232,11 @@ export type AuditContractView = [
   start: bigint,
   invalidatingProposalId: bigint,
   isActive: boolean,
+];
+
+export type VestingContractView = [
+  auditor: Address,
+  amount: bigint,
+  withdrawn: bigint,
+  auditId: bigint,
 ];
