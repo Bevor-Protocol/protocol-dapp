@@ -235,6 +235,7 @@ export const safeGetMarkdown = async (
   const markdownObject: MarkdownAuditsI = {
     details: "",
     globalReveal: false,
+    pendingCliff: false,
     findings: [],
   };
 
@@ -267,7 +268,6 @@ export const safeGetMarkdown = async (
 
   // if finalized, we'll reveal to everyone.
   let globalReveal = audit.status == AuditStatus.FINALIZED;
-
   // auditor can always see their own findings.
   // Protocol owner can see once they put money in escrow.
   const auditeeReveal =
@@ -282,7 +282,10 @@ export const safeGetMarkdown = async (
         const start = Number(onchainAudit[5]);
         const cliff = Number(onchainAudit[4]);
         if (now < start + cliff) {
-          globalReveal = false;
+          markdownObject.pendingCliff = true;
+        } else {
+          // cliff period is over, visible to all parties.
+          globalReveal = true;
         }
       }
     } catch (error) {

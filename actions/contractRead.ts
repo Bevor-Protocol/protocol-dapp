@@ -3,7 +3,7 @@ import { localhost } from "viem/chains";
 
 import ERC20Abi from "@/contracts/abis/ERC20Token";
 import BevorABI from "@/contracts/abis/BevorProtocol";
-import { AuditContractView } from "@/lib/types";
+import { AuditContractView, VestingContractView } from "@/lib/types";
 
 const publicClient = {
   localhost: createPublicClient({
@@ -44,5 +44,64 @@ export const getAudit = (auditId: bigint): Promise<AuditContractView | null> => 
     .catch((error) => {
       console.log(error);
       return null;
+    });
+};
+
+export const getAuditorVestingSchedule = (
+  auditId: bigint,
+  user: Address,
+): Promise<{
+  vestingScheduleId: bigint | null;
+  releasable: bigint | null;
+  withdrawn: bigint | null;
+}> => {
+  /*
+  Multi-step contract read process.
+  1. get the corresponding vestingScheduleID for an audit and auditor
+    we'll need this later to be able to write to that vestingScheduleID
+  2. get the corresponding vestingSchedule for that ID, we need to see the total withdrawn
+  3. get the releasable amount (current amount claimable)
+  */
+
+  const returnObj = {
+    vestingScheduleId: null as bigint | null,
+    releasable: null as bigint | null,
+    withdrawn: null as bigint | null,
+  };
+  return publicClient.localhost
+    .readContract({
+      address: BevorABI.address as Address,
+      abi: BevorABI.abi as Abi,
+      functionName: "getVestingScheduleIdByAddressAndAudit",
+      args: [user, auditId],
+    })
+    .then((scheduleId: unknown) => {
+      const scheduleIdTyped = scheduleId as bigint;
+      returnObj.vestingScheduleId = scheduleIdTyped;
+      return publicClient.localhost.readContract({
+        address: BevorABI.address as Address,
+        abi: BevorABI.abi as Abi,
+        functionName: "vestingSchedules",
+        args: [scheduleIdTyped],
+      });
+    })
+    .then((vestingSchedule: unknown) => {
+      const vestingScheduleTyped = vestingSchedule as VestingContractView;
+      returnObj.withdrawn = vestingScheduleTyped[2];
+      return publicClient.localhost.readContract({
+        address: BevorABI.address as Address,
+        abi: BevorABI.abi as Abi,
+        functionName: "computeReleasableAmount",
+        args: [returnObj.vestingScheduleId],
+      });
+    })
+    .then((result) => {
+      const resultTyped = result as bigint;
+      returnObj.releasable = resultTyped;
+      return returnObj;
+    })
+    .catch((error) => {
+      console.log(error);
+      return returnObj;
     });
 };
