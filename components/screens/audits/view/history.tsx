@@ -11,12 +11,12 @@ import { checkLocalMostRecent, setLocalMostRecent } from "@/lib/utils";
 const AuditHistory = ({
   history,
   auditId,
-  user,
+  address,
   displayNotification,
 }: {
   history: HistoryI[];
   auditId: string;
-  user: string | undefined;
+  address: string | undefined;
   displayNotification: boolean;
 }): JSX.Element => {
   const { toggleOpen, setContent } = useModal();
@@ -24,7 +24,7 @@ const AuditHistory = ({
 
   const handleClick = (): void => {
     if (displayNotification) {
-      setLocalMostRecent(history, auditId, user);
+      setLocalMostRecent(history, auditId, address);
       setShow(false);
     }
     setContent(<HistoryPanel history={history} />);
@@ -33,9 +33,9 @@ const AuditHistory = ({
 
   useEffect(() => {
     if (!displayNotification) return;
-    const shouldShowNoti = checkLocalMostRecent(history, auditId, user);
+    const shouldShowNoti = checkLocalMostRecent(history, auditId, address);
     setShow(shouldShowNoti);
-  }, [auditId, displayNotification, history, user]);
+  }, [auditId, displayNotification, history, address]);
 
   return (
     <div className="absolute -right-10 top-0 cursor-pointer" onClick={handleClick}>
