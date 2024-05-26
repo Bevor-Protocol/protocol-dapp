@@ -9,6 +9,9 @@ jobs:
       contents: read
       pull-requests: write
     runs-on: ubuntu-latest
+    concurrency:
+      group: ${{ github.workflow }}-${{ github.ref }}
+      cancel-in-progress: true
     steps:
     - uses: actions/labeler@v5
       with:
