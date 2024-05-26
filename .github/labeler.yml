@@ -1,4 +1,3 @@
-# Root file changes (config, dependencies, etc...)
 root:
 - changed-files:
   - any-glob-to-any-file: '*'
