@@ -1,0 +1,40 @@
+root:
+- changed-files:
+  - any-glob-to-any-file: '*'
+
+Contracts:
+- changed-files:
+  - any-glob-to-any-file: contracts/**
+
+Tests:
+- changed-files:
+  - any-glob-to-any-file: cypress/**
+
+Database:
+- changed-files:
+  - any-glob-to-any-file:
+    - prisma/**
+    - db/**
+
+App:
+- changed-files:
+  - any-glob-to-any-file:
+    - app/**
+    - components/**
+    - assets/**
+    - lib/**
+
+API:
+- changed-files:
+  - any-glob-to-any-file: actions/**
+
+feature:
+  - head-branch:
+    - ^feat
+    - ^feature
+
+bug:
+  - head-branch:
+    - ^fix
+    - ^bug
+    - ^hotfix
