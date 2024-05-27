@@ -53,7 +53,6 @@ const RequestAccountChange = ({ verifiedAddress }: { verifiedAddress: string }):
       <Button
         onClick={() => {
           logout();
-          console.log("should close");
           toggleOpen();
         }}
       >
