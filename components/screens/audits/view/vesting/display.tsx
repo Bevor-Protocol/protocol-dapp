@@ -16,6 +16,7 @@ type InitialStateI = {
   startTime: number;
   duration: number;
   cliff: number;
+  tokenSymbol: string | undefined;
   vestingScheduleId: bigint | null;
   releasable: string | null;
   withdrawn: string | null;
@@ -28,7 +29,8 @@ const VestingDisplay = ({
   initialState: InitialStateI;
   isAuditor: boolean;
 }): JSX.Element => {
-  const { cliff, startTime, duration, vestingScheduleId, releasable, withdrawn } = initialState;
+  const { cliff, startTime, duration, vestingScheduleId, releasable, withdrawn, tokenSymbol } =
+    initialState;
   const [percent, setPercent] = useState(0);
   const router = useRouter();
 
@@ -90,8 +92,12 @@ const VestingDisplay = ({
         {isAuditor && releasable != null && withdrawn != null && (
           <Column className="mt-4 m-auto items-center gap-1">
             <p>
-              <span className="mx-2">Claimable: ${Number(releasable).toLocaleString()}</span>
-              <span className="mx-2">Withdrawn: ${Number(withdrawn).toLocaleString()}</span>
+              <span className="mx-2">
+                Claimable: {Number(releasable).toLocaleString()} {tokenSymbol}
+              </span>
+              <span className="mx-2">
+                Withdrawn: {Number(withdrawn).toLocaleString()} {tokenSymbol}
+              </span>
             </p>
             <Button
               onClick={withdraw}

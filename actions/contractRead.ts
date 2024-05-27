@@ -5,6 +5,7 @@ import { ethers } from "ethers";
 import ERC20ABI from "@/contracts/abis/ERC20Token";
 import BevorABI from "@/contracts/abis/BevorProtocol";
 import { AuditContractView, VestingContractView } from "@/lib/types";
+import { AvailableTokens } from "@/lib/constants";
 
 const publicClient = {
   localhost: createPublicClient({
@@ -53,6 +54,7 @@ export const getAudit = (auditId: bigint): Promise<AuditContractView | null> => 
 export const getAuditorVestingSchedule = (
   auditId: bigint,
   user: Address,
+  token: Address,
 ): Promise<{
   vestingScheduleId: bigint | null;
   releasable: string | null;
@@ -71,38 +73,22 @@ export const getAuditorVestingSchedule = (
     releasable: null as string | null,
     withdrawn: null as string | null,
   };
-  let decimals = 0;
-  //BE SURE TO REMOVE THIS WHEN OFF LOCALHOST.
+  // BE SURE TO REMOVE THIS WHEN OFF LOCALHOST.
   // WE MANUALLY FAST-FORWARD 1hr on every refresh.
   provider.send("evm_increaseTime", [3600]);
   provider.send("evm_mine", []);
   ///////////////////////////////////////////
+  const tokenUse = AvailableTokens.localhost.find((t) => t.address == token);
+  if (!tokenUse) {
+    return Promise.resolve(returnObj);
+  }
 
-  // same thing here, ideally we don't need to do this 2 step read to get decimals.
   return publicClient.localhost
     .readContract({
       address: BevorABI.address as Address,
       abi: BevorABI.abi as Abi,
-      functionName: "audits",
-      args: [auditId],
-    })
-    .then((auditStruct: unknown) => {
-      const auditTyped = auditStruct as AuditContractView;
-      const tokenAddress = auditTyped[1];
-      return publicClient.localhost.readContract({
-        address: tokenAddress,
-        abi: ERC20ABI.abi as Abi,
-        functionName: "decimals",
-      });
-    })
-    .then((d: unknown) => {
-      decimals = d as number;
-      return publicClient.localhost.readContract({
-        address: BevorABI.address as Address,
-        abi: BevorABI.abi as Abi,
-        functionName: "getVestingScheduleIdByAddressAndAudit",
-        args: [user, auditId],
-      });
+      functionName: "getVestingScheduleIdByAddressAndAudit",
+      args: [user, auditId],
     })
     .then((scheduleId: unknown) => {
       const scheduleIdTyped = scheduleId as bigint;
@@ -116,7 +102,7 @@ export const getAuditorVestingSchedule = (
     })
     .then((vestingSchedule: unknown) => {
       const vestingScheduleTyped = vestingSchedule as VestingContractView;
-      returnObj.withdrawn = formatUnits(vestingScheduleTyped[2], decimals);
+      returnObj.withdrawn = formatUnits(vestingScheduleTyped[2], tokenUse.decimals);
       return publicClient.localhost.readContract({
         address: BevorABI.address as Address,
         abi: BevorABI.abi as Abi,
@@ -126,7 +112,7 @@ export const getAuditorVestingSchedule = (
     })
     .then((result) => {
       const resultTyped = result as bigint;
-      returnObj.releasable = formatUnits(resultTyped, decimals);
+      returnObj.releasable = formatUnits(resultTyped, tokenUse.decimals);
       return returnObj;
     })
     .catch((error) => {

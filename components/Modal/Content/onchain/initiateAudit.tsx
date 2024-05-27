@@ -14,7 +14,6 @@ import { AuditI } from "@/lib/types";
 import { auditAddAuditInfoId } from "@/actions/audits/auditee";
 
 import BevorABI from "@/contracts/abis/BevorProtocol";
-import ERC20ABI from "@/contracts/abis/ERC20Token";
 import { Loader } from "@/components/Loader";
 import { useMemo } from "react";
 import { cn } from "@/lib/utils";
@@ -51,7 +50,7 @@ const InitiateAudit = ({
       DURATION,
       DETAILS,
       audit.price,
-      ERC20ABI.address,
+      audit.token,
       "I am salt",
     ];
   }, [audit]);
