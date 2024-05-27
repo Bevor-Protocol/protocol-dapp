@@ -3,9 +3,10 @@ import { Suspense } from "react";
 import AuditPage from "@/components/screens/audits/view";
 import AuditMarkdown from "@/components/screens/audits/view/markdown";
 import { getAudit } from "@/actions/audits/general";
-import { LoaderFill } from "@/components/Loader";
+import { Loader, LoaderFill } from "@/components/Loader";
 import AuditHistory from "@/components/screens/audits/view/history";
 import { getCurrentUser } from "@/actions/users";
+import Vesting from "@/components/screens/audits/view/vesting";
 
 const Fetcher = async ({ auditId }: { auditId: string }): Promise<JSX.Element> => {
   // Parsed this into 3 separate requests.
@@ -18,6 +19,7 @@ const Fetcher = async ({ auditId }: { auditId: string }): Promise<JSX.Element> =
   const { user } = await getCurrentUser();
 
   let isMemberOfAudit = false;
+  let isAuditorOfAudit = false;
   if (user) {
     if (user.address == audit.auditee.address) {
       isMemberOfAudit = true;
@@ -25,6 +27,7 @@ const Fetcher = async ({ auditId }: { auditId: string }): Promise<JSX.Element> =
       const auditors = audit.auditors.map((auditor) => auditor.user.address);
       if (auditors.includes(user.address)) {
         isMemberOfAudit = true;
+        isAuditorOfAudit = true;
       }
     }
   }
@@ -35,9 +38,12 @@ const Fetcher = async ({ auditId }: { auditId: string }): Promise<JSX.Element> =
       <AuditHistory
         history={audit.history}
         auditId={audit.id}
-        user={user?.address}
+        address={user?.address}
         displayNotification={isMemberOfAudit}
       />
+      <Suspense fallback={<Loader className="h-4 w-4" />}>
+        <Vesting audit={audit} isAuditor={isAuditorOfAudit} address={user?.address} />
+      </Suspense>
       <hr className="w-full h-[1px] border-gray-200/20 my-4" />
       <AuditMarkdown auditId={audit.id} user={user} />
     </div>

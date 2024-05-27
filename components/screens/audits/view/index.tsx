@@ -7,7 +7,8 @@ import { Icon } from "@/components/Icon";
 import { AuditAuditor } from "@/components/Audit/client";
 import { AuditI } from "@/lib/types";
 import AuditDashboardActions from "./actions";
-import Withdraw from "./actions/withdraw";
+import { Suspense } from "react";
+import { Loader } from "@/components/Loader";
 
 const AuditPage = ({ audit, user }: { audit: AuditI; user: Users | null }): JSX.Element => {
   const verifiedAuditors = audit.auditors.filter(
@@ -188,10 +189,11 @@ const AuditPage = ({ audit, user }: { audit: AuditI; user: Users | null }): JSX.
             </div>
           </Row>
         </div>
-        {(audit.status == AuditStatus.CHALLENGEABLE || audit.status == AuditStatus.FINALIZED) && (
-          <Withdraw audit={audit} />
+        {user && (
+          <Suspense fallback={<Loader className="h-4 w-4" />}>
+            <AuditDashboardActions audit={audit} user={user} />
+          </Suspense>
         )}
-        {user && <AuditDashboardActions audit={audit} user={user} />}
       </Column>
     </Row>
   );

@@ -16,8 +16,9 @@ const seed = async (): Promise<void> => {
 
   // Since we don't have a means of distribution, just initially seed all accounts with
   // some test token.
+  const startingAmount = 25_000;
   for (let i = 0; i < WALLETS.length; i++) {
-    await tokenContract.transfer(WALLETS[i], 25000);
+    await tokenContract.transfer(WALLETS[i], ethers.parseUnits(startingAmount.toString(), 18));
   }
 
   // for these, we hardcoded the ID, so we can guarantee that they're unique
@@ -26,18 +27,20 @@ const seed = async (): Promise<void> => {
   let auditId;
   let tokenId;
 
+  let amount = 20_000;
+
   auditId = await bevorContract.generateAuditId(
     accounts[0].address,
     [accounts[1].address, accounts[4].address],
     5 * 24 * 60 * 60,
     50 * 24 * 60 * 60,
     "example-7Ap1GR49l2yVbJtvIJ0dVnleKuM8pj",
-    20000,
+    amount,
     ERC20Abi.address,
     "I am salt",
   );
 
-  await tokenContract.transfer(accounts[0].address, 20000);
+  await tokenContract.transfer(accounts[0].address, ethers.parseUnits(amount.toString(), 18));
 
   await bevorContract
     .connect(accounts[0])
@@ -47,7 +50,7 @@ const seed = async (): Promise<void> => {
       5 * 24 * 60 * 60,
       50 * 24 * 60 * 60,
       "example-7Ap1GR49l2yVbJtvIJ0dVnleKuM8pj",
-      20000,
+      amount,
       ERC20Abi.address,
       "I am salt",
     );
@@ -71,12 +74,12 @@ const seed = async (): Promise<void> => {
     5 * 24 * 60 * 60,
     50 * 24 * 60 * 60,
     "example-7Ap1GR49l2yVbJtvIJ0dVnleKuM8pj",
-    20000,
+    amount,
     ERC20Abi.address,
     "I am salty",
   );
 
-  await tokenContract.transfer(accounts[0].address, 20000);
+  await tokenContract.transfer(accounts[0].address, ethers.parseUnits(amount.toString(), 18));
 
   await bevorContract
     .connect(accounts[0])
@@ -86,7 +89,7 @@ const seed = async (): Promise<void> => {
       5 * 24 * 60 * 60,
       50 * 24 * 60 * 60,
       "example-7Ap1GR49l2yVbJtvIJ0dVnleKuM8pj",
-      20000,
+      amount,
       ERC20Abi.address,
       "I am salty",
     );
@@ -103,6 +106,7 @@ const seed = async (): Promise<void> => {
   //////////////////////////////////////////////////////////////
   //////////////////////////////////////////////////////////////
   //////////////////////////////////////////////////////////////
+  amount = 2_000;
 
   auditId = await bevorContract.generateAuditId(
     accounts[3].address,
@@ -110,12 +114,12 @@ const seed = async (): Promise<void> => {
     5 * 24 * 60 * 60,
     50 * 24 * 60 * 60,
     "example-7Ap1GR49l2yVbJtvIJ0dVnleKuM8pj",
-    2000,
+    amount,
     ERC20Abi.address,
     "I am salt",
   );
 
-  await tokenContract.transfer(accounts[3].address, 2000);
+  await tokenContract.transfer(accounts[3].address, ethers.parseUnits(amount.toString(), 18));
 
   await bevorContract
     .connect(accounts[3])
@@ -125,7 +129,7 @@ const seed = async (): Promise<void> => {
       5 * 24 * 60 * 60,
       50 * 24 * 60 * 60,
       "example-7Ap1GR49l2yVbJtvIJ0dVnleKuM8pj",
-      2000,
+      amount,
       ERC20Abi.address,
       "I am salt",
     );
@@ -135,8 +139,10 @@ const seed = async (): Promise<void> => {
     "example-q0D5zQMv65hQJ4mWfJfstcnagI5kUI",
   ]);
 
-  // @ts-expect-error not recognized, but works.
-  await tokenContract.connect(accounts[3]).approve(BevorProtocolAbi.address, 2000);
+  await tokenContract
+    .connect(accounts[3])
+    // @ts-expect-error not recognized, but works.
+    .approve(BevorProtocolAbi.address, ethers.parseUnits(amount.toString(), 18));
 
   await bevorContract
     .connect(accounts[3])
@@ -168,12 +174,12 @@ const seed = async (): Promise<void> => {
     7 * 24 * 60 * 60,
     70 * 24 * 60 * 60,
     "example-7Ap1GR49l2yVbJtvIJ0dVnleKuM8pj",
-    2000,
+    amount,
     ERC20Abi.address,
     "I am salt",
   );
 
-  await tokenContract.transfer(accounts[3].address, 2000);
+  await tokenContract.transfer(accounts[3].address, ethers.parseUnits(amount.toString(), 18));
 
   await bevorContract
     .connect(accounts[3])
@@ -183,7 +189,7 @@ const seed = async (): Promise<void> => {
       7 * 24 * 60 * 60,
       70 * 24 * 60 * 60,
       "example-7Ap1GR49l2yVbJtvIJ0dVnleKuM8pj",
-      2000,
+      amount,
       ERC20Abi.address,
       "I am salt",
     );
@@ -193,8 +199,10 @@ const seed = async (): Promise<void> => {
     "example-q0D5zQMv65hQJ4mWfJfstcnagI5kUI",
   ]);
 
-  // @ts-expect-error not recognized, but works.
-  await tokenContract.connect(accounts[3]).approve(BevorProtocolAbi.address, 2000);
+  await tokenContract
+    .connect(accounts[3])
+    // @ts-expect-error not recognized, but works.
+    .approve(BevorProtocolAbi.address, ethers.parseUnits(amount.toString(), 18));
 
   await bevorContract
     .connect(accounts[3])

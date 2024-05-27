@@ -1,9 +1,10 @@
-import { Abi, Address, createPublicClient, http } from "viem";
+import { Abi, Address, createPublicClient, formatUnits, http } from "viem";
 import { localhost } from "viem/chains";
+import { ethers } from "ethers";
 
-import ERC20Abi from "@/contracts/abis/ERC20Token";
+import ERC20ABI from "@/contracts/abis/ERC20Token";
 import BevorABI from "@/contracts/abis/BevorProtocol";
-import { AuditContractView } from "@/lib/types";
+import { AuditContractView, VestingContractView } from "@/lib/types";
 
 const publicClient = {
   localhost: createPublicClient({
@@ -12,11 +13,13 @@ const publicClient = {
   }),
 };
 
+const provider = new ethers.JsonRpcProvider();
+
 export const getBalance = (): Promise<number> => {
   return publicClient.localhost
     .readContract({
-      address: ERC20Abi.address as Address,
-      abi: ERC20Abi.abi as Abi,
+      address: ERC20ABI.address as Address,
+      abi: ERC20ABI.abi as Abi,
       functionName: "allowance",
       args: ["0x97a25B755D6Df6e171d03B46F16D9b806827fcCd", BevorABI.address],
     })
@@ -44,5 +47,90 @@ export const getAudit = (auditId: bigint): Promise<AuditContractView | null> => 
     .catch((error) => {
       console.log(error);
       return null;
+    });
+};
+
+export const getAuditorVestingSchedule = (
+  auditId: bigint,
+  user: Address,
+): Promise<{
+  vestingScheduleId: bigint | null;
+  releasable: string | null;
+  withdrawn: string | null;
+}> => {
+  /*
+  Multi-step contract read process.
+  1. get the corresponding vestingScheduleID for an audit and auditor
+    we'll need this later to be able to write to that vestingScheduleID
+  2. get the corresponding vestingSchedule for that ID, we need to see the total withdrawn
+  3. get the releasable amount (current amount claimable)
+  */
+
+  const returnObj = {
+    vestingScheduleId: null as bigint | null,
+    releasable: null as string | null,
+    withdrawn: null as string | null,
+  };
+  let decimals = 0;
+  //BE SURE TO REMOVE THIS WHEN OFF LOCALHOST.
+  // WE MANUALLY FAST-FORWARD 1hr on every refresh.
+  provider.send("evm_increaseTime", [3600]);
+  provider.send("evm_mine", []);
+  ///////////////////////////////////////////
+
+  // same thing here, ideally we don't need to do this 2 step read to get decimals.
+  return publicClient.localhost
+    .readContract({
+      address: BevorABI.address as Address,
+      abi: BevorABI.abi as Abi,
+      functionName: "audits",
+      args: [auditId],
+    })
+    .then((auditStruct: unknown) => {
+      const auditTyped = auditStruct as AuditContractView;
+      const tokenAddress = auditTyped[1];
+      return publicClient.localhost.readContract({
+        address: tokenAddress,
+        abi: ERC20ABI.abi as Abi,
+        functionName: "decimals",
+      });
+    })
+    .then((d: unknown) => {
+      decimals = d as number;
+      return publicClient.localhost.readContract({
+        address: BevorABI.address as Address,
+        abi: BevorABI.abi as Abi,
+        functionName: "getVestingScheduleIdByAddressAndAudit",
+        args: [user, auditId],
+      });
+    })
+    .then((scheduleId: unknown) => {
+      const scheduleIdTyped = scheduleId as bigint;
+      returnObj.vestingScheduleId = scheduleIdTyped;
+      return publicClient.localhost.readContract({
+        address: BevorABI.address as Address,
+        abi: BevorABI.abi as Abi,
+        functionName: "vestingSchedules",
+        args: [scheduleIdTyped],
+      });
+    })
+    .then((vestingSchedule: unknown) => {
+      const vestingScheduleTyped = vestingSchedule as VestingContractView;
+      returnObj.withdrawn = formatUnits(vestingScheduleTyped[2], decimals);
+      return publicClient.localhost.readContract({
+        address: BevorABI.address as Address,
+        abi: BevorABI.abi as Abi,
+        functionName: "computeReleasableAmount",
+        args: [returnObj.vestingScheduleId],
+      });
+    })
+    .then((result) => {
+      const resultTyped = result as bigint;
+      returnObj.releasable = formatUnits(resultTyped, decimals);
+      return returnObj;
+    })
+    .catch((error) => {
+      console.log(error);
+      return returnObj;
     });
 };

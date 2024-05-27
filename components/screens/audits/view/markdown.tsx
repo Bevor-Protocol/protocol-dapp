@@ -79,9 +79,12 @@ const AuditMarkdown = ({ auditId, user }: { auditId: string; user: Users | null 
       )}
       {active === "findings" &&
         !data.findings[findingsActive].reveal &&
-        data.findings[findingsActive].submitted && (
-          <p className="my-4">Auditor submitted findings. Pending reveal.</p>
-        )}
+        data.findings[findingsActive].submitted &&
+        !data.pendingCliff && <p className="my-4">Auditor submitted findings. Pending reveal.</p>}
+      {active === "findings" &&
+        !data.findings[findingsActive].reveal &&
+        data.findings[findingsActive].submitted &&
+        data.pendingCliff && <p className="my-4">Hidden until the Cliff period is reached.</p>}
       {active === "findings" &&
         !data.findings[findingsActive].reveal &&
         !data.findings[findingsActive].submitted && (
