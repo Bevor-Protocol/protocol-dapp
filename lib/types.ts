@@ -75,6 +75,7 @@ export type AuditFindingsI = Prisma.AuditsGetPayload<{
     duration: true;
     price: true;
     cliff: true;
+    token: true;
     auditors: {
       select: {
         findings: true;
@@ -93,6 +94,7 @@ export type AuditTruncatedI = Prisma.AuditsGetPayload<{
     id: true;
     title: true;
     description: true;
+    token: true;
     status: true;
     auditee: true;
     history: {
@@ -111,6 +113,7 @@ export type AuditDetailedI = Prisma.AuditsGetPayload<{
     price: true;
     duration: true;
     cliff: true;
+    token: true;
     createdAt: true;
     auditee: true;
     auditors: {
@@ -129,6 +132,7 @@ export type AuditI = Prisma.AuditsGetPayload<{
     price: true;
     duration: true;
     cliff: true;
+    token: true;
     createdAt: true;
     status: true;
     auditee: true;

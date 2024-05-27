@@ -8,6 +8,7 @@ import { Column, Row } from "@/components/Box";
 import { Bell } from "@/assets";
 import { trimAddress, cn } from "@/lib/utils";
 import { AuditAuditor } from "./client";
+import { AvailableTokens } from "@/lib/constants";
 
 export const AuditCardTruncated = ({
   audit,
@@ -18,21 +19,23 @@ export const AuditCardTruncated = ({
   isProtocolOwner: boolean;
   showNoti: boolean;
 }): JSX.Element => {
+  const token = AvailableTokens.localhost.find((t) => t.address == audit.token);
   return (
     <div className="w-1/2 p-2">
       <DynamicLink href={`/audits/view/${audit.id}`} className="w-full">
         <Card.Main className="w-full cursor-pointer transition-colors hover:bg-dark-primary-30">
           <Card.Content className="gap-4 relative">
             <Icon image={audit.auditee.image} seed={audit.auditee.address} size="lg" />
-            <Column className="justify-start items-start overflow-hidden w-full">
+            <Column className="justify-start items-start w-full">
               <p className="text-lg font-bold line-clamp-1">{audit.title}</p>
-              <p className="text-ellipsis overflow-hidden w-full text-xs line-clamp-2">
+              <p className="text-ellipsis overflow-hidden w-full text-xs line-clamp-2 h-8">
                 {audit.description}
               </p>
+              <Row className="w-full text-white/60 text-xs justify-between mt-1 translate-y-2">
+                <p>${token?.symbol}</p>
+                <p>{isProtocolOwner ? "Protocol Owner" : "Auditor"}</p>
+              </Row>
             </Column>
-            <p className="w-full text-right text-white/60 text-xs absolute bottom-1 right-2">
-              {isProtocolOwner ? "Protocol Owner" : "Auditor"}
-            </p>
             {showNoti && (
               <div className="absolute top-2 right-2">
                 <Bell className="h-2 w-2" fill="currentColor" />
@@ -47,6 +50,7 @@ export const AuditCardTruncated = ({
 };
 
 export const AuditCard = ({ audit }: { audit: AuditDetailedI }): JSX.Element => {
+  const token = AvailableTokens.localhost.find((t) => t.address == audit.token);
   return (
     <Card.Main className="w-full">
       <Card.Content className="gap-4">
@@ -62,7 +66,9 @@ export const AuditCard = ({ audit }: { audit: AuditDetailedI }): JSX.Element => 
         <Column className="text-sm whitespace-nowrap min-w-fit">
           <p>
             <span className="inline-block w-32 text-right mr-4">Prize Pool: </span>
-            <span className="float-right">${audit.price.toLocaleString()}</span>
+            <span className="float-right">
+              {audit.price.toLocaleString()} {token?.symbol}
+            </span>
           </p>
           <p className="text-white/60 text-xs">
             <span className="inline-block w-32 text-right mr-4">Vesting Duration: </span>

@@ -176,6 +176,7 @@ export const getUserAudits = (address: string): Promise<AuditTruncatedI[]> => {
       id: true,
       title: true,
       description: true,
+      token: true,
       status: true,
       auditee: true,
       history: {

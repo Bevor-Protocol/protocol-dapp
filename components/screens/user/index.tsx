@@ -4,17 +4,14 @@ import { Column, Row } from "@/components/Box";
 import { Icon } from "@/components/Icon";
 import { trimAddress } from "@/lib/utils";
 import * as Form from "@/components/Form";
-import { AuditTruncatedI, UserStats } from "@/lib/types";
+import { UserStats } from "@/lib/types";
 
 const UserContent = async ({
   user,
   stats,
 }: {
-  address: string;
   user: Users;
   stats: UserStats;
-  isOwner: boolean;
-  audits: AuditTruncatedI[];
 }): Promise<JSX.Element> => {
   return (
     <Row className="justify-between w-full">

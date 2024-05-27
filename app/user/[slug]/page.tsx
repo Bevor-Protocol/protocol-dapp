@@ -39,7 +39,7 @@ const Fetcher = async ({ address }: { address: string }): Promise<JSX.Element> =
 
   return (
     <div className="w-full max-w-[1000px] py-8 relative">
-      <UserContent address={address} user={user} stats={stats} isOwner={isOwner} audits={audits} />
+      <UserContent user={user} stats={stats} />
       {isOwner && <UserProfileActions user={user} stats={stats} />}
       {canWishlist && (
         <UserWishlist

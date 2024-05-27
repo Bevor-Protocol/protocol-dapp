@@ -29,6 +29,7 @@ export const getAuditsDetailed = (status?: string): Promise<AuditDetailedI[]> =>
       description: true,
       price: true,
       duration: true,
+      token: true,
       cliff: true,
       createdAt: true,
       auditee: true,
@@ -62,6 +63,7 @@ export const getAudit = (id: string): Promise<AuditI | null> => {
       createdAt: true,
       status: true,
       details: true,
+      token: true,
       auditee: true,
       onchainAuditInfoId: true,
       onchainNftId: true,
@@ -109,6 +111,7 @@ export const getAuditFindings = (id: string): Promise<AuditFindingsI | null> => 
       duration: true,
       price: true,
       cliff: true,
+      token: true,
       auditors: {
         where: {
           acceptedTerms: true,

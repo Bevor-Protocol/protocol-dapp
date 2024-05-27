@@ -229,7 +229,7 @@ const AuditFormEntries = ({
           text="Select a Token"
           placeholder="-- token --"
           name="token"
-          defaultValue={""}
+          defaultValue={initialState?.token ?? ""}
           disabled={disabled}
           isError={"token" in errors}
         >
