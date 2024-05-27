@@ -1,3 +1,4 @@
+import { isAddress } from "viem";
 import { z } from "zod";
 
 const customFormToggleValidation = (value: string, ctx: z.RefinementCtx): boolean => {
@@ -30,10 +31,7 @@ export const userSchema = z.object({
     })
     .optional(),
   name: z.string().max(100).trim().optional(),
-  available: z
-    .string()
-    .transform((value, ctx) => customFormToggleValidation(value, ctx))
-    .optional(),
+  available: z.string().transform(customFormToggleValidation).optional(),
   auditorRole: z
     .string()
     .transform((value) => value == "yes")
@@ -69,11 +67,24 @@ export const auditFormSchema = z
         return true;
       })
       .optional(),
-    price: z.coerce.number().min(0).default(1_000),
-    duration: z.coerce.number().min(0).default(30),
-    cliff: z.coerce.number().min(0).default(3),
+    price: z
+      .string()
+      .min(1)
+      .catch("1000")
+      .pipe(z.coerce.number({ invalid_type_error: "Price must be a number" }).nonnegative()),
+    duration: z
+      .string()
+      .min(1)
+      .catch("30")
+      .pipe(z.coerce.number({ invalid_type_error: "Duration must be a number" }).nonnegative()),
+    cliff: z
+      .string()
+      .min(1)
+      .catch("3")
+      .pipe(z.coerce.number({ invalid_type_error: "Cliff must be a number" }).nonnegative()),
+    token: z.string().refine(isAddress, "A token must be selected"),
   })
   .refine((data) => data.cliff < data.duration, {
     message: "Cliff must be less than duration",
-    path: ["cliff"], // Optional: specify the path of the field this error is associated with
+    path: ["cliff"],
   });

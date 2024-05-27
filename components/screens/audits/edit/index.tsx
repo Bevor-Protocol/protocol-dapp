@@ -54,7 +54,7 @@ const AuditEditWrapper = ({ audit, user }: { audit: AuditI; user: Users }): JSX.
         that from the main audit view.
       </p>
       <AuditFormEntries
-        disabled={isPending}
+        disabled={isPending || !isAuthenticated || !user}
         userId={user.id}
         auditors={auditors}
         setAuditors={setAuditors}

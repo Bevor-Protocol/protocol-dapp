@@ -29,12 +29,10 @@ const AuditCreation = ({ user }: { user: Users }): JSX.Element => {
   });
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>): void => {
-    if (!isAuthenticated) return;
     e.preventDefault();
+    if (!isAuthenticated) return;
     if (!user) return;
     const formData = new FormData(e.currentTarget);
-    console.log(Object.fromEntries(formData));
-    return;
     mutate({ formData });
   };
 
@@ -51,7 +49,7 @@ const AuditCreation = ({ user }: { user: Users }): JSX.Element => {
         default ones be used.
       </p>
       <AuditFormEntries
-        disabled={isPending}
+        disabled={isPending || !isAuthenticated || !user}
         userId={user.id}
         auditors={auditors}
         setAuditors={setAuditors}
