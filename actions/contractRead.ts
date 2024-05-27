@@ -1,7 +1,8 @@
-import { Abi, Address, createPublicClient, http } from "viem";
+import { Abi, Address, createPublicClient, formatUnits, http } from "viem";
 import { localhost } from "viem/chains";
+import { ethers } from "ethers";
 
-import ERC20Abi from "@/contracts/abis/ERC20Token";
+import ERC20ABI from "@/contracts/abis/ERC20Token";
 import BevorABI from "@/contracts/abis/BevorProtocol";
 import { AuditContractView, VestingContractView } from "@/lib/types";
 
@@ -12,11 +13,13 @@ const publicClient = {
   }),
 };
 
+const provider = new ethers.JsonRpcProvider();
+
 export const getBalance = (): Promise<number> => {
   return publicClient.localhost
     .readContract({
-      address: ERC20Abi.address as Address,
-      abi: ERC20Abi.abi as Abi,
+      address: ERC20ABI.address as Address,
+      abi: ERC20ABI.abi as Abi,
       functionName: "allowance",
       args: ["0x97a25B755D6Df6e171d03B46F16D9b806827fcCd", BevorABI.address],
     })
@@ -52,8 +55,8 @@ export const getAuditorVestingSchedule = (
   user: Address,
 ): Promise<{
   vestingScheduleId: bigint | null;
-  releasable: bigint | null;
-  withdrawn: bigint | null;
+  releasable: string | null;
+  withdrawn: string | null;
 }> => {
   /*
   Multi-step contract read process.
@@ -65,15 +68,41 @@ export const getAuditorVestingSchedule = (
 
   const returnObj = {
     vestingScheduleId: null as bigint | null,
-    releasable: null as bigint | null,
-    withdrawn: null as bigint | null,
+    releasable: null as string | null,
+    withdrawn: null as string | null,
   };
+  let decimals = 0;
+  //BE SURE TO REMOVE THIS WHEN OFF LOCALHOST.
+  // WE MANUALLY FAST-FORWARD 1hr on every refresh.
+  provider.send("evm_increaseTime", [3600]);
+  provider.send("evm_mine", []);
+  ///////////////////////////////////////////
+
+  // same thing here, ideally we don't need to do this 2 step read to get decimals.
   return publicClient.localhost
     .readContract({
       address: BevorABI.address as Address,
       abi: BevorABI.abi as Abi,
-      functionName: "getVestingScheduleIdByAddressAndAudit",
-      args: [user, auditId],
+      functionName: "audits",
+      args: [auditId],
+    })
+    .then((auditStruct: unknown) => {
+      const auditTyped = auditStruct as AuditContractView;
+      const tokenAddress = auditTyped[1];
+      return publicClient.localhost.readContract({
+        address: tokenAddress,
+        abi: ERC20ABI.abi as Abi,
+        functionName: "decimals",
+      });
+    })
+    .then((d: unknown) => {
+      decimals = d as number;
+      return publicClient.localhost.readContract({
+        address: BevorABI.address as Address,
+        abi: BevorABI.abi as Abi,
+        functionName: "getVestingScheduleIdByAddressAndAudit",
+        args: [user, auditId],
+      });
     })
     .then((scheduleId: unknown) => {
       const scheduleIdTyped = scheduleId as bigint;
@@ -87,7 +116,7 @@ export const getAuditorVestingSchedule = (
     })
     .then((vestingSchedule: unknown) => {
       const vestingScheduleTyped = vestingSchedule as VestingContractView;
-      returnObj.withdrawn = vestingScheduleTyped[2];
+      returnObj.withdrawn = formatUnits(vestingScheduleTyped[2], decimals);
       return publicClient.localhost.readContract({
         address: BevorABI.address as Address,
         abi: BevorABI.abi as Abi,
@@ -97,7 +126,7 @@ export const getAuditorVestingSchedule = (
     })
     .then((result) => {
       const resultTyped = result as bigint;
-      returnObj.releasable = resultTyped;
+      returnObj.releasable = formatUnits(resultTyped, decimals);
       return returnObj;
     })
     .catch((error) => {

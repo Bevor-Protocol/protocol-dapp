@@ -27,12 +27,10 @@ const Vesting = async ({
     return <></>;
   }
 
-  console.log("AUDIT", auditView);
-
   let vestingScheduleInfo = {
     vestingScheduleId: null as bigint | null,
-    releasable: null as bigint | null,
-    withdrawn: null as bigint | null,
+    releasable: null as string | null,
+    withdrawn: null as string | null,
   };
   if (isAuditor && address) {
     vestingScheduleInfo = await getAuditorVestingSchedule(
@@ -47,8 +45,6 @@ const Vesting = async ({
     cliff: Number(auditView[4]),
     ...vestingScheduleInfo,
   };
-
-  console.log("VESTING", state);
 
   return <VestingDisplay initialState={{ ...state }} isAuditor={isAuditor} />;
 };

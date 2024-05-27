@@ -12,11 +12,12 @@ import { Column } from "@/components/Box";
 import { Button } from "@/components/Button";
 import { X } from "@/assets";
 import { useContractWriteListen } from "@/lib/hooks";
-import { AuditI } from "@/lib/types";
+import { AuditContractView, AuditI } from "@/lib/types";
 import { Loader } from "@/components/Loader";
 import { cn } from "@/lib/utils";
 import { getAuditFindings } from "@/actions/audits/general";
 import { auditAddNftInfoId } from "@/actions/audits/auditee";
+import { parseUnits } from "viem";
 
 import BevorABI from "@/contracts/abis/BevorProtocol";
 import ERC20ABI from "@/contracts/abis/ERC20Token";
@@ -46,7 +47,29 @@ const RevealAudit = ({ audit, user }: { audit: AuditI; user: Users }): JSX.Eleme
   const handleSubmitApproval = (): void => {
     if (!client) return;
     if (user.address !== audit.auditee.address) return;
-    writeApproval([BevorABI.address, BigInt(audit.price)])
+
+    // right now it takes 2 reads to get correct decimals.
+    // maybe we can expose a fct to mirror "approve()", that takes
+    // the value stored in the struct. Also would be safer as we won't need an ABI
+    readContract(client, {
+      address: BevorABI.address as Address,
+      abi: BevorABI.abi as Abi,
+      functionName: "audits",
+      args: [audit.onchainAuditInfoId],
+    })
+      .then((auditStruct: unknown) => {
+        const auditTyped = auditStruct as AuditContractView;
+        const tokenAddress = auditTyped[1];
+        return readContract(client, {
+          address: tokenAddress,
+          abi: ERC20ABI.abi as Abi,
+          functionName: "decimals",
+        });
+      })
+      .then((decimals: unknown) => {
+        const decimalsTyped = decimals as number;
+        return writeApproval([BevorABI.address, parseUnits(audit.price.toString(), decimalsTyped)]);
+      })
       .then(() => {
         setStep(1);
       })

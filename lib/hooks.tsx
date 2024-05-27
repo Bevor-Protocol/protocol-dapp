@@ -50,6 +50,7 @@ export const useContractWriteListen = ({
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
   ) => Promise<any>;
   state: Record<string, boolean>;
+  dispatch: React.Dispatch<Record<string, boolean>>;
 } => {
   const reducer = (
     state: Record<string, boolean>,
@@ -119,6 +120,7 @@ export const useContractWriteListen = ({
 
   return {
     writeContractWithEvents,
+    dispatch,
     state,
   };
 };
