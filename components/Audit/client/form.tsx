@@ -13,6 +13,7 @@ import { getWishlist, searchAuditors } from "@/actions/users";
 import { AuditI } from "@/lib/types";
 import { AuditorItem } from "@/components/Audit";
 import { cn } from "@/lib/utils";
+import { AvailableTokens } from "@/lib/constants";
 
 const AuditFormEntries = ({
   userId,
@@ -155,11 +156,11 @@ const AuditFormEntries = ({
           setSelected={setSelectedFile}
         />
         <hr className="border-gray-200/20 my-4" />
-        <Row className="text-sm gap-4">
+        <Row className="text-sm justify-between">
           <p className="w-80">Find Auditors</p>
           <p className="w-80">Your Wishlisted Auditors:</p>
         </Row>
-        <Row className="gap-2">
+        <Row className="justify-between">
           <Form.Search disabled={disabled} onChange={handleChange}>
             <Column
               className="w-full overflow-scroll px-2 justify-start"
@@ -222,39 +223,55 @@ const AuditFormEntries = ({
         </div>
       </Column>
       <hr className="border-gray-200/20 my-4" />
-      <p>Terms:</p>
-      <Row className="max-w-full gap-4 my-4 justify-start items-center flex-wrap">
-        <Form.Input
-          type="number"
-          placeholder="1000"
-          min={0}
-          name="price"
-          text="Total Price ($)"
-          defaultValue={initialState?.price}
+      <Column className="gap-4">
+        <p>Terms:</p>
+        <Form.Select
+          text="Select a Token"
+          placeholder="-- token --"
+          name="token"
+          defaultValue={""}
           disabled={disabled}
-          isError={"price" in errors}
-        />
-        <Form.Input
-          type="number"
-          placeholder="30"
-          min={0}
-          name="duration"
-          text="Vesting Duration (days)"
-          defaultValue={initialState?.duration}
-          disabled={disabled}
-          isError={"duration" in errors}
-        />
-        <Form.Input
-          type="number"
-          placeholder="3"
-          min={0}
-          name="cliff"
-          text="Vesting Cliff (days)"
-          defaultValue={initialState?.cliff}
-          disabled={disabled}
-          isError={"cliff" in errors}
-        />
-      </Row>
+          isError={"token" in errors}
+        >
+          {AvailableTokens.localhost.map((option) => (
+            <option key={option.symbol} value={option.address}>
+              {option.symbol}
+            </option>
+          ))}
+        </Form.Select>
+        <Row className="max-w-full gap-4 justify-start items-center flex-wrap">
+          <Form.Input
+            type="number"
+            placeholder="1000"
+            min={0}
+            name="price"
+            text="Total Price ($)"
+            defaultValue={initialState?.price}
+            disabled={disabled}
+            isError={"price" in errors}
+          />
+          <Form.Input
+            type="number"
+            placeholder="30"
+            min={0}
+            name="duration"
+            text="Vesting Duration (days)"
+            defaultValue={initialState?.duration}
+            disabled={disabled}
+            isError={"duration" in errors}
+          />
+          <Form.Input
+            type="number"
+            placeholder="3"
+            min={0}
+            name="cliff"
+            text="Vesting Cliff (days)"
+            defaultValue={initialState?.cliff}
+            disabled={disabled}
+            isError={"cliff" in errors}
+          />
+        </Row>
+      </Column>
       <hr className="border-gray-200/20 my-4" />
       <Row className="my-4 gap-4">
         <Button type="submit" variant="gradient" disabled={disabled}>

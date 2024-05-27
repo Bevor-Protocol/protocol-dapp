@@ -33,6 +33,8 @@ const AuditCreation = ({ user }: { user: Users }): JSX.Element => {
     e.preventDefault();
     if (!user) return;
     const formData = new FormData(e.currentTarget);
+    console.log(Object.fromEntries(formData));
+    return;
     mutate({ formData });
   };
 
