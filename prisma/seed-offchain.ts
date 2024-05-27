@@ -3,6 +3,8 @@ import { prisma } from "@/db/prisma.server";
 import { AuditorStatus, AuditStatus, HistoryAction, UserType } from "@prisma/client";
 import { ethers } from "ethers";
 
+import ERC20ABI from "@/contracts/abis/ERC20Token";
+
 const seed = async (): Promise<void> => {
   // In practice, users will only be created once they've gotten a role
   // asigned. Anyone can visit the application, but we won't need a dashboard
@@ -13,6 +15,8 @@ const seed = async (): Promise<void> => {
   if (!provider) {
     throw new Error("make sure the local blockchain is running");
   }
+  const tokenContract = new ethers.Contract(ERC20ABI.address, ERC20ABI.abi);
+  const tokenAddress = await tokenContract.getAddress();
 
   const accounts = await provider.listAccounts();
 
@@ -109,6 +113,7 @@ const seed = async (): Promise<void> => {
     data: {
       title: "Empty audit - Open",
       description: "Open, no requestors, no auditors, no details provided",
+      token: tokenAddress,
       auditee: {
         connect: {
           address: WALLETS[0],
@@ -127,6 +132,7 @@ const seed = async (): Promise<void> => {
       description: "Open, 1 requestor, no auditors, details provided",
       price: 10_000,
       duration: 30,
+      token: tokenAddress,
       details: `${process.env.BLOB_URL}/audit-details/example-7Ap1GR49l2yVbJtvIJ0dVnleKuM8pj.md`,
       auditee: {
         connect: {
@@ -156,6 +162,7 @@ const seed = async (): Promise<void> => {
       description: "Open, 1 auditor, no details",
       price: 10_000,
       duration: 50,
+      token: tokenAddress,
       auditee: {
         connect: {
           address: WALLETS[0],
@@ -184,6 +191,7 @@ const seed = async (): Promise<void> => {
       description: "Locked, 1 auditor, has not attested, details provided",
       price: 20_000,
       duration: 50,
+      token: tokenAddress,
       details: `${process.env.BLOB_URL}/audit-details/example-7Ap1GR49l2yVbJtvIJ0dVnleKuM8pj.md`,
       status: AuditStatus.ATTESTATION,
       auditee: {
@@ -222,6 +230,7 @@ const seed = async (): Promise<void> => {
       description: "Locked, 1 auditor, rejected terms, detailed provided.",
       price: 20_000,
       duration: 50,
+      token: tokenAddress,
       details: `${process.env.BLOB_URL}/audit-details/example-7Ap1GR49l2yVbJtvIJ0dVnleKuM8pj.md`,
       status: AuditStatus.ATTESTATION,
       auditee: {
@@ -287,6 +296,7 @@ const seed = async (): Promise<void> => {
       status: AuditStatus.ATTESTATION,
       price: 20_000,
       duration: 50,
+      token: tokenAddress,
       details: `${process.env.BLOB_URL}/audit-details/example-7Ap1GR49l2yVbJtvIJ0dVnleKuM8pj.md`,
       auditee: {
         connect: {
@@ -349,6 +359,7 @@ const seed = async (): Promise<void> => {
       status: AuditStatus.AUDITING,
       price: 20_000,
       duration: 50,
+      token: tokenAddress,
       details: `${process.env.BLOB_URL}/audit-details/example-7Ap1GR49l2yVbJtvIJ0dVnleKuM8pj.md`,
       auditee: {
         connect: {
@@ -468,6 +479,7 @@ const seed = async (): Promise<void> => {
       status: AuditStatus.AUDITING,
       price: 20_000,
       duration: 50,
+      token: tokenAddress,
       details: `${process.env.BLOB_URL}/audit-details/example-7Ap1GR49l2yVbJtvIJ0dVnleKuM8pj.md`,
       auditee: {
         connect: {
@@ -597,6 +609,7 @@ const seed = async (): Promise<void> => {
     data: {
       title: "Random Auditee Audit - Open",
       description: "Open, no requestors, no auditors, no details",
+      token: tokenAddress,
       auditee: {
         connect: {
           address: WALLETS[3],
@@ -615,6 +628,7 @@ const seed = async (): Promise<void> => {
       description: "Open, 1 requestor, 1 auditor, details provided",
       price: 10_000,
       duration: 30,
+      token: tokenAddress,
       details: `${process.env.BLOB_URL}/audit-details/example-7Ap1GR49l2yVbJtvIJ0dVnleKuM8pj.md`,
       auditee: {
         connect: {
@@ -674,6 +688,7 @@ that needs to come from on-chain",
       status: AuditStatus.CHALLENGEABLE,
       price: 2_000,
       duration: 50,
+      token: tokenAddress,
       details: `${process.env.BLOB_URL}/audit-details/example-7Ap1GR49l2yVbJtvIJ0dVnleKuM8pj.md`,
       auditee: {
         connect: {
@@ -812,6 +827,7 @@ that needs to come from on-chain, but I'll mark is as such",
       status: AuditStatus.FINALIZED,
       price: 2_000,
       duration: 70,
+      token: tokenAddress,
       details: `${process.env.BLOB_URL}/audit-details/example-7Ap1GR49l2yVbJtvIJ0dVnleKuM8pj.md`,
       auditee: {
         connect: {
