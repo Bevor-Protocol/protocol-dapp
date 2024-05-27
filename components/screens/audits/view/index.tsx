@@ -9,6 +9,7 @@ import { AuditI } from "@/lib/types";
 import AuditDashboardActions from "./actions";
 import { Suspense } from "react";
 import { Loader } from "@/components/Loader";
+import { AvailableTokens } from "@/lib/constants";
 
 const AuditPage = ({ audit, user }: { audit: AuditI; user: Users | null }): JSX.Element => {
   const verifiedAuditors = audit.auditors.filter(
@@ -26,6 +27,8 @@ const AuditPage = ({ audit, user }: { audit: AuditI; user: Users | null }): JSX.
   const attestationRejected = audit.auditors.filter(
     (auditor) => auditor.attestedTerms && !auditor.acceptedTerms,
   );
+
+  const token = AvailableTokens.localhost.find((t) => t.address == audit.token);
 
   return (
     <Row className="justify-between items-stretch relative">
@@ -172,7 +175,9 @@ const AuditPage = ({ audit, user }: { audit: AuditI; user: Users | null }): JSX.
         <div>
           <Row className="gap-4">
             <div className="inline-block w-36 text-right">Prize Pool: </div>
-            <div className="flex-1 text-right">${audit.price.toLocaleString()}</div>
+            <div className="flex-1 text-right">
+              {audit.price.toLocaleString()} {token?.symbol}
+            </div>
           </Row>
           <Row className="gap-4 text-sm text-white/60">
             <div className="inline-block w-36 text-right">Vesting Duration: </div>

@@ -43,6 +43,7 @@ model Audits {
   price              Int         @default(0)
   duration           Int         @default(30) // duration in days
   cliff              Int         @default(3) // cliff duration in days (determines reveal).
+  token              String?
   status             AuditStatus @default(DISCOVERY)
   auditors           Auditors[]
   history            History[]

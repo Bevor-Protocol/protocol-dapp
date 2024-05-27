@@ -36,6 +36,14 @@ interface SearchI extends React.InputHTMLAttributes<HTMLInputElement> {
   className?: string;
 }
 
+interface SelectI extends React.SelectHTMLAttributes<HTMLSelectElement> {
+  children?: React.ReactNode;
+  text?: string;
+  className?: string;
+  placeholder: string;
+  isError?: boolean;
+}
+
 export const Input: React.FC<InputI> = ({ className, text, type, isError, ...rest }) => {
   return (
     <label className="w-fit max-w-fit *:text-sm">
@@ -44,7 +52,7 @@ export const Input: React.FC<InputI> = ({ className, text, type, isError, ...res
         className={cn(
           "appearance-none bg-transparent outline-none",
           "font-inherit px-2 py-1 rounded border border-gray-200/20",
-          "focus-input disabled:opacity-80",
+          "focus-input disabled:opacity-80 placeholder:text-gray-400/80",
           type == "text" && "w-48",
           type == "number" && "w-28",
           isError && "ring-1 ring-red-500",
@@ -231,7 +239,7 @@ export const Search: React.FC<SearchI> = ({ children, className, text, ...rest }
             placeholder="Search..."
             className={cn(
               "appearance-none bg-transparent outline-none border-none",
-              "font-inherit w-full",
+              "font-inherit w-full placeholder:text-gray-400/80",
               "disabled:opacity-80",
               className,
             )}
@@ -253,7 +261,7 @@ export const TextArea: React.FC<TextAreaI> = ({ className, text, isError, ...res
       <textarea
         className={cn(
           "flex w-full rounded-md border border-gray-200/20 bg-transparent",
-          "p-2 shadow-sm placeholder:text-muted-foreground",
+          "p-2 shadow-sm placeholder:text-gray-400/80",
           "disabled:cursor-default disabled:opacity-80",
           "focus-input",
           isError && "ring-1 ring-red-500",
@@ -277,5 +285,37 @@ export const Radio: React.FC<InputI> = ({ className, text, isError, ...rest }) =
         <span className="toggle" />
       </label>
     </Row>
+  );
+};
+
+export const Select: React.FC<SelectI> = ({
+  children,
+  className,
+  text,
+  placeholder,
+  isError,
+  ...rest
+}) => {
+  // the hidden input field ensures that token gets passed even if nothing is submitted.
+  // order matters here.
+  return (
+    <label className="w-fit max-w-fit *:text-sm">
+      {text && <p className="mb-1">{text}</p>}
+      <input type="hidden" name={rest.name} value="" />
+      <select
+        className={cn(
+          "rounded-md border border-gray-200/20 bg-transparent p-1 focus-input",
+          "outline-none font-inherit w-48",
+          isError && "ring-1 ring-red-500",
+          className,
+        )}
+        {...rest}
+      >
+        <option className="text-muted-foreground" value="" disabled>
+          {placeholder}
+        </option>
+        {children}
+      </select>
+    </label>
   );
 };
