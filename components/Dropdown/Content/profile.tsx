@@ -8,7 +8,7 @@ import { Button } from "@/components/Button";
 import { Column, Row } from "@/components/Box";
 import * as Card from "@/components/Card";
 import { Social } from "@/components/Icon";
-import { useModal, useUser } from "@/lib/hooks";
+import { useModal, useSiwe } from "@/lib/hooks";
 import { Users } from "@prisma/client";
 import { WishlistPanel } from "@/components/Panel/Content/wishlist";
 
@@ -16,7 +16,7 @@ const Profile = ({ user }: { user: Users }): JSX.Element => {
   const [copied, setCopied] = useState(false);
   const { chain, connector } = useAccount();
   const { toggleOpen, setContent } = useModal();
-  const { logout } = useUser();
+  const { logout } = useSiwe();
 
   const handleClick = (): void => {
     setCopied(true);

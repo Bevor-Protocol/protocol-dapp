@@ -1,15 +1,14 @@
 "use client";
 import React, { useState, useEffect } from "react";
-import { useAccount, useConnectors } from "wagmi";
+import { Connector, useConnect, useConnectors } from "wagmi";
 
 import { config } from "@/providers/wallet/config";
-import { useModal, useUser } from "@/lib/hooks";
 import { sortWallets } from "@/lib/utils";
 import { Icon } from "@/components/Icon";
 import { CoinbaseWallet, WalletConnect } from "@/assets/wallets";
 import { Column, Row } from "@/components/Box";
-import { Loader } from "@/components/Loader";
 import Image from "next/image";
+import { useModal } from "@/lib/hooks";
 
 const IconMapper: Record<string, React.ReactNode> = {
   walletConnect: <WalletConnect height="20" width="20" />,
@@ -18,9 +17,9 @@ const IconMapper: Record<string, React.ReactNode> = {
 
 const SignIn = (): JSX.Element => {
   const [recentConnector, setRecentConnector] = useState("");
-  const { connector: activeConnector } = useAccount();
+  const { connectAsync } = useConnect();
   const { toggleOpen } = useModal();
-  const { login, isPendingSign, isAuthenticated, isRejected } = useUser();
+
   const connectors = useConnectors();
 
   useEffect(() => {
@@ -33,38 +32,13 @@ const SignIn = (): JSX.Element => {
     getRecent();
   }, []);
 
-  useEffect(() => {
-    if (isAuthenticated || isRejected) toggleOpen();
-  }, [isAuthenticated, isRejected, toggleOpen]);
+  const handleConnect = ({ connector }: { connector: Connector }): void => {
+    connectAsync({ connector })
+      .catch((error) => console.log(error))
+      .finally(() => toggleOpen());
+  };
 
   const walletsShow = sortWallets([...connectors], recentConnector, true);
-
-  if (isPendingSign && !!activeConnector) {
-    return (
-      <Column className="items-center justify-center">
-        <div className="aspect-[1091/1685] relative h-20">
-          <Image src="/logo.png" alt="brand logo" fill={true} sizes="any" />
-        </div>
-        <p className="font-bold text-xl my-4">Sign</p>
-        <div className="relative">
-          {activeConnector.icon ? (
-            <Icon
-              image={activeConnector.icon}
-              size="md"
-              className="absolute -translate-x-1/2 -translate-y-1/2 left-1/2 top-1/2"
-            />
-          ) : (
-            <div className="h-10 w-10">{IconMapper[activeConnector.id]}</div>
-          )}
-          <Loader className="h-14 w-14" />
-        </div>
-        <p className="text-sm my-4 text-center">
-          This is purely an off-chain interaction. It does not give us permissions, but it confirms
-          that you own this account
-        </p>
-      </Column>
-    );
-  }
 
   return (
     <Column className="items-center justify-center">
@@ -77,7 +51,7 @@ const SignIn = (): JSX.Element => {
         {walletsShow.map((connector) => (
           <Row
             key={connector.uid}
-            onClick={(): void => login({ connector })}
+            onClick={(): void => handleConnect({ connector })}
             className="justify-start items-center rounded-lg gap-2 relative
 px-2 py-1 border border-transparent transition-colors hover:bg-dark-primary-30 cursor-pointer"
           >

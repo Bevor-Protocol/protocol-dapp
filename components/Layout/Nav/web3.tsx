@@ -5,7 +5,7 @@ import { useModal } from "@/lib/hooks";
 import { Chevron } from "@/assets";
 import { Icon } from "@/components/Icon";
 import { ChainPresets } from "@/lib/constants";
-import SignIn from "@/components/Modal/Content/signin";
+import NetworksConnect from "@/components/Modal/Content/siwe/networks";
 import Networks from "@/components/Dropdown/Content/networks";
 import Profile from "@/components/Dropdown/Content/profile";
 import { trimAddress } from "@/lib/utils";
@@ -82,7 +82,7 @@ const Web3Holder = ({ user }: { user: Users | null }): JSX.Element => {
   const { setContent, toggleOpen } = useModal();
 
   const handleWalletModal = (): void => {
-    setContent(<SignIn />);
+    setContent(<NetworksConnect />);
     toggleOpen();
   };
 

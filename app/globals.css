@@ -326,6 +326,15 @@ body.modal-show {
     mask-composite: exclude;
     @apply aspect-square z-0 p-[3px] rounded-full
   }
+
+  .conic-full {
+    aspect-ratio: 1 / 1;
+    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    @apply aspect-square z-0 p-[3px] rounded-full
+  }
 }
 
 @layer utilities {

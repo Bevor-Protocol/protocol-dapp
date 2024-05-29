@@ -1,7 +1,7 @@
 import { useEffect, useRef, useContext, useReducer } from "react";
 
-import { UserStateI, ModalStateI, EventStateI } from "./types";
-import UserContext from "@/providers/user/context";
+import { ModalStateI, EventStateI, SiweStateI } from "./types";
+import SiweContext from "@/providers/siwe/context";
 import ModalContext from "@/providers/modal/context";
 import EventContext from "@/providers/events/context";
 import { useClient, useWriteContract } from "wagmi";
@@ -10,7 +10,7 @@ import { localhost } from "viem/chains";
 import { waitForTransactionReceipt } from "viem/actions";
 
 export const useModal = (): ModalStateI => useContext(ModalContext);
-export const useUser = (): UserStateI => useContext(UserContext);
+export const useSiwe = (): SiweStateI => useContext(SiweContext);
 export const useEvent = (): EventStateI => useContext(EventContext);
 
 export const useClickOutside = (
