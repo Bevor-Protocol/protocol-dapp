@@ -2,7 +2,7 @@ import { http, cookieStorage, createStorage, createConfig } from "wagmi";
 // import { walletConnect, injected, coinbaseWallet } from "wagmi/connectors";
 import { injected } from "wagmi/connectors";
 
-import { base, localhost, Chain } from "wagmi/chains";
+import { base, localhost, type Chain } from "wagmi/chains";
 
 // const projectId = process.env.NEXT_PUBLIC_WC_PROJECT_ID as string;
 
