@@ -2,7 +2,7 @@ import { http, cookieStorage, createStorage, createConfig } from "wagmi";
 // import { walletConnect, injected, coinbaseWallet } from "wagmi/connectors";
 import { injected } from "wagmi/connectors";
 
-import { goerli, polygonMumbai, localhost, Chain } from "wagmi/chains";
+import { base, localhost, Chain } from "wagmi/chains";
 
 // const projectId = process.env.NEXT_PUBLIC_WC_PROJECT_ID as string;
 
@@ -12,17 +12,15 @@ let chains: readonly [Chain, ...Chain[]];
 let transports;
 
 if (process.env.NODE_ENV === "development") {
-  chains = [goerli, polygonMumbai, localhost];
+  chains = [base, localhost];
   transports = {
-    [goerli.id]: http(),
-    [polygonMumbai.id]: http(),
+    [base.id]: http(),
     [localhost.id]: http(),
   };
 } else {
-  chains = [goerli, polygonMumbai];
+  chains = [base];
   transports = {
-    [goerli.id]: http(),
-    [polygonMumbai.id]: http(),
+    [base.id]: http(),
   };
 }
 
