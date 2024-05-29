@@ -11,7 +11,7 @@ export const HistoryPanel = ({ history }: { history: HistoryI[] }): JSX.Element 
 
   return (
     <Column className="relative max-h-full">
-      <div onClick={(): void => toggleOpen()} className="w-fit ml-auto mr-4 cursor-pointer">
+      <div onClick={(): void => toggleOpen()} className="cursor-pointer absolute top-0 right-4">
         <X height="1.25rem" width="1.25rem" />
       </div>
       <div className="mb-4">Audit History</div>

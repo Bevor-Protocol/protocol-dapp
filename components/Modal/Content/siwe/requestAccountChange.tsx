@@ -1,10 +1,9 @@
 "use client";
 
 import Image from "next/image";
-import React, { useEffect } from "react";
 import { useAccount } from "wagmi";
 
-import { useModal, useUser } from "@/lib/hooks";
+import { useSiwe } from "@/lib/hooks";
 import { Icon } from "@/components/Icon";
 import { CoinbaseWallet, WalletConnect } from "@/assets/wallets";
 import { Column } from "@/components/Box";
@@ -19,12 +18,9 @@ const IconMapper: Record<string, React.ReactNode> = {
 
 const RequestAccountChange = ({ verifiedAddress }: { verifiedAddress: string }): JSX.Element => {
   const { connector: activeConnector } = useAccount();
-  const { toggleOpen } = useModal();
-  const { logout, isAuthenticated, isRejected } = useUser();
+  const { logout, isPending } = useSiwe();
 
-  useEffect(() => {
-    if (isAuthenticated || isRejected) toggleOpen();
-  }, [isAuthenticated, isRejected, toggleOpen]);
+  if (!activeConnector) return <></>;
 
   return (
     <Column className="items-center justify-center">
@@ -32,30 +28,24 @@ const RequestAccountChange = ({ verifiedAddress }: { verifiedAddress: string }):
         <Image src="/logo.png" alt="brand logo" fill={true} sizes="any" />
       </div>
       <p className="font-bold text-xl my-4">Switch Wallet</p>
-      {!!activeConnector && (
-        <div className="relative">
-          {activeConnector.icon ? (
-            <Icon
-              image={activeConnector.icon}
-              size="md"
-              className="absolute -translate-x-1/2 -translate-y-1/2 left-1/2 top-1/2"
-            />
-          ) : (
-            <div className="h-10 w-10">{IconMapper[activeConnector.id]}</div>
-          )}
-          <Loader className="h-14 w-14" />
-        </div>
-      )}
+      <div className="relative h-14 w-14">
+        {activeConnector.icon ? (
+          <Icon
+            image={activeConnector.icon}
+            size="md"
+            className="absolute -translate-x-1/2 -translate-y-1/2 left-1/2 top-1/2"
+          />
+        ) : (
+          <div className="h-10 w-10">{IconMapper[activeConnector.id]}</div>
+        )}
+        {isPending && <Loader className="h-14 w-14" />}
+        {!isPending && <div className="conic-full h-14 w-14 bg-green-400" />}
+      </div>
       <p className="text-sm text-center mt-4">
-        Switch to wallet {trimAddress(verifiedAddress)} to make it active
+        Switch to wallet {trimAddress(verifiedAddress)} to make it active, or logout.
       </p>
       <p className="my-2">or</p>
-      <Button
-        onClick={() => {
-          logout();
-          toggleOpen();
-        }}
-      >
+      <Button onClick={logout} disabled={!isPending}>
         Log out
       </Button>
     </Column>

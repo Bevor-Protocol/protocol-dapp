@@ -17,7 +17,7 @@ const Page = (): JSX.Element => {
           </div>
           <p className="font-medium">
             An on-chain solution for facilitating smart contract audits in an efficient, fair, and
-            robust manner. Register as an auditee, auditor, or DAO participant.
+            robust manner. Sign in and claim your role to get started.
           </p>
           <Row className="flex-nowrap align-middle justify-center gap-2">
             <DynamicLink href="/leaderboard" asButton>

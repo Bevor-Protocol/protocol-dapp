@@ -61,6 +61,16 @@ module.exports = {
             transform: "scale(1)",
           },
         },
+        modal: {
+          "0%": {
+            backgroundColor: "rgba(0, 0, 0, 0)",
+            backdropFilter: "blur(0px)",
+          },
+          "100%": {
+            backgroundColor: "rgba(0, 0, 0, 0.7)",
+            backdropFilter: "blur(1px)",
+          },
+        },
         panel: {
           "0%": {
             transform: "translateX(100%)",
@@ -92,6 +102,7 @@ module.exports = {
         panel: "panel 0.15s",
         "toast-in": "toast-in 0.25s",
         "toast-out": "toast-out 0.25s forwards 1s",
+        modal: "modal 0.15s forwards",
       },
       colors: {
         dark: "#121212",

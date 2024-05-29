@@ -5,7 +5,6 @@ import { useRouter } from "next/navigation";
 import { useMutation } from "@tanstack/react-query";
 import { AuditorStatus, Users } from "@prisma/client";
 
-import { useUser } from "@/lib/hooks";
 import { AuditI } from "@/lib/types";
 import { updateAudit } from "@/actions/audits/auditee";
 import AuditFormEntries from "@/components/Audit/client/form";
@@ -17,7 +16,6 @@ const AuditEditWrapper = ({ audit, user }: { audit: AuditI; user: Users }): JSX.
     .map((auditor) => auditor.user);
 
   const router = useRouter();
-  const { isAuthenticated } = useUser();
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [auditors, setAuditors] = useState<Users[]>([...initialAuditors]);
 
@@ -36,7 +34,6 @@ const AuditEditWrapper = ({ audit, user }: { audit: AuditI; user: Users }): JSX.
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>): void => {
     e.preventDefault();
-    if (!isAuthenticated) return;
     if (!user) return;
     const formData = new FormData(e.currentTarget);
     mutate({ formData });
@@ -55,7 +52,7 @@ const AuditEditWrapper = ({ audit, user }: { audit: AuditI; user: Users }): JSX.
         that from the main audit view.
       </p>
       <AuditFormEntries
-        disabled={isPending || !isAuthenticated || !user}
+        disabled={isPending || !user}
         userId={user.id}
         auditors={auditors}
         setAuditors={setAuditors}

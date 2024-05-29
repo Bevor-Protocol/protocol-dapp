@@ -1,6 +1,5 @@
 import { HistoryAction, Prisma, Users, UserType } from "@prisma/client";
 import { Address } from "viem";
-import { Connector } from "wagmi";
 
 export type LeaderboardI = {
   name: string;
@@ -47,16 +46,13 @@ export type EventStateI = {
   txn: string;
 };
 
-export type UserStateI = {
-  login: ({ connector }: { connector: Connector }) => void;
+export type SiweStateI = {
+  isPending: boolean;
+  isSuccess: boolean;
+  login: () => void;
   logout: () => void;
-  isPendingSign: boolean;
-  isPendingConnect: boolean;
   isAuthenticated: boolean;
-  isRequestingAccountChange: boolean;
-  isRejected: boolean;
   setIsAuthenticated: React.Dispatch<React.SetStateAction<boolean>>;
-  setIsRequestingAccountChange: React.Dispatch<React.SetStateAction<boolean>>;
 };
 
 export interface UserWithCount extends Users {

@@ -7,11 +7,9 @@ import { Users } from "@prisma/client";
 
 import AuditFormEntries from "@/components/Audit/client/form";
 import { createAudit } from "@/actions/audits/auditee";
-import { useUser } from "@/lib/hooks";
 
 const AuditCreation = ({ user }: { user: Users }): JSX.Element => {
   const router = useRouter();
-  const { isAuthenticated } = useUser();
   const [auditors, setAuditors] = useState<Users[]>([]);
   const [errors, setErrors] = useState<Record<string, string>>({});
 
@@ -30,7 +28,6 @@ const AuditCreation = ({ user }: { user: Users }): JSX.Element => {
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>): void => {
     e.preventDefault();
-    if (!isAuthenticated) return;
     if (!user) return;
     const formData = new FormData(e.currentTarget);
     mutate({ formData });
@@ -49,7 +46,7 @@ const AuditCreation = ({ user }: { user: Users }): JSX.Element => {
         default ones be used.
       </p>
       <AuditFormEntries
-        disabled={isPending || !isAuthenticated || !user}
+        disabled={isPending || !user}
         userId={user.id}
         auditors={auditors}
         setAuditors={setAuditors}

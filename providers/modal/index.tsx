@@ -6,10 +6,6 @@ import { ModalStateI } from "@/lib/types";
 import * as Modal from "@/components/Modal";
 import * as Panel from "@/components/Panel";
 import ModalContext from "./context";
-import { getUser } from "@/actions/siwe";
-import { useAccount } from "wagmi";
-import { useUser } from "@/lib/hooks";
-import RequestAccountChange from "@/components/Modal/Content/requestAccountChange";
 
 const reducer = (state: string, action?: string): string => {
   if (state == "none") {
@@ -22,10 +18,6 @@ const reducer = (state: string, action?: string): string => {
 const ModalProvider = ({ children }: { children: React.ReactNode }): JSX.Element => {
   const [open, toggleOpen] = useReducer(reducer, "none");
   const [content, setContent] = useState<React.ReactNode>(null);
-  const [preventClose, setPreventClose] = useState(false);
-
-  const { address } = useAccount();
-  const { logout, setIsAuthenticated, setIsRequestingAccountChange } = useUser();
 
   const contentRef = useRef<HTMLDivElement>(null);
   const handlerRef = useRef<undefined | (() => void)>(undefined);
@@ -46,7 +38,6 @@ const ModalProvider = ({ children }: { children: React.ReactNode }): JSX.Element
 
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent): void => {
-      if (preventClose) return;
       if (contentRef.current && !contentRef.current.contains(e.target as Node)) {
         if (handlerRef.current) handlerRef.current();
       }
@@ -58,45 +49,7 @@ const ModalProvider = ({ children }: { children: React.ReactNode }): JSX.Element
     document.addEventListener("mousedown", handleClickOutside);
 
     return (): void => document.removeEventListener("mousedown", handleClickOutside);
-  }, [contentRef, panelRef, preventClose]);
-
-  useEffect(() => {
-    // MUST CALL THIS WITHIN THIS CONTEXT, SO IT CAN ACCESS BOTH toggleOpen()
-    // AND the user context.
-
-    // If a user is connected, then every time the address changes (excluding initial connection)
-    // present them with the option to switch back to verified account, or log out.
-    // This useEffect will also capture instances where they do switch back to the verified acct,
-    // in this case, just mark it as authenticated and return.
-    const handleChange = (): void => {
-      // on account change, except initial connection, re-authenticate.
-      getUser().then((user) => {
-        if (user.success && user.address) {
-          if (user.address === address) {
-            // captures case where user switched back to authenticated account.
-            setIsRequestingAccountChange(false);
-            setIsAuthenticated(true);
-            setPreventClose(false);
-            if (open == "modal") toggleOpen();
-          } else if (!address) {
-            // captures case where user manually disconnected account.
-            setPreventClose(false);
-            logout();
-          } else {
-            // user WAS authenticated, but switched accounts. Present modal.
-            // also block the clickOutside handler
-            setIsRequestingAccountChange(true);
-            setPreventClose(true);
-            setContent(<RequestAccountChange verifiedAddress={user.address} />);
-            if (open == "none") toggleOpen();
-          }
-        }
-      });
-    };
-
-    handleChange();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [address]);
+  }, [contentRef, panelRef]);
 
   const modalState: ModalStateI = {
     toggleOpen,

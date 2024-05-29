@@ -1,6 +1,5 @@
-import React, { forwardRef } from "react";
-
 import { cn } from "@/lib/utils";
+import React, { forwardRef } from "react";
 
 interface Props extends React.HTMLAttributes<HTMLDivElement> {
   open: boolean;
@@ -10,12 +9,7 @@ interface Props extends React.HTMLAttributes<HTMLDivElement> {
 export const Wrapper: React.FC<Props> = ({ children, open }) => {
   if (!open) return <></>;
   return (
-    <div
-      className={cn(
-        "fixed inset-0 flex justify-center items-center z-[990]",
-        "bg-black/70 backdrop-blur-[1px]",
-      )}
-    >
+    <div className="fixed inset-0 flex justify-center items-center z-[990] animate-modal">
       {children}
     </div>
   );
@@ -25,7 +19,10 @@ export const Content = forwardRef<HTMLDivElement, Props>(({ children, open, ...r
   if (!open) return <></>;
   return (
     <div
-      className="shadow rounded-lg w-[600px] max-w-[80%] max-h-[80%] overflow-scroll bg-dark p-6 relative"
+      className={cn(
+        "shadow rounded-lg w-[600px] max-w-[80%] max-h-[80%] overflow-scroll",
+        "bg-dark p-6 relative animate-appear",
+      )}
       ref={ref}
       {...rest}
     >
