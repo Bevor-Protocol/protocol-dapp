@@ -5,7 +5,6 @@ import { useModal } from "@/lib/hooks";
 import { Chevron } from "@/assets";
 import { Icon } from "@/components/Icon";
 import { ChainPresets } from "@/lib/constants";
-import NetworksConnect from "@/components/Modal/Content/siwe/networks";
 import Networks from "@/components/Dropdown/Content/networks";
 import Profile from "@/components/Dropdown/Content/profile";
 import { trimAddress } from "@/lib/utils";
@@ -15,6 +14,7 @@ import { Row } from "@/components/Box";
 import * as Dropdown from "@/components/Dropdown";
 import * as Tooltip from "@/components/Tooltip";
 import { Users } from "@prisma/client";
+import Wallets from "@/components/Panel/Content/wallets";
 
 const Web3Network = (): JSX.Element => {
   const { chain } = useAccount();
@@ -82,8 +82,8 @@ const Web3Holder = ({ user }: { user: Users | null }): JSX.Element => {
   const { setContent, toggleOpen } = useModal();
 
   const handleWalletModal = (): void => {
-    setContent(<NetworksConnect />);
-    toggleOpen();
+    setContent(<Wallets />);
+    toggleOpen("panel");
   };
 
   return (

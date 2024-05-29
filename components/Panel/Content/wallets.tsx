@@ -1,21 +1,19 @@
-"use client";
-import React, { useState, useEffect } from "react";
+import { X } from "@/assets";
+import { Column, Row } from "@/components/Box";
+import { useModal } from "@/lib/hooks";
+import { useEffect, useState } from "react";
 import { Connector, useConnect, useConnectors } from "wagmi";
-
 import { config } from "@/providers/wallet/config";
 import { sortWallets } from "@/lib/utils";
 import { Icon } from "@/components/Icon";
 import { CoinbaseWallet, WalletConnect } from "@/assets/wallets";
-import { Column, Row } from "@/components/Box";
-import Image from "next/image";
-import { useModal } from "@/lib/hooks";
 
 const IconMapper: Record<string, React.ReactNode> = {
   walletConnect: <WalletConnect height="20" width="20" />,
   coinbaseWalletSDK: <CoinbaseWallet height="20" width="20" />,
 };
 
-const SignIn = (): JSX.Element => {
+const Wallets = (): JSX.Element => {
   const [recentConnector, setRecentConnector] = useState("");
   const { connectAsync } = useConnect();
   const { toggleOpen } = useModal();
@@ -41,13 +39,12 @@ const SignIn = (): JSX.Element => {
   const walletsShow = sortWallets([...connectors], recentConnector, true);
 
   return (
-    <Column className="items-center justify-center">
-      <div className="aspect-[1091/1685] relative h-20">
-        <Image src="/logo.png" alt="brand logo" fill={true} sizes="any" />
+    <Column className="relative max-h-full">
+      <div onClick={(): void => toggleOpen()} className="cursor-pointer absolute top-0 right-4">
+        <X height="1.25rem" width="1.25rem" />
       </div>
-      <p className="font-bold text-xl mt-4">Connect to Bevor</p>
-      <hr className="border-gray-200/20 my-2 w-1/2" />
-      <Column className="">
+      <div className="mb-4">Connect a Wallet</div>
+      <Column className="gap-2 text-left overflow-y-scroll flex-grow">
         {walletsShow.map((connector) => (
           <Row
             key={connector.uid}
@@ -56,7 +53,7 @@ const SignIn = (): JSX.Element => {
 px-2 py-1 border border-transparent transition-colors hover:bg-dark-primary-30 cursor-pointer"
           >
             {connector.icon ? (
-              <Icon image={connector.icon} size="xs" />
+              <Icon image={connector.icon} size="sm" />
             ) : (
               <div className="h-5 w-5">{IconMapper[connector.id]}</div>
             )}
@@ -73,4 +70,4 @@ px-2 py-1 border border-transparent transition-colors hover:bg-dark-primary-30 c
   );
 };
 
-export default SignIn;
+export default Wallets;
