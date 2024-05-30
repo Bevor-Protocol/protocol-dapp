@@ -41,7 +41,7 @@ export const Nav = async (): Promise<JSX.Element> => {
         </Row>
       </Row>
       <Suspense>
-        <NavWeb3 user={user} />
+        <NavWeb3 address={address} user={user} />
       </Suspense>
     </nav>
   );

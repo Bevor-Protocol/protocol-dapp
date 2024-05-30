@@ -12,7 +12,7 @@ import { useModal, useSiwe } from "@/lib/hooks";
 import { Users } from "@prisma/client";
 import { WishlistPanel } from "@/components/Panel/Content/wishlist";
 
-const Profile = ({ user }: { user: Users }): JSX.Element => {
+const Profile = ({ address, user }: { address: string; user: Users | null }): JSX.Element => {
   const [copied, setCopied] = useState(false);
   const { chain, connector } = useAccount();
   const { toggleOpen, setContent } = useModal();
@@ -20,13 +20,14 @@ const Profile = ({ user }: { user: Users }): JSX.Element => {
 
   const handleClick = (): void => {
     setCopied(true);
-    navigator.clipboard.writeText(user.address as string);
+    navigator.clipboard.writeText(address as string);
     setTimeout(() => {
       setCopied(false);
     }, 1000);
   };
 
   const handleWishlist = (): void => {
+    if (!user) return;
     setContent(<WishlistPanel userId={user.id} />);
     toggleOpen("panel");
   };
@@ -47,7 +48,7 @@ const Profile = ({ user }: { user: Users }): JSX.Element => {
             />
           </Social>
         </Row>
-        <p>{trimAddress(user.address)}</p>
+        <p>{trimAddress(address)}</p>
         <p className="text-white/60">{connector?.name}</p>
         <Button onClick={(): void => logout()} className="text-xs mt-2" variant="gradient">
           <Logout height="0.75rem" width="0.75rem" />
@@ -67,7 +68,7 @@ const Profile = ({ user }: { user: Users }): JSX.Element => {
           />
         </p>
       </Card.Footer>
-      {user.auditeeRole && (
+      {user && user.auditeeRole && (
         <Card.Footer className="p-2 text-white/60">
           <Row className="gap-1 items-center cursor-pointer" onClick={handleWishlist}>
             <Heart height="0.65rem" width="0.65rem" className="fill-gray-400" />
