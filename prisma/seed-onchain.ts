@@ -7,7 +7,9 @@ import BevorProtocolAbi from "@/contracts/abis/BevorProtocol";
 const seed = async (): Promise<void> => {
   const provider = new ethers.JsonRpcProvider();
   const signer = await provider.getSigner();
-  const accounts = await provider.listAccounts();
+
+  // skip the signer for seeding, as the nonce is wrong due to deployer script.
+  const [, ...accounts] = await provider.listAccounts();
 
   const tokenContract = new ethers.Contract(ERC20Abi.address, ERC20Abi.abi, signer);
   const bevorContract = new ethers.Contract(BevorProtocolAbi.address, BevorProtocolAbi.abi, signer);

@@ -18,7 +18,8 @@ const seed = async (): Promise<void> => {
   const tokenContract = new ethers.Contract(ERC20ABI.address, ERC20ABI.abi);
   const tokenAddress = await tokenContract.getAddress();
 
-  const accounts = await provider.listAccounts();
+  // skip the signer for seeding, as the nonce is wrong due to deployer script.
+  const [, ...accounts] = await provider.listAccounts();
 
   if (!process.env.BLOB_URL) {
     throw new Error("must set the BLOB_URL (vercel blob url prefix)");
