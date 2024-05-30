@@ -54,7 +54,7 @@ const Web3Network = (): JSX.Element => {
   );
 };
 
-const Web3Profile = ({ user }: { user: Users }): JSX.Element => {
+const Web3Profile = ({ address, user }: { address: string; user: Users | null }): JSX.Element => {
   return (
     <Dropdown.Main
       className="flex flex-row relative cursor-pointer rounded-lg focus-border"
@@ -67,18 +67,21 @@ const Web3Profile = ({ user }: { user: Users }): JSX.Element => {
             "hover:bg-dark-primary-30 gap-2 text-sm px-2",
           )}
         >
-          <Icon size="md" image={user.image} seed={user.address} />
-          <span className="lg:hidden">{trimAddress(user.address)}</span>
+          <Icon size="md" image={user?.image} seed={address} />
+          <span className="lg:hidden">{trimAddress(address)}</span>
         </Row>
       </Dropdown.Trigger>
       <Dropdown.Content className="top-full right-0 w-40">
-        <Profile user={user} />
+        <Profile address={address} user={user} />
       </Dropdown.Content>
     </Dropdown.Main>
   );
 };
 
-const Web3Holder = ({ user }: { user: Users | null }): JSX.Element => {
+const Web3Holder = ({ address, user }: { address: string; user: Users | null }): JSX.Element => {
+  // need to pass both because a user can get authenticated via SIWE,
+  // but not have an account yet.
+
   const { setContent, toggleOpen } = useModal();
 
   const handleWalletModal = (): void => {
@@ -88,13 +91,13 @@ const Web3Holder = ({ user }: { user: Users | null }): JSX.Element => {
 
   return (
     <Row className="gap-2 items-center relative">
-      {!!user && (
+      {!!address && (
         <>
           <Web3Network />
-          <Web3Profile user={user} />
+          <Web3Profile address={address} user={user} />
         </>
       )}
-      {!user && <Button onClick={handleWalletModal}>connect</Button>}
+      {!address && <Button onClick={handleWalletModal}>connect</Button>}
     </Row>
   );
 };
