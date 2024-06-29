@@ -13,13 +13,13 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+
+      - name: Install Doppler CLI
+        uses: dopplerhq/setup-doppler@v1
       
       # Install npm dependencies
       - name: Install dependencies
         run: yarn install
-      
-      - name: Install Doppler CLI
-        run: curl -Ls https://cli.doppler.com/install.sh | sh
 
       # Generate Prisma Client to reflect latest database schema
       - name: Generate Prisma Client
