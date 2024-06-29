@@ -9,9 +9,7 @@ jobs:
       group: ${{ github.workflow }}-${{ github.ref }}
       cancel-in-progress: true
     env:
-      NEXT_PUBLIC_WC_PROJECT_ID: ${{ secrets.NEXT_PUBLIC_WC_PROJECT_ID }}
-      DATABASE_URL_UNPOOLED: ${{ secrets.DATABASE_URL_UNPOOLED }}
-      VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+      DOPPLER_TOKEN: ${{ secrets.DOPPLER_TOKEN }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -19,13 +17,16 @@ jobs:
       # Install npm dependencies
       - name: Install dependencies
         run: yarn install
+      
+      - name: Install Doppler CLI
+        run: curl -Ls https://cli.doppler.com/install.sh | sh
 
       # Generate Prisma Client to reflect latest database schema
       - name: Generate Prisma Client
-        run: yarn prisma generate
+        run: doppler run -- yarn prisma generate
 
       - name: Deploy DB changes
-        run: yarn prisma migrate deploy
+        run: doppler run -- yarn prisma migrate deploy
 
       # Build the application
       - name: Build
