@@ -15,7 +15,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Install Doppler CLI
-        uses: dopplerhq/setup-doppler@v1
+        uses: dopplerhq/cli-action@v1
       
       # Install npm dependencies
       - name: Install dependencies
