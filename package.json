@@ -6,7 +6,7 @@
     "dev": "doppler run -- next dev",
     "testing": "doppler run -- printenv",
     "build": "doppler run -- next build",
-    "vercel-build": "doppler run -- prisma generate && prisma migrate deploy && next build",
+    "vercel-build": "doppler run --command='prisma generate && prisma migrate deploy && next build'",
     "start": "doppler run -- next start",
     "prepare": "husky install",
     "lint": "next lint && prettier --check \"**/*.{ts,tsx,js,jsx,md,json}\" && prisma validate && tsc --noEmit",
