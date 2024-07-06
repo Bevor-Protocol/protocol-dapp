@@ -2,21 +2,15 @@
 
 import { useState, useRef, useReducer, useEffect } from "react";
 
-import { ModalStateI } from "@/lib/types";
+import { ModalStateI } from "@/utils/types";
 import * as Modal from "@/components/Modal";
 import * as Panel from "@/components/Panel";
 import ModalContext from "./context";
-
-const reducer = (state: string, action?: string): string => {
-  if (state == "none") {
-    return action || "modal";
-  }
-  return "none";
-};
+import { modalReducer } from "@/reducers";
 
 // Modal provider component
 const ModalProvider = ({ children }: { children: React.ReactNode }): JSX.Element => {
-  const [open, toggleOpen] = useReducer(reducer, "none");
+  const [open, toggleOpen] = useReducer(modalReducer, "none");
   const [content, setContent] = useState<React.ReactNode>(null);
 
   const contentRef = useRef<HTMLDivElement>(null);

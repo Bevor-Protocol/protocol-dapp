@@ -9,11 +9,12 @@ import { Column, Row } from "@/components/Box";
 import { Button } from "@/components/Button";
 import * as Form from "@/components/Form";
 import { Loader } from "@/components/Loader";
-import { getWishlist, searchAuditors } from "@/actions/users";
-import { AuditI } from "@/lib/types";
+import { wishlistController, userController } from "@/actions";
+import { AuditI } from "@/utils/types/prisma";
 import { AuditorItem } from "@/components/Audit";
-import { cn } from "@/lib/utils";
-import { AvailableTokens } from "@/lib/constants";
+import { cn } from "@/utils";
+import { AvailableTokens } from "@/constants/web3";
+import { AUDITORS, WISHLIST } from "@/constants/queryKeys";
 
 const AuditFormEntries = ({
   userId,
@@ -40,13 +41,13 @@ const AuditFormEntries = ({
   const [selectedFile, setSelectedFile] = useState<File | undefined>(mockFileDefault);
 
   const { data, isPending } = useQuery({
-    queryKey: ["auditors", queryString],
-    queryFn: () => searchAuditors(queryString),
+    queryKey: [AUDITORS, queryString],
+    queryFn: () => userController.searchAuditors(queryString),
   });
 
   const { data: dataWishlist, isPending: isPendingWishlist } = useQuery({
-    queryKey: ["wishlist"],
-    queryFn: () => getWishlist(userId),
+    queryKey: [WISHLIST],
+    queryFn: () => wishlistController.getUserWishlist(userId),
   });
 
   const addAuditorSet = (auditor: Users): void => {

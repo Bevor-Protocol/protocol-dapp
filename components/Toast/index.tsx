@@ -1,4 +1,5 @@
-import { cn, trimTxn } from "@/lib/utils";
+import { cn } from "@/utils";
+import { trimTxn } from "@/utils/formatters";
 import { Column, Row } from "@/components/Box";
 import { Arrow, Check, X } from "@/assets";
 import { Loader } from "../Loader";

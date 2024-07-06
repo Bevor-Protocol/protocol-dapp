@@ -1,4 +1,4 @@
-import { getCurrentUser } from "@/actions/users";
+import { userController } from "@/actions";
 import { Arrow } from "@/assets";
 import { Column } from "@/components/Box";
 import { Button } from "@/components/Button";
@@ -8,7 +8,7 @@ import AuditCreation from "@/components/screens/audits/create";
 import { Suspense } from "react";
 
 const Fetcher = async (): Promise<JSX.Element> => {
-  const { address, user } = await getCurrentUser();
+  const { address, user } = await userController.currentUser();
 
   if (!address) {
     return (

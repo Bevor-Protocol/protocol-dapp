@@ -5,8 +5,8 @@ import { useRouter } from "next/navigation";
 import { useMutation } from "@tanstack/react-query";
 import { AuditorStatus, Users } from "@prisma/client";
 
-import { AuditI } from "@/lib/types";
-import { updateAudit } from "@/actions/audits/auditee";
+import { AuditI } from "@/utils/types/prisma";
+import { auditController } from "@/actions";
 import AuditFormEntries from "@/components/Audit/client/form";
 
 const AuditEditWrapper = ({ audit, user }: { audit: AuditI; user: Users }): JSX.Element => {
@@ -21,14 +21,19 @@ const AuditEditWrapper = ({ audit, user }: { audit: AuditI; user: Users }): JSX.
 
   const { mutate, isPending } = useMutation({
     mutationFn: (variables: { formData: FormData }) =>
-      updateAudit(audit.id, variables.formData, auditors),
-    onSettled: (data) => {
-      if (data?.success) {
+      auditController.updateAudit(audit.id, variables.formData, auditors),
+    onSuccess: (data) => {
+      if (data.success) {
         router.push(`/audits/view/${audit.id}`);
+      } else {
+        if (data.validationErrors) {
+          setErrors(data.validationErrors);
+        }
       }
-      if (!data?.success && data?.validationErrors) {
-        setErrors(data.validationErrors);
-      }
+    },
+    onError: (error) => {
+      console.log(error);
+      setErrors({ arbitrary: "something went wrong, try again later" });
     },
   });
 

@@ -2,14 +2,14 @@ import { AuditorStatus, AuditStatus, Users } from "@prisma/client";
 
 import { Column, Row } from "@/components/Box";
 import DynamicLink from "@/components/Link";
-import { trimAddress } from "@/lib/utils";
+import { trimAddress } from "@/utils/formatters";
 import { Icon } from "@/components/Icon";
 import { AuditAuditor } from "@/components/Audit/client";
-import { AuditI } from "@/lib/types";
+import { AuditI } from "@/utils/types/prisma";
 import AuditDashboardActions from "./actions";
 import { Suspense } from "react";
 import { Loader } from "@/components/Loader";
-import { AvailableTokens } from "@/lib/constants";
+import { AvailableTokens } from "@/constants/web3";
 
 const AuditPage = ({ audit, user }: { audit: AuditI; user: Users | null }): JSX.Element => {
   const verifiedAuditors = audit.auditors.filter(

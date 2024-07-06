@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 
-import { EventStateI } from "@/lib/types";
+import { EventStateI } from "@/utils/types";
 import * as Toast from "@/components/Toast";
 import EventContext from "./context";
 

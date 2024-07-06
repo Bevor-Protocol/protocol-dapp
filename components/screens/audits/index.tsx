@@ -3,12 +3,13 @@
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 
-import { getAuditsDetailed } from "@/actions/audits/general";
+import { auditController } from "@/actions";
 import { Column, Row } from "@/components/Box";
 import { AuditCard } from "@/components/Audit";
 import { Toggle } from "@/components/Toggle";
 import { AuditsSkeleton } from "@/components/Loader";
-import { AuditDetailedI } from "@/lib/types";
+import { AuditDetailedI } from "@/utils/types/prisma";
+import { AUDITS } from "@/constants/queryKeys";
 
 const statuses = ["open", "locked", "ongoing", "challengeable", "completed"];
 
@@ -16,8 +17,8 @@ const Audits = ({ initialData }: { initialData: AuditDetailedI[] }): JSX.Element
   const [display, setDisplay] = useState("open");
 
   const { data, isFetching } = useQuery({
-    queryKey: ["audits", display],
-    queryFn: () => getAuditsDetailed(display),
+    queryKey: [AUDITS, display],
+    queryFn: () => auditController.getAuditsDetailed(display),
     initialData,
   });
 

@@ -6,9 +6,10 @@ import { useMutation } from "@tanstack/react-query";
 
 import { Icon } from "@/components/Icon";
 import * as Form from "@/components/Form";
-import { createUser } from "@/actions/users";
+import { userController } from "@/actions";
 import { Button } from "@/components/Button";
 import { Column, Row } from "@/components/Box";
+import { ValidationError } from "@/utils/error";
 
 const UserOnboard = ({ address }: { address: string }): JSX.Element => {
   const router = useRouter();
@@ -17,12 +18,11 @@ const UserOnboard = ({ address }: { address: string }): JSX.Element => {
 
   const { mutate, isPending } = useMutation({
     mutationFn: (variables: { userAddress: string; formData: FormData }) =>
-      createUser(variables.userAddress, variables.formData),
-    onSettled: (data) => {
-      console.log(data);
-      if (data?.success) router.refresh();
-      if (!data?.success && data?.validationErrors) {
-        setErrors(data.validationErrors);
+      userController.createUser(variables.userAddress, variables.formData),
+    onSuccess: () => router.refresh(),
+    onError: (error) => {
+      if (error instanceof ValidationError) {
+        setErrors(error.validationErrors);
       }
     },
   });

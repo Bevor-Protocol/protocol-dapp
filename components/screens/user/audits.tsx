@@ -5,8 +5,8 @@ import { AuditStatus } from "@prisma/client";
 
 import { AuditCardTruncated } from "@/components/Audit";
 import { Column, Row } from "@/components/Box";
-import { AuditTruncatedI } from "@/lib/types";
-import { checkLocalMostRecentMany } from "@/lib/utils";
+import { AuditTruncatedI } from "@/utils/types/prisma";
+import { checkLocalMostRecentMany } from "@/utils/browser";
 
 const UserAudits = ({
   address,

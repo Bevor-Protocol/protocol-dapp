@@ -2,10 +2,10 @@ import { Suspense } from "react";
 
 import { Loader } from "@/components/Loader";
 import LeaderboardWrapper from "@/components/screens/leaderboard";
-import { getLeaderboard } from "@/actions/users";
+import { userController } from "@/actions";
 
 const Fetcher = async (): Promise<JSX.Element> => {
-  const data = await getLeaderboard("name", "asc");
+  const data = await userController.getLeaderboard("name", "asc");
   return <LeaderboardWrapper initialData={data} />;
 };
 

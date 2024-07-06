@@ -1,6 +1,6 @@
 import { createContext } from "react";
 
-import { SiweStateI } from "@/lib/types";
+import { SiweStateI } from "@/utils/types";
 
 // Create a context with initial state
 const SiweContext = createContext<SiweStateI>({

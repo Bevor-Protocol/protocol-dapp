@@ -6,7 +6,7 @@ import { useMutation } from "@tanstack/react-query";
 import { Users } from "@prisma/client";
 
 import AuditFormEntries from "@/components/Audit/client/form";
-import { createAudit } from "@/actions/audits/auditee";
+import { auditController } from "@/actions";
 
 const AuditCreation = ({ user }: { user: Users }): JSX.Element => {
   const router = useRouter();
@@ -15,14 +15,19 @@ const AuditCreation = ({ user }: { user: Users }): JSX.Element => {
 
   const { mutate, isPending } = useMutation({
     mutationFn: (variables: { formData: FormData }) =>
-      createAudit(user!.id, variables.formData, auditors),
-    onSettled: (data) => {
-      if (data?.success) {
+      auditController.createAudit(user!.id, variables.formData, auditors),
+    onSuccess: (data) => {
+      if (data.success) {
         router.push(`/user/${user.address}`);
+      } else {
+        if (data.validationErrors) {
+          setErrors(data.validationErrors);
+        }
       }
-      if (!data?.success && data?.validationErrors) {
-        setErrors(data.validationErrors);
-      }
+    },
+    onError: (error) => {
+      console.log(error);
+      setErrors({ arbitrary: "something went wrong, try again later" });
     },
   });
 

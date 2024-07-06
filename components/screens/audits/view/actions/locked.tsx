@@ -4,10 +4,10 @@ import { useState } from "react";
 import { Users } from "@prisma/client";
 import { useMutation } from "@tanstack/react-query";
 
-import { AuditI, AuditStateI } from "@/lib/types";
-import { useModal } from "@/lib/hooks";
-import { reopenAudit } from "@/actions/audits/auditee";
-import { leaveAudit } from "@/actions/audits/auditor";
+import { AuditI } from "@/utils/types/prisma";
+import { AuditStateI } from "@/utils/types";
+import { useModal } from "@/hooks/useContexts";
+import { auditController } from "@/actions";
 import { Row, Column } from "@/components/Box";
 import { Button } from "@/components/Button";
 import DynamicLink from "@/components/Link";
@@ -49,7 +49,7 @@ const AuditeeReopenAudit = ({
   setDisabled: React.Dispatch<React.SetStateAction<boolean>>;
 }): JSX.Element => {
   const { mutate } = useMutation({
-    mutationFn: () => reopenAudit(id),
+    mutationFn: () => auditController.openAudit(id),
     onMutate: () => setDisabled(true),
     onSettled: (data) => {
       setDisabled(false);
@@ -120,17 +120,15 @@ const AuditeeInitiateAudit = ({
 
 const AuditorRemoveVerification = ({
   auditId,
-  userId,
   disabled,
   setDisabled,
 }: {
   auditId: string;
-  userId: string;
   disabled: boolean;
   setDisabled: React.Dispatch<React.SetStateAction<boolean>>;
 }): JSX.Element => {
   const { mutate } = useMutation({
-    mutationFn: () => leaveAudit(auditId, userId),
+    mutationFn: () => auditController.leaveAudit(auditId),
     onMutate: () => setDisabled(true),
     onSettled: (data) => {
       setDisabled(false);
@@ -230,7 +228,6 @@ const AuditLockedActions = ({
       <Column className="gap-2 items-end w-fit *:w-full">
         <AuditorRemoveVerification
           auditId={audit.id}
-          userId={user.id}
           disabled={disabled}
           setDisabled={setDisabled}
         />

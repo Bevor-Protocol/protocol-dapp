@@ -1,4 +1,4 @@
-import { HistoryAction, Prisma, Users, UserType } from "@prisma/client";
+import { HistoryAction, Users, UserType } from "@prisma/client";
 import { Address } from "viem";
 
 export type LeaderboardI = {
@@ -55,116 +55,6 @@ export type SiweStateI = {
   setIsAuthenticated: React.Dispatch<React.SetStateAction<boolean>>;
 };
 
-export interface UserWithCount extends Users {
-  stats: {
-    valuePotential: number;
-    valueComplete: number;
-    numActive: number;
-    numComplete: number;
-    numWishlist: number;
-  };
-}
-
-export type AuditFindingsI = Prisma.AuditsGetPayload<{
-  select: {
-    onchainAuditInfoId: true;
-    duration: true;
-    price: true;
-    cliff: true;
-    token: true;
-    auditors: {
-      select: {
-        findings: true;
-        user: {
-          select: {
-            address: true;
-          };
-        };
-      };
-    };
-  };
-}>;
-
-export type AuditTruncatedI = Prisma.AuditsGetPayload<{
-  select: {
-    id: true;
-    title: true;
-    description: true;
-    token: true;
-    status: true;
-    auditee: true;
-    history: {
-      select: {
-        id: true;
-      };
-    };
-  };
-}>;
-
-export type AuditDetailedI = Prisma.AuditsGetPayload<{
-  select: {
-    id: true;
-    title: true;
-    description: true;
-    price: true;
-    duration: true;
-    cliff: true;
-    token: true;
-    createdAt: true;
-    auditee: true;
-    auditors: {
-      select: {
-        user: true;
-      };
-    };
-  };
-}>;
-
-export type AuditI = Prisma.AuditsGetPayload<{
-  select: {
-    id: true;
-    title: true;
-    description: true;
-    price: true;
-    duration: true;
-    cliff: true;
-    token: true;
-    createdAt: true;
-    status: true;
-    auditee: true;
-    details: true;
-    onchainAuditInfoId: true;
-    onchainNftId: true;
-    auditors: {
-      select: {
-        user: true;
-        status: true;
-        attestedTerms: true;
-        acceptedTerms: true;
-      };
-    };
-    history: {
-      select: {
-        id: true;
-        action: true;
-        userType: true;
-        comment: true;
-        createdAt: true;
-        audit: {
-          select: {
-            auditee: true;
-          };
-        };
-        auditor: {
-          select: {
-            user: true;
-          };
-        };
-      };
-    };
-  };
-}>;
-
 export type HistoryI = {
   id: string;
   action: HistoryAction;
@@ -178,12 +68,6 @@ export type HistoryI = {
     user: Users;
   } | null;
 };
-
-export type WishlistI = Prisma.WishlistGetPayload<{
-  select: {
-    receiver: true;
-  };
-}>;
 
 export type AuditStateI = {
   isTheAuditee: boolean;
@@ -208,20 +92,20 @@ export interface UserStats {
   numWishlist: number;
 }
 
-interface GenericSuccess<T> {
-  success: boolean;
+export interface ValidationSuccessI<T> {
+  success: true;
   data: T;
   error?: never;
   validationErrors?: never;
 }
-interface GenericFailure {
-  success: boolean;
+export interface ValidationFailureI {
+  success: false;
   data?: never;
   error: string;
   validationErrors?: Record<string, string>;
 }
 
-export type GenericUpdateI<T> = GenericSuccess<T> | GenericFailure;
+export type ValidationResponseI<T> = ValidationSuccessI<T> | ValidationFailureI;
 
 export type AuditContractView = [
   protocolOwner: Address,

@@ -1,10 +1,10 @@
 import { X } from "@/assets";
 import { Column, Row } from "@/components/Box";
-import { useModal } from "@/lib/hooks";
+import { useModal } from "@/hooks/useContexts";
 import { useEffect, useState } from "react";
 import { Connector, useConnect, useConnectors } from "wagmi";
 import { config } from "@/providers/wallet/config";
-import { sortWallets } from "@/lib/utils";
+import { sortWallets } from "@/utils/sorters";
 import { Icon } from "@/components/Icon";
 import { CoinbaseWallet, WalletConnect } from "@/assets/wallets";
 

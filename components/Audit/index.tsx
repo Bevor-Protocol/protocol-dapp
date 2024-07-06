@@ -3,12 +3,13 @@ import { Users } from "@prisma/client";
 import * as Card from "@/components/Card";
 import { Icon } from "@/components/Icon";
 import DynamicLink from "@/components/Link";
-import { AuditDetailedI, AuditTruncatedI } from "@/lib/types";
+import { AuditDetailedI, AuditTruncatedI } from "@/utils/types/prisma";
 import { Column, Row } from "@/components/Box";
 import { Bell } from "@/assets";
-import { trimAddress, cn } from "@/lib/utils";
+import { cn } from "@/utils";
+import { trimAddress } from "@/utils/formatters";
 import { AuditAuditor } from "./client";
-import { AvailableTokens } from "@/lib/constants";
+import { AvailableTokens } from "@/constants/web3";
 
 export const AuditCardTruncated = ({
   audit,

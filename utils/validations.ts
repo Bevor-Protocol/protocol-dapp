@@ -1,5 +1,5 @@
 import { isAddress } from "viem";
-import { z } from "zod";
+import { z, ZodError } from "zod";
 
 const customFormToggleValidation = (value: string, ctx: z.RefinementCtx): boolean => {
   // transforms the form input strings (coming from value prop) into booleans.
@@ -54,19 +54,19 @@ export const userSchemaCreate = userSchema
     { message: "must claim at least 1 role", path: ["auditorRole"] },
   );
 
+export const auditFindingsSchema = z.custom<File>((file) => {
+  if (!file) return true;
+  if (!(file instanceof File)) return "This isn't a file";
+  if (!file.name || file.size <= 0) return true;
+  if (file.size > 4.5 * 1024 * 1024) return "Max file size is 4.5MB";
+  return true;
+});
+
 export const auditFormSchema = z
   .object({
     title: z.string().min(1, { message: "A Title is required" }).max(100).trim(),
     description: z.string().min(1, { message: "A Description is required" }).trim(),
-    details: z
-      .custom<File>((file) => {
-        if (!file) return true;
-        if (!(file instanceof File)) return "This isn't a file";
-        if (!file.name || file.size <= 0) return true;
-        if (file.size > 4.5 * 1024 * 1024) return "Max file size is 4.5MB";
-        return true;
-      })
-      .optional(),
+    details: auditFindingsSchema.optional(),
     price: z
       .string()
       .min(1)
@@ -88,3 +88,11 @@ export const auditFormSchema = z
     message: "Cliff must be less than duration",
     path: ["cliff"],
   });
+
+export const handleValidationErrors = <T>(error: ZodError<T>): Record<string, string> => {
+  const validationErrors: Record<string, string> = {};
+  error.errors.forEach((err) => {
+    validationErrors[err.path[0]] = error.message;
+  });
+  return validationErrors;
+};

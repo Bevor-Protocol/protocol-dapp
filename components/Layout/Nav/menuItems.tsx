@@ -9,7 +9,7 @@ import { Row, HoverItem, Column } from "@/components/Box";
 import { Ellipses } from "@/components/Items";
 import * as Dropdown from "@/components/Dropdown";
 import * as Card from "@/components/Card";
-import { cn } from "@/lib/utils";
+import { cn } from "@/utils";
 
 export const NavDashboard = ({ address }: { address: string }): JSX.Element => {
   const pathname = usePathname();

@@ -2,13 +2,14 @@
 import { useState } from "react";
 import { useAccount } from "wagmi";
 
-import { cn, trimAddress } from "@/lib/utils";
+import { cn } from "@/utils";
+import { trimAddress } from "@/utils/formatters";
 import { Copy, Heart, Logout } from "@/assets";
 import { Button } from "@/components/Button";
 import { Column, Row } from "@/components/Box";
 import * as Card from "@/components/Card";
 import { Social } from "@/components/Icon";
-import { useModal, useSiwe } from "@/lib/hooks";
+import { useModal, useSiwe } from "@/hooks/useContexts";
 import { Users } from "@prisma/client";
 import { WishlistPanel } from "@/components/Panel/Content/wishlist";
 

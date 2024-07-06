@@ -5,11 +5,11 @@ import { useRouter } from "next/navigation";
 
 import { Button } from "@/components/Button";
 import { Column } from "@/components/Box";
-import { useContractWriteListen } from "@/lib/hooks";
+import { useContractWriteListen } from "@/hooks/useContractWriteListen";
 
 import BevorABI from "@/contracts/abis/BevorProtocol";
 import { Abi, Address } from "viem";
-import { cn } from "@/lib/utils";
+import { cn } from "@/utils";
 import { Loader } from "@/components/Loader";
 
 type InitialStateI = {

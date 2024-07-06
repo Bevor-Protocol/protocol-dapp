@@ -2,10 +2,10 @@
 
 import { useMutation } from "@tanstack/react-query";
 
-import { AuditI, AuditStateI } from "@/lib/types";
-import { useModal } from "@/lib/hooks";
-import { auditAddRequest, auditDeleteRequest } from "@/actions/audits/user";
-import { lockAudit } from "@/actions/audits/auditee";
+import { AuditI } from "@/utils/types/prisma";
+import { AuditStateI } from "@/utils/types";
+import { useModal } from "@/hooks/useContexts";
+import { auditController } from "@/actions";
 import { Row, Column } from "@/components/Box";
 import { Button } from "@/components/Button";
 import DynamicLink from "@/components/Link";
@@ -73,17 +73,15 @@ const AuditeeManageRequest = ({
 
 const AuditorRemoveRequest = ({
   auditId,
-  userId,
   disabled,
   setDisabled,
 }: {
   auditId: string;
-  userId: string;
   disabled: boolean;
   setDisabled: React.Dispatch<React.SetStateAction<boolean>>;
 }): JSX.Element => {
   const { mutate } = useMutation({
-    mutationFn: () => auditDeleteRequest(auditId, userId),
+    mutationFn: () => auditController.deleteRequest(auditId),
     onMutate: () => setDisabled(true),
     onSettled: (data) => {
       setDisabled(false);
@@ -114,17 +112,15 @@ const AuditorRemoveRequest = ({
 
 const AuditorAddRequest = ({
   auditId,
-  userId,
   disabled,
   setDisabled,
 }: {
   auditId: string;
-  userId: string;
   disabled: boolean;
   setDisabled: React.Dispatch<React.SetStateAction<boolean>>;
 }): JSX.Element => {
   const { mutate } = useMutation({
-    mutationFn: () => auditAddRequest(auditId, userId),
+    mutationFn: () => auditController.addRequest(auditId),
     onMutate: () => setDisabled(true),
     onSettled: (data) => {
       setDisabled(false);
@@ -156,17 +152,15 @@ const AuditorAddRequest = ({
 
 const AuditorRemoveVerification = ({
   auditId,
-  userId,
   disabled,
   setDisabled,
 }: {
   auditId: string;
-  userId: string;
   disabled: boolean;
   setDisabled: React.Dispatch<React.SetStateAction<boolean>>;
 }): JSX.Element => {
   const { mutate } = useMutation({
-    mutationFn: () => auditDeleteRequest(auditId, userId),
+    mutationFn: () => auditController.deleteRequest(auditId),
     onMutate: () => setDisabled(true),
     onSettled: (data) => {
       setDisabled(false);
@@ -229,7 +223,7 @@ const AuditeeLockAudit = ({
   setDisabled: React.Dispatch<React.SetStateAction<boolean>>;
 }): JSX.Element => {
   const { mutate } = useMutation({
-    mutationFn: () => lockAudit(auditId),
+    mutationFn: () => auditController.lockAudit(auditId),
     onMutate: () => setDisabled(true),
     onSettled: (data) => {
       setDisabled(false);
@@ -298,7 +292,6 @@ const AuditOpenActions = ({
       <Column className="gap-2 items-end w-fit *:w-full">
         <AuditorRemoveVerification
           auditId={audit.id}
-          userId={user.id}
           disabled={disabled}
           setDisabled={setDisabled}
         />
@@ -309,12 +302,7 @@ const AuditOpenActions = ({
   if (actionData.userIsRequested) {
     return (
       <Column className="gap-2 items-end w-fit *:w-full">
-        <AuditorRemoveRequest
-          auditId={audit.id}
-          userId={user.id}
-          disabled={disabled}
-          setDisabled={setDisabled}
-        />
+        <AuditorRemoveRequest auditId={audit.id} disabled={disabled} setDisabled={setDisabled} />
       </Column>
     );
   }
@@ -330,12 +318,7 @@ const AuditOpenActions = ({
   if (user.auditorRole) {
     return (
       <Column className="gap-2 items-end w-fit *:w-full">
-        <AuditorAddRequest
-          auditId={audit.id}
-          userId={user.id}
-          disabled={disabled}
-          setDisabled={setDisabled}
-        />
+        <AuditorAddRequest auditId={audit.id} disabled={disabled} setDisabled={setDisabled} />
       </Column>
     );
   }

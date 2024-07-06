@@ -2,15 +2,14 @@ import { Suspense } from "react";
 
 import { LoaderFill } from "@/components/Loader";
 import AuditEditWrapper from "@/components/screens/audits/edit";
-import { getAudit } from "@/actions/audits/general";
-import { getCurrentUser } from "@/actions/users";
+import { auditController, userController } from "@/actions";
 import { Column } from "@/components/Box";
 import DynamicLink from "@/components/Link";
 import { Button } from "@/components/Button";
 import { Arrow } from "@/assets";
 
 const Fetcher = async ({ auditId }: { auditId: string }): Promise<JSX.Element> => {
-  const audit = await getAudit(auditId);
+  const audit = await auditController.getAudit(auditId);
 
   if (!audit) {
     return (
@@ -20,7 +19,7 @@ const Fetcher = async ({ auditId }: { auditId: string }): Promise<JSX.Element> =
     );
   }
 
-  const { address, user } = await getCurrentUser();
+  const { address, user } = await userController.currentUser();
 
   if (!address) {
     return (

@@ -3,11 +3,11 @@
 import { useState } from "react";
 import { useMutation } from "@tanstack/react-query";
 
-import { useModal } from "@/lib/hooks";
+import { useModal } from "@/hooks/useContexts";
 import { Column, Row } from "@/components/Box";
-import { AuditI } from "@/lib/types";
+import { AuditI } from "@/utils/types/prisma";
 // import * as Form from "@/components/Form";
-import { auditUpdateApprovalStatus } from "@/actions/audits/auditee";
+import { auditController } from "@/actions";
 import { AuditorStatus } from "@prisma/client";
 import { AuditorItem } from "@/components/Audit";
 import { Button } from "@/components/Button";
@@ -37,7 +37,7 @@ const RequestsEdit = ({ audit }: { audit: AuditI }): JSX.Element => {
       auditorsApprove: string[];
       auditorsReject: string[];
     }) => {
-      return auditUpdateApprovalStatus(
+      return auditController.updateRequestors(
         variables.id,
         variables.auditorsApprove,
         variables.auditorsReject,

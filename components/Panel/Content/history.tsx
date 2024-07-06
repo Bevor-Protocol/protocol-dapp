@@ -1,8 +1,9 @@
 import { X } from "@/assets";
 import { Column, Row } from "@/components/Box";
-import { useModal } from "@/lib/hooks";
-import { HistoryI } from "@/lib/types";
-import { cn, timeSince } from "@/lib/utils";
+import { useModal } from "@/hooks/useContexts";
+import { HistoryI } from "@/utils/types";
+import { cn } from "@/utils";
+import { timeSince } from "@/utils/dates";
 import { AuditorItemSimple } from "@/components/Audit";
 import { HistoryAction, UserType } from "@prisma/client";
 

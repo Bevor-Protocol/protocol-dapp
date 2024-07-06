@@ -3,20 +3,21 @@
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 
-import { getLeaderboard } from "@/actions/users";
+import { userController } from "@/actions";
 import LeaderboardData from "./data";
 import LeaderboardNav from "./nav";
-import { UserWithCount } from "@/lib/types";
+import { UserWithCount } from "@/utils/types/prisma";
 import { Column } from "@/components/Box";
 import { LeaderboardSkeleton } from "@/components/Loader";
+import { LEADERBOARD } from "@/constants/queryKeys";
 
 const LeaderboardWrapper = ({ initialData }: { initialData: UserWithCount[] }): JSX.Element => {
   const [listSort, setListSort] = useState("name");
   const [listOrder, setListOrder] = useState("asc");
 
   const { data, isFetching } = useQuery({
-    queryKey: ["leaderboard", listSort, listOrder],
-    queryFn: () => getLeaderboard(listSort, listOrder),
+    queryKey: [LEADERBOARD, listSort, listOrder],
+    queryFn: () => userController.getLeaderboard(listSort, listOrder),
     initialData,
   });
 

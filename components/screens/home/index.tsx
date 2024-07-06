@@ -1,9 +1,10 @@
 "use client";
 // import { useEffect, useState } from "react";
-import { HomeStatI } from "@/lib/types";
+import { HomeStatI } from "@/utils/types";
 import { useQuery } from "@tanstack/react-query";
 import * as Card from "@/components/Card";
 import { HomeStatSkeleton } from "@/components/Loader";
+import { HOME_STATS } from "@/constants/queryKeys";
 
 export const HomeStat = ({ action, symbol, text, queryKey }: HomeStatI): JSX.Element => {
   // I converted this to a client component since it's not important for user interaction
@@ -12,7 +13,7 @@ export const HomeStat = ({ action, symbol, text, queryKey }: HomeStatI): JSX.Ele
 
   // The slower requests still block others from completing.
   const { data, isLoading } = useQuery({
-    queryKey: ["homestats", queryKey],
+    queryKey: [HOME_STATS, queryKey],
     queryFn: () => action(),
     refetchOnMount: false,
     refetchOnWindowFocus: false,

@@ -1,40 +1,11 @@
-import { useEffect, useRef, useContext, useReducer } from "react";
-
-import { ModalStateI, EventStateI, SiweStateI } from "./types";
-import SiweContext from "@/providers/siwe/context";
-import ModalContext from "@/providers/modal/context";
-import EventContext from "@/providers/events/context";
-import { useClient, useWriteContract } from "wagmi";
 import { Abi, Address } from "viem";
 import { localhost } from "viem/chains";
+import { useClient, useWriteContract } from "wagmi";
+import { useEvent } from "./useContexts";
+import { useReducer } from "react";
 import { waitForTransactionReceipt } from "viem/actions";
-
-export const useModal = (): ModalStateI => useContext(ModalContext);
-export const useSiwe = (): SiweStateI => useContext(SiweContext);
-export const useEvent = (): EventStateI => useContext(EventContext);
-
-export const useClickOutside = (
-  node: React.RefObject<HTMLElement | undefined>,
-  handler: undefined | (() => void),
-): void => {
-  const handlerRef = useRef<undefined | (() => void)>(handler);
-
-  useEffect(() => {
-    handlerRef.current = handler;
-  }, [handler]);
-
-  useEffect(() => {
-    const handleClickOutside = (e: MouseEvent): void => {
-      if (node.current && !node.current.contains(e.target as Node)) {
-        if (handlerRef.current) handlerRef.current();
-      }
-    };
-
-    document.addEventListener("mousedown", handleClickOutside);
-
-    return (): void => document.removeEventListener("mousedown", handleClickOutside);
-  }, [node]);
-};
+import { contractWriteReducer } from "@/reducers";
+import { CONTRACT_WRITE_INITIAL_STATE } from "@/utils/initialState";
 
 export const useContractWriteListen = ({
   abi,
@@ -52,29 +23,8 @@ export const useContractWriteListen = ({
   state: Record<string, boolean>;
   dispatch: React.Dispatch<Record<string, boolean>>;
 } => {
-  const reducer = (
-    state: Record<string, boolean>,
-    action: Record<string, boolean>,
-  ): { [key: string]: boolean } => {
-    Object.entries(action).forEach(([key, value]) => {
-      if (key in state) {
-        state[key] = value;
-      }
-    });
-    return state;
-  };
-
-  const INITIAL_STATE = {
-    isPendingSign: false,
-    isPendingWrite: false,
-    isSuccessSign: false,
-    isSuccessWrite: false,
-    isErrorSign: false,
-    isErrorWrite: false,
-  };
-
   const { setTxn, setStatus } = useEvent();
-  const [state, dispatch] = useReducer(reducer, { ...INITIAL_STATE });
+  const [state, dispatch] = useReducer(contractWriteReducer, { ...CONTRACT_WRITE_INITIAL_STATE });
   const client = useClient();
 
   // rather than using react-query mutations, I explicitly throw "callbacks" in the
@@ -83,7 +33,7 @@ export const useContractWriteListen = ({
 
   const writeContractWithEvents = (writeArgs: readonly unknown[]): Promise<void> => {
     if (!client) return Promise.reject();
-    dispatch({ ...INITIAL_STATE, isPendingSign: true });
+    dispatch({ ...CONTRACT_WRITE_INITIAL_STATE, isPendingSign: true });
     return writeContractAsync({
       abi,
       address,

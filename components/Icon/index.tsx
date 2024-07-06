@@ -1,32 +1,6 @@
 import React from "react";
-import { cn } from "@/lib/utils";
-
-const sizeMapper: Record<string, Record<string, string>> = {
-  xs: {
-    desktop: "20px",
-    mobile: "20px",
-  },
-  sm: {
-    desktop: "25px",
-    mobile: "25px",
-  },
-  md: {
-    desktop: "30px",
-    mobile: "25px",
-  },
-  lg: {
-    desktop: "75px",
-    mobile: "60px",
-  },
-  xl: {
-    desktop: "90px",
-    mobile: "75px",
-  },
-  xxl: {
-    desktop: "120px",
-    mobile: "90px",
-  },
-};
+import { cn } from "@/utils";
+import { iconSizeMapper } from "@/constants/sizes";
 
 interface IconI extends React.HTMLAttributes<HTMLElement> {
   size: string;
@@ -40,7 +14,7 @@ interface SocialI extends React.HTMLAttributes<HTMLElement> {
 }
 
 export const Icon: React.FC<IconI> = ({ size, image, seed, className, ...rest }) => {
-  const { desktop, mobile } = sizeMapper[size];
+  const { desktop, mobile } = iconSizeMapper[size];
 
   let urlUse = `url(https://avatar.vercel.sh/${seed?.replace(/\s/g, "")})`;
   if (image) {

@@ -1,4 +1,4 @@
-import { cn } from "@/lib/utils";
+import { cn } from "@/utils";
 import React, { forwardRef } from "react";
 
 interface Props extends React.HTMLAttributes<HTMLDivElement> {

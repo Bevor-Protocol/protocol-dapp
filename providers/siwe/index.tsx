@@ -4,11 +4,11 @@ import { useEffect, useState } from "react";
 import SiweContext from "./context";
 
 import * as Modal from "@/components/Modal";
-import { getUser, verify, logout as siweLogout } from "@/actions/siwe";
+import { authController } from "@/actions";
 import { useAccount, useDisconnect, useSignMessage } from "wagmi";
 import SignIn from "@/components/Modal/Content/siwe/signin";
 import RequestAccountChange from "@/components/Modal/Content/siwe/requestAccountChange";
-import { createSiweMessage } from "@/lib/utils";
+import { createSiweMessage } from "@/utils/helpers";
 import { Address } from "viem";
 
 const SiweProvider = ({ children }: { children: React.ReactNode }): JSX.Element => {
@@ -25,7 +25,7 @@ const SiweProvider = ({ children }: { children: React.ReactNode }): JSX.Element 
   const [isSuccess, setIsSuccess] = useState(false);
 
   const logout = (): void => {
-    siweLogout().then(() => {
+    authController.logout().then(() => {
       disconnect();
       setIsAuthenticated(false);
     });
@@ -39,13 +39,17 @@ const SiweProvider = ({ children }: { children: React.ReactNode }): JSX.Element 
     let messageParsed = "";
     setIsPending(true);
     setIsSuccess(false);
-    createSiweMessage(addressUse, chainIdUse)
+    authController
+      .nonce()
+      .then((nonce) => {
+        return createSiweMessage(addressUse, chainIdUse, nonce);
+      })
       .then((message) => {
         messageParsed = message;
         return signMessageAsync({ message });
       })
       .then((signature) => {
-        return verify({ message: messageParsed, signature });
+        return authController.verify(messageParsed, signature);
       })
       .then(() => {
         setIsAuthenticated(true);
@@ -76,7 +80,7 @@ const SiweProvider = ({ children }: { children: React.ReactNode }): JSX.Element 
     */
     let timer: ReturnType<typeof setTimeout>;
     const handleChange = (): void => {
-      getUser().then((user) => {
+      authController.getUser().then((user) => {
         const ANY_USER_AUTHED = user.success && !!user.address;
         const ANY_WALLET_CONNECTED = !!address;
         if (!ANY_USER_AUTHED && !ANY_WALLET_CONNECTED) {

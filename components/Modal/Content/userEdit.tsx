@@ -3,14 +3,14 @@ import React, { useState } from "react";
 import { Users } from "@prisma/client";
 import { useMutation } from "@tanstack/react-query";
 
-import { useModal } from "@/lib/hooks";
+import { useModal } from "@/hooks/useContexts";
 import { Icon } from "@/components/Icon";
 import { Column, Row } from "@/components/Box";
-import { UserStats } from "@/lib/types";
+import { UserStats } from "@/utils/types";
 import * as Form from "@/components/Form";
 import * as Tooltip from "@/components/Tooltip";
 import { Button } from "@/components/Button";
-import { updateUser } from "@/actions/users";
+import { userController } from "@/actions";
 import { X, Info } from "@/assets";
 
 const UserEdit = ({ user, stats }: { user: Users; stats: UserStats }): JSX.Element => {
@@ -23,13 +23,20 @@ const UserEdit = ({ user, stats }: { user: Users; stats: UserStats }): JSX.Eleme
 
   const { mutate, isPending } = useMutation({
     mutationFn: (variables: { formData: FormData }) => {
-      return updateUser(user.id, variables.formData);
+      return userController.updateUser(user.id, variables.formData);
     },
-    onSettled: (data) => {
-      if (data?.success) toggleOpen();
-      if (!data?.success && data?.validationErrors) {
-        setErrors(data.validationErrors);
+    onSuccess: (response) => {
+      if (response.success) {
+        toggleOpen();
+      } else {
+        if (response.validationErrors) {
+          setErrors(response.validationErrors);
+        }
       }
+    },
+    onError: (error) => {
+      console.log(error);
+      setErrors({ arbitrary: "something went wrong, try again later" });
     },
   });
 
@@ -43,6 +50,7 @@ const UserEdit = ({ user, stats }: { user: Users; stats: UserStats }): JSX.Eleme
     // allows for resetting the image preview in an uncontrolled manner.
     // default reset still occurs since the HTML is controlled the input values.
     setSelectedImage(undefined);
+    setErrors({});
   };
 
   return (

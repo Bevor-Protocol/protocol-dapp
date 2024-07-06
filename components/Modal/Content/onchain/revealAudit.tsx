@@ -7,21 +7,20 @@ import { Abi, Address } from "viem";
 import { readContract } from "viem/actions";
 import { Users } from "@prisma/client";
 
-import { useModal } from "@/lib/hooks";
+import { useModal } from "@/hooks/useContexts";
 import { Column } from "@/components/Box";
 import { Button } from "@/components/Button";
 import { X } from "@/assets";
-import { useContractWriteListen } from "@/lib/hooks";
-import { AuditI } from "@/lib/types";
+import { useContractWriteListen } from "@/hooks/useContractWriteListen";
+import { AuditI } from "@/utils/types/prisma";
 import { Loader } from "@/components/Loader";
-import { cn } from "@/lib/utils";
-import { getAuditFindings } from "@/actions/audits/general";
-import { auditAddNftInfoId } from "@/actions/audits/auditee";
+import { cn } from "@/utils";
+import { auditController } from "@/actions";
 import { parseUnits } from "viem";
 
 import BevorABI from "@/contracts/abis/BevorProtocol";
 import ERC20ABI from "@/contracts/abis/ERC20Token";
-import { AvailableTokens } from "@/lib/constants";
+import { AvailableTokens } from "@/constants/web3";
 
 const RevealAudit = ({ audit, user }: { audit: AuditI; user: Users }): JSX.Element => {
   const { toggleOpen } = useModal();
@@ -67,7 +66,8 @@ const RevealAudit = ({ audit, user }: { audit: AuditI; user: Users }): JSX.Eleme
     let tokenIdGenerated = BigInt(0);
     let auditIdGenerated = "";
     let findings: string[] = [];
-    getAuditFindings(audit.id)
+    auditController
+      .getAuditFindings(audit.id)
       .then((result) => {
         if (!result) return;
         findings = result.auditors.map((auditor) => {
@@ -88,7 +88,7 @@ const RevealAudit = ({ audit, user }: { audit: AuditI; user: Users }): JSX.Eleme
         return writeContractWithEvents([findings, auditIdGenerated]);
       })
       .then(() => {
-        return auditAddNftInfoId(audit.id, BigInt(tokenIdGenerated as bigint).toString());
+        return auditController.addNftInfo(audit.id, BigInt(tokenIdGenerated as bigint).toString());
       })
       .catch((error) => {
         console.log(error);

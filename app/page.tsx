@@ -1,7 +1,7 @@
 import { Arrow } from "@/assets";
 import { HomeStat } from "@/components/screens/home";
-import * as Actions from "@/actions/protocolData";
-import { cn } from "@/lib/utils";
+import { statController } from "@/actions";
+import { cn } from "@/utils";
 import { Column, Row } from "@/components/Box";
 import DynamicLink from "@/components/Link";
 
@@ -44,20 +44,24 @@ const Page = (): JSX.Element => {
             "xl:grid-cols-1 xl:grid-rows-4",
           )}
         >
-          <HomeStat action={Actions.protocolDataAudits} text="audits conducted" queryKey="audits" />
           <HomeStat
-            action={Actions.protocolDataVulnerabilities}
+            action={statController.getProtocolNumAudits}
+            text="audits conducted"
+            queryKey="audits"
+          />
+          <HomeStat
+            action={statController.getProtocolVulnerabilities}
             text="vulnerabilities uncovered"
             queryKey="vulnerabilities"
           />
           <HomeStat
-            action={Actions.protocolDataFunds}
+            action={statController.getProtocolFunds}
             symbol="$"
             text="funds facilitated"
             queryKey="funds"
           />
           <HomeStat
-            action={Actions.protocolDataAuditors}
+            action={statController.getProtocolNumAuditors}
             text="registered auditors"
             queryKey="auditors"
           />

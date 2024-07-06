@@ -1,27 +1,24 @@
 "use client";
 import { useAccount } from "wagmi";
 
-import { useModal } from "@/lib/hooks";
+import { useModal } from "@/hooks/useContexts";
 import { Chevron } from "@/assets";
 import { Icon } from "@/components/Icon";
-import { ChainPresets } from "@/lib/constants";
 import Networks from "@/components/Dropdown/Content/networks";
 import Profile from "@/components/Dropdown/Content/profile";
-import { trimAddress } from "@/lib/utils";
-import { cn } from "@/lib/utils";
+import { trimAddress } from "@/utils/formatters";
+import { cn } from "@/utils";
 import { Button } from "@/components/Button";
 import { Row } from "@/components/Box";
 import * as Dropdown from "@/components/Dropdown";
 import * as Tooltip from "@/components/Tooltip";
 import { Users } from "@prisma/client";
 import Wallets from "@/components/Panel/Content/wallets";
+import { getNetworkImage } from "@/utils/helpers";
 
 const Web3Network = (): JSX.Element => {
   const { chain } = useAccount();
-  let imgSrc = 99999;
-  if (chain && chain.id in ChainPresets) {
-    imgSrc = chain.id;
-  }
+  const { supported, networkImg } = getNetworkImage(chain);
 
   return (
     <Dropdown.Main
@@ -32,11 +29,7 @@ const Web3Network = (): JSX.Element => {
         <Tooltip.Reference shouldShow={!chain}>
           <Tooltip.Trigger>
             <Row className="justify-center items-center gap-2 px-2 h-12 rounded-lg hover:bg-dark-primary-30">
-              <Icon
-                size="sm"
-                image={ChainPresets[imgSrc]}
-                className={cn(imgSrc === 99999 && "!bg-auto")}
-              />
+              <Icon size="sm" image={networkImg} className={cn(!supported && "!bg-auto")} />
               <Chevron />
             </Row>
           </Tooltip.Trigger>

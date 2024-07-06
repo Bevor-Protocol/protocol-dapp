@@ -6,25 +6,24 @@ import { Row, Column } from "@/components/Box";
 import { Button } from "@/components/Button";
 import * as Tooltip from "@/components/Tooltip";
 import { Info } from "@/assets";
-import { useModal } from "@/lib/hooks";
+import { useModal } from "@/hooks/useContexts";
 import UploadFindings from "@/components/Modal/Content/uploadFindings";
-import { AuditI, AuditStateI } from "@/lib/types";
+import { AuditI } from "@/utils/types/prisma";
+import { AuditStateI } from "@/utils/types";
 
 import RevealAudit from "@/components/Modal/Content/onchain/revealAudit";
 
 const AuditorSubmitFindings = ({
   auditId,
-  userId,
   disabled,
 }: {
   auditId: string;
-  userId: string;
   disabled: boolean;
 }): JSX.Element => {
   const { toggleOpen, setContent } = useModal();
 
   const handleUploadModal = (): void => {
-    setContent(<UploadFindings auditId={auditId} userId={userId} />);
+    setContent(<UploadFindings auditId={auditId} />);
     toggleOpen();
   };
   return (
@@ -125,11 +124,7 @@ const AuditOngoingActions = ({
   if (actionData.isAnAuditor) {
     return (
       <Column className="gap-2 items-end w-fit *:w-full">
-        <AuditorSubmitFindings
-          auditId={audit.id}
-          userId={user.id}
-          disabled={actionData.userSubmitted}
-        />
+        <AuditorSubmitFindings auditId={audit.id} disabled={actionData.userSubmitted} />
       </Column>
     );
   }

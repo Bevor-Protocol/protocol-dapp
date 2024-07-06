@@ -7,7 +7,7 @@ import { CoinbaseWallet, WalletConnect } from "@/assets/wallets";
 import { Column, Row } from "@/components/Box";
 import { Loader } from "@/components/Loader";
 import Image from "next/image";
-import { useSiwe } from "@/lib/hooks";
+import { useSiwe } from "@/hooks/useContexts";
 import { Button } from "@/components/Button";
 
 const IconMapper: Record<string, React.ReactNode> = {

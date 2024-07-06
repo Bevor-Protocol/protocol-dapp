@@ -1,12 +1,13 @@
-import { addToWishlist, getWishlist, removeFromWishlist } from "@/actions/users";
+import { wishlistController } from "@/actions";
 import { Arrow, Heart, X } from "@/assets";
 import { AuditorItemSimple } from "@/components/Audit";
 import { Column, Row } from "@/components/Box";
-import { useModal } from "@/lib/hooks";
-import { cn } from "@/lib/utils";
+import { WISHLIST } from "@/constants/queryKeys";
+import { useModal } from "@/hooks/useContexts";
+import { cn } from "@/utils";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 
 export const WishlistPanel = ({ userId }: { userId: string }): JSX.Element => {
   // We won't remove people from the panel immediately upon being removed.
@@ -16,24 +17,22 @@ export const WishlistPanel = ({ userId }: { userId: string }): JSX.Element => {
   const [isWishlisted, setIsWishlisted] = useState<{ id: string; wishlisted: boolean }[]>([]);
 
   const { data, isPending } = useQuery({
-    queryKey: ["wishlist"],
-    queryFn: () => getWishlist(userId),
+    queryKey: [WISHLIST],
+    queryFn: async () => {
+      const result = await wishlistController.getUserWishlist(userId);
+      if (result) {
+        setIsWishlisted(result.map((d) => ({ id: d.receiver.id, wishlisted: true })));
+        return result;
+      }
+    },
   });
-
-  useEffect(() => {
-    if (!data) return;
-    // initial fetch will not be updated until panel is closed.
-    // we can update the state array upon mutation, to allow users to re-add users to
-    // the wishlist.
-    setIsWishlisted(data.map((d) => ({ id: d.receiver.id, wishlisted: true })));
-  }, [data]);
 
   const { mutate } = useMutation({
     mutationFn: (variables: { receiver: string; type: string }) => {
       if (variables.type == "remove") {
-        return removeFromWishlist(userId, variables.receiver);
+        return wishlistController.removeFromWishlist(userId, variables.receiver);
       }
-      return addToWishlist(userId, variables.receiver);
+      return wishlistController.addToWishlist(userId, variables.receiver);
     },
     onSuccess: (_, variables: { receiver: string; type: string }) => {
       const updatedWishlist = isWishlisted.map((item) => {

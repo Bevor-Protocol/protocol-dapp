@@ -3,7 +3,8 @@
 import * as Tooltip from "@/components/Tooltip";
 import DynamicLink from "@/components/Link";
 import { Icon } from "@/components/Icon";
-import { cn, trimAddress } from "@/lib/utils";
+import { cn } from "@/utils";
+import { trimAddress } from "@/utils/formatters";
 import { Users } from "@prisma/client";
 
 export const AuditAuditor = ({

@@ -6,14 +6,15 @@ import { Row } from "@/components/Box";
 import { Toggle } from "@/components/Toggle";
 import { AuditorItem } from "@/components/Audit";
 import DynamicLink from "@/components/Link";
-import { safeGetMarkdown } from "@/actions/audits/general";
+import { auditController } from "@/actions";
 import { Loader } from "@/components/Loader";
 import { Users } from "@prisma/client";
+import { MARKDOWN } from "@/constants/queryKeys";
 
 const AuditMarkdown = ({ auditId, user }: { auditId: string; user: Users | null }): JSX.Element => {
   const { data, isPending } = useQuery({
-    queryKey: ["markdown", auditId, user?.id ?? ""],
-    queryFn: () => safeGetMarkdown(auditId, user?.id),
+    queryKey: [MARKDOWN, auditId, user?.id ?? ""],
+    queryFn: () => auditController.safeMarkdown(auditId),
   });
 
   const [active, setActive] = useState("details");

@@ -31,6 +31,7 @@ module.exports = {
     "no-console": OFF,
     "@typescript-eslint/explicit-function-return-type": OFF,
     "@typescript-eslint/no-var-requires": WARN,
+    "@typescript-eslint/return-await": OFF,
     "max-len": [
       ERROR,
       {

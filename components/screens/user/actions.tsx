@@ -1,10 +1,10 @@
 "use client";
 
-import { UserStats } from "@/lib/types";
+import { UserStats } from "@/utils/types";
 import { Button } from "@/components/Button";
 import { Row } from "@/components/Box";
 import DynamicLink from "@/components/Link";
-import { useModal } from "@/lib/hooks";
+import { useModal } from "@/hooks/useContexts";
 import UserEdit from "@/components/Modal/Content/userEdit";
 import { Users } from "@prisma/client";
 

@@ -1,8 +1,8 @@
 "use client";
 
-import { addToWishlist, removeFromWishlist } from "@/actions/users";
+import { wishlistController } from "@/actions";
 import { Heart } from "@/assets";
-import { cn } from "@/lib/utils";
+import { cn } from "@/utils";
 import { useMutation } from "@tanstack/react-query";
 
 const UserWishlist = ({
@@ -18,9 +18,9 @@ const UserWishlist = ({
     mutationKey: ["wishlist", requestor, receiver],
     mutationFn: () => {
       if (isWishlistedFlag) {
-        return removeFromWishlist(requestor, receiver);
+        return wishlistController.removeFromWishlist(requestor, receiver);
       }
-      return addToWishlist(requestor, receiver);
+      return wishlistController.addToWishlist(requestor, receiver);
     },
   });
 

@@ -3,10 +3,10 @@ import { useSwitchChain, useAccount, Register } from "wagmi";
 
 import { Icon } from "@/components/Icon";
 import * as Card from "@/components/Card";
-import { ChainPresets } from "@/lib/constants";
+import { ChainPresets } from "@/constants/web3";
 import { Column, HoverItem } from "@/components/Box";
 import { Check } from "@/assets";
-import { cn } from "@/lib/utils";
+import { cn } from "@/utils";
 
 const Networks = ({ close }: { close?: () => void }): JSX.Element => {
   const { chain: currentChain } = useAccount();

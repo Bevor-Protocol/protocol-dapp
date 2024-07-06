@@ -3,16 +3,17 @@
 import { useState } from "react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 
-import { useModal } from "@/lib/hooks";
+import { useModal } from "@/hooks/useContexts";
 import { Row } from "@/components/Box";
-import { AuditI } from "@/lib/types";
+import { AuditI } from "@/utils/types/prisma";
 import * as Form from "@/components/Form";
-import { attestToTerms } from "@/actions/audits/auditor";
+import { auditController } from "@/actions";
 import { Users } from "@prisma/client";
 import { Button } from "@/components/Button";
 import { X } from "@/assets";
 import React from "react";
-import { cn } from "@/lib/utils";
+import { cn } from "@/utils";
+import { ACTIONS } from "@/constants/queryKeys";
 
 const AuditorAttest = ({ audit, user }: { audit: AuditI; user: Users }): JSX.Element => {
   const { toggleOpen } = useModal(); // const [showRejected, setShowRejected] = useState(false);
@@ -22,11 +23,11 @@ const AuditorAttest = ({ audit, user }: { audit: AuditI; user: Users }): JSX.Ele
 
   const { mutate, isPending } = useMutation({
     mutationFn: (variables: { status: boolean }) => {
-      return attestToTerms(audit.id, user.id, variables.status, comment);
+      return auditController.attestToTerms(audit.id, user.id, variables.status, comment);
     },
     onSettled: (data) => {
       if (data?.success) {
-        queryClient.invalidateQueries({ queryKey: ["actions"] });
+        queryClient.invalidateQueries({ queryKey: [ACTIONS] });
         toggleOpen();
       }
       if (!data?.success && data?.validationErrors) {

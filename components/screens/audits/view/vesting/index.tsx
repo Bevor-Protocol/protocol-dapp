@@ -1,9 +1,9 @@
-import { AuditI } from "@/lib/types";
+import { AuditI } from "@/utils/types/prisma";
 import { AuditStatus } from "@prisma/client";
-import { getAudit, getAuditorVestingSchedule } from "@/actions/contractRead";
+import { contractController } from "@/actions";
 import VestingDisplay from "./display";
 import { Address } from "viem";
-import { AvailableTokens } from "@/lib/constants";
+import { AvailableTokens } from "@/constants/web3";
 
 const Vesting = async ({
   audit,
@@ -22,7 +22,7 @@ const Vesting = async ({
     return <></>;
   }
 
-  const auditView = await getAudit(BigInt(audit.onchainAuditInfoId));
+  const auditView = await contractController.getAudit(BigInt(audit.onchainAuditInfoId));
 
   if (!auditView) {
     return <></>;
@@ -36,7 +36,7 @@ const Vesting = async ({
     withdrawn: null as string | null,
   };
   if (isAuditor && address) {
-    vestingScheduleInfo = await getAuditorVestingSchedule(
+    vestingScheduleInfo = await contractController.getAuditorVestingSchedule(
       BigInt(audit.onchainAuditInfoId),
       address as Address,
       audit.token as Address,

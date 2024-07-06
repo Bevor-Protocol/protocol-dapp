@@ -1,8 +1,10 @@
 "use client";
 import { useRef, useReducer, cloneElement, ReactElement } from "react";
 
-import { useClickOutside } from "@/lib/hooks";
-import { cn, filterChildren } from "@/lib/utils";
+import { useClickOutside } from "@/hooks/useClickOutside";
+import { cn } from "@/utils";
+import { filterChildren } from "@/utils/filters";
+import { genericToggleReducer } from "@/reducers";
 
 interface Props extends React.HTMLAttributes<HTMLDivElement> {
   children: React.ReactNode;
@@ -16,7 +18,7 @@ interface PropsWithClose extends Props {
 
 export const Main: React.FC<Props> = ({ children, className, ...rest }) => {
   const ref = useRef<HTMLDivElement>(null);
-  const [isShowing, toggle] = useReducer((s) => !s, false);
+  const [isShowing, toggle] = useReducer(genericToggleReducer, false);
 
   useClickOutside(ref, isShowing ? toggle : undefined);
 

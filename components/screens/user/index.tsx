@@ -2,9 +2,9 @@ import { Users } from "@prisma/client";
 
 import { Column, Row } from "@/components/Box";
 import { Icon } from "@/components/Icon";
-import { trimAddress } from "@/lib/utils";
+import { trimAddress } from "@/utils/formatters";
 import * as Form from "@/components/Form";
-import { UserStats } from "@/lib/types";
+import { UserStats } from "@/utils/types";
 
 const UserContent = async ({
   user,

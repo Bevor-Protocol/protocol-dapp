@@ -3,10 +3,10 @@
 import { useEffect, useState } from "react";
 
 import { History } from "@/assets";
-import { HistoryI } from "@/lib/types";
-import { useModal } from "@/lib/hooks";
+import { HistoryI } from "@/utils/types";
+import { useModal } from "@/hooks/useContexts";
 import { HistoryPanel } from "@/components/Panel/Content/history";
-import { checkLocalMostRecent, setLocalMostRecent } from "@/lib/utils";
+import { checkLocalMostRecent, setLocalMostRecent } from "@/utils/browser";
 
 const AuditHistory = ({
   history,

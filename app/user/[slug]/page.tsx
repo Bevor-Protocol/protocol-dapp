@@ -2,13 +2,7 @@ import { Suspense } from "react";
 
 import { Loader } from "@/components/Loader";
 import UserContent from "@/components/screens/user";
-import {
-  getCurrentUser,
-  getUserAudits,
-  getUserProfile,
-  getUserStats,
-  isWishlisted,
-} from "@/actions/users";
+import { userController, wishlistController, statController } from "@/actions";
 import UserNotExist from "@/components/screens/user/onboard";
 import UserAudits from "@/components/screens/user/audits";
 import UserProfileActions from "@/components/screens/user/actions";
@@ -17,14 +11,14 @@ import UserWishlist from "@/components/screens/user/wishlist";
 const Fetcher = async ({ address }: { address: string }): Promise<JSX.Element> => {
   // this is already stored in a context, but since we conditionally fetch the stats server-side,
   // I'll throw a re-request here.
-  const user = await getUserProfile(address);
+  const user = await userController.getProfile(address);
 
   if (!user) {
     return <UserNotExist address={address} />;
   }
-  const stats = await getUserStats(address);
-  const currentUser = await getCurrentUser();
-  const audits = await getUserAudits(address);
+  const stats = await statController.getUserStats(address);
+  const currentUser = await userController.currentUser();
+  const audits = await userController.getUserAudits(address);
 
   const isOwner = currentUser.address === address;
 
@@ -34,7 +28,7 @@ const Fetcher = async ({ address }: { address: string }): Promise<JSX.Element> =
   const canWishlist =
     !isOwner && user.auditorRole && !!currentUser.user && currentUser.user.auditeeRole;
   if (canWishlist) {
-    isWishlistedFlag = await isWishlisted(currentUser.user!.id, user.id);
+    isWishlistedFlag = await wishlistController.isWishlisted(currentUser.user!.id, user.id);
   }
 
   return (

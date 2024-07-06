@@ -2,21 +2,20 @@
 
 import { useMutation } from "@tanstack/react-query";
 
-import { useModal } from "@/lib/hooks";
+import { useModal } from "@/hooks/useContexts";
 import { Row } from "@/components/Box";
 import * as Form from "@/components/Form";
-import { addAuditFindings } from "@/actions/audits/auditor";
+import { auditController } from "@/actions";
 import { Button } from "@/components/Button";
 import { X } from "@/assets";
 import { useState } from "react";
+import { ValidationError } from "@/utils/error";
 
 const UploadFindings = ({
   auditId,
-  userId,
   initial = false,
 }: {
   auditId: string;
-  userId: string;
   initial?: boolean;
 }): JSX.Element => {
   const initialFile = initial ? new File([], "") : undefined;
@@ -26,14 +25,12 @@ const UploadFindings = ({
 
   const { mutate, isPending } = useMutation({
     mutationFn: (variables: { formData: FormData }) => {
-      return addAuditFindings(auditId, userId, variables.formData);
+      return auditController.addFinding(auditId, variables.formData);
     },
-    onSettled: (data) => {
-      if (data?.success) {
-        toggleOpen();
-      }
-      if (!data?.success && data?.validationErrors) {
-        setErrors(data.validationErrors);
+    onSuccess: () => toggleOpen(),
+    onError: (error) => {
+      if (error instanceof ValidationError) {
+        setErrors(error.validationErrors);
       }
     },
   });

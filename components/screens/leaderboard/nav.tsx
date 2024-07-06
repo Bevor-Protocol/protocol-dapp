@@ -1,7 +1,7 @@
 "use client";
 
 import { Arrow } from "@/assets";
-import { cn } from "@/lib/utils";
+import { cn } from "@/utils";
 
 const headers = [
   { key: "name", text: "name" },

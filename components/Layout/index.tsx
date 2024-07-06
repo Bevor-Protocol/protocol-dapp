@@ -5,7 +5,7 @@ import NavWeb3 from "./Nav/web3";
 import DynamicLink from "@/components/Link";
 import { Row, Column } from "@/components/Box";
 import { Suspense } from "react";
-import { getCurrentUser } from "@/actions/users";
+import { userController } from "@/actions";
 
 export const Layout = ({ children }: { children: React.ReactNode }): JSX.Element => {
   return <div className="min-h-svh flex flex-col px-content-limit">{children}</div>;
@@ -23,7 +23,7 @@ export const Footer = (): JSX.Element => {
 };
 
 export const Nav = async (): Promise<JSX.Element> => {
-  const { address, user } = await getCurrentUser();
+  const { address, user } = await userController.currentUser();
   return (
     <nav className="py-6 w-full flex flex-row justify-between items-center md:py-4">
       <Row className="gap-6">
