@@ -1,39 +1,32 @@
 "use server";
 
 import { UserStats } from "@/utils/types";
-import * as StatService from "./stat.service";
+import statController from "./stat.controller";
 
-export const getUserStats = async (address: string): Promise<UserStats> => {
-  const [moneyPaid, moneyEarned, numAuditsCreated, numAuditsAudited, numWishlist] =
-    await Promise.all([
-      StatService.getUserMoneyPaid(address),
-      StatService.getUserMoneyEarned(address),
-      StatService.getUserNumAuditsOwner(address),
-      StatService.getUserNumAuditsAuditor(address),
-      StatService.getUserNumWishlistReciever(address),
-    ]);
-
-  return {
-    moneyPaid,
-    moneyEarned,
-    numAuditsCreated,
-    numAuditsAudited,
-    numWishlist,
-  };
+const getUserStats = async (address: string): Promise<UserStats> => {
+  return statController.getUserStats(address);
 };
 
-export const getProtocolNumAudits = async (): Promise<number> => {
-  return await StatService.getProtocolNumAudits();
+const getProtocolNumAudits = async (): Promise<number> => {
+  return statController.getProtocolNumAudits();
 };
 
-export const getProtocolFunds = async (): Promise<number> => {
-  return await StatService.getProtocolDataFunds();
+const getProtocolFunds = async (): Promise<number> => {
+  return statController.getProtocolFunds();
 };
 
-export const getProtocolVulnerabilities = async (): Promise<number> => {
-  return await StatService.getProtocolDataVulnerabilities();
+const getProtocolVulnerabilities = async (): Promise<number> => {
+  return statController.getProtocolVulnerabilities();
 };
 
-export const getProtocolNumAuditors = async (): Promise<number> => {
-  return await StatService.getProtocolDataAuditors();
+const getProtocolNumAuditors = async (): Promise<number> => {
+  return statController.getProtocolNumAuditors();
+};
+
+export {
+  getUserStats,
+  getProtocolFunds,
+  getProtocolVulnerabilities,
+  getProtocolNumAuditors,
+  getProtocolNumAudits,
 };

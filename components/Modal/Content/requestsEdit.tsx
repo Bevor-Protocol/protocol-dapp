@@ -37,7 +37,7 @@ const RequestsEdit = ({ audit }: { audit: AuditI }): JSX.Element => {
       auditorsApprove: string[];
       auditorsReject: string[];
     }) => {
-      return auditController.updateRequestors(
+      return auditController.owner.updateRequestors(
         variables.id,
         variables.auditorsApprove,
         variables.auditorsReject,

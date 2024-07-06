@@ -1,5 +1,6 @@
 import { HistoryAction, Users, UserType } from "@prisma/client";
 import { Address } from "viem";
+import { AuditI } from "./prisma";
 
 export type LeaderboardI = {
   name: string;
@@ -106,6 +107,20 @@ export interface ValidationFailureI {
 }
 
 export type ValidationResponseI<T> = ValidationSuccessI<T> | ValidationFailureI;
+
+export interface RoleSuccess {
+  allowed: true;
+  user: Users;
+  audit: AuditI;
+}
+
+export interface RoleFailure {
+  allowed: false;
+  user: Users | null;
+  audit: AuditI | null;
+}
+
+export type RoleI = RoleSuccess | RoleFailure;
 
 export type AuditContractView = [
   protocolOwner: Address,

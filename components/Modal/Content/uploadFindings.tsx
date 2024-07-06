@@ -25,7 +25,7 @@ const UploadFindings = ({
 
   const { mutate, isPending } = useMutation({
     mutationFn: (variables: { formData: FormData }) => {
-      return auditController.addFinding(auditId, variables.formData);
+      return auditController.auditor.addFinding(auditId, variables.formData);
     },
     onSuccess: () => toggleOpen(),
     onError: (error) => {

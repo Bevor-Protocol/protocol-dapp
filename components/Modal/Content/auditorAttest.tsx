@@ -23,7 +23,7 @@ const AuditorAttest = ({ audit, user }: { audit: AuditI; user: Users }): JSX.Ele
 
   const { mutate, isPending } = useMutation({
     mutationFn: (variables: { status: boolean }) => {
-      return auditController.attestToTerms(audit.id, user.id, variables.status, comment);
+      return auditController.auditor.attestToTerms(audit.id, user.id, variables.status, comment);
     },
     onSettled: (data) => {
       if (data?.success) {

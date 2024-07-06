@@ -81,7 +81,7 @@ const AuditorRemoveRequest = ({
   setDisabled: React.Dispatch<React.SetStateAction<boolean>>;
 }): JSX.Element => {
   const { mutate } = useMutation({
-    mutationFn: () => auditController.deleteRequest(auditId),
+    mutationFn: () => auditController.auditor.deleteRequest(auditId),
     onMutate: () => setDisabled(true),
     onSettled: (data) => {
       setDisabled(false);
@@ -120,7 +120,7 @@ const AuditorAddRequest = ({
   setDisabled: React.Dispatch<React.SetStateAction<boolean>>;
 }): JSX.Element => {
   const { mutate } = useMutation({
-    mutationFn: () => auditController.addRequest(auditId),
+    mutationFn: () => auditController.auditor.addRequest(auditId),
     onMutate: () => setDisabled(true),
     onSettled: (data) => {
       setDisabled(false);
@@ -160,7 +160,7 @@ const AuditorRemoveVerification = ({
   setDisabled: React.Dispatch<React.SetStateAction<boolean>>;
 }): JSX.Element => {
   const { mutate } = useMutation({
-    mutationFn: () => auditController.deleteRequest(auditId),
+    mutationFn: () => auditController.auditor.deleteRequest(auditId),
     onMutate: () => setDisabled(true),
     onSettled: (data) => {
       setDisabled(false);
@@ -223,7 +223,7 @@ const AuditeeLockAudit = ({
   setDisabled: React.Dispatch<React.SetStateAction<boolean>>;
 }): JSX.Element => {
   const { mutate } = useMutation({
-    mutationFn: () => auditController.lockAudit(auditId),
+    mutationFn: () => auditController.owner.lockAudit(auditId),
     onMutate: () => setDisabled(true),
     onSettled: (data) => {
       setDisabled(false);

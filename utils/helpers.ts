@@ -28,7 +28,6 @@ export const getNetworkImage = (
     result.supported = true;
     result.networkImg = ChainPresets[chain.id];
   }
-  console.log(chain, result);
   return result;
 };
 

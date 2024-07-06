@@ -1,99 +1,64 @@
 "use server";
 
-import { Prisma, Users } from "@prisma/client";
-import * as BlobService from "../blob/blob.service";
-import * as UserService from "./user.service";
-import * as AuthService from "../auth/auth.service";
+import { Users } from "@prisma/client";
+import userController from "./user.controller";
 import { AuditTruncatedI, UserWithCount } from "@/utils/types/prisma";
+import { ValidationResponseI, ValidationSuccessI } from "@/utils/types";
 import { revalidatePath } from "next/cache";
-import { ValidationResponseI } from "@/utils/types";
 import { handleValidationErrorReturn } from "@/utils/error";
 
-export const currentUser = async (): Promise<{ address: string; user: Users | null }> => {
-  const session = await AuthService.getSession();
-  if (!session?.siwe) {
-    return {
-      address: "",
-      user: null,
-    };
-  }
-  const { address } = session.siwe;
-
-  return UserService.getProfile(address)
-    .then((user) => {
-      return { address, user };
-    })
-    .catch(() => {
-      return { address, user: null };
-    });
+const currentUser = async (): Promise<{ address: string; user: Users | null }> => {
+  return userController.currentUser();
 };
 
-export const getProfile = (address: string): Promise<Users | null> => {
-  return UserService.getProfile(address);
+const getProfile = async (address: string): Promise<Users | null> => {
+  return userController.getProfile(address);
 };
 
-export const createUser = async (
+const createUser = async (
   address: string,
   formData: FormData,
 ): Promise<ValidationResponseI<Users>> => {
-  try {
-    const parsed = UserService.parseCreateUserForm(formData);
-
-    const { image, ...rest } = parsed;
-    const dataPass: Prisma.UsersCreateInput = {
-      address,
-      ...rest,
-    };
-
-    const blobData = await BlobService.addBlob("profile-images", image);
-    if (blobData) {
-      dataPass.image = blobData.url;
-    }
-
-    return await UserService.createUser(dataPass).then((data) => {
+  return userController
+    .createUser(address, formData)
+    .then((data): ValidationSuccessI<Users> => {
       return { success: true, data };
+    })
+    .catch((error) => {
+      return handleValidationErrorReturn(error);
     });
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  } catch (error: any) {
-    return handleValidationErrorReturn(error);
-  }
 };
 
-export const updateUser = async (
-  id: string,
-  formData: FormData,
-): Promise<ValidationResponseI<Users>> => {
-  try {
-    const parsed = UserService.parseUpdateUserForm(formData);
-
-    const { image, ...rest } = parsed;
-    const dataPass: Prisma.UsersUpdateInput = {
-      ...rest,
-    };
-
-    const blobData = await BlobService.addBlob("profile-images", image);
-    if (blobData) {
-      dataPass.image = blobData.url;
-    }
-
-    return UserService.updateUser(id, dataPass).then((data) => {
+const updateUser = async (id: string, formData: FormData): Promise<ValidationResponseI<Users>> => {
+  return userController
+    .updateUser(id, formData)
+    .then((data): ValidationSuccessI<Users> => {
       revalidatePath(`/user/${id}`);
       return { success: true, data };
+    })
+    .catch((error) => {
+      return handleValidationErrorReturn(error);
     });
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  } catch (error: any) {
-    return handleValidationErrorReturn(error);
-  }
 };
 
-export const getUserAudits = (address: string): Promise<AuditTruncatedI[]> => {
-  return UserService.userAudits(address);
+const getUserAudits = async (address: string): Promise<AuditTruncatedI[]> => {
+  return userController.getUserAudits(address);
 };
 
-export const getLeaderboard = async (key?: string, order?: string): Promise<UserWithCount[]> => {
-  return UserService.getLeaderboard(key, order);
+const getLeaderboard = async (key?: string, order?: string): Promise<UserWithCount[]> => {
+  return userController.getLeaderboard(key, order);
 };
 
-export const searchAuditors = (query?: string): Promise<Users[]> => {
-  return UserService.searchAuditors(query);
+const searchAuditors = async (query?: string): Promise<Users[]> => {
+  return userController.searchAuditors(query);
+};
+
+export {
+  currentUser,
+  getProfile,
+  createUser,
+  updateUser,
+  getUserAudits,
+  getLeaderboard,
+  searchAuditors,
 };

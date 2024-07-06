@@ -4,8 +4,10 @@ export const ChainPresets: Record<number, string> = {
   // #TODO update for bases
   // Ethereum
   5: "/images/eth.png",
-  // Polygon
-  80001: "/images/polygon.png",
+  // Base
+  8453: "/images/base.png",
+  // Localhost
+  1337: "/images/unknown.svg",
   // Default
   99999: "/images/unknown.svg",
 };

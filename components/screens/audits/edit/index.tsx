@@ -21,7 +21,7 @@ const AuditEditWrapper = ({ audit, user }: { audit: AuditI; user: Users }): JSX.
 
   const { mutate, isPending } = useMutation({
     mutationFn: (variables: { formData: FormData }) =>
-      auditController.updateAudit(audit.id, variables.formData, auditors),
+      auditController.owner.updateAudit(audit.id, variables.formData, auditors),
     onSuccess: (data) => {
       if (data.success) {
         router.push(`/audits/view/${audit.id}`);

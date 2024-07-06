@@ -1,35 +1,21 @@
 "use server";
 
-import { generateNonce } from "siwe";
-import * as AuthService from "./auth.service";
-import { headers } from "next/headers";
+import authController from "./auth.controller";
 
-export const nonce = async (): Promise<string> => {
-  const session = await AuthService.getSession();
-  session.nonce = generateNonce();
-  await session.save();
-
-  return session.nonce;
+const nonce = async (): Promise<string> => {
+  return authController.nonce();
 };
 
-export const getUser = async (): Promise<{ success: boolean; address?: string }> => {
-  const session = await AuthService.getSession();
-
-  return {
-    success: !!session.siwe,
-    address: session.siwe?.address,
-  };
+const getUser = async (): Promise<{ success: boolean; address?: string }> => {
+  return authController.getUser();
 };
 
-export const verify = async (message: string, signature: string): Promise<void> => {
-  const session = await AuthService.getSession();
-  const domain = headers().get("x-forwarded-host") ?? "";
-
-  await AuthService.verifyMessage(message, signature, session, domain);
+const verify = async (message: string, signature: string): Promise<void> => {
+  return authController.verify(message, signature);
 };
 
-export const logout = async (): Promise<boolean> => {
-  const session = await AuthService.getSession();
-  session.destroy();
-  return true;
+const logout = async (): Promise<boolean> => {
+  return authController.logout();
 };
+
+export { nonce, getUser, verify, logout };

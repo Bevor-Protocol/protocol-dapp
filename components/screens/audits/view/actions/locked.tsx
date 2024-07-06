@@ -49,7 +49,7 @@ const AuditeeReopenAudit = ({
   setDisabled: React.Dispatch<React.SetStateAction<boolean>>;
 }): JSX.Element => {
   const { mutate } = useMutation({
-    mutationFn: () => auditController.openAudit(id),
+    mutationFn: () => auditController.owner.openAudit(id),
     onMutate: () => setDisabled(true),
     onSettled: (data) => {
       setDisabled(false);
@@ -128,7 +128,7 @@ const AuditorRemoveVerification = ({
   setDisabled: React.Dispatch<React.SetStateAction<boolean>>;
 }): JSX.Element => {
   const { mutate } = useMutation({
-    mutationFn: () => auditController.leaveAudit(auditId),
+    mutationFn: () => auditController.auditor.leaveAudit(auditId),
     onMutate: () => setDisabled(true),
     onSettled: (data) => {
       setDisabled(false);

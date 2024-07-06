@@ -29,7 +29,14 @@ const Web3Network = (): JSX.Element => {
         <Tooltip.Reference shouldShow={!chain}>
           <Tooltip.Trigger>
             <Row className="justify-center items-center gap-2 px-2 h-12 rounded-lg hover:bg-dark-primary-30">
-              <Icon size="sm" image={networkImg} className={cn(!supported && "!bg-auto")} />
+              <Icon
+                size="sm"
+                image={networkImg}
+                className={cn(
+                  !supported && "!bg-auto",
+                  networkImg.includes("unknown") && "!bg-auto", // for localhost for now.
+                )}
+              />
               <Chevron />
             </Row>
           </Tooltip.Trigger>

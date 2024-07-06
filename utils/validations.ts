@@ -1,5 +1,6 @@
 import { isAddress } from "viem";
 import { z, ZodError } from "zod";
+import { ValidationError } from "./error";
 
 const customFormToggleValidation = (value: string, ctx: z.RefinementCtx): boolean => {
   // transforms the form input strings (coming from value prop) into booleans.
@@ -55,6 +56,8 @@ export const userSchemaCreate = userSchema
   );
 
 export const auditFindingsSchema = z.custom<File>((file) => {
+  // This doesn't check for empty files (default HTML form state)
+  // we'll do that separately (we shouldn't fail validation when this is optional)
   if (!file) return true;
   if (!(file instanceof File)) return "This isn't a file";
   if (!file.name || file.size <= 0) return true;
@@ -95,4 +98,31 @@ export const handleValidationErrors = <T>(error: ZodError<T>): Record<string, st
     validationErrors[err.path[0]] = err.message;
   });
   return validationErrors;
+};
+
+export const parseForm = (
+  formData: FormData,
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  schema: z.ZodType<any> | z.ZodEffects<z.ZodObject<any>>,
+): z.infer<typeof schema> => {
+  const form = Object.fromEntries(formData);
+  const formParsed = schema.safeParse(form);
+  if (!formParsed.success) {
+    const validationErrors = handleValidationErrors(formParsed.error);
+    throw new ValidationError("validation schema", validationErrors);
+  }
+  return formParsed.data;
+};
+
+export const parseFormEntry = (
+  entry: FormDataEntryValue,
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  schema: z.ZodType<any>,
+): z.infer<typeof schema> => {
+  const entryParsed = schema.safeParse(entry);
+  if (!entryParsed.success) {
+    const validationErrors = handleValidationErrors(entryParsed.error);
+    throw new ValidationError("validation schema", validationErrors);
+  }
+  return entryParsed.data;
 };

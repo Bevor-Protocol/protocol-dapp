@@ -10,7 +10,7 @@
     "vercel-build": "doppler run --command='prisma generate && prisma migrate deploy && next build'",
     "start": "doppler run -- next start",
     "prepare": "husky install",
-    "lint": "next lint && prettier --check \"**/*.{ts,tsx,js,jsx,md,json}\" && prisma validate && tsc --noEmit",
+    "lint": "doppler run --command='next lint && prettier --check \"**/*.{ts,tsx,js,jsx,md,json}\" && prisma validate && tsc --noEmit'",
     "format": "prettier --write \"**/*.{ts,tsx,js,jsx,md,json}\" && eslint --fix && prisma format",
     "db:studio": "doppler run -- npx prisma studio",
     "db:push": "doppler run -- npx prisma db push",
