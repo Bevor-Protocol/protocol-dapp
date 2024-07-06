@@ -92,7 +92,7 @@ export const auditFormSchema = z
 export const handleValidationErrors = <T>(error: ZodError<T>): Record<string, string> => {
   const validationErrors: Record<string, string> = {};
   error.errors.forEach((err) => {
-    validationErrors[err.path[0]] = error.message;
+    validationErrors[err.path[0]] = err.message;
   });
   return validationErrors;
 };

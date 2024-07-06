@@ -23,11 +23,12 @@ export const createSiweMessage = async (
 export const getNetworkImage = (
   chain: Chain | undefined,
 ): { supported: boolean; networkImg: string } => {
-  const result = { supported: false, networkImg: ChainPresets[999999] };
+  const result = { supported: false, networkImg: ChainPresets[99999] };
   if (chain && chain.id in ChainPresets) {
     result.supported = true;
     result.networkImg = ChainPresets[chain.id];
   }
+  console.log(chain, result);
   return result;
 };
 

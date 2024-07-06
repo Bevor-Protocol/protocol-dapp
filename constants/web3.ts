@@ -1,6 +1,7 @@
 import { Address } from "viem";
 
 export const ChainPresets: Record<number, string> = {
+  // #TODO update for bases
   // Ethereum
   5: "/images/eth.png",
   // Polygon
