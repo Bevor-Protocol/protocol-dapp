@@ -5,6 +5,7 @@ import { Column, Row } from "@/components/Box";
 import { WISHLIST } from "@/constants/queryKeys";
 import { useModal } from "@/hooks/useContexts";
 import { cn } from "@/utils";
+import { Users } from "@prisma/client";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import Link from "next/link";
 import { useState } from "react";
@@ -28,15 +29,23 @@ export const WishlistPanel = ({ userId }: { userId: string }): JSX.Element => {
   });
 
   const { mutate } = useMutation({
-    mutationFn: (variables: { receiver: string; type: string }) => {
+    mutationFn: (variables: { receiver: Users; type: string }) => {
       if (variables.type == "remove") {
-        return wishlistController.removeFromWishlist(userId, variables.receiver);
+        return wishlistController.removeFromWishlist(
+          userId,
+          variables.receiver.id,
+          variables.receiver.address,
+        );
       }
-      return wishlistController.addToWishlist(userId, variables.receiver);
+      return wishlistController.addToWishlist(
+        userId,
+        variables.receiver.id,
+        variables.receiver.address,
+      );
     },
-    onSuccess: (_, variables: { receiver: string; type: string }) => {
+    onSuccess: (_, variables: { receiver: Users; type: string }) => {
       const updatedWishlist = isWishlisted.map((item) => {
-        if (item.id == variables.receiver) {
+        if (item.id == variables.receiver.id) {
           return { ...item, wishlisted: variables.type == "add" };
         }
         return { ...item };
@@ -65,7 +74,7 @@ export const WishlistPanel = ({ userId }: { userId: string }): JSX.Element => {
                 <div
                   onClick={() =>
                     mutate({
-                      receiver: wishlist.receiver.id,
+                      receiver: wishlist.receiver,
                       type: isWishlisted[ind].wishlisted ? "remove" : "add",
                     })
                   }
