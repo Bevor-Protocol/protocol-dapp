@@ -5,3 +5,4 @@ export const ACTIONS = "ACTIONS";
 export const AUDITS = "AUDITS";
 export const MARKDOWN = "MARKDOWN";
 export const LEADERBOARD = "LEADERBOARD";
+export const USER = "USER";

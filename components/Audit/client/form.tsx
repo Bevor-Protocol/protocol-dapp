@@ -46,7 +46,7 @@ const AuditFormEntries = ({
   });
 
   const { data: dataWishlist, isPending: isPendingWishlist } = useQuery({
-    queryKey: [WISHLIST],
+    queryKey: [WISHLIST, userId],
     queryFn: () => wishlistController.getUserWishlist(userId),
   });
 

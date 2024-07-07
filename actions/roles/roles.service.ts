@@ -48,7 +48,7 @@ class RoleService {
     if (!allowed || audit?.status !== AuditStatus.ATTESTATION) {
       return { audit, user, allowed: false };
     }
-    return { audit, user, allowed: false };
+    return { audit, user, allowed: true };
   }
 
   async canEdit(id: string): Promise<RoleI> {

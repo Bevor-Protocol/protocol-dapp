@@ -3,42 +3,32 @@
 import { Users } from "@prisma/client";
 import userController from "./user.controller";
 import { AuditTruncatedI, UserWithCount } from "@/utils/types/prisma";
-import { ValidationResponseI, ValidationSuccessI } from "@/utils/types";
-import { revalidatePath } from "next/cache";
-import { handleValidationErrorReturn } from "@/utils/error";
+import { ValidationResponseI } from "@/utils/types";
+import { revalidatePath, unstable_cache } from "next/cache";
+import { errorWrapperMutation } from "@/utils/error";
 
 const currentUser = async (): Promise<{ address: string; user: Users | null }> => {
   return userController.currentUser();
 };
 
 const getProfile = async (address: string): Promise<Users | null> => {
-  return userController.getProfile(address);
+  const action = userController.getProfile(address);
+  return unstable_cache(async () => action, ["profile"], { tags: [`profile ${address}`] })();
 };
 
 const createUser = async (
   address: string,
   formData: FormData,
 ): Promise<ValidationResponseI<Users>> => {
-  return userController
-    .createUser(address, formData)
-    .then((data): ValidationSuccessI<Users> => {
-      return { success: true, data };
-    })
-    .catch((error) => {
-      return handleValidationErrorReturn(error);
-    });
+  return errorWrapperMutation(() => userController.createUser(address, formData));
 };
 
 const updateUser = async (id: string, formData: FormData): Promise<ValidationResponseI<Users>> => {
-  return userController
-    .updateUser(id, formData)
-    .then((data): ValidationSuccessI<Users> => {
-      revalidatePath(`/user/${id}`);
-      return { success: true, data };
-    })
-    .catch((error) => {
-      return handleValidationErrorReturn(error);
-    });
+  return errorWrapperMutation(
+    () => userController.updateUser(id, formData),
+    // () => revalidateTag("profile 0x9C3f8EF6079C493aD85D59D53E10995B934eEf1d"),
+    () => revalidatePath("/user", "layout"),
+  );
 };
 
 const getUserAudits = async (address: string): Promise<AuditTruncatedI[]> => {

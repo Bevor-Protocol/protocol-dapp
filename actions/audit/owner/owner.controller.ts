@@ -1,4 +1,4 @@
-import { AuditorStatus, Audits, Prisma, Users } from "@prisma/client";
+import { AuditorStatus, Audits, Users } from "@prisma/client";
 import { auditFormSchema, parseForm } from "@/utils/validations";
 import { RoleError } from "@/utils/error";
 import { z } from "zod";
@@ -76,7 +76,7 @@ class OwnerController {
     id: string,
     auditorsApprove: string[],
     auditorsReject: string[],
-  ): Promise<Prisma.BatchPayload[]> {
+  ): Promise<{ rejected: number; verified: number }> {
     const { allowed } = await this.roleService.canEdit(id);
     if (!allowed) {
       throw new RoleError("you cannot edit this audit");
@@ -87,7 +87,12 @@ class OwnerController {
       this.ownerService.updateRequestors(id, auditorsApprove, AuditorStatus.VERIFIED),
     ];
 
-    return Promise.all(promises);
+    const data = await Promise.all(promises);
+
+    return {
+      rejected: data[0].count,
+      verified: data[1].count,
+    };
   }
 }
 

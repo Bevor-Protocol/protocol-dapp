@@ -7,6 +7,7 @@ import UserNotExist from "@/components/screens/user/onboard";
 import UserAudits from "@/components/screens/user/audits";
 import UserProfileActions from "@/components/screens/user/actions";
 import UserWishlist from "@/components/screens/user/wishlist";
+import { unstable_cache } from "next/cache";
 
 const Fetcher = async ({ address }: { address: string }): Promise<JSX.Element> => {
   // this is already stored in a context, but since we conditionally fetch the stats server-side,
@@ -18,7 +19,13 @@ const Fetcher = async ({ address }: { address: string }): Promise<JSX.Element> =
   }
   const stats = await statController.getUserStats(address);
   const currentUser = await userController.currentUser();
-  const audits = await userController.getUserAudits(address);
+  const audits = await unstable_cache(
+    async () => userController.getUserAudits(address),
+    ["audits"],
+    {
+      tags: [`audits ${address}`],
+    },
+  )();
 
   const isOwner = currentUser.address === address;
 

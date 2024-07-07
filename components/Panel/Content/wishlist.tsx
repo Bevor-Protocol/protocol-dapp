@@ -17,7 +17,7 @@ export const WishlistPanel = ({ userId }: { userId: string }): JSX.Element => {
   const [isWishlisted, setIsWishlisted] = useState<{ id: string; wishlisted: boolean }[]>([]);
 
   const { data, isPending } = useQuery({
-    queryKey: [WISHLIST],
+    queryKey: [WISHLIST, userId],
     queryFn: async () => {
       const result = await wishlistController.getUserWishlist(userId);
       if (result) {

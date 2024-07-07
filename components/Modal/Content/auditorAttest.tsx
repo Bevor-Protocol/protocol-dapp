@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useMutation } from "@tanstack/react-query";
 
 import { useModal } from "@/hooks/useContexts";
 import { Row } from "@/components/Box";
@@ -13,26 +13,27 @@ import { Button } from "@/components/Button";
 import { X } from "@/assets";
 import React from "react";
 import { cn } from "@/utils";
-import { ACTIONS } from "@/constants/queryKeys";
 
 const AuditorAttest = ({ audit, user }: { audit: AuditI; user: Users }): JSX.Element => {
   const { toggleOpen } = useModal(); // const [showRejected, setShowRejected] = useState(false);
   const [comment, setComment] = useState("");
   const [errors, setErrors] = useState<Record<string, string>>({});
-  const queryClient = useQueryClient();
 
   const { mutate, isPending } = useMutation({
     mutationFn: (variables: { status: boolean }) => {
       return auditController.auditor.attestToTerms(audit.id, user.id, variables.status, comment);
     },
-    onSettled: (data) => {
-      if (data?.success) {
-        queryClient.invalidateQueries({ queryKey: [ACTIONS] });
+    onSuccess: (response) => {
+      if (response.success) {
         toggleOpen();
+      } else {
+        if (response.validationErrors) {
+          setErrors(response.validationErrors);
+        }
       }
-      if (!data?.success && data?.validationErrors) {
-        setErrors(data.validationErrors);
-      }
+    },
+    onError: () => {
+      setErrors({ arbitrary: "something went wrong, try again later" });
     },
   });
 

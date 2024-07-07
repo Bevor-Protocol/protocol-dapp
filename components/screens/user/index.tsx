@@ -24,7 +24,7 @@ const UserContent = async ({
           </p>
           <p className="text-white/60 text-xs my-1">
             Member Since:
-            <span> {user.createdAt.toLocaleDateString()}</span>
+            <span> {new Date(user.createdAt).toLocaleDateString()}</span>
           </p>
         </div>
         <Row className="gap-4">

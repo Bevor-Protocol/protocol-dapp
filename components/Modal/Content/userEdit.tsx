@@ -34,8 +34,7 @@ const UserEdit = ({ user, stats }: { user: Users; stats: UserStats }): JSX.Eleme
         }
       }
     },
-    onError: (error) => {
-      console.log(error);
+    onError: () => {
       setErrors({ arbitrary: "something went wrong, try again later" });
     },
   });

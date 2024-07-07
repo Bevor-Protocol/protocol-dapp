@@ -1,9 +1,9 @@
 "use server";
 
-import { ValidationResponseI, ValidationSuccessI } from "@/utils/types";
+import { ValidationResponseI } from "@/utils/types";
 import auditorController from "./auditor.controller";
 import { Auditors, Audits } from "@prisma/client";
-import { handleValidationErrorReturn } from "@/utils/error";
+import { errorWrapperMutation } from "@/utils/error";
 import { revalidatePath } from "next/cache";
 
 const attestToTerms = async (
@@ -12,66 +12,41 @@ const attestToTerms = async (
   status: boolean,
   comment: string,
 ): Promise<ValidationResponseI<Auditors>> => {
-  return auditorController
-    .attestToTerms(id, userId, status, comment)
-    .then((data): ValidationSuccessI<Auditors> => {
-      revalidatePath(`/audits/view/${id}`);
-      return { success: true, data };
-    })
-    .catch((error) => {
-      return handleValidationErrorReturn(error);
-    });
+  return errorWrapperMutation(
+    () => auditorController.attestToTerms(id, userId, status, comment),
+    () => revalidatePath(`/audits/view/${id}`),
+  );
 };
 
 const leaveAudit = async (id: string): Promise<ValidationResponseI<Audits>> => {
-  return auditorController
-    .leaveAudit(id)
-    .then((data): ValidationSuccessI<Audits> => {
-      revalidatePath(`/audits/view/${id}`);
-      return { success: true, data };
-    })
-    .catch((error) => {
-      return handleValidationErrorReturn(error);
-    });
+  return errorWrapperMutation(
+    () => auditorController.leaveAudit(id),
+    () => revalidatePath(`/audits/view/${id}`),
+  );
 };
 
 const addFinding = async (
   id: string,
   formData: FormData,
 ): Promise<ValidationResponseI<Auditors>> => {
-  return auditorController
-    .addFinding(id, formData)
-    .then((data): ValidationSuccessI<Auditors> => {
-      revalidatePath(`/audits/view/${id}`);
-      return { success: true, data };
-    })
-    .catch((error) => {
-      return handleValidationErrorReturn(error);
-    });
+  return errorWrapperMutation(
+    () => auditorController.addFinding(id, formData),
+    () => revalidatePath(`/audits/view/${id}`),
+  );
 };
 
 const addRequest = async (id: string): Promise<ValidationResponseI<Auditors>> => {
-  return auditorController
-    .addRequest(id)
-    .then((data): ValidationSuccessI<Auditors> => {
-      revalidatePath(`/audits/view/${id}`);
-      return { success: true, data };
-    })
-    .catch((error) => {
-      return handleValidationErrorReturn(error);
-    });
+  return errorWrapperMutation(
+    () => auditorController.addRequest(id),
+    () => revalidatePath(`/audits/view/${id}`),
+  );
 };
 
 const deleteRequest = async (id: string): Promise<ValidationResponseI<Auditors>> => {
-  return auditorController
-    .deleteRequest(id)
-    .then((data): ValidationSuccessI<Auditors> => {
-      revalidatePath(`/audits/view/${id}`);
-      return { success: true, data };
-    })
-    .catch((error) => {
-      return handleValidationErrorReturn(error);
-    });
+  return errorWrapperMutation(
+    () => auditorController.deleteRequest(id),
+    () => revalidatePath(`/audits/view/${id}`),
+  );
 };
 
 export { attestToTerms, leaveAudit, addFinding, addRequest, deleteRequest };
