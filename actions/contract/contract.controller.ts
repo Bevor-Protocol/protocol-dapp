@@ -6,11 +6,11 @@ class ContractController {
   constructor(private readonly contractService: typeof ContractService) {}
 
   async getBalance(address: string): Promise<number> {
-    return ContractService.getBalance(address);
+    return this.contractService.getBalance(address);
   }
 
   async getAudit(auditId: bigint): Promise<AuditContractView | null> {
-    return ContractService.getAudit(auditId);
+    return this.contractService.getAudit(auditId);
   }
 
   async getAuditorVestingSchedule(
@@ -22,7 +22,7 @@ class ContractController {
     releasable: string | null;
     withdrawn: string | null;
   }> {
-    return ContractService.getAuditorVestingSchedule(auditId, user, token);
+    return this.contractService.getAuditorVestingSchedule(auditId, user, token);
   }
 }
 

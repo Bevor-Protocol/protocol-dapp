@@ -38,8 +38,8 @@ const Fetcher = async ({ address }: { address: string }): Promise<JSX.Element> =
       {canWishlist && (
         <UserWishlist
           isWishlistedFlag={isWishlistedFlag}
-          requestor={currentUser.user!.id}
-          receiver={user.id}
+          requestor={currentUser.user!}
+          receiver={user}
         />
       )}
       <hr className="w-full h-[1px] border-gray-200/20 my-4" />

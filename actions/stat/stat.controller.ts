@@ -24,19 +24,19 @@ class StatController {
   }
 
   async getProtocolNumAudits(): Promise<number> {
-    return StatService.getProtocolNumAudits();
+    return this.statService.getProtocolNumAudits();
   }
 
   async getProtocolFunds(): Promise<number> {
-    return StatService.getProtocolDataFunds();
+    return this.statService.getProtocolDataFunds();
   }
 
   async getProtocolVulnerabilities(): Promise<number> {
-    return StatService.getProtocolDataVulnerabilities();
+    return this.statService.getProtocolDataVulnerabilities();
   }
 
   async getProtocolNumAuditors(): Promise<number> {
-    return StatService.getProtocolDataAuditors();
+    return this.statService.getProtocolDataAuditors();
   }
 }
 

@@ -14,7 +14,7 @@ class AuthController {
   }
 
   async getUser(): Promise<{ success: boolean; address?: string }> {
-    const session = await AuthService.getSession();
+    const session = await this.authService.getSession();
 
     return {
       success: !!session.siwe,
@@ -26,11 +26,11 @@ class AuthController {
     const session = await AuthService.getSession();
     const domain = headers().get("x-forwarded-host") ?? "";
 
-    await AuthService.verifyMessage(message, signature, session, domain);
+    await this.authService.verifyMessage(message, signature, session, domain);
   }
 
   async logout(): Promise<boolean> {
-    const session = await AuthService.getSession();
+    const session = await this.authService.getSession();
     session.destroy();
     return true;
   }

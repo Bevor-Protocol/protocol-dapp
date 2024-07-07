@@ -15,7 +15,7 @@ class UserController {
   }
 
   async getProfile(address: string): Promise<Users | null> {
-    return UserService.getProfile(address);
+    return this.userService.getProfile(address);
   }
 
   async createUser(address: string, formData: FormData): Promise<Users> {
@@ -51,15 +51,15 @@ class UserController {
   }
 
   async getUserAudits(address: string): Promise<AuditTruncatedI[]> {
-    return UserService.userAudits(address);
+    return this.userService.userAudits(address);
   }
 
   async getLeaderboard(key?: string, order?: string): Promise<UserWithCount[]> {
-    return UserService.getLeaderboard(key, order);
+    return this.userService.getLeaderboard(key, order);
   }
 
   async searchAuditors(query?: string): Promise<Users[]> {
-    return UserService.searchAuditors(query);
+    return this.userService.searchAuditors(query);
   }
 }
 

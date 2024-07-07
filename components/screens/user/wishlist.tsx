@@ -3,7 +3,9 @@
 import { wishlistController } from "@/actions";
 import { Heart } from "@/assets";
 import { cn } from "@/utils";
+import { Users } from "@prisma/client";
 import { useMutation } from "@tanstack/react-query";
+import * as Tooltip from "@/components/Tooltip";
 
 const UserWishlist = ({
   isWishlistedFlag,
@@ -11,26 +13,36 @@ const UserWishlist = ({
   receiver,
 }: {
   isWishlistedFlag: boolean;
-  requestor: string;
-  receiver: string;
+  requestor: Users;
+  receiver: Users;
 }): JSX.Element => {
   const { mutate } = useMutation({
-    mutationKey: ["wishlist", requestor, receiver],
     mutationFn: () => {
       if (isWishlistedFlag) {
-        return wishlistController.removeFromWishlist(requestor, receiver);
+        return wishlistController.removeFromWishlist(requestor.id, receiver.id, receiver.address);
       }
-      return wishlistController.addToWishlist(requestor, receiver);
+      return wishlistController.addToWishlist(requestor.id, receiver.id, receiver.address);
     },
   });
 
   return (
-    <div className="absolute -right-10 top-0 cursor-pointer" onClick={() => mutate()}>
-      <Heart
-        height="1.5rem"
-        width="1.5rem"
-        className={cn(isWishlistedFlag ? "fill-red-400" : "fill-gray-400")}
-      />
+    <div className="absolute -right-10 top-0">
+      <Tooltip.Reference>
+        <Tooltip.Trigger>
+          <div className="cursor-pointer" onClick={() => mutate()}>
+            <Heart
+              height="1.5rem"
+              width="1.5rem"
+              className={cn(isWishlistedFlag ? "fill-red-400" : "fill-gray-400")}
+            />
+          </div>
+        </Tooltip.Trigger>
+        <Tooltip.Content>
+          <div className="bg-dark shadow rounded-lg cursor-default">
+            <div className="px-2 py-1 whitespace-nowrap">add/remove auditor from wishlist</div>
+          </div>
+        </Tooltip.Content>
+      </Tooltip.Reference>
     </div>
   );
 };

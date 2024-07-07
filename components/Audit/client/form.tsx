@@ -167,7 +167,11 @@ const AuditFormEntries = ({
               className="w-full overflow-scroll px-2 justify-start"
               style={{ maxHeight: "calc(5 * 32px)", height: "calc(5 * 32px)" }}
             >
-              {(isPending || timoutPending) && <Loader className="h-5 w-5 self-center" />}
+              {(isPending || timoutPending) && (
+                <Column className="h-full justify-center">
+                  <Loader className="h-5 w-5 self-center" />
+                </Column>
+              )}
               {!isPending &&
                 !timoutPending &&
                 auditorsShow.length > 0 &&
