@@ -4,7 +4,7 @@ import { Users } from "@prisma/client";
 import userController from "./user.controller";
 import { AuditTruncatedI, UserWithCount } from "@/utils/types/prisma";
 import { ValidationResponseI } from "@/utils/types";
-import { revalidatePath, unstable_cache } from "next/cache";
+import { revalidatePath } from "next/cache";
 import { errorWrapperMutation } from "@/utils/error";
 
 const currentUser = async (): Promise<{ address: string; user: Users | null }> => {
@@ -12,8 +12,7 @@ const currentUser = async (): Promise<{ address: string; user: Users | null }> =
 };
 
 const getProfile = async (address: string): Promise<Users | null> => {
-  const action = userController.getProfile(address);
-  return unstable_cache(async () => action, ["profile"], { tags: [`profile ${address}`] })();
+  return userController.getProfile(address);
 };
 
 const createUser = async (
@@ -23,11 +22,14 @@ const createUser = async (
   return errorWrapperMutation(() => userController.createUser(address, formData));
 };
 
-const updateUser = async (id: string, formData: FormData): Promise<ValidationResponseI<Users>> => {
+const updateUser = async (
+  id: string,
+  formData: FormData,
+  address: string,
+): Promise<ValidationResponseI<Users>> => {
   return errorWrapperMutation(
     () => userController.updateUser(id, formData),
-    // () => revalidateTag("profile 0x9C3f8EF6079C493aD85D59D53E10995B934eEf1d"),
-    () => revalidatePath("/user", "layout"),
+    () => revalidatePath(`/user/${address}`, "page"),
   );
 };
 

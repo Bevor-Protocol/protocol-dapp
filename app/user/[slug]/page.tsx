@@ -7,11 +7,10 @@ import UserNotExist from "@/components/screens/user/onboard";
 import UserAudits from "@/components/screens/user/audits";
 import UserProfileActions from "@/components/screens/user/actions";
 import UserWishlist from "@/components/screens/user/wishlist";
-import { unstable_cache } from "next/cache";
 
 const Fetcher = async ({ address }: { address: string }): Promise<JSX.Element> => {
   // this is already stored in a context, but since we conditionally fetch the stats server-side,
-  // I'll throw a re-request here.
+  // I'll throw a re-request here. Memoization should prevent actually going back to data store.
   const user = await userController.getProfile(address);
 
   if (!user) {
@@ -19,13 +18,7 @@ const Fetcher = async ({ address }: { address: string }): Promise<JSX.Element> =
   }
   const stats = await statController.getUserStats(address);
   const currentUser = await userController.currentUser();
-  const audits = await unstable_cache(
-    async () => userController.getUserAudits(address),
-    ["audits"],
-    {
-      tags: [`audits ${address}`],
-    },
-  )();
+  const audits = await userController.getUserAudits(address);
 
   const isOwner = currentUser.address === address;
 
@@ -45,8 +38,8 @@ const Fetcher = async ({ address }: { address: string }): Promise<JSX.Element> =
       {canWishlist && (
         <UserWishlist
           isWishlistedFlag={isWishlistedFlag}
-          requestor={currentUser.user!.id}
-          receiver={user.id}
+          requestor={currentUser.user!}
+          receiver={user}
         />
       )}
       <hr className="w-full h-[1px] border-gray-200/20 my-4" />

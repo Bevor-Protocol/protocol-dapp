@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Image from "next/image";
 import { useClient } from "wagmi";
 import { Abi, Address } from "viem";
@@ -10,12 +10,12 @@ import { Users } from "@prisma/client";
 import { useModal } from "@/hooks/useContexts";
 import { Column } from "@/components/Box";
 import { Button } from "@/components/Button";
-import { X } from "@/assets";
+import { Check, X } from "@/assets";
 import { useContractWriteListen } from "@/hooks/useContractWriteListen";
 import { AuditI } from "@/utils/types/prisma";
 import { Loader } from "@/components/Loader";
 import { cn } from "@/utils";
-import { auditController } from "@/actions";
+import { auditController, contractController } from "@/actions";
 import { parseUnits } from "viem";
 
 import BevorABI from "@/contracts/abis/BevorProtocol";
@@ -26,6 +26,24 @@ const RevealAudit = ({ audit, user }: { audit: AuditI; user: Users }): JSX.Eleme
   const { toggleOpen } = useModal();
   const client = useClient();
   const [step, setStep] = useState(0);
+
+  useEffect(() => {
+    // if user already has approved the necessary amount, move them to next step.
+    const token = AvailableTokens.localhost.find((t) => t.address == audit.token);
+    if (!token) return;
+    const convertedValue = parseUnits(audit.price.toString(), token.decimals);
+    contractController
+      .getBalance(user.address)
+      .then((result) => {
+        if (result >= convertedValue) {
+          setStep(1);
+        }
+      })
+      .catch((error) => {
+        console.log(error);
+        setStep(0);
+      });
+  }, [user.address, audit.token, audit.price]);
 
   // following approvals overwrite previous ones, so we can safely call it again.
   const { state: stateApproval, writeContractWithEvents: writeApproval } = useContractWriteListen({
@@ -90,6 +108,9 @@ const RevealAudit = ({ audit, user }: { audit: AuditI; user: Users }): JSX.Eleme
       .then(() => {
         return auditController.addNftInfo(audit.id, BigInt(tokenIdGenerated as bigint).toString());
       })
+      .then(() => {
+        setStep(2);
+      })
       .catch((error) => {
         console.log(error);
       });
@@ -111,32 +132,54 @@ const RevealAudit = ({ audit, user }: { audit: AuditI; user: Users }): JSX.Eleme
       </p>
       <hr className="w-full h-[1px] border-gray-200/20 my-4" />
       <Column className="gap-4 justify-end">
-        <Button
-          onClick={handleSubmitApproval}
-          disabled={stateApproval.isPendingSign || stateApproval.isSuccessSign}
-          className="relative"
-        >
-          <span
+        <div className="relative">
+          <div
             className={cn(
-              (stateApproval.isPendingSign || stateApproval.isSuccessSign) && "invisible",
+              "absolute -left-8 top-1/2 -translate-y-1/2 rounded-full",
+              "bg-green-500 p-0.5 border border-white",
+              step < 1 && "hidden",
             )}
           >
-            Approve Spend
-          </span>
-          {stateApproval.isPendingSign && <Loader className="h-4 w-4 absolute" />}
-          {stateApproval.isSuccessSign && <span className="absolute">Success</span>}
-        </Button>
-        <Button
-          onClick={handleSubmitReveal}
-          disabled={state.isPendingSign || state.isSuccessSign || step == 0}
-          className="relative"
-        >
-          <span className={cn((state.isPendingSign || state.isSuccessSign) && "invisible")}>
-            Reveal Findings
-          </span>
-          {state.isPendingSign && <Loader className="h-4 w-4 absolute" />}
-          {state.isSuccessSign && <span className="absolute">Success</span>}
-        </Button>
+            <Check height="0.75rem" width="0.75rem" fill="white" />
+          </div>
+          <Button
+            onClick={handleSubmitApproval}
+            disabled={stateApproval.isPendingSign || stateApproval.isSuccessSign || step != 0}
+            className="relative"
+          >
+            <span
+              className={cn(
+                (stateApproval.isPendingSign || stateApproval.isSuccessSign) && "invisible",
+              )}
+            >
+              Approve Spend
+            </span>
+            {stateApproval.isPendingSign && <Loader className="h-4 w-4 absolute" />}
+            {stateApproval.isSuccessSign && <span className="absolute">Success</span>}
+          </Button>
+        </div>
+        <div className="relative">
+          <div
+            className={cn(
+              "absolute -left-8 top-1/2 -translate-y-1/2 rounded-full",
+              "bg-green-500 p-0.5 border border-white",
+              step < 2 && "hidden",
+            )}
+          >
+            <Check height="0.75rem" width="0.75rem" fill="white" />
+          </div>
+          <Button
+            onClick={handleSubmitReveal}
+            disabled={state.isPendingSign || state.isSuccessSign || step != 1}
+            className="relative"
+          >
+            <span className={cn((state.isPendingSign || state.isSuccessSign) && "invisible")}>
+              Reveal Findings
+            </span>
+            {state.isPendingSign && <Loader className="h-4 w-4 absolute" />}
+            {state.isSuccessSign && <span className="absolute">Success</span>}
+          </Button>
+        </div>
       </Column>
     </Column>
   );

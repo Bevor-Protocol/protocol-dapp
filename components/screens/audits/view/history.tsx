@@ -7,6 +7,8 @@ import { HistoryI } from "@/utils/types";
 import { useModal } from "@/hooks/useContexts";
 import { HistoryPanel } from "@/components/Panel/Content/history";
 import { checkLocalMostRecent, setLocalMostRecent } from "@/utils/browser";
+import { Button } from "@/components/Button";
+import { Row } from "@/components/Box";
 
 const AuditHistory = ({
   history,
@@ -38,12 +40,15 @@ const AuditHistory = ({
   }, [auditId, displayNotification, history, address]);
 
   return (
-    <div className="absolute -right-10 top-0 cursor-pointer" onClick={handleClick}>
-      <History height="1.5rem" width="1.5rem" fill="white" />
-      {show && (
-        <span className="h-2 w-2 rounded-full mb-auto bg-red-400 absolute -top-1 -right-1" />
-      )}
-    </div>
+    <Row className="w-full justify-end pb-2">
+      <Button className="relative" onClick={handleClick}>
+        History
+        <History height="0.75rem" width="0.75rem" fill="currentColor" />
+        {show && (
+          <span className="h-2 w-2 rounded-full mb-auto bg-red-400 absolute top-1 right-1" />
+        )}
+      </Button>
+    </Row>
   );
 };
 

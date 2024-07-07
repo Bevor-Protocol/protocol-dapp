@@ -8,14 +8,13 @@ import LeaderboardData from "./data";
 import LeaderboardNav from "./nav";
 import { UserWithCount } from "@/utils/types/prisma";
 import { Column } from "@/components/Box";
-import { LeaderboardSkeleton } from "@/components/Loader";
 import { LEADERBOARD } from "@/constants/queryKeys";
 
 const LeaderboardWrapper = ({ initialData }: { initialData: UserWithCount[] }): JSX.Element => {
   const [listSort, setListSort] = useState("name");
   const [listOrder, setListOrder] = useState("asc");
 
-  const { data, isFetching } = useQuery({
+  const { data } = useQuery({
     queryKey: [LEADERBOARD, listSort, listOrder],
     queryFn: () => userController.getLeaderboard(listSort, listOrder),
     initialData,
@@ -33,7 +32,7 @@ const LeaderboardWrapper = ({ initialData }: { initialData: UserWithCount[] }): 
   return (
     <Column className="leaderboard">
       <LeaderboardNav sort={listSort} order={listOrder} handleSearch={handleSearch} />
-      {isFetching ? <LeaderboardSkeleton nItems={data.length} /> : <LeaderboardData data={data} />}
+      <LeaderboardData data={data} />
     </Column>
   );
 };

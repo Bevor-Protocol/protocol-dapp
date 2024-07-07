@@ -32,14 +32,14 @@ const Fetcher = async ({ auditId }: { auditId: string }): Promise<JSX.Element> =
   }
 
   return (
-    <div className="w-full max-w-[1000px] py-8 relative">
-      <AuditPage audit={audit} user={user} />
+    <div className="w-full max-w-[1000px]">
       <AuditHistory
         history={audit.history}
         auditId={audit.id}
         address={user?.address}
         displayNotification={isMemberOfAudit}
       />
+      <AuditPage audit={audit} user={user} />
       <Suspense fallback={<Loader className="h-4 w-4" />}>
         <Vesting audit={audit} isAuditor={isAuditorOfAudit} address={user?.address} />
       </Suspense>

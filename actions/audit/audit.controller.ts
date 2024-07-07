@@ -29,17 +29,17 @@ class AuditController {
   async getState(id: string): Promise<AuditStateI> {
     const { user } = await this.userService.currentUser();
 
-    return AuditService.getAuditState(id, user?.id);
+    return this.auditService.getAuditState(id, user?.id);
   }
 
   async safeMarkdown(id: string): Promise<MarkdownAuditsI> {
     const { user } = await this.userService.currentUser();
 
-    return AuditService.safeMarkdownDisplay(id, user?.id);
+    return this.auditService.safeMarkdownDisplay(id, user?.id);
   }
 
   async getAuditFindings(id: string): Promise<AuditFindingsI | null> {
-    return AuditService.getAuditFindings(id);
+    return this.auditService.getAuditFindings(id);
   }
 }
 

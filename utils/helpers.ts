@@ -34,3 +34,7 @@ export const getNetworkImage = (
 export const isFileEmpty = (file: File | undefined): boolean => {
   return !file || file.size <= 0 || !file.name;
 };
+
+export const generateTag = (...args: string[]): string => {
+  return args.join(":");
+};
