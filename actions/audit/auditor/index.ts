@@ -14,14 +14,14 @@ const attestToTerms = async (
 ): Promise<ValidationResponseI<Auditors>> => {
   return errorWrapperMutation(
     () => auditorController.attestToTerms(id, userId, status, comment),
-    () => revalidatePath(`/audits/view/${id}`),
+    () => revalidatePath(`/audits/view/${id}`, "page"),
   );
 };
 
 const leaveAudit = async (id: string): Promise<ValidationResponseI<Audits>> => {
   return errorWrapperMutation(
     () => auditorController.leaveAudit(id),
-    () => revalidatePath(`/audits/view/${id}`),
+    () => revalidatePath(`/audits/view/${id}`, "page"),
   );
 };
 
@@ -31,21 +31,21 @@ const addFinding = async (
 ): Promise<ValidationResponseI<Auditors>> => {
   return errorWrapperMutation(
     () => auditorController.addFinding(id, formData),
-    () => revalidatePath(`/audits/view/${id}`),
+    () => revalidatePath(`/audits/view/${id}`, "page"),
   );
 };
 
 const addRequest = async (id: string): Promise<ValidationResponseI<Auditors>> => {
   return errorWrapperMutation(
     () => auditorController.addRequest(id),
-    () => revalidatePath(`/audits/view/${id}`),
+    () => revalidatePath(`/audits/view/${id}`, "page"),
   );
 };
 
 const deleteRequest = async (id: string): Promise<ValidationResponseI<Auditors>> => {
   return errorWrapperMutation(
     () => auditorController.deleteRequest(id),
-    () => revalidatePath(`/audits/view/${id}`),
+    () => revalidatePath(`/audits/view/${id}`, "page"),
   );
 };
 

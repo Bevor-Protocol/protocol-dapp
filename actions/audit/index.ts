@@ -19,14 +19,14 @@ const getAuditsDetailed = async (status?: string): Promise<AuditDetailedI[]> => 
 const addAuditInfo = async (id: string, infoId: string): Promise<ValidationResponseI<Audits>> => {
   return errorWrapperMutation(
     () => auditController.addAuditInfo(id, infoId),
-    () => revalidatePath(`/audits/view/${id}`),
+    () => revalidatePath(`/audits/view/${id}`, "page"),
   );
 };
 
 const addNftInfo = async (id: string, nftId: string): Promise<ValidationResponseI<Audits>> => {
   return errorWrapperMutation(
     () => auditController.addNftInfo(id, nftId),
-    () => revalidatePath(`/audits/view/${id}`),
+    () => revalidatePath(`/audits/view/${id}`, "page"),
   );
 };
 

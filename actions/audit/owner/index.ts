@@ -21,21 +21,21 @@ const updateAudit = async (
 ): Promise<ValidationResponseI<Audits>> => {
   return errorWrapperMutation(
     () => ownerController.updateAudit(id, formData, auditors),
-    () => revalidatePath(`/audits/view/${id}`),
+    () => revalidatePath(`/audits/view/${id}`, "page"),
   );
 };
 
 const lockAudit = async (id: string): Promise<ValidationResponseI<Audits>> => {
   return errorWrapperMutation(
     () => ownerController.lockAudit(id),
-    () => revalidatePath(`/audits/view/${id}`),
+    () => revalidatePath(`/audits/view/${id}`, "page"),
   );
 };
 
 const openAudit = async (id: string): Promise<ValidationResponseI<Audits>> => {
   return errorWrapperMutation(
     () => ownerController.openAudit(id),
-    () => revalidatePath(`/audits/view/${id}`),
+    () => revalidatePath(`/audits/view/${id}`, "page"),
   );
 };
 
@@ -46,7 +46,7 @@ const updateRequestors = async (
 ): Promise<ValidationResponseI<{ rejected: number; verified: number }>> => {
   return errorWrapperMutation(
     () => ownerController.updateRequestors(id, auditorsApprove, auditorsReject),
-    () => revalidatePath(`/audits/view/${id}`),
+    () => revalidatePath(`/audits/view/${id}`, "page"),
   );
 };
 
