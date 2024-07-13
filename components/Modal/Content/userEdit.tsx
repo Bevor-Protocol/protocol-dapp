@@ -23,7 +23,7 @@ const UserEdit = ({ user, stats }: { user: Users; stats: UserStats }): JSX.Eleme
 
   const { mutate, isPending } = useMutation({
     mutationFn: (variables: { formData: FormData }) => {
-      return userController.updateUser(user.id, variables.formData, user.address);
+      return userController.updateUser(user.id, variables.formData);
     },
     onSuccess: (response) => {
       if (response.success) {

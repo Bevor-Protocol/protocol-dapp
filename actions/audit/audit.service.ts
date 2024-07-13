@@ -212,6 +212,10 @@ class AuditService {
           verifiedAuditors.length;
 
         return objOut;
+      })
+      .catch((error) => {
+        console.log(error);
+        return objOut;
       });
   }
 

@@ -4,8 +4,6 @@ import { Users } from "@prisma/client";
 import userController from "./user.controller";
 import { AuditTruncatedI, UserWithCount } from "@/utils/types/prisma";
 import { ValidationResponseI } from "@/utils/types";
-import { revalidatePath } from "next/cache";
-import { errorWrapperMutation } from "@/utils/error";
 
 const currentUser = async (): Promise<{ address: string; user: Users | null }> => {
   return userController.currentUser();
@@ -19,18 +17,11 @@ const createUser = async (
   address: string,
   formData: FormData,
 ): Promise<ValidationResponseI<Users>> => {
-  return errorWrapperMutation(() => userController.createUser(address, formData));
+  return userController.createUser(address, formData);
 };
 
-const updateUser = async (
-  id: string,
-  formData: FormData,
-  address: string,
-): Promise<ValidationResponseI<Users>> => {
-  return errorWrapperMutation(
-    () => userController.updateUser(id, formData),
-    () => revalidatePath(`/user/${address}`, "page"),
-  );
+const updateUser = async (id: string, formData: FormData): Promise<ValidationResponseI<Users>> => {
+  return userController.updateUser(id, formData);
 };
 
 const getUserAudits = async (address: string): Promise<AuditTruncatedI[]> => {

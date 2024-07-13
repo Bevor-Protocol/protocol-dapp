@@ -1,6 +1,6 @@
 import { createContext } from "react";
 
-import { SiweStateI } from "@/utils/types";
+import { SiweStateI } from "@/utils/types/providers";
 
 // Create a context with initial state
 const SiweContext = createContext<SiweStateI>({

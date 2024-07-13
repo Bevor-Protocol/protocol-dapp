@@ -26,7 +26,6 @@ const UserAudits = ({
   };
 
   const [show, setShow] = useState<Record<string, boolean>>({});
-  console.log(show);
 
   useEffect(() => {
     if (!isOwner) return;

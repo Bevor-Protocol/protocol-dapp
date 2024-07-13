@@ -70,7 +70,6 @@ const InitiateAudit = ({
       args: args,
     })
       .then((auditId) => {
-        console.log(auditId);
         auditIdGenerated = auditId as bigint;
         return writeContractWithEvents(args.slice(1));
       })

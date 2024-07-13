@@ -25,22 +25,28 @@ class WishlistService {
     });
   }
 
-  addToWishlist(requestor: string, receiver: string): Promise<Wishlist> {
+  addToWishlist(requestor: string, receiver: string): Promise<WishlistI> {
     return prisma.wishlist.create({
       data: {
         receiverId: receiver,
         requestorId: requestor,
       },
+      select: {
+        receiver: true,
+      },
     });
   }
 
-  removeFromWishlist(requestor: string, receiver: string): Promise<Wishlist> {
+  removeFromWishlist(requestor: string, receiver: string): Promise<WishlistI> {
     return prisma.wishlist.delete({
       where: {
         uniqueWishlistEntry: {
           requestorId: requestor,
           receiverId: receiver,
         },
+      },
+      select: {
+        receiver: true,
       },
     });
   }

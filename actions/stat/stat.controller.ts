@@ -24,19 +24,31 @@ class StatController {
   }
 
   async getProtocolNumAudits(): Promise<number> {
-    return this.statService.getProtocolNumAudits();
+    return this.statService.getProtocolNumAudits().catch((error) => {
+      console.log(error);
+      return 0;
+    });
   }
 
   async getProtocolFunds(): Promise<number> {
-    return this.statService.getProtocolDataFunds();
+    return this.statService.getProtocolDataFunds().catch((error) => {
+      console.log(error);
+      return 0;
+    });
   }
 
   async getProtocolVulnerabilities(): Promise<number> {
-    return this.statService.getProtocolDataVulnerabilities();
+    return this.statService.getProtocolDataVulnerabilities().catch((error) => {
+      console.log(error);
+      return 0;
+    });
   }
 
   async getProtocolNumAuditors(): Promise<number> {
-    return this.statService.getProtocolDataAuditors();
+    return this.statService.getProtocolDataAuditors().catch((error) => {
+      console.log(error);
+      return 0;
+    });
   }
 }
 

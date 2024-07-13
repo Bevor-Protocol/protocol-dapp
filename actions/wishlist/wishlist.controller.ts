@@ -1,6 +1,8 @@
 import WishlistService from "./wishlist.service";
-import { Wishlist } from "@prisma/client";
 import { WishlistI } from "@/utils/types/prisma";
+import { handleValidationErrorReturn } from "@/utils/error";
+import { ValidationResponseI, ValidationSuccessI } from "@/utils/types";
+import { revalidatePath } from "next/cache";
 
 // Might want to add some revalidations here.
 
@@ -12,16 +14,35 @@ class WishlistController {
     return !!entry;
   }
 
-  async getUserWishlist(requestor: string): Promise<WishlistI[]> {
+  getUserWishlist(requestor: string): Promise<WishlistI[]> {
     return this.wishlistService.getUserWishlist(requestor);
   }
 
-  async addToWishlist(requestor: string, receiver: string): Promise<Wishlist> {
-    return this.wishlistService.addToWishlist(requestor, receiver);
+  addToWishlist(requestor: string, receiver: string): Promise<ValidationResponseI<WishlistI>> {
+    return this.wishlistService
+      .addToWishlist(requestor, receiver)
+      .then((data): ValidationSuccessI<WishlistI> => {
+        revalidatePath(`/user/${data.receiver.address}`, "page");
+        return { success: true, data };
+      })
+      .catch((error) => {
+        return handleValidationErrorReturn(error);
+      });
   }
 
-  async removeFromWishlist(requestor: string, receiver: string): Promise<Wishlist> {
-    return this.wishlistService.removeFromWishlist(requestor, receiver);
+  async removeFromWishlist(
+    requestor: string,
+    receiver: string,
+  ): Promise<ValidationResponseI<WishlistI>> {
+    return this.wishlistService
+      .removeFromWishlist(requestor, receiver)
+      .then((data): ValidationSuccessI<WishlistI> => {
+        revalidatePath(`/user/${data.receiver.address}`, "page");
+        return { success: true, data };
+      })
+      .catch((error) => {
+        return handleValidationErrorReturn(error);
+      });
   }
 }
 

@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { BlobError } from "@vercel/blob";
-import { ValidationFailureI, ValidationResponseI, ValidationSuccessI } from "./types";
+import { ValidationFailureI } from "./types";
 
 export class ValidationError extends Error {
   name = "ValidationError";
@@ -31,20 +31,4 @@ export const handleValidationErrorReturn = (error: any): ValidationFailureI => {
     };
   }
   return { success: false, error: error.message };
-};
-
-export const errorWrapperMutation = <T>(
-  fn: () => Promise<T>,
-  onSuccess?: () => void,
-  onError?: () => void,
-): Promise<ValidationResponseI<T>> => {
-  return fn()
-    .then((data): ValidationSuccessI<T> => {
-      if (onSuccess) onSuccess();
-      return { success: true, data };
-    })
-    .catch((error) => {
-      if (onError) onError();
-      return handleValidationErrorReturn(error);
-    });
 };

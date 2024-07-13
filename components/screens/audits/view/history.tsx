@@ -41,7 +41,7 @@ const AuditHistory = ({
 
   return (
     <Row className="w-full justify-end pb-2">
-      <Button className="relative" onClick={handleClick}>
+      <Button className="relative" onClick={handleClick} disabled={!history.length}>
         History
         <History height="0.75rem" width="0.75rem" fill="currentColor" />
         {show && (

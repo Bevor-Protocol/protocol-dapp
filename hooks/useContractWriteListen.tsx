@@ -1,11 +1,13 @@
 import { Abi, Address } from "viem";
 import { localhost } from "viem/chains";
 import { useClient, useWriteContract } from "wagmi";
-import { useEvent } from "./useContexts";
-import { useReducer } from "react";
+import { useToast } from "./useContexts";
+import { useReducer, useState } from "react";
 import { waitForTransactionReceipt } from "viem/actions";
 import { contractWriteReducer } from "@/reducers";
 import { CONTRACT_WRITE_INITIAL_STATE } from "@/utils/initialState";
+import { TransactionEnum } from "@/utils/types/enum";
+import Transaction from "@/components/Toast/Content/transaction";
 
 export const useContractWriteListen = ({
   abi,
@@ -23,13 +25,13 @@ export const useContractWriteListen = ({
   state: Record<string, boolean>;
   dispatch: React.Dispatch<Record<string, boolean>>;
 } => {
-  const { setTxn, setStatus } = useEvent();
+  const [txn, setTxn] = useState("123");
+  const { toggleOpen, setContent } = useToast();
   const [state, dispatch] = useReducer(contractWriteReducer, { ...CONTRACT_WRITE_INITIAL_STATE });
-  const client = useClient();
-
   // rather than using react-query mutations, I explicitly throw "callbacks" in the
   // thenable statements, for cleaner error handling.
   const { writeContractAsync } = useWriteContract();
+  const client = useClient();
 
   const writeContractWithEvents = (writeArgs: readonly unknown[]): Promise<void> => {
     if (!client) return Promise.reject();
@@ -43,17 +45,19 @@ export const useContractWriteListen = ({
     })
       .then((hash) => {
         setTxn(hash as string);
-        setStatus("pending");
         dispatch({ isPendingSign: false, isSuccessSign: true, isPendingWrite: true });
+        setContent(<Transaction txn={hash as string} status={TransactionEnum.PENDING} />);
+        toggleOpen();
         return waitForTransactionReceipt(client, { hash });
       })
       .then((receipt) => {
-        console.log(receipt);
         if (receipt.status === "success") {
-          setStatus("success");
+          setContent(<Transaction txn={txn} status={TransactionEnum.SUCCESS} />);
+          toggleOpen();
           dispatch({ isPendingWrite: false, isSuccessWrite: true });
         } else {
-          setStatus("error");
+          setContent(<Transaction txn={txn} status={TransactionEnum.ERROR} />);
+          toggleOpen();
           dispatch({ isPendingWrite: false, isErrorWrite: true });
           throw new Error("Transaction Error");
         }
@@ -64,7 +68,7 @@ export const useContractWriteListen = ({
           dispatch({ isPendingSign: false, isErrorSign: true });
         }
         // Explicitly throw (again) to make it thenable, and catchable by external fct calls.
-        throw new Error(error);
+        throw error;
       });
   };
 

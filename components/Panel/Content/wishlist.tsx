@@ -31,17 +31,9 @@ export const WishlistPanel = ({ userId }: { userId: string }): JSX.Element => {
   const { mutate } = useMutation({
     mutationFn: (variables: { receiver: Users; type: string }) => {
       if (variables.type == "remove") {
-        return wishlistController.removeFromWishlist(
-          userId,
-          variables.receiver.id,
-          variables.receiver.address,
-        );
+        return wishlistController.removeFromWishlist(userId, variables.receiver.id);
       }
-      return wishlistController.addToWishlist(
-        userId,
-        variables.receiver.id,
-        variables.receiver.address,
-      );
+      return wishlistController.addToWishlist(userId, variables.receiver.id);
     },
     onSuccess: (_, variables: { receiver: Users; type: string }) => {
       const updatedWishlist = isWishlisted.map((item) => {

@@ -3,8 +3,6 @@
 import { ValidationResponseI } from "@/utils/types";
 import auditorController from "./auditor.controller";
 import { Auditors, Audits } from "@prisma/client";
-import { errorWrapperMutation } from "@/utils/error";
-import { revalidatePath } from "next/cache";
 
 const attestToTerms = async (
   id: string,
@@ -12,41 +10,26 @@ const attestToTerms = async (
   status: boolean,
   comment: string,
 ): Promise<ValidationResponseI<Auditors>> => {
-  return errorWrapperMutation(
-    () => auditorController.attestToTerms(id, userId, status, comment),
-    () => revalidatePath(`/audits/view/${id}`, "page"),
-  );
+  return auditorController.attestToTerms(id, userId, status, comment);
 };
 
 const leaveAudit = async (id: string): Promise<ValidationResponseI<Audits>> => {
-  return errorWrapperMutation(
-    () => auditorController.leaveAudit(id),
-    () => revalidatePath(`/audits/view/${id}`, "page"),
-  );
+  return auditorController.leaveAudit(id);
 };
 
 const addFinding = async (
   id: string,
   formData: FormData,
 ): Promise<ValidationResponseI<Auditors>> => {
-  return errorWrapperMutation(
-    () => auditorController.addFinding(id, formData),
-    () => revalidatePath(`/audits/view/${id}`, "page"),
-  );
+  return auditorController.addFinding(id, formData);
 };
 
 const addRequest = async (id: string): Promise<ValidationResponseI<Auditors>> => {
-  return errorWrapperMutation(
-    () => auditorController.addRequest(id),
-    () => revalidatePath(`/audits/view/${id}`, "page"),
-  );
+  return auditorController.addRequest(id);
 };
 
 const deleteRequest = async (id: string): Promise<ValidationResponseI<Auditors>> => {
-  return errorWrapperMutation(
-    () => auditorController.deleteRequest(id),
-    () => revalidatePath(`/audits/view/${id}`, "page"),
-  );
+  return auditorController.deleteRequest(id);
 };
 
 export { attestToTerms, leaveAudit, addFinding, addRequest, deleteRequest };

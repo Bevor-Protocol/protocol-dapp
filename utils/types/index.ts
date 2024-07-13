@@ -36,26 +36,6 @@ export type HomeStatI = {
   queryKey: string;
 };
 
-export type ModalStateI = {
-  toggleOpen: (s?: string) => void;
-  setContent: (content: React.ReactNode) => void;
-};
-
-export type EventStateI = {
-  setStatus: React.Dispatch<React.SetStateAction<string>>;
-  setTxn: React.Dispatch<React.SetStateAction<string>>;
-  txn: string;
-};
-
-export type SiweStateI = {
-  isPending: boolean;
-  isSuccess: boolean;
-  login: () => void;
-  logout: () => void;
-  isAuthenticated: boolean;
-  setIsAuthenticated: React.Dispatch<React.SetStateAction<boolean>>;
-};
-
 export type HistoryI = {
   id: string;
   action: HistoryAction;

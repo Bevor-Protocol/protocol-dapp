@@ -2,7 +2,6 @@
 
 import { useState, useRef, useReducer, useEffect } from "react";
 
-import { ModalStateI } from "@/utils/types";
 import * as Modal from "@/components/Modal";
 import * as Panel from "@/components/Panel";
 import ModalContext from "./context";
@@ -45,7 +44,7 @@ const ModalProvider = ({ children }: { children: React.ReactNode }): JSX.Element
     return (): void => document.removeEventListener("mousedown", handleClickOutside);
   }, [contentRef, panelRef]);
 
-  const modalState: ModalStateI = {
+  const modalState = {
     toggleOpen,
     setContent,
   };

@@ -1,8 +1,24 @@
 import { Audits } from "@prisma/client";
 import AuditService from "./audit.service";
 import UserService from "../user/user.service";
-import { AuditStateI, MarkdownAuditsI } from "@/utils/types";
+import {
+  AuditStateI,
+  MarkdownAuditsI,
+  ValidationResponseI,
+  ValidationSuccessI,
+} from "@/utils/types";
 import { AuditDetailedI, AuditFindingsI, AuditI } from "@/utils/types/prisma";
+import { revalidatePath } from "next/cache";
+import { handleValidationErrorReturn } from "@/utils/error";
+
+/*
+Mutations will return a Generic ValidationResponseI type object.
+
+We can't send 4xx/5xx responses in server actions, so we destructure
+responses to handle { success: boolean, data: T}, which we can handle client side.
+
+Most mutations will require revalidation of cache.
+*/
 
 class AuditController {
   constructor(
@@ -18,12 +34,28 @@ class AuditController {
     return this.auditService.getAuditsDetailed(status);
   }
 
-  async addAuditInfo(id: string, infoId: string): Promise<Audits> {
-    return this.auditService.addAuditInfo(id, infoId);
+  async addAuditInfo(id: string, infoId: string): Promise<ValidationResponseI<Audits>> {
+    return this.auditService
+      .addAuditInfo(id, infoId)
+      .then((data): ValidationSuccessI<Audits> => {
+        revalidatePath(`/audits/view/${id}`, "page");
+        return { success: true, data };
+      })
+      .catch((error) => {
+        return handleValidationErrorReturn(error);
+      });
   }
 
-  async addNftInfo(id: string, nftId: string): Promise<Audits> {
-    return this.auditService.addNftInfo(id, nftId);
+  async addNftInfo(id: string, nftId: string): Promise<ValidationResponseI<Audits>> {
+    return this.auditService
+      .addNftInfo(id, nftId)
+      .then((data): ValidationSuccessI<Audits> => {
+        revalidatePath(`/audits/view/${id}`, "page");
+        return { success: true, data };
+      })
+      .catch((error) => {
+        return handleValidationErrorReturn(error);
+      });
   }
 
   async getState(id: string): Promise<AuditStateI> {

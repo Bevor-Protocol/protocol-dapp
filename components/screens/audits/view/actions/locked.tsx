@@ -6,7 +6,7 @@ import { useMutation } from "@tanstack/react-query";
 
 import { AuditI } from "@/utils/types/prisma";
 import { AuditStateI } from "@/utils/types";
-import { useModal } from "@/hooks/useContexts";
+import { useModal, useToast } from "@/hooks/useContexts";
 import { auditController } from "@/actions";
 import { Row, Column } from "@/components/Box";
 import { Button } from "@/components/Button";
@@ -15,6 +15,7 @@ import AuditorAttest from "@/components/Modal/Content/auditorAttest";
 import InitiateAudit from "@/components/Modal/Content/onchain/initiateAudit";
 import * as Tooltip from "@/components/Tooltip";
 import { Info } from "@/assets";
+import ErrorToast from "@/components/Toast/Content/error";
 
 const AuditeeEditAudit = ({ id, disabled }: { id: string; disabled: boolean }): JSX.Element => {
   return (
@@ -48,12 +49,19 @@ const AuditeeReopenAudit = ({
   disabled: boolean;
   setDisabled: React.Dispatch<React.SetStateAction<boolean>>;
 }): JSX.Element => {
+  const { setContent, toggleOpen } = useToast();
+
   const { mutate } = useMutation({
     mutationFn: () => auditController.owner.openAudit(id),
     onMutate: () => setDisabled(true),
     onSettled: (data) => {
-      setDisabled(false);
-      console.log(data);
+      if (data?.success) {
+        setDisabled(false);
+      } else {
+        setContent(<ErrorToast text={data?.error || "Something went wrong, try again later"} />);
+        toggleOpen();
+        toggleOpen();
+      }
     },
   });
 
@@ -127,12 +135,19 @@ const AuditorRemoveVerification = ({
   disabled: boolean;
   setDisabled: React.Dispatch<React.SetStateAction<boolean>>;
 }): JSX.Element => {
+  const { setContent, toggleOpen } = useToast();
+
   const { mutate } = useMutation({
     mutationFn: () => auditController.auditor.leaveAudit(auditId),
     onMutate: () => setDisabled(true),
     onSettled: (data) => {
-      setDisabled(false);
-      console.log(data);
+      if (data?.success) {
+        setDisabled(false);
+      } else {
+        setContent(<ErrorToast text={data?.error || "Something went wrong, try again later"} />);
+        toggleOpen();
+        toggleOpen();
+      }
     },
   });
 

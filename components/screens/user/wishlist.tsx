@@ -19,9 +19,9 @@ const UserWishlist = ({
   const { mutate } = useMutation({
     mutationFn: () => {
       if (isWishlistedFlag) {
-        return wishlistController.removeFromWishlist(requestor.id, receiver.id, receiver.address);
+        return wishlistController.removeFromWishlist(requestor.id, receiver.id);
       }
-      return wishlistController.addToWishlist(requestor.id, receiver.id, receiver.address);
+      return wishlistController.addToWishlist(requestor.id, receiver.id);
     },
   });
 

@@ -9,7 +9,7 @@ import { Plus_Jakarta_Sans } from "next/font/google";
 import WalletProvider from "@/providers/wallet";
 import ModalProvider from "@/providers/modal";
 import SiweProvider from "@/providers/siwe";
-import ToastProvider from "@/providers/events";
+import ToastProvider from "@/providers/toast";
 import { config } from "@/providers/wallet/config";
 
 import { Layout, Footer, Nav } from "@/components/Layout";
