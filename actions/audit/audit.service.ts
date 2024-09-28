@@ -1,25 +1,25 @@
+import { prisma } from "@/db/prisma.server";
 import { AuditStateI, MarkdownAuditsI } from "@/utils/types";
+import { AuditDetailedI, AuditFindingsI, AuditI } from "@/utils/types/prisma";
 import {
-  Auditors,
+  Audit,
+  Auditor,
   AuditorStatus,
-  Audits,
   AuditStatus,
   HistoryAction,
   UserType,
 } from "@prisma/client";
-import { prisma } from "@/db/prisma.server";
-import { AuditDetailedI, AuditFindingsI, AuditI } from "@/utils/types/prisma";
-import { remark } from "remark";
-import html from "remark-html";
-import remarkGfm from "remark-gfm";
 import matter from "gray-matter";
+import { remark } from "remark";
+import remarkGfm from "remark-gfm";
+import html from "remark-html";
 import ContractService from "../contract/contract.service";
 
 class AuditService {
   constructor(private readonly contractService: typeof ContractService) {}
 
   getAudit(id: string): Promise<AuditI | null> {
-    return prisma.audits.findUnique({
+    return prisma.audit.findUnique({
       where: {
         id,
       },
@@ -52,16 +52,7 @@ class AuditService {
             userType: true,
             comment: true,
             createdAt: true,
-            audit: {
-              select: {
-                auditee: true,
-              },
-            },
-            auditor: {
-              select: {
-                user: true,
-              },
-            },
+            user: true,
           },
           orderBy: {
             createdAt: "asc",
@@ -80,7 +71,7 @@ class AuditService {
       completed: AuditStatus.FINALIZED,
     };
 
-    return prisma.audits.findMany({
+    return prisma.audit.findMany({
       where: {
         status: statusFilter[status ?? "open"],
       },
@@ -110,7 +101,7 @@ class AuditService {
   }
 
   getAuditFindings(id: string): Promise<AuditFindingsI | null> {
-    return prisma.audits.findUnique({
+    return prisma.audit.findUnique({
       where: {
         id,
       },
@@ -155,7 +146,7 @@ class AuditService {
       allAttested: false,
       allSubmitted: false,
     };
-    return prisma.audits
+    return prisma.audit
       .findUnique({
         where: {
           id,
@@ -182,7 +173,7 @@ class AuditService {
           (auditor) => auditor.status == AuditorStatus.REJECTED,
         );
 
-        const userAuditor: Auditors | undefined = result.auditors.find(
+        const userAuditor: Auditor | undefined = result.auditors.find(
           (auditor) => auditor.userId == userId,
         );
 
@@ -219,36 +210,54 @@ class AuditService {
       });
   }
 
-  addAuditInfo(id: string, infoId: string): Promise<Audits> {
-    return prisma.audits.update({
+  addAuditInfo(auditId: string, infoId: string): Promise<Audit> {
+    return prisma.audit.update({
       where: {
-        id,
+        id: auditId,
       },
       data: {
         onchainAuditInfoId: infoId,
         status: AuditStatus.AUDITING,
-        history: {
-          create: {
-            userType: UserType.AUDITEE,
-            action: HistoryAction.FINALIZED,
+        auditee: {
+          update: {
+            history: {
+              create: {
+                userType: UserType.AUDITEE,
+                action: HistoryAction.FINALIZED,
+                audit: {
+                  connect: {
+                    id: auditId,
+                  },
+                },
+              },
+            },
           },
         },
       },
     });
   }
 
-  addNftInfo(id: string, nftId: string): Promise<Audits> {
-    return prisma.audits.update({
+  addNftInfo(auditId: string, nftId: string): Promise<Audit> {
+    return prisma.audit.update({
       where: {
-        id,
+        id: auditId,
       },
       data: {
         onchainNftId: nftId,
         status: AuditStatus.CHALLENGEABLE,
-        history: {
-          create: {
-            userType: UserType.AUDITEE,
-            action: HistoryAction.MINTED,
+        auditee: {
+          update: {
+            history: {
+              create: {
+                userType: UserType.AUDITEE,
+                action: HistoryAction.MINTED,
+                audit: {
+                  connect: {
+                    id: auditId,
+                  },
+                },
+              },
+            },
           },
         },
       },
@@ -284,7 +293,7 @@ class AuditService {
 
     const state = await this.getAuditState(id, userId);
 
-    const audit = await prisma.audits.findUnique({
+    const audit = await prisma.audit.findUnique({
       where: {
         id,
       },

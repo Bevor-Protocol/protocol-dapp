@@ -2,11 +2,7 @@ import { ChainPresets } from "@/constants/web3";
 import { SiweMessage } from "siwe";
 import { Chain } from "viem";
 
-export const createSiweMessage = async (
-  address: string,
-  chainId: number,
-  nonce: string,
-): Promise<string> => {
+export const createSiweMessage = (address: string, chainId: number, nonce: string): string => {
   const message = new SiweMessage({
     domain: window.location.host,
     address,

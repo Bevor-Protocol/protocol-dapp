@@ -5,7 +5,7 @@ import { Column, Row } from "@/components/Box";
 import { WISHLIST } from "@/constants/queryKeys";
 import { useModal } from "@/hooks/useContexts";
 import { cn } from "@/utils";
-import { Users } from "@prisma/client";
+import { User } from "@prisma/client";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import Link from "next/link";
 import { useState } from "react";
@@ -29,13 +29,13 @@ export const WishlistPanel = ({ userId }: { userId: string }): JSX.Element => {
   });
 
   const { mutate } = useMutation({
-    mutationFn: (variables: { receiver: Users; type: string }) => {
+    mutationFn: (variables: { receiver: User; type: string }) => {
       if (variables.type == "remove") {
         return wishlistController.removeFromWishlist(variables.receiver.id);
       }
       return wishlistController.addToWishlist(variables.receiver.id);
     },
-    onSuccess: (_, variables: { receiver: Users; type: string }) => {
+    onSuccess: (_, variables: { receiver: User; type: string }) => {
       const updatedWishlist = isWishlisted.map((item) => {
         if (item.id == variables.receiver.id) {
           return { ...item, wishlisted: variables.type == "add" };

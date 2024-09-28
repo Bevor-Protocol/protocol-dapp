@@ -76,7 +76,7 @@ const seed = async (): Promise<void> => {
 
   const users = await prisma.$transaction(
     userData.map((user) =>
-      prisma.users.create({
+      prisma.user.create({
         data: {
           ...user,
         },
@@ -88,7 +88,7 @@ const seed = async (): Promise<void> => {
   //////////////////////////////////////////////////////////////////////////////
   // Create initial wishlist
 
-  await prisma.users.update({
+  await prisma.user.update({
     where: {
       id: users[0].id,
     },
@@ -110,7 +110,7 @@ const seed = async (): Promise<void> => {
   // but here we're retrospectively creating these instances. So we need access to the
   // auditId or userId when creating these.
 
-  await prisma.audits.create({
+  await prisma.audit.create({
     data: {
       title: "Empty audit - Open",
       description: "Open, no requestors, no auditors, no details provided",
@@ -127,7 +127,7 @@ const seed = async (): Promise<void> => {
   //////////////////////////////////////////////////////////////////////////////
   //////////////////////////////////////////////////////////////////////////////
 
-  await prisma.audits.create({
+  await prisma.audit.create({
     data: {
       title: "Requested Audit - Open",
       description: "Open, 1 requestor, no auditors, details provided",
@@ -157,7 +157,7 @@ const seed = async (): Promise<void> => {
   //////////////////////////////////////////////////////////////////////////////
   //////////////////////////////////////////////////////////////////////////////
 
-  await prisma.audits.create({
+  await prisma.audit.create({
     data: {
       title: "Auditor Audit - Open",
       description: "Open, 1 auditor, no details",
@@ -186,7 +186,7 @@ const seed = async (): Promise<void> => {
   //////////////////////////////////////////////////////////////////////////////
   //////////////////////////////////////////////////////////////////////////////
 
-  await prisma.audits.create({
+  await prisma.audit.create({
     data: {
       title: "Auditor Audit - Locked",
       description: "Locked, 1 auditor, has not attested, details provided",
@@ -214,6 +214,11 @@ const seed = async (): Promise<void> => {
         create: {
           action: HistoryAction.LOCKED,
           userType: UserType.AUDITEE,
+          user: {
+            connect: {
+              address: WALLETS[0],
+            },
+          },
         },
       },
     },
@@ -223,9 +228,7 @@ const seed = async (): Promise<void> => {
   //////////////////////////////////////////////////////////////////////////////
   //////////////////////////////////////////////////////////////////////////////
 
-  let res;
-
-  res = await prisma.audits.create({
+  await prisma.audit.create({
     data: {
       title: "Auditor Audit - Locked, Rejected",
       description: "Locked, 1 auditor, rejected terms, detailed provided.",
@@ -252,36 +255,28 @@ const seed = async (): Promise<void> => {
         },
       },
       history: {
-        create: {
-          action: HistoryAction.LOCKED,
-          userType: UserType.AUDITEE,
-          createdAt: new Date(new Date().getTime() - 1000),
-        },
-      },
-    },
-  });
-
-  // need to independently create the history objects for auditors.
-  // YOU'LL SEE THIS THROUGHOUT THE SEED SCRIPT.
-  await prisma.auditors.update({
-    where: {
-      auditId_userId: {
-        userId: users[1].id,
-        auditId: res.id,
-      },
-    },
-    data: {
-      history: {
-        create: {
-          action: HistoryAction.REJECTED,
-          userType: UserType.AUDITOR,
-          comment: "I don't like the terms",
-          audit: {
-            connect: {
-              id: res.id,
+        create: [
+          {
+            action: HistoryAction.LOCKED,
+            userType: UserType.AUDITEE,
+            createdAt: new Date(new Date().getTime() - 1000),
+            user: {
+              connect: {
+                address: WALLETS[0],
+              },
             },
           },
-        },
+          {
+            action: HistoryAction.REJECTED,
+            userType: UserType.AUDITOR,
+            comment: "I don't like the terms",
+            user: {
+              connect: {
+                address: WALLETS[1],
+              },
+            },
+          },
+        ],
       },
     },
   });
@@ -290,7 +285,7 @@ const seed = async (): Promise<void> => {
   //////////////////////////////////////////////////////////////////////////////
   //////////////////////////////////////////////////////////////////////////////
 
-  res = await prisma.audits.create({
+  await prisma.audit.create({
     data: {
       title: "Auditor Audit - Locked, Accepted",
       description: "Locked, 1 auditor, accepted terms, details provided. Can be kicked off.",
@@ -317,33 +312,27 @@ const seed = async (): Promise<void> => {
         },
       },
       history: {
-        create: {
-          action: HistoryAction.LOCKED,
-          userType: UserType.AUDITEE,
-          createdAt: new Date(new Date().getTime() - 1000),
-        },
-      },
-    },
-  });
-
-  await prisma.auditors.update({
-    where: {
-      auditId_userId: {
-        userId: users[1].id,
-        auditId: res.id,
-      },
-    },
-    data: {
-      history: {
-        create: {
-          action: HistoryAction.APPROVED,
-          userType: UserType.AUDITOR,
-          audit: {
-            connect: {
-              id: res.id,
+        create: [
+          {
+            action: HistoryAction.LOCKED,
+            userType: UserType.AUDITEE,
+            createdAt: new Date(new Date().getTime() - 1000),
+            user: {
+              connect: {
+                address: WALLETS[0],
+              },
             },
           },
-        },
+          {
+            action: HistoryAction.APPROVED,
+            userType: UserType.AUDITOR,
+            user: {
+              connect: {
+                address: WALLETS[1],
+              },
+            },
+          },
+        ],
       },
     },
   });
@@ -352,7 +341,7 @@ const seed = async (): Promise<void> => {
   //////////////////////////////////////////////////////////////////////////////
   //////////////////////////////////////////////////////////////////////////////
 
-  res = await prisma.audits.create({
+  await prisma.audit.create({
     data: {
       id: "number1",
       title: "Auditor Audit - Locked, Accepted, 1 Findings Submitted",
@@ -393,73 +382,53 @@ const seed = async (): Promise<void> => {
         ],
       },
       history: {
-        createMany: {
-          data: [
-            {
-              action: HistoryAction.LOCKED,
-              userType: UserType.AUDITEE,
-              createdAt: new Date(new Date().getTime() - 4000),
-            },
-            {
-              action: HistoryAction.FINALIZED,
-              userType: UserType.AUDITEE,
-              createdAt: new Date(new Date().getTime() - 2000),
-            },
-          ],
-        },
-      },
-    },
-  });
-
-  await prisma.auditors.update({
-    where: {
-      auditId_userId: {
-        userId: users[1].id,
-        auditId: res.id,
-      },
-    },
-    data: {
-      history: {
-        create: {
-          action: HistoryAction.APPROVED,
-          userType: UserType.AUDITOR,
-          createdAt: new Date(new Date().getTime() - 3600),
-          audit: {
-            connect: {
-              id: res.id,
+        create: [
+          {
+            action: HistoryAction.LOCKED,
+            userType: UserType.AUDITEE,
+            createdAt: new Date(new Date().getTime() - 4000),
+            user: {
+              connect: {
+                address: WALLETS[0],
+              },
             },
           },
-        },
-      },
-    },
-  });
-
-  await prisma.auditors.update({
-    where: {
-      auditId_userId: {
-        userId: users[4].id,
-        auditId: res.id,
-      },
-    },
-    data: {
-      history: {
-        create: [
+          {
+            action: HistoryAction.FINALIZED,
+            userType: UserType.AUDITEE,
+            createdAt: new Date(new Date().getTime() - 2000),
+            user: {
+              connect: {
+                address: WALLETS[0],
+              },
+            },
+          },
+          {
+            action: HistoryAction.APPROVED,
+            userType: UserType.AUDITOR,
+            createdAt: new Date(new Date().getTime() - 3600),
+            user: {
+              connect: {
+                address: WALLETS[1],
+              },
+            },
+          },
           {
             action: HistoryAction.APPROVED,
             userType: UserType.AUDITOR,
             createdAt: new Date(new Date().getTime() - 3500),
-            audit: {
+            user: {
               connect: {
-                id: res.id,
+                address: WALLETS[4],
               },
             },
           },
           {
             action: HistoryAction.FINDINGS,
             userType: UserType.AUDITOR,
-            audit: {
+            user: {
               connect: {
-                id: res.id,
+                address: WALLETS[1],
               },
             },
           },
@@ -472,7 +441,7 @@ const seed = async (): Promise<void> => {
   //////////////////////////////////////////////////////////////////////////////
   //////////////////////////////////////////////////////////////////////////////
 
-  res = await prisma.audits.create({
+  await prisma.audit.create({
     data: {
       id: "number2",
       title: "Auditor Audit - Ready for on-chain",
@@ -514,41 +483,34 @@ const seed = async (): Promise<void> => {
         ],
       },
       history: {
-        createMany: {
-          data: [
-            {
-              action: HistoryAction.LOCKED,
-              userType: UserType.AUDITEE,
-              createdAt: new Date(new Date().getTime() - 4000),
-            },
-            {
-              action: HistoryAction.FINALIZED,
-              userType: UserType.AUDITEE,
-              createdAt: new Date(new Date().getTime() - 2000),
-            },
-          ],
-        },
-      },
-    },
-  });
-
-  await prisma.auditors.update({
-    where: {
-      auditId_userId: {
-        userId: users[1].id,
-        auditId: res.id,
-      },
-    },
-    data: {
-      history: {
         create: [
+          {
+            action: HistoryAction.LOCKED,
+            userType: UserType.AUDITEE,
+            createdAt: new Date(new Date().getTime() - 4000),
+            user: {
+              connect: {
+                address: WALLETS[0],
+              },
+            },
+          },
+          {
+            action: HistoryAction.FINALIZED,
+            userType: UserType.AUDITEE,
+            createdAt: new Date(new Date().getTime() - 2000),
+            user: {
+              connect: {
+                address: WALLETS[0],
+              },
+            },
+          },
           {
             action: HistoryAction.APPROVED,
             userType: UserType.AUDITOR,
             createdAt: new Date(new Date().getTime() - 3600),
-            audit: {
+            user: {
               connect: {
-                id: res.id,
+                address: WALLETS[1],
               },
             },
           },
@@ -556,34 +518,19 @@ const seed = async (): Promise<void> => {
             action: HistoryAction.FINDINGS,
             userType: UserType.AUDITOR,
             createdAt: new Date(new Date().getTime() - 1000),
-            audit: {
+            user: {
               connect: {
-                id: res.id,
+                address: WALLETS[1],
               },
             },
           },
-        ],
-      },
-    },
-  });
-
-  await prisma.auditors.update({
-    where: {
-      auditId_userId: {
-        userId: users[4].id,
-        auditId: res.id,
-      },
-    },
-    data: {
-      history: {
-        create: [
           {
             action: HistoryAction.APPROVED,
             userType: UserType.AUDITOR,
             createdAt: new Date(new Date().getTime() - 3500),
-            audit: {
+            user: {
               connect: {
-                id: res.id,
+                address: WALLETS[4],
               },
             },
           },
@@ -591,9 +538,9 @@ const seed = async (): Promise<void> => {
             action: HistoryAction.FINDINGS,
             userType: UserType.AUDITOR,
             createdAt: new Date(new Date().getTime() - 200),
-            audit: {
+            user: {
               connect: {
-                id: res.id,
+                address: WALLETS[4],
               },
             },
           },
@@ -606,7 +553,7 @@ const seed = async (): Promise<void> => {
   //////////////////////////////////////////////////////////////////////////////
   //////////////////////////////////////////////////////////////////////////////
 
-  await prisma.audits.create({
+  await prisma.audit.create({
     data: {
       title: "Random Auditee Audit - Open",
       description: "Open, no requestors, no auditors, no details",
@@ -623,7 +570,7 @@ const seed = async (): Promise<void> => {
   //////////////////////////////////////////////////////////////////////////////
   //////////////////////////////////////////////////////////////////////////////
 
-  await prisma.audits.create({
+  await prisma.audit.create({
     data: {
       title: "Random Auditee Audit - Open",
       description: "Open, 1 requestor, 1 auditor, details provided",
@@ -657,20 +604,28 @@ const seed = async (): Promise<void> => {
         ],
       },
       history: {
-        createMany: {
-          data: [
-            {
-              action: HistoryAction.LOCKED,
-              userType: UserType.AUDITEE,
-              createdAt: new Date(new Date().getTime() - 4000),
+        create: [
+          {
+            action: HistoryAction.LOCKED,
+            userType: UserType.AUDITEE,
+            createdAt: new Date(new Date().getTime() - 4000),
+            user: {
+              connect: {
+                address: WALLETS[2],
+              },
             },
-            {
-              action: HistoryAction.OPENED,
-              userType: UserType.AUDITEE,
-              createdAt: new Date(new Date().getTime() - 2000),
+          },
+          {
+            action: HistoryAction.OPENED,
+            userType: UserType.AUDITEE,
+            createdAt: new Date(new Date().getTime() - 2000),
+            user: {
+              connect: {
+                address: WALLETS[2],
+              },
             },
-          ],
-        },
+          },
+        ],
       },
     },
   });
@@ -679,7 +634,7 @@ const seed = async (): Promise<void> => {
   //////////////////////////////////////////////////////////////////////////////
   //////////////////////////////////////////////////////////////////////////////
 
-  res = await prisma.audits.create({
+  await prisma.audit.create({
     data: {
       id: "number3",
       title: "Completed audit",
@@ -723,41 +678,34 @@ that needs to come from on-chain",
         ],
       },
       history: {
-        createMany: {
-          data: [
-            {
-              action: HistoryAction.LOCKED,
-              userType: UserType.AUDITEE,
-              createdAt: new Date(new Date().getTime() - 4000),
-            },
-            {
-              action: HistoryAction.FINALIZED,
-              userType: UserType.AUDITEE,
-              createdAt: new Date(new Date().getTime() - 2000),
-            },
-          ],
-        },
-      },
-    },
-  });
-
-  await prisma.auditors.update({
-    where: {
-      auditId_userId: {
-        userId: users[2].id,
-        auditId: res.id,
-      },
-    },
-    data: {
-      history: {
         create: [
+          {
+            action: HistoryAction.LOCKED,
+            userType: UserType.AUDITEE,
+            createdAt: new Date(new Date().getTime() - 4000),
+            user: {
+              connect: {
+                address: WALLETS[3],
+              },
+            },
+          },
+          {
+            action: HistoryAction.FINALIZED,
+            userType: UserType.AUDITEE,
+            createdAt: new Date(new Date().getTime() - 2000),
+            user: {
+              connect: {
+                address: WALLETS[3],
+              },
+            },
+          },
           {
             action: HistoryAction.APPROVED,
             userType: UserType.AUDITOR,
             createdAt: new Date(new Date().getTime() - 3600),
-            audit: {
+            user: {
               connect: {
-                id: res.id,
+                address: WALLETS[2],
               },
             },
           },
@@ -765,34 +713,19 @@ that needs to come from on-chain",
             action: HistoryAction.FINDINGS,
             userType: UserType.AUDITOR,
             createdAt: new Date(new Date().getTime() - 1000),
-            audit: {
+            user: {
               connect: {
-                id: res.id,
+                address: WALLETS[2],
               },
             },
           },
-        ],
-      },
-    },
-  });
-
-  await prisma.auditors.update({
-    where: {
-      auditId_userId: {
-        userId: users[5].id,
-        auditId: res.id,
-      },
-    },
-    data: {
-      history: {
-        create: [
           {
             action: HistoryAction.APPROVED,
             userType: UserType.AUDITOR,
             createdAt: new Date(new Date().getTime() - 3500),
-            audit: {
+            user: {
               connect: {
-                id: res.id,
+                address: WALLETS[5],
               },
             },
           },
@@ -800,9 +733,9 @@ that needs to come from on-chain",
             action: HistoryAction.FINDINGS,
             userType: UserType.AUDITOR,
             createdAt: new Date(new Date().getTime() - 100),
-            audit: {
+            user: {
               connect: {
-                id: res.id,
+                address: WALLETS[5],
               },
             },
           },
@@ -818,7 +751,7 @@ that needs to come from on-chain",
   // this one is finicky as we can't simulate a finished contract by fast-forwarding
   // time in contract reads on the frontend (we can simulate it as a standalone script).
 
-  res = await prisma.audits.create({
+  await prisma.audit.create({
     data: {
       id: "number4",
       title: "Completed audit",
@@ -862,41 +795,34 @@ that needs to come from on-chain, but I'll mark is as such",
         ],
       },
       history: {
-        createMany: {
-          data: [
-            {
-              action: HistoryAction.LOCKED,
-              userType: UserType.AUDITEE,
-              createdAt: new Date(new Date().getTime() - 4000),
-            },
-            {
-              action: HistoryAction.FINALIZED,
-              userType: UserType.AUDITEE,
-              createdAt: new Date(new Date().getTime() - 2000),
-            },
-          ],
-        },
-      },
-    },
-  });
-
-  await prisma.auditors.update({
-    where: {
-      auditId_userId: {
-        userId: users[2].id,
-        auditId: res.id,
-      },
-    },
-    data: {
-      history: {
         create: [
+          {
+            action: HistoryAction.LOCKED,
+            userType: UserType.AUDITEE,
+            createdAt: new Date(new Date().getTime() - 4000),
+            user: {
+              connect: {
+                address: WALLETS[3],
+              },
+            },
+          },
+          {
+            action: HistoryAction.FINALIZED,
+            userType: UserType.AUDITEE,
+            createdAt: new Date(new Date().getTime() - 2000),
+            user: {
+              connect: {
+                address: WALLETS[3],
+              },
+            },
+          },
           {
             action: HistoryAction.APPROVED,
             userType: UserType.AUDITOR,
             createdAt: new Date(new Date().getTime() - 3600),
-            audit: {
+            user: {
               connect: {
-                id: res.id,
+                address: WALLETS[2],
               },
             },
           },
@@ -904,34 +830,19 @@ that needs to come from on-chain, but I'll mark is as such",
             action: HistoryAction.FINDINGS,
             userType: UserType.AUDITOR,
             createdAt: new Date(new Date().getTime() - 1000),
-            audit: {
+            user: {
               connect: {
-                id: res.id,
+                address: WALLETS[2],
               },
             },
           },
-        ],
-      },
-    },
-  });
-
-  await prisma.auditors.update({
-    where: {
-      auditId_userId: {
-        userId: users[5].id,
-        auditId: res.id,
-      },
-    },
-    data: {
-      history: {
-        create: [
           {
             action: HistoryAction.APPROVED,
             userType: UserType.AUDITOR,
             createdAt: new Date(new Date().getTime() - 3500),
-            audit: {
+            user: {
               connect: {
-                id: res.id,
+                address: WALLETS[5],
               },
             },
           },
@@ -939,9 +850,9 @@ that needs to come from on-chain, but I'll mark is as such",
             action: HistoryAction.FINDINGS,
             userType: UserType.AUDITOR,
             createdAt: new Date(new Date().getTime() - 100),
-            audit: {
+            user: {
               connect: {
-                id: res.id,
+                address: WALLETS[5],
               },
             },
           },

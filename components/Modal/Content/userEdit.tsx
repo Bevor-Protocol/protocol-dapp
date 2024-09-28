@@ -1,5 +1,4 @@
 "use client";
-import { Users } from "@prisma/client";
 import { useMutation } from "@tanstack/react-query";
 import React, { useState } from "react";
 
@@ -12,8 +11,9 @@ import { Icon } from "@/components/Icon";
 import * as Tooltip from "@/components/Tooltip";
 import { useModal } from "@/hooks/useContexts";
 import { UserStats } from "@/utils/types";
+import { User } from "@prisma/client";
 
-const UserEdit = ({ user, stats }: { user: Users; stats: UserStats }): JSX.Element => {
+const UserEdit = ({ user, stats }: { user: User; stats: UserStats }): JSX.Element => {
   const { toggleOpen } = useModal();
   const [selectedImage, setSelectedImage] = useState<File | undefined>();
   const [errors, setErrors] = useState<Record<string, string>>({});

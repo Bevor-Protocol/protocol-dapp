@@ -3,7 +3,7 @@ import { AuditorStatus } from "@prisma/client";
 
 class StatService {
   getUserMoneyPaid(address: string): Promise<number> {
-    return prisma.audits
+    return prisma.audit
       .findMany({
         where: {
           auditee: {
@@ -22,7 +22,7 @@ class StatService {
   }
 
   getUserMoneyEarned(address: string): Promise<number> {
-    return prisma.audits
+    return prisma.audit
       .findMany({
         where: {
           // status: AuditStatus.FINAL, might add this back.
@@ -45,7 +45,7 @@ class StatService {
   }
 
   getUserNumAuditsOwner(address: string): Promise<number> {
-    return prisma.audits.count({
+    return prisma.audit.count({
       where: {
         auditee: {
           address,
@@ -55,7 +55,7 @@ class StatService {
   }
 
   getUserNumAuditsAuditor(address: string): Promise<number> {
-    return prisma.auditors.count({
+    return prisma.auditor.count({
       where: {
         user: {
           address,
@@ -76,11 +76,11 @@ class StatService {
   }
 
   getProtocolNumAudits(): Promise<number> {
-    return prisma.audits.count();
+    return prisma.audit.count();
   }
 
   getProtocolDataFunds(): Promise<number> {
-    return prisma.audits
+    return prisma.audit
       .aggregate({
         // where: {
         //   isFinal: true,
@@ -99,7 +99,7 @@ class StatService {
   }
 
   getProtocolDataAuditors(): Promise<number> {
-    return prisma.users.count({
+    return prisma.user.count({
       where: {
         auditorRole: true,
       },

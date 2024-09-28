@@ -1,15 +1,15 @@
 "use client";
 
-import React, { useState } from "react";
-import { useRouter } from "next/navigation";
+import { AuditorStatus, User } from "@prisma/client";
 import { useMutation } from "@tanstack/react-query";
-import { AuditorStatus, Users } from "@prisma/client";
+import { useRouter } from "next/navigation";
+import React, { useState } from "react";
 
-import { AuditI } from "@/utils/types/prisma";
 import { auditController } from "@/actions";
 import AuditFormEntries from "@/components/Audit/client/form";
+import { AuditI } from "@/utils/types/prisma";
 
-const AuditEditWrapper = ({ audit, user }: { audit: AuditI; user: Users }): JSX.Element => {
+const AuditEditWrapper = ({ audit, user }: { audit: AuditI; user: User }): JSX.Element => {
   // only show the selected auditors that were already verified.
   const initialAuditors = audit.auditors
     .filter((auditor) => auditor.status === AuditorStatus.VERIFIED)
@@ -17,7 +17,7 @@ const AuditEditWrapper = ({ audit, user }: { audit: AuditI; user: Users }): JSX.
 
   const router = useRouter();
   const [errors, setErrors] = useState<Record<string, string>>({});
-  const [auditors, setAuditors] = useState<Users[]>([...initialAuditors]);
+  const [auditors, setAuditors] = useState<User[]>([...initialAuditors]);
 
   const { mutate, isPending } = useMutation({
     mutationFn: (variables: { formData: FormData }) =>

@@ -1,7 +1,6 @@
 /* eslint-disable max-len */
 /* eslint-disable @typescript-eslint/explicit-function-return-type */
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import "reflect-metadata";
 import { handleValidationErrorReturn } from "./error";
 import { ValidationResponseI } from "./types";
 

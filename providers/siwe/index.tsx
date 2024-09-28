@@ -3,13 +3,13 @@
 import { useEffect, useState } from "react";
 import SiweContext from "./context";
 
-import * as Modal from "@/components/Modal";
 import { authController } from "@/actions";
-import { useAccount, useDisconnect, useSignMessage } from "wagmi";
-import SignIn from "@/components/Modal/Content/siwe/signin";
+import * as Modal from "@/components/Modal";
 import RequestAccountChange from "@/components/Modal/Content/siwe/requestAccountChange";
+import SignIn from "@/components/Modal/Content/siwe/signin";
 import { createSiweMessage } from "@/utils/helpers";
 import { Address } from "viem";
+import { useAccount, useDisconnect, useSignMessage } from "wagmi";
 
 const SiweProvider = ({ children }: { children: React.ReactNode }): JSX.Element => {
   // controls user Auth UI, and controls a non-toggleable Modal.
@@ -42,11 +42,8 @@ const SiweProvider = ({ children }: { children: React.ReactNode }): JSX.Element 
     authController
       .nonce()
       .then((nonce) => {
-        return createSiweMessage(addressUse, chainIdUse, nonce);
-      })
-      .then((message) => {
-        messageParsed = message;
-        return signMessageAsync({ message });
+        messageParsed = createSiweMessage(addressUse, chainIdUse, nonce);
+        return signMessageAsync({ message: messageParsed });
       })
       .then((signature) => {
         return authController.verify(messageParsed, signature);
@@ -79,8 +76,8 @@ const SiweProvider = ({ children }: { children: React.ReactNode }): JSX.Element 
       - else, allow them to disconnect, or prompt to change account.
     */
     let timer: ReturnType<typeof setTimeout>;
-    const handleChange = (): void => {
-      authController.getUser().then((user) => {
+    const handleChange = async (): Promise<void> => {
+      await authController.getUser().then((user) => {
         const ANY_USER_AUTHED = user.success && !!user.address;
         const ANY_WALLET_CONNECTED = !!address;
         if (!ANY_USER_AUTHED && !ANY_WALLET_CONNECTED) {

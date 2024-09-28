@@ -1,16 +1,16 @@
 "use client";
 
-import React, { useState } from "react";
-import { useRouter } from "next/navigation";
 import { useMutation } from "@tanstack/react-query";
-import { Users } from "@prisma/client";
+import { useRouter } from "next/navigation";
+import React, { useState } from "react";
 
-import AuditFormEntries from "@/components/Audit/client/form";
 import { auditController } from "@/actions";
+import AuditFormEntries from "@/components/Audit/client/form";
+import { User } from "@prisma/client";
 
-const AuditCreation = ({ user }: { user: Users }): JSX.Element => {
+const AuditCreation = ({ user }: { user: User }): JSX.Element => {
   const router = useRouter();
-  const [auditors, setAuditors] = useState<Users[]>([]);
+  const [auditors, setAuditors] = useState<User[]>([]);
   const [errors, setErrors] = useState<Record<string, string>>({});
 
   const { mutate, isPending } = useMutation({

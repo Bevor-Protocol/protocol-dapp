@@ -1,14 +1,14 @@
 "use client";
 
-import { UserStats } from "@/utils/types";
-import { Button } from "@/components/Button";
 import { Row } from "@/components/Box";
+import { Button } from "@/components/Button";
 import DynamicLink from "@/components/Link";
-import { useModal } from "@/hooks/useContexts";
 import UserEdit from "@/components/Modal/Content/userEdit";
-import { Users } from "@prisma/client";
+import { useModal } from "@/hooks/useContexts";
+import { UserStats } from "@/utils/types";
+import { User } from "@prisma/client";
 
-const UserProfileActions = ({ user, stats }: { user: Users; stats: UserStats }): JSX.Element => {
+const UserProfileActions = ({ user, stats }: { user: User; stats: UserStats }): JSX.Element => {
   const { toggleOpen, setContent } = useModal();
 
   const handleModal = (): void => {

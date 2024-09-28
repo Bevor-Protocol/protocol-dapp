@@ -2,20 +2,19 @@
 
 import { useMutation } from "@tanstack/react-query";
 
-import { AuditI } from "@/utils/types/prisma";
-import { AuditStateI } from "@/utils/types";
-import { useModal } from "@/hooks/useContexts";
 import { auditController } from "@/actions";
-import { Row, Column } from "@/components/Box";
+import { Info } from "@/assets";
+import { Column, Row } from "@/components/Box";
 import { Button } from "@/components/Button";
 import DynamicLink from "@/components/Link";
 import RequestsEdit from "@/components/Modal/Content/requestsEdit";
-import * as Tooltip from "@/components/Tooltip";
-import { Info } from "@/assets";
-import { useState } from "react";
-import { Users } from "@prisma/client";
-import { useToast } from "@/hooks/useContexts";
 import ErrorToast from "@/components/Toast/Content/error";
+import * as Tooltip from "@/components/Tooltip";
+import { useModal, useToast } from "@/hooks/useContexts";
+import { AuditStateI } from "@/utils/types";
+import { AuditI } from "@/utils/types/prisma";
+import { User } from "@prisma/client";
+import { useState } from "react";
 
 const AuditeeEditAudit = ({ id }: { id: string }): JSX.Element => {
   return (
@@ -295,7 +294,7 @@ const AuditOpenActions = ({
   audit,
   actionData,
 }: {
-  user: Users;
+  user: User;
   audit: AuditI;
   actionData: AuditStateI;
 }): JSX.Element => {

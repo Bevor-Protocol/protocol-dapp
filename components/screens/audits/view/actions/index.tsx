@@ -1,4 +1,4 @@
-import { AuditStatus, Users } from "@prisma/client";
+import { AuditStatus, User } from "@prisma/client";
 
 import { auditController } from "@/actions";
 import { AuditI } from "@/utils/types/prisma";
@@ -12,7 +12,7 @@ const AuditDashboardActions = async ({
   user,
 }: {
   audit: AuditI;
-  user: Users;
+  user: User;
 }): Promise<JSX.Element> => {
   const data = await auditController.getState(audit.id);
 

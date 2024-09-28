@@ -1,20 +1,20 @@
 /* eslint-disable @next/next/no-img-element */
 "use client";
 
-import React, { useState, useRef, useMemo } from "react";
+import { AuditorStatus, User } from "@prisma/client";
 import { useQuery } from "@tanstack/react-query";
-import { AuditorStatus, Users } from "@prisma/client";
+import React, { useMemo, useRef, useState } from "react";
 
+import { userController, wishlistController } from "@/actions";
+import { AuditorItem } from "@/components/Audit";
 import { Column, Row } from "@/components/Box";
 import { Button } from "@/components/Button";
 import * as Form from "@/components/Form";
 import { Loader } from "@/components/Loader";
-import { wishlistController, userController } from "@/actions";
-import { AuditI } from "@/utils/types/prisma";
-import { AuditorItem } from "@/components/Audit";
-import { cn } from "@/utils";
-import { AvailableTokens } from "@/constants/web3";
 import { AUDITORS, WISHLIST } from "@/constants/queryKeys";
+import { AvailableTokens } from "@/constants/web3";
+import { cn } from "@/utils";
+import { AuditI } from "@/utils/types/prisma";
 
 const AuditFormEntries = ({
   userId,
@@ -27,10 +27,10 @@ const AuditFormEntries = ({
 }: {
   userId: string;
   disabled: boolean;
-  auditors: Users[];
-  setAuditors: React.Dispatch<React.SetStateAction<Users[]>>;
+  auditors: User[];
+  setAuditors: React.Dispatch<React.SetStateAction<User[]>>;
   initialState?: AuditI;
-  initialAuditors?: Users[];
+  initialAuditors?: User[];
   errors: Record<string, string>;
 }): JSX.Element => {
   const mockFileDefault = initialState?.details ? new File([], "") : undefined;
@@ -50,7 +50,7 @@ const AuditFormEntries = ({
     queryFn: () => wishlistController.getUserWishlist(userId),
   });
 
-  const addAuditorSet = (auditor: Users): void => {
+  const addAuditorSet = (auditor: User): void => {
     setAuditors((prev) => [...prev, auditor]);
   };
 

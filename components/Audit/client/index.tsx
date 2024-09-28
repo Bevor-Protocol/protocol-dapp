@@ -1,18 +1,18 @@
 "use client";
 
-import * as Tooltip from "@/components/Tooltip";
-import DynamicLink from "@/components/Link";
 import { Icon } from "@/components/Icon";
+import DynamicLink from "@/components/Link";
+import * as Tooltip from "@/components/Tooltip";
 import { cn } from "@/utils";
 import { trimAddress } from "@/utils/formatters";
-import { Users } from "@prisma/client";
+import { User } from "@prisma/client";
 
 export const AuditAuditor = ({
   position,
   auditor,
 }: {
   position: string;
-  auditor: Users;
+  auditor: User;
 }): JSX.Element => {
   return (
     <div style={{ transform: `translateX(${position})` }}>

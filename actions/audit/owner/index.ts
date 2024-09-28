@@ -1,30 +1,30 @@
 "use server";
 
-import { Audits, Users } from "@prisma/client";
 import { ValidationResponseI } from "@/utils/types";
+import { Audit, User } from "@prisma/client";
 import ownerController from "./owner.controller";
 
 const createAudit = async (
   id: string,
   formData: FormData,
-  auditors: Users[],
-): Promise<ValidationResponseI<Audits>> => {
+  auditors: User[],
+): Promise<ValidationResponseI<Audit>> => {
   return ownerController.createAudit(id, formData, auditors);
 };
 
 const updateAudit = async (
   id: string,
   formData: FormData,
-  auditors: Users[],
-): Promise<ValidationResponseI<Audits>> => {
+  auditors: User[],
+): Promise<ValidationResponseI<Audit>> => {
   return ownerController.updateAudit(id, formData, auditors);
 };
 
-const lockAudit = async (id: string): Promise<ValidationResponseI<Audits>> => {
+const lockAudit = async (id: string): Promise<ValidationResponseI<Audit>> => {
   return ownerController.lockAudit(id);
 };
 
-const openAudit = async (id: string): Promise<ValidationResponseI<Audits>> => {
+const openAudit = async (id: string): Promise<ValidationResponseI<Audit>> => {
   return ownerController.openAudit(id);
 };
 
@@ -36,4 +36,4 @@ const updateRequestors = async (
   return ownerController.updateRequestors(id, auditorsApprove, auditorsReject);
 };
 
-export { createAudit, updateAudit, lockAudit, openAudit, updateRequestors };
+export { createAudit, lockAudit, openAudit, updateAudit, updateRequestors };

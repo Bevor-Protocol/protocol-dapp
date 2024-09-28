@@ -1,8 +1,8 @@
 import { prisma } from "@/db/prisma.server";
 import { ethers } from "ethers";
 
-import ERC20Abi from "@/contracts/abis/ERC20Token";
 import BevorProtocolAbi from "@/contracts/abis/BevorProtocol";
+import ERC20Abi from "@/contracts/abis/ERC20Token";
 
 const seed = async (): Promise<void> => {
   const provider = new ethers.JsonRpcProvider();
@@ -57,7 +57,7 @@ const seed = async (): Promise<void> => {
       "I am salt",
     );
 
-  await prisma.audits.update({
+  await prisma.audit.update({
     where: {
       id: "number1",
     },
@@ -96,7 +96,7 @@ const seed = async (): Promise<void> => {
       "I am salty",
     );
 
-  await prisma.audits.update({
+  await prisma.audit.update({
     where: {
       id: "number2",
     },
@@ -154,7 +154,7 @@ const seed = async (): Promise<void> => {
       auditId,
     );
 
-  await prisma.audits.update({
+  await prisma.audit.update({
     where: {
       id: "number3",
     },
@@ -214,7 +214,7 @@ const seed = async (): Promise<void> => {
       auditId,
     );
 
-  await prisma.audits.update({
+  await prisma.audit.update({
     where: {
       id: "number4",
     },

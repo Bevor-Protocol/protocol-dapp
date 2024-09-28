@@ -24,7 +24,7 @@ class AuthService {
           throw error;
         }
         session.siwe = data;
-        session.save();
+        return session.save();
       });
   }
 }

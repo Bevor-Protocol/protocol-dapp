@@ -4,7 +4,7 @@ import { wishlistController } from "@/actions";
 import { Heart } from "@/assets";
 import * as Tooltip from "@/components/Tooltip";
 import { cn } from "@/utils";
-import { Users } from "@prisma/client";
+import { User } from "@prisma/client";
 import { useMutation } from "@tanstack/react-query";
 
 const UserWishlist = ({
@@ -12,7 +12,7 @@ const UserWishlist = ({
   receiver,
 }: {
   isWishlistedFlag: boolean;
-  receiver: Users;
+  receiver: User;
 }): JSX.Element => {
   const { mutate } = useMutation({
     mutationFn: () => {

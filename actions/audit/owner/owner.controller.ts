@@ -4,7 +4,7 @@ import { handleErrors } from "@/utils/decorators";
 import { RoleError } from "@/utils/error";
 import { ValidationResponseI } from "@/utils/types";
 import { auditFormSchema, parseForm } from "@/utils/validations";
-import { AuditorStatus, Audits, Users } from "@prisma/client";
+import { Audit, AuditorStatus, User } from "@prisma/client";
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
 import OwnerService from "./owner.service";
@@ -29,8 +29,8 @@ class OwnerController {
   async createAudit(
     id: string,
     formData: FormData,
-    auditors: Users[],
-  ): Promise<ValidationResponseI<Audits>> {
+    auditors: User[],
+  ): Promise<ValidationResponseI<Audit>> {
     const parsed = parseForm(formData, auditFormSchema) as z.infer<typeof auditFormSchema>;
 
     const { details, ...rest } = parsed;
@@ -52,8 +52,8 @@ class OwnerController {
   async updateAudit(
     auditId: string,
     formData: FormData,
-    auditors: Users[],
-  ): Promise<ValidationResponseI<Audits>> {
+    auditors: User[],
+  ): Promise<ValidationResponseI<Audit>> {
     const user = await this.roleService.requireAuth();
     const { audit, allowed } = await this.roleService.canEdit(user, auditId);
     if (!allowed) {
@@ -87,7 +87,7 @@ class OwnerController {
   }
 
   @handleErrors
-  async lockAudit(auditId: string): Promise<ValidationResponseI<Audits>> {
+  async lockAudit(auditId: string): Promise<ValidationResponseI<Audit>> {
     const user = await this.roleService.requireAuth();
     const { allowed } = await this.roleService.canLock(user, auditId);
     if (!allowed) {
@@ -100,7 +100,7 @@ class OwnerController {
   }
 
   @handleErrors
-  async openAudit(auditId: string): Promise<ValidationResponseI<Audits>> {
+  async openAudit(auditId: string): Promise<ValidationResponseI<Audit>> {
     const user = await this.roleService.requireAuth();
     const { allowed } = await this.roleService.canOpen(user, auditId);
     if (!allowed) {

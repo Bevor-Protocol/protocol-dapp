@@ -1,16 +1,15 @@
-import { Users } from "@prisma/client";
-
 import { Column, Row } from "@/components/Box";
+import * as Form from "@/components/Form";
 import { Icon } from "@/components/Icon";
 import { trimAddress } from "@/utils/formatters";
-import * as Form from "@/components/Form";
 import { UserStats } from "@/utils/types";
+import { User } from "@prisma/client";
 
 const UserContent = async ({
   user,
   stats,
 }: {
-  user: Users;
+  user: User;
   stats: UserStats;
 }): Promise<JSX.Element> => {
   return (

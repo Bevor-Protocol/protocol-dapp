@@ -1,7 +1,7 @@
 import { handleErrors } from "@/utils/decorators";
 import { AuditStateI, MarkdownAuditsI, ValidationResponseI } from "@/utils/types";
 import { AuditDetailedI, AuditFindingsI, AuditI } from "@/utils/types/prisma";
-import { Audits } from "@prisma/client";
+import { Audit } from "@prisma/client";
 import { revalidatePath } from "next/cache";
 import UserService from "../user/user.service";
 import AuditService from "./audit.service";
@@ -30,7 +30,7 @@ class AuditController {
   }
 
   @handleErrors
-  async addAuditInfo(id: string, infoId: string): Promise<ValidationResponseI<Audits>> {
+  async addAuditInfo(id: string, infoId: string): Promise<ValidationResponseI<Audit>> {
     const data = await this.auditService.addAuditInfo(id, infoId);
 
     revalidatePath(`/audits/view/${id}`, "page");
@@ -38,7 +38,7 @@ class AuditController {
   }
 
   @handleErrors
-  async addNftInfo(id: string, nftId: string): Promise<ValidationResponseI<Audits>> {
+  async addNftInfo(id: string, nftId: string): Promise<ValidationResponseI<Audit>> {
     const data = await this.auditService.addNftInfo(id, nftId);
 
     revalidatePath(`/audits/view/${id}`, "page");

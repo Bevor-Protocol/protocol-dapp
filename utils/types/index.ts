@@ -1,4 +1,4 @@
-import { HistoryAction, Users, UserType } from "@prisma/client";
+import { HistoryAction, User, UserType } from "@prisma/client";
 import { Address } from "viem";
 import { AuditI } from "./prisma";
 
@@ -21,7 +21,7 @@ export type MarkdownAuditsI = {
   globalReveal: boolean;
   pendingCliff: boolean;
   findings: {
-    user: Users;
+    user: User;
     submitted: boolean;
     owner: boolean;
     reveal: boolean;
@@ -42,12 +42,7 @@ export type HistoryI = {
   userType: UserType;
   comment: string | null;
   createdAt: Date;
-  audit: {
-    auditee: Users;
-  };
-  auditor: {
-    user: Users;
-  } | null;
+  user: User;
 };
 
 export type AuditStateI = {

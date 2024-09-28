@@ -1,6 +1,6 @@
-import { Prisma, Users } from "@prisma/client";
+import { Prisma, User } from "@prisma/client";
 
-export interface UserWithCount extends Users {
+export interface UserWithCount extends User {
   stats: {
     valuePotential: number;
     valueComplete: number;
@@ -10,7 +10,7 @@ export interface UserWithCount extends Users {
   };
 }
 
-export type AuditFindingsI = Prisma.AuditsGetPayload<{
+export type AuditFindingsI = Prisma.AuditGetPayload<{
   select: {
     onchainAuditInfoId: true;
     duration: true;
@@ -30,7 +30,7 @@ export type AuditFindingsI = Prisma.AuditsGetPayload<{
   };
 }>;
 
-export type AuditTruncatedI = Prisma.AuditsGetPayload<{
+export type AuditTruncatedI = Prisma.AuditGetPayload<{
   select: {
     id: true;
     title: true;
@@ -46,7 +46,7 @@ export type AuditTruncatedI = Prisma.AuditsGetPayload<{
   };
 }>;
 
-export type AuditDetailedI = Prisma.AuditsGetPayload<{
+export type AuditDetailedI = Prisma.AuditGetPayload<{
   select: {
     id: true;
     title: true;
@@ -65,7 +65,7 @@ export type AuditDetailedI = Prisma.AuditsGetPayload<{
   };
 }>;
 
-export type AuditI = Prisma.AuditsGetPayload<{
+export type AuditI = Prisma.AuditGetPayload<{
   select: {
     id: true;
     title: true;
@@ -95,16 +95,7 @@ export type AuditI = Prisma.AuditsGetPayload<{
         userType: true;
         comment: true;
         createdAt: true;
-        audit: {
-          select: {
-            auditee: true;
-          };
-        };
-        auditor: {
-          select: {
-            user: true;
-          };
-        };
+        user: true;
       };
     };
   };

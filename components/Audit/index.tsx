@@ -1,15 +1,14 @@
-import { Users } from "@prisma/client";
-
+import { Bell } from "@/assets";
+import { Column, Row } from "@/components/Box";
 import * as Card from "@/components/Card";
 import { Icon } from "@/components/Icon";
 import DynamicLink from "@/components/Link";
-import { AuditDetailedI, AuditTruncatedI } from "@/utils/types/prisma";
-import { Column, Row } from "@/components/Box";
-import { Bell } from "@/assets";
+import { AvailableTokens } from "@/constants/web3";
 import { cn } from "@/utils";
 import { trimAddress } from "@/utils/formatters";
+import { AuditDetailedI, AuditTruncatedI } from "@/utils/types/prisma";
+import { User } from "@prisma/client";
 import { AuditAuditor } from "./client";
-import { AvailableTokens } from "@/constants/web3";
 
 export const AuditCardTruncated = ({
   audit,
@@ -107,7 +106,7 @@ export const AuditCard = ({ audit }: { audit: AuditDetailedI }): JSX.Element => 
 };
 
 interface AuditorItemI extends React.HTMLAttributes<HTMLDivElement> {
-  auditor: Users;
+  auditor: User;
   hover?: boolean;
   disabled?: boolean;
   canClose?: boolean;
@@ -155,7 +154,7 @@ export const AuditorItem: React.FC<AuditorItemI> = ({
   );
 };
 
-export const AuditorItemSimple: React.FC<{ auditor: Users; showStatus?: boolean }> = ({
+export const AuditorItemSimple: React.FC<{ auditor: User; showStatus?: boolean }> = ({
   auditor,
   showStatus = false,
 }) => {

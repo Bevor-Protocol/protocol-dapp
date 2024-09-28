@@ -2,7 +2,7 @@ import { handleErrors } from "@/utils/decorators";
 import { ValidationResponseI } from "@/utils/types";
 import { AuditTruncatedI, UserWithCount } from "@/utils/types/prisma";
 import { parseForm, userSchema, userSchemaCreate } from "@/utils/validations";
-import { Prisma, Users } from "@prisma/client";
+import { Prisma, User } from "@prisma/client";
 import { revalidatePath } from "next/cache";
 import BlobService from "../blob/blob.service";
 import RoleService from "../roles/roles.service";
@@ -24,19 +24,19 @@ class UserController {
     private readonly roleService: typeof RoleService,
   ) {}
 
-  async currentUser(): Promise<{ address: string; user: Users | null }> {
+  async currentUser(): Promise<{ address: string; user: User | null }> {
     return await this.userService.currentUser();
   }
 
-  async getProfile(address: string): Promise<Users | null> {
+  async getProfile(address: string): Promise<User | null> {
     return this.userService.getProfile(address);
   }
 
   @handleErrors
-  async createUser(address: string, formData: FormData): Promise<ValidationResponseI<Users>> {
+  async createUser(address: string, formData: FormData): Promise<ValidationResponseI<User>> {
     const parsed = parseForm(formData, userSchemaCreate);
     const { image, ...rest } = parsed;
-    const dataPass: Prisma.UsersCreateInput = {
+    const dataPass: Prisma.UserCreateInput = {
       address,
       ...rest,
     };
@@ -52,12 +52,12 @@ class UserController {
   }
 
   @handleErrors
-  async updateUser(formData: FormData): Promise<ValidationResponseI<Users>> {
+  async updateUser(formData: FormData): Promise<ValidationResponseI<User>> {
     const user = await this.roleService.requireAuth();
     const parsed = parseForm(formData, userSchema);
 
     const { image, ...rest } = parsed;
-    const dataPass: Prisma.UsersUpdateInput = {
+    const dataPass: Prisma.UserUpdateInput = {
       ...rest,
     };
 
@@ -80,7 +80,7 @@ class UserController {
     return this.userService.getLeaderboard(key, order);
   }
 
-  async searchAuditors(query?: string): Promise<Users[]> {
+  async searchAuditors(query?: string): Promise<User[]> {
     return this.userService.searchAuditors(query);
   }
 }

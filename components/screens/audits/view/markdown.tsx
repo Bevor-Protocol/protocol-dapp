@@ -1,17 +1,17 @@
 "use client";
-import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
+import { useState } from "react";
 
-import { Row } from "@/components/Box";
-import { Toggle } from "@/components/Toggle";
-import { AuditorItem } from "@/components/Audit";
-import DynamicLink from "@/components/Link";
 import { auditController } from "@/actions";
+import { AuditorItem } from "@/components/Audit";
+import { Row } from "@/components/Box";
+import DynamicLink from "@/components/Link";
 import { Loader } from "@/components/Loader";
-import { Users } from "@prisma/client";
+import { Toggle } from "@/components/Toggle";
 import { MARKDOWN } from "@/constants/queryKeys";
+import { User } from "@prisma/client";
 
-const AuditMarkdown = ({ auditId, user }: { auditId: string; user: Users | null }): JSX.Element => {
+const AuditMarkdown = ({ auditId, user }: { auditId: string; user: User | null }): JSX.Element => {
   const { data, isPending } = useQuery({
     queryKey: [MARKDOWN, auditId, user?.id ?? ""],
     queryFn: () => auditController.safeMarkdown(auditId),

@@ -1,12 +1,12 @@
 import { prisma } from "@/db/prisma.server";
 import { auditFormSchema } from "@/utils/validations";
 import {
+  Audit,
   AuditorStatus,
-  Audits,
   AuditStatus,
   HistoryAction,
   Prisma,
-  Users,
+  User,
   UserType,
 } from "@prisma/client";
 import { z } from "zod";
@@ -15,9 +15,9 @@ class OwnerService {
   createAudit(
     id: string,
     data: Omit<z.infer<typeof auditFormSchema>, "details"> & { details?: string },
-    auditors: Users[],
-  ): Promise<Audits> {
-    return prisma.audits.create({
+    auditors: User[],
+  ): Promise<Audit> {
+    return prisma.audit.create({
       data: {
         auditee: {
           connect: {
@@ -41,10 +41,10 @@ class OwnerService {
 
   async updateAudit(
     id: string,
-    data: Prisma.AuditsUpdateInput,
+    data: Prisma.AuditUpdateInput,
     auditorsCreate: string[],
     auditorsRemove: string[],
-  ): Promise<Audits> {
+  ): Promise<Audit> {
     // would throw before this function is ever called. We can assure currentAudit exists.
     const auditorsCreateConnected = auditorsCreate.map((auditor) => ({
       status: AuditorStatus.VERIFIED,
@@ -55,7 +55,7 @@ class OwnerService {
       },
     }));
 
-    return prisma.audits.update({
+    return prisma.audit.update({
       where: {
         id,
       },
@@ -89,8 +89,8 @@ class OwnerService {
     });
   }
 
-  lockAudit(id: string): Promise<Audits> {
-    return prisma.audits.update({
+  lockAudit(id: string): Promise<Audit> {
+    return prisma.audit.update({
       where: {
         id,
       },
@@ -114,8 +114,8 @@ class OwnerService {
     });
   }
 
-  openAudit(id: string): Promise<Audits> {
-    return prisma.audits.update({
+  openAudit(id: string): Promise<Audit> {
+    return prisma.audit.update({
       where: {
         id,
       },
@@ -147,7 +147,7 @@ class OwnerService {
     auditors: string[],
     status: AuditorStatus,
   ): Promise<Prisma.BatchPayload> {
-    return prisma.auditors.updateMany({
+    return prisma.auditor.updateMany({
       where: {
         auditId: id,
         userId: {

@@ -24,6 +24,7 @@ model User {
   auditees            Audit[]
   wishlistAsRequestor Wishlist[] @relation("UserWishlist")
   wishlistAsReceiver  Wishlist[] @relation("UserWishedBy")
+  history             History[]
 }
 
 enum AuditStatus {
@@ -71,10 +72,9 @@ model Auditor {
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
 
-  audit   Audit         @relation(fields: [auditId], references: [id], onDelete: Cascade)
-  user    User          @relation(fields: [userId], references: [id], onDelete: Cascade)
-  status  AuditorStatus
-  history History[]
+  audit  Audit         @relation(fields: [auditId], references: [id], onDelete: Cascade)
+  user   User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  status AuditorStatus
 
   @@unique([auditId, userId])
 }
@@ -99,17 +99,17 @@ enum UserType {
 model History {
   id        String   @id @default(cuid())
   auditId   String
-  auditorId String?
+  userId    String
   comment   String?
   createdAt DateTime @default(now())
 
   audit    Audit         @relation(fields: [auditId], references: [id], onDelete: Cascade)
-  auditor  Auditor?      @relation(fields: [auditorId], references: [id], onDelete: Cascade)
+  user     User          @relation(fields: [userId], references: [id], onDelete: Cascade)
   action   HistoryAction
   userType UserType
 
   @@index([auditId], name: "idx_history_audit")
-  @@index([auditorId], name: "idx_history_auditor")
+  @@index([userId], name: "idx_history_user")
 }
 
 model Wishlist {

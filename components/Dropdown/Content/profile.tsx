@@ -2,18 +2,18 @@
 import { useState } from "react";
 import { useAccount } from "wagmi";
 
-import { cn } from "@/utils";
-import { trimAddress } from "@/utils/formatters";
 import { Copy, Heart, Logout } from "@/assets";
-import { Button } from "@/components/Button";
 import { Column, Row } from "@/components/Box";
+import { Button } from "@/components/Button";
 import * as Card from "@/components/Card";
 import { Social } from "@/components/Icon";
-import { useModal, useSiwe } from "@/hooks/useContexts";
-import { Users } from "@prisma/client";
 import { WishlistPanel } from "@/components/Panel/Content/wishlist";
+import { useModal, useSiwe } from "@/hooks/useContexts";
+import { cn } from "@/utils";
+import { trimAddress } from "@/utils/formatters";
+import { User } from "@prisma/client";
 
-const Profile = ({ address, user }: { address: string; user: Users | null }): JSX.Element => {
+const Profile = ({ address, user }: { address: string; user: User | null }): JSX.Element => {
   const [copied, setCopied] = useState(false);
   const { chain, connector } = useAccount();
   const { toggleOpen, setContent } = useModal();
@@ -69,7 +69,7 @@ const Profile = ({ address, user }: { address: string; user: Users | null }): JS
           />
         </p>
       </Card.Footer>
-      {user && user.auditeeRole && (
+      {user?.auditeeRole && (
         <Card.Footer className="p-2 text-white/60">
           <Row className="gap-1 items-center cursor-pointer" onClick={handleWishlist}>
             <Heart height="0.65rem" width="0.65rem" className="fill-gray-400" />

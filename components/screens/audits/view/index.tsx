@@ -1,17 +1,17 @@
-import { AuditorStatus, AuditStatus, Users } from "@prisma/client";
+import { AuditorStatus, AuditStatus, User } from "@prisma/client";
 
-import { Column, Row } from "@/components/Box";
-import DynamicLink from "@/components/Link";
-import { trimAddress } from "@/utils/formatters";
-import { Icon } from "@/components/Icon";
 import { AuditAuditor } from "@/components/Audit/client";
-import { AuditI } from "@/utils/types/prisma";
-import AuditDashboardActions from "./actions";
-import { Suspense } from "react";
+import { Column, Row } from "@/components/Box";
+import { Icon } from "@/components/Icon";
+import DynamicLink from "@/components/Link";
 import { Loader } from "@/components/Loader";
 import { AvailableTokens } from "@/constants/web3";
+import { trimAddress } from "@/utils/formatters";
+import { AuditI } from "@/utils/types/prisma";
+import { Suspense } from "react";
+import AuditDashboardActions from "./actions";
 
-const AuditPage = ({ audit, user }: { audit: AuditI; user: Users | null }): JSX.Element => {
+const AuditPage = ({ audit, user }: { audit: AuditI; user: User | null }): JSX.Element => {
   const verifiedAuditors = audit.auditors.filter(
     (auditor) => auditor.status == AuditorStatus.VERIFIED,
   );

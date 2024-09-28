@@ -1,28 +1,28 @@
 "use client";
 
-import { useEffect, useState } from "react";
 import Image from "next/image";
-import { useClient } from "wagmi";
+import { useEffect, useState } from "react";
 import { Abi, Address } from "viem";
 import { readContract } from "viem/actions";
-import { Users } from "@prisma/client";
+import { useClient } from "wagmi";
 
-import { useModal } from "@/hooks/useContexts";
+import { auditController, contractController } from "@/actions";
+import { Check, X } from "@/assets";
 import { Column } from "@/components/Box";
 import { Button } from "@/components/Button";
-import { Check, X } from "@/assets";
-import { useContractWriteListen } from "@/hooks/useContractWriteListen";
-import { AuditI } from "@/utils/types/prisma";
 import { Loader } from "@/components/Loader";
+import { useModal } from "@/hooks/useContexts";
+import { useContractWriteListen } from "@/hooks/useContractWriteListen";
 import { cn } from "@/utils";
-import { auditController, contractController } from "@/actions";
+import { AuditI } from "@/utils/types/prisma";
 import { parseUnits } from "viem";
 
+import { AvailableTokens } from "@/constants/web3";
 import BevorABI from "@/contracts/abis/BevorProtocol";
 import ERC20ABI from "@/contracts/abis/ERC20Token";
-import { AvailableTokens } from "@/constants/web3";
+import { User } from "@prisma/client";
 
-const RevealAudit = ({ audit, user }: { audit: AuditI; user: Users }): JSX.Element => {
+const RevealAudit = ({ audit, user }: { audit: AuditI; user: User }): JSX.Element => {
   const { toggleOpen } = useModal();
   const client = useClient();
   const [step, setStep] = useState(0);

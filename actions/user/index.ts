@@ -2,25 +2,25 @@
 
 import { ValidationResponseI } from "@/utils/types";
 import { AuditTruncatedI, UserWithCount } from "@/utils/types/prisma";
-import { Users } from "@prisma/client";
+import { User } from "@prisma/client";
 import userController from "./user.controller";
 
-const currentUser = async (): Promise<{ address: string; user: Users | null }> => {
+const currentUser = async (): Promise<{ address: string; user: User | null }> => {
   return userController.currentUser();
 };
 
-const getProfile = async (address: string): Promise<Users | null> => {
+const getProfile = async (address: string): Promise<User | null> => {
   return userController.getProfile(address);
 };
 
 const createUser = async (
   address: string,
   formData: FormData,
-): Promise<ValidationResponseI<Users>> => {
+): Promise<ValidationResponseI<User>> => {
   return userController.createUser(address, formData);
 };
 
-const updateUser = async (formData: FormData): Promise<ValidationResponseI<Users>> => {
+const updateUser = async (formData: FormData): Promise<ValidationResponseI<User>> => {
   return userController.updateUser(formData);
 };
 
@@ -32,7 +32,7 @@ const getLeaderboard = async (key?: string, order?: string): Promise<UserWithCou
   return userController.getLeaderboard(key, order);
 };
 
-const searchAuditors = async (query?: string): Promise<Users[]> => {
+const searchAuditors = async (query?: string): Promise<User[]> => {
   return userController.searchAuditors(query);
 };
 

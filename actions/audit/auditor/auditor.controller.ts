@@ -4,7 +4,7 @@ import { handleErrors } from "@/utils/decorators";
 import { RoleError, ValidationError } from "@/utils/error";
 import { ValidationResponseI } from "@/utils/types";
 import { auditFindingsSchema, parseForm } from "@/utils/validations";
-import { Auditors, Audits } from "@prisma/client";
+import { Auditor, User } from "@prisma/client";
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
 import AuditorService from "./auditor.service";
@@ -30,7 +30,7 @@ class AuditorController {
     auditId: string,
     status: boolean,
     comment: string,
-  ): Promise<ValidationResponseI<Auditors>> {
+  ): Promise<ValidationResponseI<User>> {
     const user = await this.roleService.requireAuth();
     const { allowed } = await this.roleService.canAttest(user, auditId);
     if (!allowed) {
@@ -43,20 +43,20 @@ class AuditorController {
   }
 
   @handleErrors
-  async leaveAudit(auditId: string): Promise<ValidationResponseI<Audits>> {
+  async leaveAudit(auditId: string): Promise<ValidationResponseI<User>> {
     const user = await this.roleService.requireAuth();
     const { audit, allowed } = await this.roleService.canLeave(user, auditId);
     if (!allowed) {
       throw new RoleError("you cannot leave this audit");
     }
-    const data = await this.auditorService.leaveAudit(audit, user);
+    const data = await this.auditorService.leaveAudit(audit.id, user.id, audit.status);
 
     revalidatePath(`/audits/view/${auditId}`, "page");
     return { success: true, data };
   }
 
   @handleErrors
-  async addFinding(auditId: string, formData: FormData): Promise<ValidationResponseI<Auditors>> {
+  async addFinding(auditId: string, formData: FormData): Promise<ValidationResponseI<User>> {
     const user = await this.roleService.requireAuth();
     const { allowed } = await this.roleService.isAuditAuditor(user, auditId);
     if (!allowed) {
@@ -79,7 +79,7 @@ class AuditorController {
   }
 
   @handleErrors
-  async addRequest(auditId: string): Promise<ValidationResponseI<Auditors>> {
+  async addRequest(auditId: string): Promise<ValidationResponseI<Auditor>> {
     const user = await this.roleService.requireAuth();
     const { allowed } = await this.roleService.canRequest(user, auditId);
     if (!allowed) {
@@ -93,7 +93,7 @@ class AuditorController {
   }
 
   @handleErrors
-  async deleteRequest(auditId: string): Promise<ValidationResponseI<Auditors>> {
+  async deleteRequest(auditId: string): Promise<ValidationResponseI<Auditor>> {
     const user = await this.roleService.requireAuth();
     const { allowed } = await this.roleService.isAuditAuditor(user, auditId);
     if (!allowed) {

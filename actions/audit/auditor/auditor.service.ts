@@ -1,27 +1,34 @@
 import { prisma } from "@/db/prisma.server";
-import { AuditI } from "@/utils/types/prisma";
-import {
-  Auditors,
-  AuditorStatus,
-  Audits,
-  AuditStatus,
-  HistoryAction,
-  Users,
-  UserType,
-} from "@prisma/client";
+import { Auditor, AuditorStatus, AuditStatus, HistoryAction, User, UserType } from "@prisma/client";
 
 class AuditorService {
-  attestToTerms(id: string, userId: string, status: boolean, comment: string): Promise<Auditors> {
-    return prisma.auditors.update({
+  async attestToTerms(
+    auditId: string,
+    userId: string,
+    status: boolean,
+    comment: string,
+  ): Promise<User> {
+    // via an entry of User, we can simultaneously update Auditors, and create
+    // a History observation.
+    return prisma.user.update({
       where: {
-        auditId_userId: {
-          auditId: id,
-          userId,
-        },
+        id: userId,
       },
       data: {
-        acceptedTerms: status,
-        attestedTerms: true,
+        auditors: {
+          update: {
+            where: {
+              auditId_userId: {
+                auditId,
+                userId,
+              },
+            },
+            data: {
+              acceptedTerms: status,
+              attestedTerms: true,
+            },
+          },
+        },
         history: {
           create: {
             userType: UserType.AUDITOR,
@@ -29,7 +36,7 @@ class AuditorService {
             comment: comment.length > 0 ? comment : null,
             audit: {
               connect: {
-                id,
+                id: auditId,
               },
             },
           },
@@ -38,17 +45,17 @@ class AuditorService {
     });
   }
 
-  async leaveAudit(audit: AuditI, auditor: Users): Promise<Audits> {
+  async leaveAudit(auditId: string, auditorId: string, auditStatus: AuditStatus): Promise<User> {
     let historyObj = {};
-    if (audit.status == AuditStatus.AUDITING) {
+    if (auditStatus == AuditStatus.AUDITING) {
       historyObj = {
         history: {
           create: {
             userType: UserType.AUDITOR,
             action: HistoryAction.LEFT,
-            auditor: {
+            audit: {
               connect: {
-                id: auditor.id,
+                id: auditId,
               },
             },
           },
@@ -56,21 +63,21 @@ class AuditorService {
       };
     }
 
-    return prisma.audits.update({
+    return prisma.user.update({
       where: {
-        id: audit.id,
+        id: auditorId,
       },
       data: {
         auditors: {
           delete: {
             auditId_userId: {
-              auditId: audit.id,
-              userId: auditor.id,
+              auditId,
+              userId: auditorId,
             },
           },
           updateMany: {
             where: {
-              auditId: auditor.id,
+              auditId: auditorId,
             },
             data: {
               acceptedTerms: false,
@@ -83,16 +90,25 @@ class AuditorService {
     });
   }
 
-  addFindings(auditId: string, userId: string, findings: string): Promise<Auditors> {
-    return prisma.auditors.update({
+  addFindings(auditId: string, userId: string, findings: string): Promise<User> {
+    return prisma.user.update({
       where: {
-        auditId_userId: {
-          auditId: auditId,
-          userId: userId,
-        },
+        id: userId,
       },
       data: {
-        findings,
+        auditors: {
+          update: {
+            where: {
+              auditId_userId: {
+                auditId: auditId,
+                userId: userId,
+              },
+            },
+            data: {
+              findings,
+            },
+          },
+        },
         history: {
           create: {
             userType: UserType.AUDITOR,
@@ -108,8 +124,8 @@ class AuditorService {
     });
   }
 
-  addRequest(id: string, userId: string): Promise<Auditors> {
-    return prisma.auditors.create({
+  addRequest(id: string, userId: string): Promise<Auditor> {
+    return prisma.auditor.create({
       data: {
         status: AuditorStatus.REQUESTED,
         audit: {
@@ -126,8 +142,8 @@ class AuditorService {
     });
   }
 
-  deleteRequest(id: string, userId: string): Promise<Auditors> {
-    return prisma.auditors.delete({
+  deleteRequest(id: string, userId: string): Promise<Auditor> {
+    return prisma.auditor.delete({
       where: {
         auditId_userId: {
           auditId: id,

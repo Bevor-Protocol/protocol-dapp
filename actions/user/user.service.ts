@@ -1,12 +1,12 @@
-import { AuditorStatus, AuditStatus, Prisma, Users } from "@prisma/client";
 import { prisma } from "@/db/prisma.server";
 import { AuditTruncatedI, UserWithCount } from "@/utils/types/prisma";
+import { AuditorStatus, AuditStatus, Prisma, User } from "@prisma/client";
 import AuthService from "../auth/auth.service";
 
 class UserService {
   constructor(private readonly authService: typeof AuthService) {}
 
-  async currentUser(): Promise<{ address: string; user: Users | null }> {
+  async currentUser(): Promise<{ address: string; user: User | null }> {
     const session = await this.authService.getSession();
     if (!session?.siwe) {
       return {
@@ -25,22 +25,22 @@ class UserService {
       });
   }
 
-  getProfile(address: string): Promise<Users | null> {
-    return prisma.users.findUnique({
+  getProfile(address: string): Promise<User | null> {
+    return prisma.user.findUnique({
       where: {
         address,
       },
     });
   }
 
-  createUser(data: Prisma.UsersCreateInput): Promise<Users> {
-    return prisma.users.create({
+  createUser(data: Prisma.UserCreateInput): Promise<User> {
+    return prisma.user.create({
       data,
     });
   }
 
-  updateUser(id: string, data: Prisma.UsersUpdateInput): Promise<Users> {
-    return prisma.users.update({
+  updateUser(id: string, data: Prisma.UserUpdateInput): Promise<User> {
+    return prisma.user.update({
       where: {
         id,
       },
@@ -69,7 +69,7 @@ class UserService {
     }
 
     // come back to this.
-    return prisma.users
+    return prisma.user
       .findMany({
         where: {
           auditorRole: true,
@@ -164,7 +164,7 @@ class UserService {
   }
 
   userAudits(address: string): Promise<AuditTruncatedI[]> {
-    return prisma.audits.findMany({
+    return prisma.audit.findMany({
       where: {
         OR: [
           {
@@ -206,7 +206,7 @@ class UserService {
     });
   }
 
-  searchAuditors(query?: string): Promise<Users[]> {
+  searchAuditors(query?: string): Promise<User[]> {
     const search = query
       ? {
           OR: [
@@ -225,7 +225,7 @@ class UserService {
           ],
         }
       : {};
-    return prisma.users.findMany({
+    return prisma.user.findMany({
       where: {
         auditorRole: true,
         ...search,

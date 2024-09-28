@@ -1,20 +1,20 @@
 "use client";
 import { useAccount } from "wagmi";
 
-import { useModal } from "@/hooks/useContexts";
 import { Chevron } from "@/assets";
-import { Icon } from "@/components/Icon";
+import { Row } from "@/components/Box";
+import { Button } from "@/components/Button";
+import * as Dropdown from "@/components/Dropdown";
 import Networks from "@/components/Dropdown/Content/networks";
 import Profile from "@/components/Dropdown/Content/profile";
-import { trimAddress } from "@/utils/formatters";
-import { cn } from "@/utils";
-import { Button } from "@/components/Button";
-import { Row } from "@/components/Box";
-import * as Dropdown from "@/components/Dropdown";
-import * as Tooltip from "@/components/Tooltip";
-import { Users } from "@prisma/client";
+import { Icon } from "@/components/Icon";
 import Wallets from "@/components/Panel/Content/wallets";
+import * as Tooltip from "@/components/Tooltip";
+import { useModal } from "@/hooks/useContexts";
+import { cn } from "@/utils";
+import { trimAddress } from "@/utils/formatters";
 import { getNetworkImage } from "@/utils/helpers";
+import { User } from "@prisma/client";
 
 const Web3Network = (): JSX.Element => {
   const { chain } = useAccount();
@@ -54,7 +54,7 @@ const Web3Network = (): JSX.Element => {
   );
 };
 
-const Web3Profile = ({ address, user }: { address: string; user: Users | null }): JSX.Element => {
+const Web3Profile = ({ address, user }: { address: string; user: User | null }): JSX.Element => {
   return (
     <Dropdown.Main
       className="flex flex-row relative cursor-pointer rounded-lg focus-border"
@@ -78,7 +78,7 @@ const Web3Profile = ({ address, user }: { address: string; user: Users | null })
   );
 };
 
-const Web3Holder = ({ address, user }: { address: string; user: Users | null }): JSX.Element => {
+const Web3Holder = ({ address, user }: { address: string; user: User | null }): JSX.Element => {
   // need to pass both because a user can get authenticated via SIWE,
   // but not have an account yet.
 

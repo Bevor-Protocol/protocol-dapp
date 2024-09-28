@@ -1,17 +1,16 @@
 "use client";
 
-import { Users } from "@prisma/client";
-
-import { Row, Column } from "@/components/Box";
-import { Button } from "@/components/Button";
-import * as Tooltip from "@/components/Tooltip";
 import { Info } from "@/assets";
-import { useModal } from "@/hooks/useContexts";
+import { Column, Row } from "@/components/Box";
+import { Button } from "@/components/Button";
 import UploadFindings from "@/components/Modal/Content/uploadFindings";
-import { AuditI } from "@/utils/types/prisma";
+import * as Tooltip from "@/components/Tooltip";
+import { useModal } from "@/hooks/useContexts";
 import { AuditStateI } from "@/utils/types";
+import { AuditI } from "@/utils/types/prisma";
 
 import RevealAudit from "@/components/Modal/Content/onchain/revealAudit";
+import { User } from "@prisma/client";
 
 const AuditorSubmitFindings = ({
   auditId,
@@ -77,7 +76,7 @@ const AuditeeLockStake = ({
   // setDisabled,
 }: {
   audit: AuditI;
-  user: Users;
+  user: User;
   // disabled: boolean;
   // setDisabled: React.Dispatch<React.SetStateAction<boolean>>;
 }): JSX.Element => {
@@ -117,7 +116,7 @@ const AuditOngoingActions = ({
   audit,
   actionData,
 }: {
-  user: Users;
+  user: User;
   audit: AuditI;
   actionData: AuditStateI;
 }): JSX.Element => {

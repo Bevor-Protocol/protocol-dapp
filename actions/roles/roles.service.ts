@@ -1,6 +1,6 @@
 import { AuthError } from "@/utils/error";
 import { RoleI } from "@/utils/types";
-import { AuditorStatus, AuditStatus, Users } from "@prisma/client";
+import { AuditorStatus, AuditStatus, User } from "@prisma/client";
 import AuditService from "../audit/audit.service";
 import UserService from "../user/user.service";
 
@@ -10,7 +10,7 @@ class RoleService {
     private readonly auditService: typeof AuditService,
   ) {}
 
-  async requireAuth(): Promise<Users> {
+  async requireAuth(): Promise<User> {
     const { user } = await this.userService.currentUser();
     if (!user) {
       throw new AuthError();
@@ -18,7 +18,7 @@ class RoleService {
     return user;
   }
 
-  async isAuditOwner(user: Users, auditId: string): Promise<RoleI> {
+  async isAuditOwner(user: User, auditId: string): Promise<RoleI> {
     // I'm already fetching the audit. some of these are reused across permissions,
     // so might as well return it in the object.
     const audit = await this.auditService.getAudit(auditId);
@@ -31,7 +31,7 @@ class RoleService {
     return { audit, allowed: true };
   }
 
-  async isAuditAuditor(user: Users, auditId: string): Promise<RoleI> {
+  async isAuditAuditor(user: User, auditId: string): Promise<RoleI> {
     const audit = await this.auditService.getAudit(auditId);
     if (!audit) {
       return { audit, allowed: false };
@@ -44,7 +44,7 @@ class RoleService {
     return { audit, allowed: true };
   }
 
-  async canAttest(user: Users, auditId: string): Promise<RoleI> {
+  async canAttest(user: User, auditId: string): Promise<RoleI> {
     const { audit, allowed } = await this.isAuditAuditor(user, auditId);
     if (!allowed || audit?.status !== AuditStatus.ATTESTATION) {
       return { audit, allowed: false };
@@ -52,7 +52,7 @@ class RoleService {
     return { audit, allowed: true };
   }
 
-  async canEdit(user: Users, auditId: string): Promise<RoleI> {
+  async canEdit(user: User, auditId: string): Promise<RoleI> {
     const { audit, allowed } = await this.isAuditOwner(user, auditId);
     if (
       !allowed ||
@@ -63,7 +63,7 @@ class RoleService {
     return { audit, allowed: true };
   }
 
-  async canLock(user: Users, auditId: string): Promise<RoleI> {
+  async canLock(user: User, auditId: string): Promise<RoleI> {
     const { audit, allowed } = await this.isAuditOwner(user, auditId);
     if (!allowed || audit?.status !== AuditStatus.DISCOVERY || !audit.details) {
       return { audit, allowed: false };
@@ -77,7 +77,7 @@ class RoleService {
     return { audit, allowed: true };
   }
 
-  async canOpen(user: Users, auditId: string): Promise<RoleI> {
+  async canOpen(user: User, auditId: string): Promise<RoleI> {
     const { audit, allowed } = await this.isAuditOwner(user, auditId);
     if (!allowed || audit?.status !== AuditStatus.ATTESTATION) {
       return { audit, allowed: false };
@@ -85,7 +85,7 @@ class RoleService {
     return { audit, allowed: true };
   }
 
-  async canLeave(user: Users, auditId: string): Promise<RoleI> {
+  async canLeave(user: User, auditId: string): Promise<RoleI> {
     const { audit, allowed } = await this.isAuditAuditor(user, auditId);
     if (
       !allowed ||
@@ -96,7 +96,7 @@ class RoleService {
     return { audit, allowed: true };
   }
 
-  async canRequest(user: Users, auditId: string): Promise<RoleI> {
+  async canRequest(user: User, auditId: string): Promise<RoleI> {
     const audit = await this.auditService.getAudit(auditId);
 
     if (!audit) {

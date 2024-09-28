@@ -1,10 +1,10 @@
 import { X } from "@/assets";
+import { AuditorItemSimple } from "@/components/Audit";
 import { Column, Row } from "@/components/Box";
 import { useModal } from "@/hooks/useContexts";
-import { HistoryI } from "@/utils/types";
 import { cn } from "@/utils";
 import { timeSince } from "@/utils/dates";
-import { AuditorItemSimple } from "@/components/Audit";
+import { HistoryI } from "@/utils/types";
 import { HistoryAction, UserType } from "@prisma/client";
 
 export const HistoryPanel = ({ history }: { history: HistoryI[] }): JSX.Element => {
@@ -25,12 +25,7 @@ export const HistoryPanel = ({ history }: { history: HistoryI[] }): JSX.Element 
               </div>
               <div className="text-xs text-white/60">{timeSince(item.createdAt)}</div>
             </Row>
-            {item.userType == UserType.AUDITEE && (
-              <AuditorItemSimple auditor={item.audit.auditee} />
-            )}
-            {item.userType == UserType.AUDITOR && (
-              <AuditorItemSimple auditor={item.auditor!.user} />
-            )}
+            <AuditorItemSimple auditor={item.user} />
             <Row className="bg-dark shadow rounded-lg p-1 w-fit text-xs items-center gap-1 m-1">
               <span
                 className={cn(
