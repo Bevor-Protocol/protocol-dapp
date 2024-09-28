@@ -1,42 +1,83 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { BlobError } from "@vercel/blob";
-import { ValidationFailureI } from "./types";
+import { ResponseFailureI } from "./types";
+import { ErrorTypeEnum } from "./types/enum";
 
 export class ValidationError extends Error {
-  name = "ValidationError";
-
   validationErrors: Record<string, string>;
 
-  constructor(message: string, validationErrors: Record<string, string>) {
-    super(message);
+  type: ErrorTypeEnum;
+
+  constructor(validationErrors: Record<string, string>) {
+    super("Failed validation");
     this.validationErrors = validationErrors;
+    this.type = ErrorTypeEnum.VALIDATION;
 
     Object.setPrototypeOf(this, ValidationError.prototype);
   }
 }
 
 export class RoleError extends Error {
-  name = "RoleError";
+  type: ErrorTypeEnum;
 
-  message = "User does not have role";
+  constructor() {
+    super("User doesn't have the proper role to take this action.");
+    this.type = ErrorTypeEnum.ROLE;
+  }
 }
 
 export class AuthError extends Error {
-  name = "AuthError";
+  type: ErrorTypeEnum;
 
-  message = "User not authenticated";
+  constructor() {
+    super("User isn't authenticated");
+    this.type = ErrorTypeEnum.AUTH;
+  }
 }
 
-export const handleValidationErrorReturn = (error: any): ValidationFailureI => {
+export const handleErrorResponse = (error: any): ResponseFailureI => {
   if (error instanceof ValidationError) {
-    return { success: false, error: error.message, validationErrors: error.validationErrors };
+    return {
+      success: false,
+      error: {
+        message: error.message,
+        type: ErrorTypeEnum.VALIDATION,
+        validationErrors: error.validationErrors,
+      },
+    };
   }
   if (error instanceof BlobError) {
     return {
       success: false,
-      error: error.message,
-      validationErrors: { image: "error uploading, try later" },
+      error: {
+        message: error.message,
+        type: ErrorTypeEnum.BLOB,
+        validationErrors: { image: "error uploading, try later" },
+      },
     };
   }
-  return { success: false, error: error.message };
+  if (error instanceof AuthError) {
+    return {
+      success: false,
+      error: {
+        message: error.message,
+        type: ErrorTypeEnum.AUTH,
+        validationErrors: {},
+      },
+    };
+  }
+  if (error instanceof RoleError) {
+    return {
+      success: false,
+      error: {
+        message: error.message,
+        type: ErrorTypeEnum.ROLE,
+        validationErrors: {},
+      },
+    };
+  }
+  return {
+    success: false,
+    error: { type: ErrorTypeEnum.OTHER, message: error.message, validationErrors: {} },
+  };
 };

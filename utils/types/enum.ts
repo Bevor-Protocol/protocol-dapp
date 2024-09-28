@@ -3,3 +3,11 @@ export enum TransactionEnum {
   ERROR = "ERROR",
   SUCCESS = "SUCCESS",
 }
+
+export enum ErrorTypeEnum {
+  AUTH = "AUTH",
+  ROLE = "ROLE",
+  VALIDATION = "VALIDATION",
+  BLOB = "BLOB",
+  OTHER = "OTHER",
+}

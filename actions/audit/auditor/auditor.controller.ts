@@ -2,7 +2,7 @@ import BlobService from "@/actions/blob/blob.service";
 import RoleService from "@/actions/roles/roles.service";
 import { handleErrors } from "@/utils/decorators";
 import { ValidationError } from "@/utils/error";
-import { ValidationResponseI } from "@/utils/types";
+import { ResponseI } from "@/utils/types";
 import { auditFindingsSchema, parseForm } from "@/utils/validations";
 import { Auditor, User } from "@prisma/client";
 import { revalidatePath } from "next/cache";
@@ -10,7 +10,7 @@ import { z } from "zod";
 import AuditorService from "./auditor.service";
 
 /*
-Mutations will return a Generic ValidationResponseI type object.
+Mutations will return a Generic ResponseI type object.
 
 We can't send 4xx/5xx responses in server actions, so we destructure
 responses to handle { success: boolean, data: T}, which we can handle client side.
@@ -26,11 +26,7 @@ class AuditorController {
   ) {}
 
   @handleErrors
-  async attestToTerms(
-    auditId: string,
-    status: boolean,
-    comment: string,
-  ): Promise<ValidationResponseI<User>> {
+  async attestToTerms(auditId: string, status: boolean, comment: string): Promise<ResponseI<User>> {
     const user = await this.roleService.requireAuth();
     await this.roleService.canAttest(user, auditId);
 
@@ -41,7 +37,7 @@ class AuditorController {
   }
 
   @handleErrors
-  async leaveAudit(auditId: string): Promise<ValidationResponseI<User>> {
+  async leaveAudit(auditId: string): Promise<ResponseI<User>> {
     const user = await this.roleService.requireAuth();
     const audit = await this.roleService.canLeave(user, auditId);
 
@@ -52,7 +48,7 @@ class AuditorController {
   }
 
   @handleErrors
-  async addFinding(auditId: string, formData: FormData): Promise<ValidationResponseI<User>> {
+  async addFinding(auditId: string, formData: FormData): Promise<ResponseI<User>> {
     const user = await this.roleService.requireAuth();
     await this.roleService.isAuditAuditor(user, auditId);
 
@@ -60,7 +56,7 @@ class AuditorController {
 
     const blobData = await this.blobService.addBlob("audit-details", parsed);
     if (!blobData) {
-      throw new ValidationError("no file provided", {
+      throw new ValidationError({
         image: "no file provided",
       });
     }
@@ -72,7 +68,7 @@ class AuditorController {
   }
 
   @handleErrors
-  async addRequest(auditId: string): Promise<ValidationResponseI<Auditor>> {
+  async addRequest(auditId: string): Promise<ResponseI<Auditor>> {
     const user = await this.roleService.requireAuth();
     await this.roleService.canRequest(user, auditId);
 
@@ -83,7 +79,7 @@ class AuditorController {
   }
 
   @handleErrors
-  async deleteRequest(auditId: string): Promise<ValidationResponseI<Auditor>> {
+  async deleteRequest(auditId: string): Promise<ResponseI<Auditor>> {
     const user = await this.roleService.requireAuth();
     await this.roleService.isAuditAuditor(user, auditId);
 

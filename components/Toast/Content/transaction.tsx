@@ -1,11 +1,10 @@
-import { trimTxn } from "@/utils/formatters";
-import { Row } from "@/components/Box";
 import { Arrow, Check, X } from "@/assets";
+import { Row } from "@/components/Box";
 import { Loader } from "@/components/Loader";
+import { trimTxn } from "@/utils/formatters";
 import { TransactionEnum } from "@/utils/types/enum";
 
 const Transaction = ({ txn, status }: { txn?: string; status: TransactionEnum }): JSX.Element => {
-  if (!open) return <></>;
   return (
     <>
       <Row className="text-xs gap-2">

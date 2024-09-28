@@ -81,21 +81,19 @@ const AuditorRemoveRequest = ({
   disabled: boolean;
   setDisabled: React.Dispatch<React.SetStateAction<boolean>>;
 }): JSX.Element => {
-  const { setContent, toggleOpen } = useToast();
+  const { setContent, toggleOpen, setReadyAutoClose } = useToast({ autoClose: true });
 
   const { mutate } = useMutation({
     mutationFn: () => auditController.auditor.deleteRequest(auditId),
     onMutate: () => setDisabled(true),
     onError: (error) => console.log(error),
-    onSuccess: (d) => console.log(d),
-    onSettled: (data) => {
-      console.log(data);
-      if (data?.success) {
+    onSuccess: (response) => {
+      if (response.success) {
         setDisabled(false);
       } else {
-        console.log("HITS");
-        setContent(<ErrorToast text={data?.error ?? "Something went wrong, try again later"} />);
+        setContent(<ErrorToast text={response.error.message} />);
         toggleOpen();
+        setReadyAutoClose(true);
       }
     },
   });
@@ -130,17 +128,17 @@ const AuditorAddRequest = ({
   disabled: boolean;
   setDisabled: React.Dispatch<React.SetStateAction<boolean>>;
 }): JSX.Element => {
-  const { setContent, toggleOpen } = useToast();
+  const { setContent, toggleOpen, setReadyAutoClose } = useToast({ autoClose: true });
   const { mutate } = useMutation({
     mutationFn: () => auditController.auditor.addRequest(auditId),
     onMutate: () => setDisabled(true),
-    onSettled: (data) => {
-      if (data?.success) {
+    onSuccess: (response) => {
+      if (response.success) {
         setDisabled(false);
       } else {
-        setContent(<ErrorToast text={data?.error || "Something went wrong, try again later"} />);
+        setContent(<ErrorToast text={response.error.message} />);
         toggleOpen();
-        toggleOpen();
+        setReadyAutoClose(true);
       }
     },
   });
@@ -183,11 +181,11 @@ const AuditorRemoveVerification = ({
   const { mutate } = useMutation({
     mutationFn: () => auditController.auditor.deleteRequest(auditId),
     onMutate: () => setDisabled(true),
-    onSettled: (data) => {
-      if (data?.success) {
+    onSuccess: (response) => {
+      if (response.success) {
         setDisabled(false);
       } else {
-        setContent(<ErrorToast text={data?.error ?? "Something went wrong, try again later"} />);
+        setContent(<ErrorToast text={response.error.message} />);
         toggleOpen();
         setReadyAutoClose(true);
       }
@@ -248,18 +246,18 @@ const AuditeeLockAudit = ({
   disabled: boolean;
   setDisabled: React.Dispatch<React.SetStateAction<boolean>>;
 }): JSX.Element => {
-  const { setContent, toggleOpen } = useToast();
+  const { setContent, toggleOpen, setReadyAutoClose } = useToast({ autoClose: true });
 
   const { mutate } = useMutation({
     mutationFn: () => auditController.owner.lockAudit(auditId),
     onMutate: () => setDisabled(true),
-    onSettled: (data) => {
-      if (data?.success) {
+    onSuccess: (response) => {
+      if (response.success) {
         setDisabled(false);
       } else {
-        setContent(<ErrorToast text={data?.error || "Something went wrong, try again later"} />);
+        setContent(<ErrorToast text={response.error.message} />);
         toggleOpen();
-        toggleOpen();
+        setReadyAutoClose(true);
       }
     },
   });

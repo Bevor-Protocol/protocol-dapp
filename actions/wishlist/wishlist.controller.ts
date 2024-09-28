@@ -1,5 +1,5 @@
 import { handleErrors } from "@/utils/decorators";
-import { ValidationResponseI } from "@/utils/types";
+import { ResponseI } from "@/utils/types";
 import { WishlistI } from "@/utils/types/prisma";
 import { revalidatePath } from "next/cache";
 import RoleService from "../roles/roles.service";
@@ -23,7 +23,7 @@ class WishlistController {
   }
 
   @handleErrors
-  async addToWishlist(receiver: string): Promise<ValidationResponseI<WishlistI>> {
+  async addToWishlist(receiver: string): Promise<ResponseI<WishlistI>> {
     const user = await this.roleService.requireAuth();
     const data = await this.wishlistService.addToWishlist(user.id, receiver);
 
@@ -32,7 +32,7 @@ class WishlistController {
   }
 
   @handleErrors
-  async removeFromWishlist(receiver: string): Promise<ValidationResponseI<WishlistI>> {
+  async removeFromWishlist(receiver: string): Promise<ResponseI<WishlistI>> {
     const user = await this.roleService.requireAuth();
     const data = await this.wishlistService.removeFromWishlist(user.id, receiver);
 

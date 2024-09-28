@@ -1,6 +1,6 @@
 "use server";
 
-import { ValidationResponseI } from "@/utils/types";
+import { ResponseI } from "@/utils/types";
 import { Auditor, User } from "@prisma/client";
 import auditorController from "./auditor.controller";
 
@@ -8,26 +8,23 @@ const attestToTerms = async (
   auditId: string,
   status: boolean,
   comment: string,
-): Promise<ValidationResponseI<User>> => {
+): Promise<ResponseI<User>> => {
   return auditorController.attestToTerms(auditId, status, comment);
 };
 
-const leaveAudit = async (auditId: string): Promise<ValidationResponseI<User>> => {
+const leaveAudit = async (auditId: string): Promise<ResponseI<User>> => {
   return auditorController.leaveAudit(auditId);
 };
 
-const addFinding = async (
-  auditId: string,
-  formData: FormData,
-): Promise<ValidationResponseI<User>> => {
+const addFinding = async (auditId: string, formData: FormData): Promise<ResponseI<User>> => {
   return auditorController.addFinding(auditId, formData);
 };
 
-const addRequest = async (auditId: string): Promise<ValidationResponseI<Auditor>> => {
+const addRequest = async (auditId: string): Promise<ResponseI<Auditor>> => {
   return auditorController.addRequest(auditId);
 };
 
-const deleteRequest = async (auditId: string): Promise<ValidationResponseI<Auditor>> => {
+const deleteRequest = async (auditId: string): Promise<ResponseI<Auditor>> => {
   return auditorController.deleteRequest(auditId);
 };
 

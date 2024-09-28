@@ -1,5 +1,5 @@
 import { handleErrors } from "@/utils/decorators";
-import { ValidationResponseI } from "@/utils/types";
+import { ResponseI } from "@/utils/types";
 import { AuditTruncatedI, UserWithCount } from "@/utils/types/prisma";
 import { parseForm, userSchema, userSchemaCreate } from "@/utils/validations";
 import { Prisma, User } from "@prisma/client";
@@ -9,7 +9,7 @@ import RoleService from "../roles/roles.service";
 import UserService from "./user.service";
 
 /*
-Mutations will return a Generic ValidationResponseI type object.
+Mutations will return a Generic ResponseI type object.
 
 We can't send 4xx/5xx responses in server actions, so we destructure
 responses to handle { success: boolean, data: T}, which we can handle client side.
@@ -33,7 +33,7 @@ class UserController {
   }
 
   @handleErrors
-  async createUser(address: string, formData: FormData): Promise<ValidationResponseI<User>> {
+  async createUser(address: string, formData: FormData): Promise<ResponseI<User>> {
     const parsed = parseForm(formData, userSchemaCreate);
     const { image, ...rest } = parsed;
     const dataPass: Prisma.UserCreateInput = {
@@ -52,7 +52,7 @@ class UserController {
   }
 
   @handleErrors
-  async updateUser(formData: FormData): Promise<ValidationResponseI<User>> {
+  async updateUser(formData: FormData): Promise<ResponseI<User>> {
     const user = await this.roleService.requireAuth();
     const parsed = parseForm(formData, userSchema);
 

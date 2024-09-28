@@ -1,6 +1,6 @@
 "use server";
 
-import { ValidationResponseI } from "@/utils/types";
+import { ResponseI } from "@/utils/types";
 import { AuditTruncatedI, UserWithCount } from "@/utils/types/prisma";
 import { User } from "@prisma/client";
 import userController from "./user.controller";
@@ -13,14 +13,11 @@ const getProfile = async (address: string): Promise<User | null> => {
   return userController.getProfile(address);
 };
 
-const createUser = async (
-  address: string,
-  formData: FormData,
-): Promise<ValidationResponseI<User>> => {
+const createUser = async (address: string, formData: FormData): Promise<ResponseI<User>> => {
   return userController.createUser(address, formData);
 };
 
-const updateUser = async (formData: FormData): Promise<ValidationResponseI<User>> => {
+const updateUser = async (formData: FormData): Promise<ResponseI<User>> => {
   return userController.updateUser(formData);
 };
 

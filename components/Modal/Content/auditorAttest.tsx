@@ -8,14 +8,17 @@ import { X } from "@/assets";
 import { Row } from "@/components/Box";
 import { Button } from "@/components/Button";
 import * as Form from "@/components/Form";
-import { useModal } from "@/hooks/useContexts";
+import ErrorToast from "@/components/Toast/Content/error";
+import { useModal, useToast } from "@/hooks/useContexts";
 import { cn } from "@/utils";
+import { ErrorTypeEnum } from "@/utils/types/enum";
 import { AuditI } from "@/utils/types/prisma";
 import React from "react";
 
 const AuditorAttest = ({ audit }: { audit: AuditI }): JSX.Element => {
   const { toggleOpen } = useModal(); // const [showRejected, setShowRejected] = useState(false);
   const [comment, setComment] = useState("");
+  const { toggleOpen: toggleToast, setContent, setReadyAutoClose } = useToast({ autoClose: true });
   const [errors, setErrors] = useState<Record<string, string>>({});
 
   const { mutate, isPending } = useMutation({
@@ -26,13 +29,24 @@ const AuditorAttest = ({ audit }: { audit: AuditI }): JSX.Element => {
       if (response.success) {
         toggleOpen();
       } else {
-        if (response.validationErrors) {
-          setErrors(response.validationErrors);
+        const error = response.error;
+        switch (error.type) {
+          case ErrorTypeEnum.VALIDATION:
+          case ErrorTypeEnum.BLOB:
+            setErrors(error.validationErrors);
+            break;
+          default:
+            setContent(<ErrorToast text="something went wrong, try again later" />);
+            toggleToast();
+            setReadyAutoClose(true);
         }
       }
     },
-    onError: () => {
-      setErrors({ arbitrary: "something went wrong, try again later" });
+    onError: (error) => {
+      console.log(error);
+      setContent(<ErrorToast text="something went wrong, try again later" />);
+      toggleToast();
+      setReadyAutoClose(true);
     },
   });
 

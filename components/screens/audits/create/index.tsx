@@ -6,28 +6,42 @@ import React, { useState } from "react";
 
 import { auditController } from "@/actions";
 import AuditFormEntries from "@/components/Audit/client/form";
+import ErrorToast from "@/components/Toast/Content/error";
+import { useToast } from "@/hooks/useContexts";
+import { ErrorTypeEnum } from "@/utils/types/enum";
 import { User } from "@prisma/client";
 
 const AuditCreation = ({ user }: { user: User }): JSX.Element => {
   const router = useRouter();
   const [auditors, setAuditors] = useState<User[]>([]);
+  const { toggleOpen: toggleToast, setContent, setReadyAutoClose } = useToast({ autoClose: true });
   const [errors, setErrors] = useState<Record<string, string>>({});
 
   const { mutate, isPending } = useMutation({
     mutationFn: (variables: { formData: FormData }) =>
       auditController.owner.createAudit(variables.formData, auditors),
-    onSuccess: (data) => {
-      if (data.success) {
+    onSuccess: (response) => {
+      if (response.success) {
         router.push(`/user/${user.address}`);
       } else {
-        if (data.validationErrors) {
-          setErrors(data.validationErrors);
+        const error = response.error;
+        switch (error.type) {
+          case ErrorTypeEnum.VALIDATION:
+          case ErrorTypeEnum.BLOB:
+            setErrors(error.validationErrors);
+            break;
+          default:
+            setContent(<ErrorToast text="something went wrong, try again later" />);
+            toggleToast();
+            setReadyAutoClose(true);
         }
       }
     },
     onError: (error) => {
       console.log(error);
-      setErrors({ arbitrary: "something went wrong, try again later" });
+      setContent(<ErrorToast text="something went wrong, try again later" />);
+      toggleToast();
+      setReadyAutoClose(true);
     },
   });
 

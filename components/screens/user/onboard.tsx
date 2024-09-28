@@ -1,29 +1,49 @@
 "use client";
-import { useState, useMemo } from "react";
-import { useAccount } from "wagmi";
-import { useRouter } from "next/navigation";
 import { useMutation } from "@tanstack/react-query";
+import { useRouter } from "next/navigation";
+import { useMemo, useState } from "react";
+import { useAccount } from "wagmi";
 
-import { Icon } from "@/components/Icon";
-import * as Form from "@/components/Form";
 import { userController } from "@/actions";
-import { Button } from "@/components/Button";
 import { Column, Row } from "@/components/Box";
-import { ValidationError } from "@/utils/error";
+import { Button } from "@/components/Button";
+import * as Form from "@/components/Form";
+import { Icon } from "@/components/Icon";
+import ErrorToast from "@/components/Toast/Content/error";
+import { useToast } from "@/hooks/useContexts";
+import { ErrorTypeEnum } from "@/utils/types/enum";
 
 const UserOnboard = ({ address }: { address: string }): JSX.Element => {
   const router = useRouter();
   const [selectedImage, setSelectedImage] = useState<File | undefined>();
+  const { toggleOpen: toggleToast, setContent, setReadyAutoClose } = useToast({ autoClose: true });
   const [errors, setErrors] = useState<Record<string, string>>({});
 
   const { mutate, isPending } = useMutation({
     mutationFn: (variables: { userAddress: string; formData: FormData }) =>
       userController.createUser(variables.userAddress, variables.formData),
-    onSuccess: () => router.refresh(),
-    onError: (error) => {
-      if (error instanceof ValidationError) {
-        setErrors(error.validationErrors);
+    onSuccess: (response) => {
+      if (response.success) {
+        router.refresh();
+      } else {
+        const error = response.error;
+        switch (error.type) {
+          case ErrorTypeEnum.VALIDATION:
+          case ErrorTypeEnum.BLOB:
+            setErrors(error.validationErrors);
+            break;
+          default:
+            setContent(<ErrorToast text="something went wrong, try again later" />);
+            toggleToast();
+            setReadyAutoClose(true);
+        }
       }
+    },
+    onError: (error) => {
+      console.log(error);
+      setContent(<ErrorToast text="something went wrong, try again later" />);
+      toggleToast();
+      setReadyAutoClose(true);
     },
   });
 

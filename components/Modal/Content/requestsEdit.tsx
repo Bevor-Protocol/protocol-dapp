@@ -1,17 +1,18 @@
 "use client";
 
-import { useState } from "react";
 import { useMutation } from "@tanstack/react-query";
+import { useState } from "react";
 
-import { useModal } from "@/hooks/useContexts";
 import { Column, Row } from "@/components/Box";
+import { useModal, useToast } from "@/hooks/useContexts";
 import { AuditI } from "@/utils/types/prisma";
 // import * as Form from "@/components/Form";
 import { auditController } from "@/actions";
-import { AuditorStatus } from "@prisma/client";
+import { X } from "@/assets";
 import { AuditorItem } from "@/components/Audit";
 import { Button } from "@/components/Button";
-import { X } from "@/assets";
+import ErrorToast from "@/components/Toast/Content/error";
+import { AuditorStatus } from "@prisma/client";
 
 const RequestsEdit = ({ audit }: { audit: AuditI }): JSX.Element => {
   const requestedAuditors = audit.auditors.filter(
@@ -29,6 +30,7 @@ const RequestsEdit = ({ audit }: { audit: AuditI }): JSX.Element => {
 
   const { toggleOpen } = useModal();
   const [checked, setChecked] = useState<(1 | -1 | 0)[]>([...initialState]);
+  const { toggleOpen: toggleToast, setContent, setReadyAutoClose } = useToast({ autoClose: true });
   // const [showRejected, setShowRejected] = useState(false);
 
   const { mutate, isPending } = useMutation({
@@ -43,9 +45,20 @@ const RequestsEdit = ({ audit }: { audit: AuditI }): JSX.Element => {
         variables.auditorsReject,
       );
     },
-    onSettled: (data) => {
-      console.log(data);
-      toggleOpen();
+    onSuccess: (response) => {
+      if (response.success) {
+        toggleOpen();
+      } else {
+        setContent(<ErrorToast text="something went wrong, try again later" />);
+        toggleToast();
+        setReadyAutoClose(true);
+      }
+    },
+    onError: (error) => {
+      console.log(error);
+      setContent(<ErrorToast text="something went wrong, try again later" />);
+      toggleToast();
+      setReadyAutoClose(true);
     },
   });
 

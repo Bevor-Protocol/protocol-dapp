@@ -1,5 +1,5 @@
 import { handleErrors } from "@/utils/decorators";
-import { AuditStateI, MarkdownAuditsI, ValidationResponseI } from "@/utils/types";
+import { AuditStateI, MarkdownAuditsI, ResponseI } from "@/utils/types";
 import { AuditDetailedI, AuditFindingsI, AuditI } from "@/utils/types/prisma";
 import { Audit } from "@prisma/client";
 import { revalidatePath } from "next/cache";
@@ -7,7 +7,7 @@ import UserService from "../user/user.service";
 import AuditService from "./audit.service";
 
 /*
-Mutations will return a Generic ValidationResponseI type object.
+Mutations will return a Generic ResponseI type object.
 
 We can't send 4xx/5xx responses in server actions, so we destructure
 responses to handle { success: boolean, data: T}, which we can handle client side.
@@ -30,7 +30,7 @@ class AuditController {
   }
 
   @handleErrors
-  async addAuditInfo(id: string, infoId: string): Promise<ValidationResponseI<Audit>> {
+  async addAuditInfo(id: string, infoId: string): Promise<ResponseI<Audit>> {
     const data = await this.auditService.addAuditInfo(id, infoId);
 
     revalidatePath(`/audits/view/${id}`, "page");
@@ -38,7 +38,7 @@ class AuditController {
   }
 
   @handleErrors
-  async addNftInfo(id: string, nftId: string): Promise<ValidationResponseI<Audit>> {
+  async addNftInfo(id: string, nftId: string): Promise<ResponseI<Audit>> {
     const data = await this.auditService.addNftInfo(id, nftId);
 
     revalidatePath(`/audits/view/${id}`, "page");

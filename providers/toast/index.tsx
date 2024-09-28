@@ -3,8 +3,8 @@
 import { useEffect, useReducer, useRef, useState } from "react";
 
 import * as Toast from "@/components/Toast";
-import EventContext from "./context";
 import { toggleReducer } from "@/reducers";
+import EventContext from "./context";
 
 // Event provider component
 const ToastProvider = ({ children }: { children: React.ReactNode }): JSX.Element => {

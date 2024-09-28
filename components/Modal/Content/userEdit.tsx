@@ -8,13 +8,16 @@ import { Column, Row } from "@/components/Box";
 import { Button } from "@/components/Button";
 import * as Form from "@/components/Form";
 import { Icon } from "@/components/Icon";
+import ErrorToast from "@/components/Toast/Content/error";
 import * as Tooltip from "@/components/Tooltip";
-import { useModal } from "@/hooks/useContexts";
+import { useModal, useToast } from "@/hooks/useContexts";
 import { UserStats } from "@/utils/types";
+import { ErrorTypeEnum } from "@/utils/types/enum";
 import { User } from "@prisma/client";
 
 const UserEdit = ({ user, stats }: { user: User; stats: UserStats }): JSX.Element => {
   const { toggleOpen } = useModal();
+  const { toggleOpen: toggleToast, setContent, setReadyAutoClose } = useToast({ autoClose: true });
   const [selectedImage, setSelectedImage] = useState<File | undefined>();
   const [errors, setErrors] = useState<Record<string, string>>({});
 
@@ -29,13 +32,24 @@ const UserEdit = ({ user, stats }: { user: User; stats: UserStats }): JSX.Elemen
       if (response.success) {
         toggleOpen();
       } else {
-        if (response.validationErrors) {
-          setErrors(response.validationErrors);
+        const error = response.error;
+        switch (error.type) {
+          case ErrorTypeEnum.VALIDATION:
+          case ErrorTypeEnum.BLOB:
+            setErrors(error.validationErrors);
+            break;
+          default:
+            setContent(<ErrorToast text="something went wrong, try again later" />);
+            toggleToast();
+            setReadyAutoClose(true);
         }
       }
     },
-    onError: () => {
-      setErrors({ arbitrary: "something went wrong, try again later" });
+    onError: (error) => {
+      console.log(error);
+      setContent(<ErrorToast text="something went wrong, try again later" />);
+      toggleToast();
+      setReadyAutoClose(true);
     },
   });
 

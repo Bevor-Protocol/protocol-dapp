@@ -1,5 +1,5 @@
 import { isFileEmpty } from "@/utils/helpers";
-import { put, del, type PutBlobResult } from "@vercel/blob";
+import { del, put, type PutBlobResult } from "@vercel/blob";
 
 class BlobService {
   addBlob(folder: string, file: File | undefined): Promise<PutBlobResult | null> {

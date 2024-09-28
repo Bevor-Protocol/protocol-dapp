@@ -2,14 +2,15 @@
 
 import { useMutation } from "@tanstack/react-query";
 
-import { useModal } from "@/hooks/useContexts";
-import { Row } from "@/components/Box";
-import * as Form from "@/components/Form";
 import { auditController } from "@/actions";
-import { Button } from "@/components/Button";
 import { X } from "@/assets";
+import { Row } from "@/components/Box";
+import { Button } from "@/components/Button";
+import * as Form from "@/components/Form";
+import ErrorToast from "@/components/Toast/Content/error";
+import { useModal, useToast } from "@/hooks/useContexts";
+import { ErrorTypeEnum } from "@/utils/types/enum";
 import { useState } from "react";
-import { ValidationError } from "@/utils/error";
 
 const UploadFindings = ({
   auditId,
@@ -21,17 +22,35 @@ const UploadFindings = ({
   const initialFile = initial ? new File([], "") : undefined;
   const { toggleOpen } = useModal();
   const [selectedFile, setSelectedFile] = useState<File | undefined>(initialFile);
+  const { toggleOpen: toggleToast, setContent, setReadyAutoClose } = useToast({ autoClose: true });
   const [errors, setErrors] = useState<Record<string, string>>({});
 
   const { mutate, isPending } = useMutation({
     mutationFn: (variables: { formData: FormData }) => {
       return auditController.auditor.addFinding(auditId, variables.formData);
     },
-    onSuccess: () => toggleOpen(),
-    onError: (error) => {
-      if (error instanceof ValidationError) {
-        setErrors(error.validationErrors);
+    onSuccess: (response) => {
+      if (response.success) {
+        toggleOpen();
+      } else {
+        const error = response.error;
+        switch (error.type) {
+          case ErrorTypeEnum.VALIDATION:
+          case ErrorTypeEnum.BLOB:
+            setErrors(error.validationErrors);
+            break;
+          default:
+            setContent(<ErrorToast text="something went wrong, try again later" />);
+            toggleToast();
+            setReadyAutoClose(true);
+        }
       }
+    },
+    onError: (error) => {
+      console.log(error);
+      setContent(<ErrorToast text="something went wrong, try again later" />);
+      toggleToast();
+      setReadyAutoClose(true);
     },
   });
 

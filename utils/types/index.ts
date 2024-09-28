@@ -1,5 +1,6 @@
 import { HistoryAction, User, UserType } from "@prisma/client";
 import { Address } from "viem";
+import { ErrorTypeEnum } from "./enum";
 import { AuditI } from "./prisma";
 
 export type LeaderboardI = {
@@ -68,20 +69,26 @@ export interface UserStats {
   numWishlist: number;
 }
 
-export interface ValidationSuccessI<T> {
+export interface ErrorTypeI {
+  type: ErrorTypeEnum;
+  message: string;
+  validationErrors: Record<string, string>;
+}
+
+export interface ResponseSuccessI<T> {
   success: true;
   data: T;
   error?: never;
+  type?: never;
   validationErrors?: never;
 }
-export interface ValidationFailureI {
+export interface ResponseFailureI {
   success: false;
   data?: never;
-  error: string;
-  validationErrors?: Record<string, string>;
+  error: ErrorTypeI;
 }
 
-export type ValidationResponseI<T> = ValidationSuccessI<T> | ValidationFailureI;
+export type ResponseI<T> = ResponseSuccessI<T> | ResponseFailureI;
 
 export interface RoleSuccess {
   allowed: true;
@@ -112,3 +119,7 @@ export type VestingContractView = [
   withdrawn: bigint,
   auditId: bigint,
 ];
+
+export type CustomErrorType = Error & {
+  type: ErrorTypeEnum;
+};

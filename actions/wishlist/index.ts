@@ -1,6 +1,6 @@
 "use server";
 
-import { ValidationResponseI } from "@/utils/types";
+import { ResponseI } from "@/utils/types";
 import { WishlistI } from "@/utils/types/prisma";
 import wishlistController from "./wishlist.controller";
 
@@ -12,11 +12,11 @@ const getUserWishlist = async (requestorId: string): Promise<WishlistI[]> => {
   return wishlistController.getUserWishlist(requestorId);
 };
 
-const addToWishlist = async (receiverId: string): Promise<ValidationResponseI<WishlistI>> => {
+const addToWishlist = async (receiverId: string): Promise<ResponseI<WishlistI>> => {
   return wishlistController.addToWishlist(receiverId);
 };
 
-const removeFromWishlist = async (receiverId: string): Promise<ValidationResponseI<WishlistI>> => {
+const removeFromWishlist = async (receiverId: string): Promise<ResponseI<WishlistI>> => {
   return wishlistController.removeFromWishlist(receiverId);
 };
 

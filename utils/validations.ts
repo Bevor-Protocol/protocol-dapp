@@ -109,7 +109,7 @@ export const parseForm = (
   const formParsed = schema.safeParse(form);
   if (!formParsed.success) {
     const validationErrors = handleValidationErrors(formParsed.error);
-    throw new ValidationError("validation schema", validationErrors);
+    throw new ValidationError(validationErrors);
   }
   return formParsed.data;
 };
@@ -122,7 +122,7 @@ export const parseFormEntry = (
   const entryParsed = schema.safeParse(entry);
   if (!entryParsed.success) {
     const validationErrors = handleValidationErrors(entryParsed.error);
-    throw new ValidationError("validation schema", validationErrors);
+    throw new ValidationError(validationErrors);
   }
   return entryParsed.data;
 };

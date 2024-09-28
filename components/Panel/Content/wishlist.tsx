@@ -35,14 +35,16 @@ export const WishlistPanel = ({ userId }: { userId: string }): JSX.Element => {
       }
       return wishlistController.addToWishlist(variables.receiver.id);
     },
-    onSuccess: (_, variables: { receiver: User; type: string }) => {
-      const updatedWishlist = isWishlisted.map((item) => {
-        if (item.id == variables.receiver.id) {
-          return { ...item, wishlisted: variables.type == "add" };
-        }
-        return { ...item };
-      });
-      setIsWishlisted(updatedWishlist);
+    onSuccess: (response, variables: { receiver: User; type: string }) => {
+      if (response.success) {
+        const updatedWishlist = isWishlisted.map((item) => {
+          if (item.id == variables.receiver.id) {
+            return { ...item, wishlisted: variables.type == "add" };
+          }
+          return { ...item };
+        });
+        setIsWishlisted(updatedWishlist);
+      }
     },
   });
 
