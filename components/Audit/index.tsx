@@ -52,7 +52,7 @@ export const AuditCardTruncated = ({
 export const AuditCard = ({ audit }: { audit: AuditDetailedI }): JSX.Element => {
   const token = AvailableTokens.localhost.find((t) => t.address == audit.token);
   return (
-    <Card.Main className="w-full">
+    <Card.Main className="w-full animate-fade-in">
       <Card.Content className="gap-4">
         <DynamicLink href={`/user/${audit.auditee.address}`}>
           <Icon image={audit.auditee.image} seed={audit.auditee.address} size="lg" />

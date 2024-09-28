@@ -1,15 +1,26 @@
-import { cn } from "@/utils";
-import { trimAddress } from "@/utils/formatters";
+import { Column } from "@/components/Box";
 import { Icon } from "@/components/Icon";
 import DynamicLink from "@/components/Link";
-import { Column } from "@/components/Box";
+import { cn } from "@/utils";
+import { trimAddress } from "@/utils/formatters";
 import { UserWithCount } from "@/utils/types/prisma";
 
-const LeaderboardData = ({ data }: { data: UserWithCount[] }): JSX.Element => {
+const LeaderboardData = ({
+  data,
+  isLoading,
+}: {
+  data: UserWithCount[];
+  isLoading: boolean;
+}): JSX.Element => {
+  if (isLoading) return <></>;
   return (
     <Column className="w-full gap-1">
-      {data.map((item, ind) => (
-        <DynamicLink key={ind} href={`/user/${item.address}`} className="w-full">
+      {data.map((item) => (
+        <DynamicLink
+          key={item.id}
+          href={`/user/${item.address}`}
+          className="w-full animate-fade-in"
+        >
           <ul
             className="leaderboard-element rounded-md
 shadow bg-dark cursor-pointer transition-colors hover:bg-dark-primary-20"

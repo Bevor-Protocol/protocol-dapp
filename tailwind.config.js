@@ -61,6 +61,14 @@ module.exports = {
             transform: "scale(1)",
           },
         },
+        "fade-in": {
+          "0%": {
+            opacity: 0,
+          },
+          "100%": {
+            opacity: 1,
+          },
+        },
         modal: {
           "0%": {
             backgroundColor: "rgba(0, 0, 0, 0)",
@@ -99,6 +107,7 @@ module.exports = {
       animation: {
         shrink: "shrink 1s infinite",
         appear: "appear 0.15s",
+        "fade-in": "fade-in 1s",
         panel: "panel 0.15s",
         "toast-in": "toast-in 0.25s",
         "toast-out": "toast-out 0.25s forwards 1s",

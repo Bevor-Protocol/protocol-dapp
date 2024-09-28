@@ -1,22 +1,21 @@
 "use client";
 
-import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
+import { useState } from "react";
 
 import { auditController } from "@/actions";
-import { Column, Row } from "@/components/Box";
 import { AuditCard } from "@/components/Audit";
+import { Column, Row } from "@/components/Box";
 import { Toggle } from "@/components/Toggle";
-import { AuditsSkeleton } from "@/components/Loader";
-import { AuditDetailedI } from "@/utils/types/prisma";
 import { AUDITS } from "@/constants/queryKeys";
+import { AuditDetailedI } from "@/utils/types/prisma";
 
 const statuses = ["open", "locked", "ongoing", "challengeable", "completed"];
 
 const Audits = ({ initialData }: { initialData: AuditDetailedI[] }): JSX.Element => {
   const [display, setDisplay] = useState("open");
 
-  const { data, isFetching } = useQuery({
+  const { data, isPending } = useQuery({
     queryKey: [AUDITS, display],
     queryFn: () => auditController.getAuditsDetailed(display),
     initialData,
@@ -37,13 +36,11 @@ const Audits = ({ initialData }: { initialData: AuditDetailedI[] }): JSX.Element
           />
         ))}
       </Row>
-      {isFetching ? (
-        <AuditsSkeleton nItems={data.length} />
-      ) : (
+      {!isPending && (
         <Column className="gap-4 justify-center items-center w-full">
           {data.length == 0 && <p>Currently no {display} audits</p>}
-          {data.map((audit, ind) => (
-            <AuditCard audit={audit} key={ind} />
+          {data.map((audit) => (
+            <AuditCard audit={audit} key={audit.id} />
           ))}
         </Column>
       )}
