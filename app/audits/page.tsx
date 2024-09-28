@@ -1,11 +1,12 @@
 import { Suspense } from "react";
 
-import { Loader } from "@/components/Loader";
 import { auditController } from "@/actions";
+import { Loader } from "@/components/Loader";
 import Audits from "@/components/screens/audits";
+import { AuditStatus } from "@prisma/client";
 
 const Fetcher = async (): Promise<JSX.Element> => {
-  const data = await auditController.getAuditsDetailed("open");
+  const data = await auditController.getAuditsDetailed(AuditStatus.DISCOVERY);
 
   return <Audits initialData={data} />;
 };

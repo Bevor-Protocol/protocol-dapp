@@ -62,18 +62,10 @@ class AuditService {
     });
   }
 
-  getAuditsDetailed(status?: string): Promise<AuditDetailedI[]> {
-    const statusFilter: Record<string, AuditStatus> = {
-      open: AuditStatus.DISCOVERY,
-      locked: AuditStatus.ATTESTATION,
-      ongoing: AuditStatus.AUDITING,
-      challengeable: AuditStatus.CHALLENGEABLE,
-      completed: AuditStatus.FINALIZED,
-    };
-
+  getAuditsDetailed(status?: AuditStatus): Promise<AuditDetailedI[]> {
     return prisma.audit.findMany({
       where: {
-        status: statusFilter[status ?? "open"],
+        status: status ?? AuditStatus.DISCOVERY,
       },
       select: {
         id: true,

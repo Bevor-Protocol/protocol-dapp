@@ -1,11 +1,11 @@
 import Image from "next/image";
 
-import { NavDashboard, NavMenuItems, NavDropdown } from "./Nav/menuItems";
-import NavWeb3 from "./Nav/web3";
-import DynamicLink from "@/components/Link";
-import { Row, Column } from "@/components/Box";
-import { Suspense } from "react";
 import { userController } from "@/actions";
+import { Column, Row } from "@/components/Box";
+import DynamicLink from "@/components/Link";
+import { Suspense } from "react";
+import { NavDashboard, NavDropdown, NavMenuItems } from "./Nav/menuItems";
+import NavWeb3 from "./Nav/web3";
 
 export const Layout = ({ children }: { children: React.ReactNode }): JSX.Element => {
   return <div className="min-h-svh flex flex-col px-content-limit">{children}</div>;

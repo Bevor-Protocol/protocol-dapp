@@ -3,14 +3,14 @@
 import { AuditStateI, MarkdownAuditsI, ResponseI } from "@/utils/types";
 import { AuditDetailedI, AuditFindingsI, AuditI } from "@/utils/types/prisma";
 
-import { Audit } from "@prisma/client";
+import { Audit, AuditStatus } from "@prisma/client";
 import auditController from "./audit.controller";
 
 const getAudit = async (id: string): Promise<AuditI | null> => {
   return auditController.getAudit(id);
 };
 
-const getAuditsDetailed = async (status?: string): Promise<AuditDetailedI[]> => {
+const getAuditsDetailed = async (status?: AuditStatus): Promise<AuditDetailedI[]> => {
   return auditController.getAuditsDetailed(status);
 };
 

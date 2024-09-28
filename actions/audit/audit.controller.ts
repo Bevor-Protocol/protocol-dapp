@@ -1,7 +1,7 @@
 import { handleErrors } from "@/utils/decorators";
 import { AuditStateI, MarkdownAuditsI, ResponseI } from "@/utils/types";
 import { AuditDetailedI, AuditFindingsI, AuditI } from "@/utils/types/prisma";
-import { Audit } from "@prisma/client";
+import { Audit, AuditStatus } from "@prisma/client";
 import { revalidatePath } from "next/cache";
 import UserService from "../user/user.service";
 import AuditService from "./audit.service";
@@ -25,7 +25,7 @@ class AuditController {
     return this.auditService.getAudit(id);
   }
 
-  async getAuditsDetailed(status?: string): Promise<AuditDetailedI[]> {
+  async getAuditsDetailed(status?: AuditStatus): Promise<AuditDetailedI[]> {
     return this.auditService.getAuditsDetailed(status);
   }
 
