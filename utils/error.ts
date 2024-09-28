@@ -19,6 +19,10 @@ export class RoleError extends Error {
   name = "RoleError";
 }
 
+export class AuthError extends Error {
+  name = "AuthError";
+}
+
 export const handleValidationErrorReturn = (error: any): ValidationFailureI => {
   if (error instanceof ValidationError) {
     return { success: false, error: error.message, validationErrors: error.validationErrors };

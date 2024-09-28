@@ -1,21 +1,20 @@
 "use client";
 
-import { useState } from "react";
-import { Users } from "@prisma/client";
 import { useMutation } from "@tanstack/react-query";
+import { useState } from "react";
 
-import { AuditI } from "@/utils/types/prisma";
-import { AuditStateI } from "@/utils/types";
-import { useModal, useToast } from "@/hooks/useContexts";
 import { auditController } from "@/actions";
-import { Row, Column } from "@/components/Box";
+import { Info } from "@/assets";
+import { Column, Row } from "@/components/Box";
 import { Button } from "@/components/Button";
 import DynamicLink from "@/components/Link";
 import AuditorAttest from "@/components/Modal/Content/auditorAttest";
 import InitiateAudit from "@/components/Modal/Content/onchain/initiateAudit";
-import * as Tooltip from "@/components/Tooltip";
-import { Info } from "@/assets";
 import ErrorToast from "@/components/Toast/Content/error";
+import * as Tooltip from "@/components/Tooltip";
+import { useModal, useToast } from "@/hooks/useContexts";
+import { AuditStateI } from "@/utils/types";
+import { AuditI } from "@/utils/types/prisma";
 
 const AuditeeEditAudit = ({ id, disabled }: { id: string; disabled: boolean }): JSX.Element => {
   return (
@@ -175,18 +174,16 @@ const AuditorRemoveVerification = ({
 };
 
 const AuditorAttestTerms = ({
-  user,
   audit,
   disabled,
 }: {
-  user: Users;
   audit: AuditI;
   disabled: boolean;
 }): JSX.Element => {
   const { toggleOpen, setContent } = useModal();
 
   const handleAttestModal = (): void => {
-    setContent(<AuditorAttest audit={audit} user={user} />);
+    setContent(<AuditorAttest audit={audit} />);
     toggleOpen();
   };
 
@@ -213,11 +210,9 @@ const AuditorAttestTerms = ({
 };
 
 const AuditLockedActions = ({
-  user,
   audit,
   actionData,
 }: {
-  user: Users;
   audit: AuditI;
   actionData: AuditStateI;
 }): JSX.Element => {
@@ -246,11 +241,7 @@ const AuditLockedActions = ({
           disabled={disabled}
           setDisabled={setDisabled}
         />
-        <AuditorAttestTerms
-          audit={audit}
-          user={user}
-          disabled={actionData.userAttested || disabled}
-        />
+        <AuditorAttestTerms audit={audit} disabled={actionData.userAttested || disabled} />
       </Column>
     );
   }

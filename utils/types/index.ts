@@ -90,13 +90,11 @@ export type ValidationResponseI<T> = ValidationSuccessI<T> | ValidationFailureI;
 
 export interface RoleSuccess {
   allowed: true;
-  user: Users;
   audit: AuditI;
 }
 
 export interface RoleFailure {
   allowed: false;
-  user: Users | null;
   audit: AuditI | null;
 }
 

@@ -9,20 +9,21 @@ datasource db {
   directUrl = env("DATABASE_URL_UNPOOLED")
 }
 
-model Users {
-  id                  String     @id @default(cuid())
-  address             String     @unique
-  auditeeRole         Boolean    @default(false)
-  auditorRole         Boolean    @default(false)
-  name                String?
-  image               String?
-  available           Boolean    @default(false)
-  auditors            Auditors[]
-  auditees            Audits[]
+model User {
+  id          String   @id @default(cuid())
+  address     String   @unique
+  auditeeRole Boolean  @default(false)
+  auditorRole Boolean  @default(false)
+  name        String?
+  image       String?
+  available   Boolean  @default(false)
+  updatedAt   DateTime @updatedAt
+  createdAt   DateTime @default(now())
+
+  auditors            Auditor[]
+  auditees            Audit[]
   wishlistAsRequestor Wishlist[] @relation("UserWishlist")
   wishlistAsReceiver  Wishlist[] @relation("UserWishedBy")
-  updatedAt           DateTime   @updatedAt
-  createdAt           DateTime   @default(now())
 }
 
 enum AuditStatus {
@@ -33,24 +34,25 @@ enum AuditStatus {
   FINALIZED // audit is complete and cannot be challenged
 }
 
-model Audits {
-  id                 String      @id @default(cuid())
+model Audit {
+  id                 String   @id @default(cuid())
   auditeeId          String
-  auditee            Users       @relation(fields: [auditeeId], references: [id], onDelete: Cascade)
   title              String
   description        String
   details            String? // references blob storage URL
-  price              Int         @default(0)
-  duration           Int         @default(30) // duration in days
-  cliff              Int         @default(3) // cliff duration in days (determines reveal).
+  price              Int      @default(0)
+  duration           Int      @default(30) // duration in days
+  cliff              Int      @default(3) // cliff duration in days (determines reveal).
   token              String?
-  status             AuditStatus @default(DISCOVERY)
-  auditors           Auditors[]
-  history            History[]
   onchainAuditInfoId String?
   onchainNftId       String?
-  createdAt          DateTime    @default(now())
-  updatedAt          DateTime    @updatedAt
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
+
+  auditee  User        @relation(fields: [auditeeId], references: [id], onDelete: Cascade)
+  status   AuditStatus @default(DISCOVERY)
+  auditors Auditor[]
+  history  History[]
 }
 
 enum AuditorStatus {
@@ -59,19 +61,20 @@ enum AuditorStatus {
   REJECTED
 }
 
-model Auditors {
-  id            String        @id @default(cuid())
+model Auditor {
+  id            String   @id @default(cuid())
   auditId       String
-  audit         Audits        @relation(fields: [auditId], references: [id], onDelete: Cascade)
   userId        String
-  user          Users         @relation(fields: [userId], references: [id], onDelete: Cascade)
-  status        AuditorStatus
-  history       History[]
-  attestedTerms Boolean       @default(false)
-  acceptedTerms Boolean       @default(false)
+  attestedTerms Boolean  @default(false)
+  acceptedTerms Boolean  @default(false)
   findings      String? // references blob storage URL
-  createdAt     DateTime      @default(now())
-  updatedAt     DateTime      @updatedAt
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  audit   Audit         @relation(fields: [auditId], references: [id], onDelete: Cascade)
+  user    User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  status  AuditorStatus
+  history History[]
 
   @@unique([auditId, userId])
 }
@@ -94,15 +97,16 @@ enum UserType {
 }
 
 model History {
-  id        String        @id @default(cuid())
+  id        String   @id @default(cuid())
   auditId   String
-  audit     Audits        @relation(fields: [auditId], references: [id], onDelete: Cascade)
   auditorId String?
-  auditor   Auditors?     @relation(fields: [auditorId], references: [id], onDelete: Cascade)
-  action    HistoryAction
-  userType  UserType
   comment   String?
-  createdAt DateTime      @default(now())
+  createdAt DateTime @default(now())
+
+  audit    Audit         @relation(fields: [auditId], references: [id], onDelete: Cascade)
+  auditor  Auditor?      @relation(fields: [auditorId], references: [id], onDelete: Cascade)
+  action   HistoryAction
+  userType UserType
 
   @@index([auditId], name: "idx_history_audit")
   @@index([auditorId], name: "idx_history_auditor")
@@ -112,9 +116,10 @@ model Wishlist {
   id          String   @id @default(cuid())
   requestorId String
   receiverId  String
-  requestor   Users    @relation("UserWishlist", fields: [requestorId], references: [id], onDelete: Cascade)
-  receiver    Users    @relation("UserWishedBy", fields: [receiverId], references: [id], onDelete: Cascade)
   createdAt   DateTime @default(now())
+
+  requestor User @relation("UserWishlist", fields: [requestorId], references: [id], onDelete: Cascade)
+  receiver  User @relation("UserWishedBy", fields: [receiverId], references: [id], onDelete: Cascade)
 
   @@unique([requestorId, receiverId], name: "uniqueWishlistEntry")
 }

@@ -2,26 +2,24 @@
 
 import { wishlistController } from "@/actions";
 import { Heart } from "@/assets";
+import * as Tooltip from "@/components/Tooltip";
 import { cn } from "@/utils";
 import { Users } from "@prisma/client";
 import { useMutation } from "@tanstack/react-query";
-import * as Tooltip from "@/components/Tooltip";
 
 const UserWishlist = ({
   isWishlistedFlag,
-  requestor,
   receiver,
 }: {
   isWishlistedFlag: boolean;
-  requestor: Users;
   receiver: Users;
 }): JSX.Element => {
   const { mutate } = useMutation({
     mutationFn: () => {
       if (isWishlistedFlag) {
-        return wishlistController.removeFromWishlist(requestor.id, receiver.id);
+        return wishlistController.removeFromWishlist(receiver.id);
       }
-      return wishlistController.addToWishlist(requestor.id, receiver.id);
+      return wishlistController.addToWishlist(receiver.id);
     },
   });
 

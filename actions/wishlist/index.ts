@@ -1,29 +1,23 @@
 "use server";
 
+import { ValidationResponseI } from "@/utils/types";
 import { WishlistI } from "@/utils/types/prisma";
 import wishlistController from "./wishlist.controller";
-import { ValidationResponseI } from "@/utils/types";
 
-const isWishlisted = async (requestor: string, receiver: string): Promise<boolean> => {
-  return wishlistController.isWishlisted(requestor, receiver);
+const isWishlisted = async (requestorId: string, receiverId: string): Promise<boolean> => {
+  return wishlistController.isWishlisted(requestorId, receiverId);
 };
 
-const getUserWishlist = async (requestor: string): Promise<WishlistI[]> => {
-  return wishlistController.getUserWishlist(requestor);
+const getUserWishlist = async (requestorId: string): Promise<WishlistI[]> => {
+  return wishlistController.getUserWishlist(requestorId);
 };
 
-const addToWishlist = async (
-  requestor: string,
-  receiver: string,
-): Promise<ValidationResponseI<WishlistI>> => {
-  return wishlistController.addToWishlist(requestor, receiver);
+const addToWishlist = async (receiverId: string): Promise<ValidationResponseI<WishlistI>> => {
+  return wishlistController.addToWishlist(receiverId);
 };
 
-const removeFromWishlist = async (
-  requestor: string,
-  receiver: string,
-): Promise<ValidationResponseI<WishlistI>> => {
-  return wishlistController.removeFromWishlist(requestor, receiver);
+const removeFromWishlist = async (receiverId: string): Promise<ValidationResponseI<WishlistI>> => {
+  return wishlistController.removeFromWishlist(receiverId);
 };
 
-export { isWishlisted, getUserWishlist, addToWishlist, removeFromWishlist };
+export { addToWishlist, getUserWishlist, isWishlisted, removeFromWishlist };

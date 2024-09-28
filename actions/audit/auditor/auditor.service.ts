@@ -40,7 +40,7 @@ class AuditorService {
 
   async leaveAudit(audit: AuditI, auditor: Users): Promise<Audits> {
     let historyObj = {};
-    if (audit!.status == AuditStatus.AUDITING) {
+    if (audit.status == AuditStatus.AUDITING) {
       historyObj = {
         history: {
           create: {

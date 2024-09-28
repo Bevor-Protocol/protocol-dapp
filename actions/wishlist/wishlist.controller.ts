@@ -1,13 +1,17 @@
-import WishlistService from "./wishlist.service";
+import { handleErrors } from "@/utils/decorators";
+import { ValidationResponseI } from "@/utils/types";
 import { WishlistI } from "@/utils/types/prisma";
-import { handleValidationErrorReturn } from "@/utils/error";
-import { ValidationResponseI, ValidationSuccessI } from "@/utils/types";
 import { revalidatePath } from "next/cache";
+import RoleService from "../roles/roles.service";
+import WishlistService from "./wishlist.service";
 
 // Might want to add some revalidations here.
 
 class WishlistController {
-  constructor(private readonly wishlistService: typeof WishlistService) {}
+  constructor(
+    private readonly wishlistService: typeof WishlistService,
+    private readonly roleService: typeof RoleService,
+  ) {}
 
   async isWishlisted(requestor: string, receiver: string): Promise<boolean> {
     const entry = await this.wishlistService.getWishlistEntry(requestor, receiver);
@@ -18,33 +22,24 @@ class WishlistController {
     return this.wishlistService.getUserWishlist(requestor);
   }
 
-  addToWishlist(requestor: string, receiver: string): Promise<ValidationResponseI<WishlistI>> {
-    return this.wishlistService
-      .addToWishlist(requestor, receiver)
-      .then((data): ValidationSuccessI<WishlistI> => {
-        revalidatePath(`/user/${data.receiver.address}`, "page");
-        return { success: true, data };
-      })
-      .catch((error) => {
-        return handleValidationErrorReturn(error);
-      });
+  @handleErrors
+  async addToWishlist(receiver: string): Promise<ValidationResponseI<WishlistI>> {
+    const user = await this.roleService.requireAuth();
+    const data = await this.wishlistService.addToWishlist(user.id, receiver);
+
+    revalidatePath(`/user/${data.receiver.address}`, "page");
+    return { success: true, data };
   }
 
-  async removeFromWishlist(
-    requestor: string,
-    receiver: string,
-  ): Promise<ValidationResponseI<WishlistI>> {
-    return this.wishlistService
-      .removeFromWishlist(requestor, receiver)
-      .then((data): ValidationSuccessI<WishlistI> => {
-        revalidatePath(`/user/${data.receiver.address}`, "page");
-        return { success: true, data };
-      })
-      .catch((error) => {
-        return handleValidationErrorReturn(error);
-      });
+  @handleErrors
+  async removeFromWishlist(receiver: string): Promise<ValidationResponseI<WishlistI>> {
+    const user = await this.roleService.requireAuth();
+    const data = await this.wishlistService.removeFromWishlist(user.id, receiver);
+
+    revalidatePath(`/user/${data.receiver.address}`, "page");
+    return { success: true, data };
   }
 }
 
-const wishlistController = new WishlistController(WishlistService);
+const wishlistController = new WishlistController(WishlistService, RoleService);
 export default wishlistController;

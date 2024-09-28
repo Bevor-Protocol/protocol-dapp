@@ -1,17 +1,17 @@
 "use client";
-import React, { useState } from "react";
 import { Users } from "@prisma/client";
 import { useMutation } from "@tanstack/react-query";
+import React, { useState } from "react";
 
-import { useModal } from "@/hooks/useContexts";
-import { Icon } from "@/components/Icon";
-import { Column, Row } from "@/components/Box";
-import { UserStats } from "@/utils/types";
-import * as Form from "@/components/Form";
-import * as Tooltip from "@/components/Tooltip";
-import { Button } from "@/components/Button";
 import { userController } from "@/actions";
-import { X, Info } from "@/assets";
+import { Info, X } from "@/assets";
+import { Column, Row } from "@/components/Box";
+import { Button } from "@/components/Button";
+import * as Form from "@/components/Form";
+import { Icon } from "@/components/Icon";
+import * as Tooltip from "@/components/Tooltip";
+import { useModal } from "@/hooks/useContexts";
+import { UserStats } from "@/utils/types";
 
 const UserEdit = ({ user, stats }: { user: Users; stats: UserStats }): JSX.Element => {
   const { toggleOpen } = useModal();
@@ -23,7 +23,7 @@ const UserEdit = ({ user, stats }: { user: Users; stats: UserStats }): JSX.Eleme
 
   const { mutate, isPending } = useMutation({
     mutationFn: (variables: { formData: FormData }) => {
-      return userController.updateUser(user.id, variables.formData);
+      return userController.updateUser(variables.formData);
     },
     onSuccess: (response) => {
       if (response.success) {

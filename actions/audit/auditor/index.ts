@@ -1,35 +1,34 @@
 "use server";
 
 import { ValidationResponseI } from "@/utils/types";
-import auditorController from "./auditor.controller";
 import { Auditors, Audits } from "@prisma/client";
+import auditorController from "./auditor.controller";
 
 const attestToTerms = async (
-  id: string,
-  userId: string,
+  auditId: string,
   status: boolean,
   comment: string,
 ): Promise<ValidationResponseI<Auditors>> => {
-  return auditorController.attestToTerms(id, userId, status, comment);
+  return auditorController.attestToTerms(auditId, status, comment);
 };
 
-const leaveAudit = async (id: string): Promise<ValidationResponseI<Audits>> => {
-  return auditorController.leaveAudit(id);
+const leaveAudit = async (auditId: string): Promise<ValidationResponseI<Audits>> => {
+  return auditorController.leaveAudit(auditId);
 };
 
 const addFinding = async (
-  id: string,
+  auditId: string,
   formData: FormData,
 ): Promise<ValidationResponseI<Auditors>> => {
-  return auditorController.addFinding(id, formData);
+  return auditorController.addFinding(auditId, formData);
 };
 
-const addRequest = async (id: string): Promise<ValidationResponseI<Auditors>> => {
-  return auditorController.addRequest(id);
+const addRequest = async (auditId: string): Promise<ValidationResponseI<Auditors>> => {
+  return auditorController.addRequest(auditId);
 };
 
-const deleteRequest = async (id: string): Promise<ValidationResponseI<Auditors>> => {
-  return auditorController.deleteRequest(id);
+const deleteRequest = async (auditId: string): Promise<ValidationResponseI<Auditors>> => {
+  return auditorController.deleteRequest(auditId);
 };
 
-export { attestToTerms, leaveAudit, addFinding, addRequest, deleteRequest };
+export { addFinding, addRequest, attestToTerms, deleteRequest, leaveAudit };

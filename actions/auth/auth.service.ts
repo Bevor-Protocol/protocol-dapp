@@ -1,6 +1,6 @@
+import { getIronSession, type IronSession } from "iron-session";
 import { cookies } from "next/headers";
 import { SiweMessage } from "siwe";
-import { getIronSession, type IronSession } from "iron-session";
 
 import { sessionOptions, type SessionData } from "@/utils/session";
 
@@ -24,7 +24,7 @@ class AuthService {
           throw error;
         }
         session.siwe = data;
-        return session.save();
+        session.save();
       });
   }
 }

@@ -1,11 +1,12 @@
-import { Prisma, Users } from "@prisma/client";
-import BlobService from "../blob/blob.service";
-import UserService from "./user.service";
+import { handleErrors } from "@/utils/decorators";
+import { ValidationResponseI } from "@/utils/types";
 import { AuditTruncatedI, UserWithCount } from "@/utils/types/prisma";
 import { parseForm, userSchema, userSchemaCreate } from "@/utils/validations";
-import { handleValidationErrorReturn } from "@/utils/error";
-import { ValidationResponseI } from "@/utils/types";
+import { Prisma, Users } from "@prisma/client";
 import { revalidatePath } from "next/cache";
+import BlobService from "../blob/blob.service";
+import RoleService from "../roles/roles.service";
+import UserService from "./user.service";
 
 /*
 Mutations will return a Generic ValidationResponseI type object.
@@ -20,6 +21,7 @@ class UserController {
   constructor(
     private readonly userService: typeof UserService,
     private readonly blobService: typeof BlobService,
+    private readonly roleService: typeof RoleService,
   ) {}
 
   async currentUser(): Promise<{ address: string; user: Users | null }> {
@@ -30,49 +32,44 @@ class UserController {
     return this.userService.getProfile(address);
   }
 
+  @handleErrors
   async createUser(address: string, formData: FormData): Promise<ValidationResponseI<Users>> {
-    try {
-      const parsed = parseForm(formData, userSchemaCreate);
-      const { image, ...rest } = parsed;
-      const dataPass: Prisma.UsersCreateInput = {
-        address,
-        ...rest,
-      };
+    const parsed = parseForm(formData, userSchemaCreate);
+    const { image, ...rest } = parsed;
+    const dataPass: Prisma.UsersCreateInput = {
+      address,
+      ...rest,
+    };
 
-      const blobData = await this.blobService.addBlob("profile-images", image);
-      if (blobData) {
-        dataPass.image = blobData.url;
-      }
-
-      const data = await this.userService.createUser(dataPass);
-
-      return { success: true, data };
-    } catch (error) {
-      return handleValidationErrorReturn(error);
+    const blobData = await this.blobService.addBlob("profile-images", image);
+    if (blobData) {
+      dataPass.image = blobData.url;
     }
+
+    const data = await this.userService.createUser(dataPass);
+
+    return { success: true, data };
   }
 
-  async updateUser(id: string, formData: FormData): Promise<ValidationResponseI<Users>> {
-    try {
-      const parsed = parseForm(formData, userSchema);
+  @handleErrors
+  async updateUser(formData: FormData): Promise<ValidationResponseI<Users>> {
+    const user = await this.roleService.requireAuth();
+    const parsed = parseForm(formData, userSchema);
 
-      const { image, ...rest } = parsed;
-      const dataPass: Prisma.UsersUpdateInput = {
-        ...rest,
-      };
+    const { image, ...rest } = parsed;
+    const dataPass: Prisma.UsersUpdateInput = {
+      ...rest,
+    };
 
-      const blobData = await this.blobService.addBlob("profile-images", image);
-      if (blobData) {
-        dataPass.image = blobData.url;
-      }
-
-      const data = await this.userService.updateUser(id, dataPass);
-
-      revalidatePath(`/user/${data.address}`, "page");
-      return { success: true, data };
-    } catch (error) {
-      return handleValidationErrorReturn(error);
+    const blobData = await this.blobService.addBlob("profile-images", image);
+    if (blobData) {
+      dataPass.image = blobData.url;
     }
+
+    const data = await this.userService.updateUser(user.id, dataPass);
+
+    revalidatePath(`/user/${data.address}`, "page");
+    return { success: true, data };
   }
 
   async getUserAudits(address: string): Promise<AuditTruncatedI[]> {
@@ -88,5 +85,5 @@ class UserController {
   }
 }
 
-const userController = new UserController(UserService, BlobService);
+const userController = new UserController(UserService, BlobService, RoleService);
 export default userController;

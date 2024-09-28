@@ -1,11 +1,11 @@
 import { AuditStatus, Users } from "@prisma/client";
 
+import { auditController } from "@/actions";
 import { AuditI } from "@/utils/types/prisma";
-import AuditOpenActions from "./open";
+import AuditChallengeableActions from "./challengeable";
 import AuditLockedActions from "./locked";
 import AuditOngoingActions from "./ongoing";
-import AuditChallengeableActions from "./challengeable";
-import { auditController } from "@/actions";
+import AuditOpenActions from "./open";
 
 const AuditDashboardActions = async ({
   audit,
@@ -21,7 +21,7 @@ const AuditDashboardActions = async ({
   }
 
   if (audit.status === AuditStatus.ATTESTATION) {
-    return <AuditLockedActions user={user} audit={audit} actionData={data} />;
+    return <AuditLockedActions audit={audit} actionData={data} />;
   }
 
   if (audit.status === AuditStatus.AUDITING) {

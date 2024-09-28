@@ -1,27 +1,26 @@
 "use client";
 
-import { useState } from "react";
 import { useMutation } from "@tanstack/react-query";
+import { useState } from "react";
 
-import { useModal } from "@/hooks/useContexts";
-import { Row } from "@/components/Box";
-import { AuditI } from "@/utils/types/prisma";
-import * as Form from "@/components/Form";
 import { auditController } from "@/actions";
-import { Users } from "@prisma/client";
-import { Button } from "@/components/Button";
 import { X } from "@/assets";
-import React from "react";
+import { Row } from "@/components/Box";
+import { Button } from "@/components/Button";
+import * as Form from "@/components/Form";
+import { useModal } from "@/hooks/useContexts";
 import { cn } from "@/utils";
+import { AuditI } from "@/utils/types/prisma";
+import React from "react";
 
-const AuditorAttest = ({ audit, user }: { audit: AuditI; user: Users }): JSX.Element => {
+const AuditorAttest = ({ audit }: { audit: AuditI }): JSX.Element => {
   const { toggleOpen } = useModal(); // const [showRejected, setShowRejected] = useState(false);
   const [comment, setComment] = useState("");
   const [errors, setErrors] = useState<Record<string, string>>({});
 
   const { mutate, isPending } = useMutation({
     mutationFn: (variables: { status: boolean }) => {
-      return auditController.auditor.attestToTerms(audit.id, user.id, variables.status, comment);
+      return auditController.auditor.attestToTerms(audit.id, variables.status, comment);
     },
     onSuccess: (response) => {
       if (response.success) {

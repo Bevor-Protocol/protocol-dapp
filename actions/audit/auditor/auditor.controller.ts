@@ -1,12 +1,13 @@
-import RoleService from "@/actions/roles/roles.service";
-import AuditorService from "./auditor.service";
-import { handleValidationErrorReturn, RoleError, ValidationError } from "@/utils/error";
-import { Auditors, Audits } from "@prisma/client";
-import { auditFindingsSchema, parseForm } from "@/utils/validations";
-import { z } from "zod";
 import BlobService from "@/actions/blob/blob.service";
+import RoleService from "@/actions/roles/roles.service";
+import { handleErrors } from "@/utils/decorators";
+import { RoleError, ValidationError } from "@/utils/error";
 import { ValidationResponseI } from "@/utils/types";
+import { auditFindingsSchema, parseForm } from "@/utils/validations";
+import { Auditors, Audits } from "@prisma/client";
 import { revalidatePath } from "next/cache";
+import { z } from "zod";
+import AuditorService from "./auditor.service";
 
 /*
 Mutations will return a Generic ValidationResponseI type object.
@@ -24,96 +25,84 @@ class AuditorController {
     private readonly blobService: typeof BlobService,
   ) {}
 
+  @handleErrors
   async attestToTerms(
-    id: string,
-    userId: string,
+    auditId: string,
     status: boolean,
     comment: string,
   ): Promise<ValidationResponseI<Auditors>> {
-    try {
-      const { allowed } = await this.roleService.canAttest(id);
-      if (!allowed) {
-        throw new RoleError("cannot attest to terms");
-      }
-      const data = await this.auditorService.attestToTerms(id, userId, status, comment);
-
-      revalidatePath(`/audits/view/${id}`, "page");
-      return { success: true, data };
-    } catch (error) {
-      return handleValidationErrorReturn(error);
+    const user = await this.roleService.requireAuth();
+    const { allowed } = await this.roleService.canAttest(user, auditId);
+    if (!allowed) {
+      throw new RoleError("cannot attest to terms");
     }
+    const data = await this.auditorService.attestToTerms(auditId, user.id, status, comment);
+
+    revalidatePath(`/audits/view/${auditId}`, "page");
+    return { success: true, data };
   }
 
-  async leaveAudit(id: string): Promise<ValidationResponseI<Audits>> {
-    try {
-      const { audit, user, allowed } = await this.roleService.canLeave(id);
-      if (!allowed) {
-        throw new RoleError("you cannot leave this audit");
-      }
-      const data = await this.auditorService.leaveAudit(audit, user);
-
-      revalidatePath(`/audits/view/${id}`, "page");
-      return { success: true, data };
-    } catch (error) {
-      return handleValidationErrorReturn(error);
+  @handleErrors
+  async leaveAudit(auditId: string): Promise<ValidationResponseI<Audits>> {
+    const user = await this.roleService.requireAuth();
+    const { audit, allowed } = await this.roleService.canLeave(user, auditId);
+    if (!allowed) {
+      throw new RoleError("you cannot leave this audit");
     }
+    const data = await this.auditorService.leaveAudit(audit, user);
+
+    revalidatePath(`/audits/view/${auditId}`, "page");
+    return { success: true, data };
   }
 
-  async addFinding(id: string, formData: FormData): Promise<ValidationResponseI<Auditors>> {
-    try {
-      const { user, allowed } = await this.roleService.isAuditAuditor(id);
-      if (!allowed) {
-        throw new RoleError("you cannot add findings to this audit");
-      }
-
-      const parsed = parseForm(formData, auditFindingsSchema) as z.infer<
-        typeof auditFindingsSchema
-      >;
-
-      const blobData = await this.blobService.addBlob("audit-details", parsed);
-      if (!blobData) {
-        throw new ValidationError("no file provided", {
-          image: "no file provided",
-        });
-      }
-
-      const data = await this.auditorService.addFindings(id, user.id, blobData.url);
-
-      revalidatePath(`/audits/view/${id}`, "page");
-      return { success: true, data };
-    } catch (error) {
-      return handleValidationErrorReturn(error);
+  @handleErrors
+  async addFinding(auditId: string, formData: FormData): Promise<ValidationResponseI<Auditors>> {
+    const user = await this.roleService.requireAuth();
+    const { allowed } = await this.roleService.isAuditAuditor(user, auditId);
+    if (!allowed) {
+      throw new RoleError("you cannot add findings to this audit");
     }
+
+    const parsed = parseForm(formData, auditFindingsSchema) as z.infer<typeof auditFindingsSchema>;
+
+    const blobData = await this.blobService.addBlob("audit-details", parsed);
+    if (!blobData) {
+      throw new ValidationError("no file provided", {
+        image: "no file provided",
+      });
+    }
+
+    const data = await this.auditorService.addFindings(auditId, user.id, blobData.url);
+
+    revalidatePath(`/audits/view/${auditId}`, "page");
+    return { success: true, data };
   }
 
-  async addRequest(id: string): Promise<ValidationResponseI<Auditors>> {
-    try {
-      const { user, allowed } = await this.roleService.canRequest(id);
-      if (!allowed) {
-        // make sure they are NOT an auditor on the audit, but that they have the auditor role.
-        throw new RoleError("cannot add a request to this audit");
-      }
-      const data = await this.auditorService.addRequest(id, user.id);
-      revalidatePath(`/audits/view/${id}`, "page");
-      return { success: true, data };
-    } catch (error) {
-      return handleValidationErrorReturn(error);
+  @handleErrors
+  async addRequest(auditId: string): Promise<ValidationResponseI<Auditors>> {
+    const user = await this.roleService.requireAuth();
+    const { allowed } = await this.roleService.canRequest(user, auditId);
+    if (!allowed) {
+      // make sure they are NOT an auditor on the audit, but that they have the auditor role.
+      throw new RoleError("cannot add a request to this audit");
     }
+    const data = await this.auditorService.addRequest(auditId, user.id);
+
+    revalidatePath(`/audits/view/${auditId}`, "page");
+    return { success: true, data };
   }
 
-  async deleteRequest(id: string): Promise<ValidationResponseI<Auditors>> {
-    try {
-      const { user, allowed } = await this.roleService.isAuditAuditor(id);
-      if (!allowed) {
-        throw new RoleError("cannot delete request");
-      }
-      const data = await this.auditorService.deleteRequest(id, user.id);
-      // throw new RoleError("testing this out");
-      revalidatePath(`/audits/view/${id}`, "page");
-      return { success: true, data };
-    } catch (error) {
-      return handleValidationErrorReturn(error);
+  @handleErrors
+  async deleteRequest(auditId: string): Promise<ValidationResponseI<Auditors>> {
+    const user = await this.roleService.requireAuth();
+    const { allowed } = await this.roleService.isAuditAuditor(user, auditId);
+    if (!allowed) {
+      throw new RoleError("cannot delete request");
     }
+    const data = await this.auditorService.deleteRequest(auditId, user.id);
+
+    revalidatePath(`/audits/view/${auditId}`, "page");
+    return { success: true, data };
   }
 }
 

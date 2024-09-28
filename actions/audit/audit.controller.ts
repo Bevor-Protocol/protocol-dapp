@@ -1,15 +1,10 @@
-import { Audits } from "@prisma/client";
-import AuditService from "./audit.service";
-import UserService from "../user/user.service";
-import {
-  AuditStateI,
-  MarkdownAuditsI,
-  ValidationResponseI,
-  ValidationSuccessI,
-} from "@/utils/types";
+import { handleErrors } from "@/utils/decorators";
+import { AuditStateI, MarkdownAuditsI, ValidationResponseI } from "@/utils/types";
 import { AuditDetailedI, AuditFindingsI, AuditI } from "@/utils/types/prisma";
+import { Audits } from "@prisma/client";
 import { revalidatePath } from "next/cache";
-import { handleValidationErrorReturn } from "@/utils/error";
+import UserService from "../user/user.service";
+import AuditService from "./audit.service";
 
 /*
 Mutations will return a Generic ValidationResponseI type object.
@@ -34,28 +29,20 @@ class AuditController {
     return this.auditService.getAuditsDetailed(status);
   }
 
+  @handleErrors
   async addAuditInfo(id: string, infoId: string): Promise<ValidationResponseI<Audits>> {
-    return this.auditService
-      .addAuditInfo(id, infoId)
-      .then((data): ValidationSuccessI<Audits> => {
-        revalidatePath(`/audits/view/${id}`, "page");
-        return { success: true, data };
-      })
-      .catch((error) => {
-        return handleValidationErrorReturn(error);
-      });
+    const data = await this.auditService.addAuditInfo(id, infoId);
+
+    revalidatePath(`/audits/view/${id}`, "page");
+    return { success: true, data };
   }
 
+  @handleErrors
   async addNftInfo(id: string, nftId: string): Promise<ValidationResponseI<Audits>> {
-    return this.auditService
-      .addNftInfo(id, nftId)
-      .then((data): ValidationSuccessI<Audits> => {
-        revalidatePath(`/audits/view/${id}`, "page");
-        return { success: true, data };
-      })
-      .catch((error) => {
-        return handleValidationErrorReturn(error);
-      });
+    const data = await this.auditService.addNftInfo(id, nftId);
+
+    revalidatePath(`/audits/view/${id}`, "page");
+    return { success: true, data };
   }
 
   async getState(id: string): Promise<AuditStateI> {

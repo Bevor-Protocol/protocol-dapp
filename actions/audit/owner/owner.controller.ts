@@ -1,12 +1,13 @@
-import { AuditorStatus, Audits, Users } from "@prisma/client";
-import { auditFormSchema, parseForm } from "@/utils/validations";
-import { handleValidationErrorReturn, RoleError } from "@/utils/error";
-import { z } from "zod";
-import RoleService from "@/actions/roles/roles.service";
-import OwnerService from "./owner.service";
 import BlobService from "@/actions/blob/blob.service";
+import RoleService from "@/actions/roles/roles.service";
+import { handleErrors } from "@/utils/decorators";
+import { RoleError } from "@/utils/error";
 import { ValidationResponseI } from "@/utils/types";
+import { auditFormSchema, parseForm } from "@/utils/validations";
+import { AuditorStatus, Audits, Users } from "@prisma/client";
 import { revalidatePath } from "next/cache";
+import { z } from "zod";
+import OwnerService from "./owner.service";
 
 /*
 Mutations will return a Generic ValidationResponseI type object.
@@ -24,132 +25,121 @@ class OwnerController {
     private readonly roleService: typeof RoleService,
   ) {}
 
+  @handleErrors
   async createAudit(
     id: string,
     formData: FormData,
     auditors: Users[],
   ): Promise<ValidationResponseI<Audits>> {
-    try {
-      const parsed = parseForm(formData, auditFormSchema) as z.infer<typeof auditFormSchema>;
+    const parsed = parseForm(formData, auditFormSchema) as z.infer<typeof auditFormSchema>;
 
-      const { details, ...rest } = parsed;
-      const dataPass: Omit<typeof parsed, "details"> & { details?: string } = {
-        ...rest,
-      };
+    const { details, ...rest } = parsed;
+    const dataPass: Omit<typeof parsed, "details"> & { details?: string } = {
+      ...rest,
+    };
 
-      const blobData = await this.blobService.addBlob("audit-details", details);
-      if (blobData) {
-        dataPass.details = blobData.url;
-      }
-
-      const data = await this.ownerService.createAudit(id, dataPass, auditors);
-
-      return { success: true, data };
-    } catch (error) {
-      return handleValidationErrorReturn(error);
+    const blobData = await this.blobService.addBlob("audit-details", details);
+    if (blobData) {
+      dataPass.details = blobData.url;
     }
+
+    const data = await this.ownerService.createAudit(id, dataPass, auditors);
+
+    return { success: true, data };
   }
 
+  @handleErrors
   async updateAudit(
-    id: string,
+    auditId: string,
     formData: FormData,
     auditors: Users[],
   ): Promise<ValidationResponseI<Audits>> {
-    try {
-      const { audit, allowed } = await this.roleService.canEdit(id);
-      if (!allowed) {
-        throw new RoleError("you cannot update this audit");
-      }
-
-      const parsed = parseForm(formData, auditFormSchema) as z.infer<typeof auditFormSchema>;
-
-      const { details, ...rest } = parsed;
-      const dataPass: Omit<typeof parsed, "details"> & { details?: string } = { ...rest };
-
-      const blobData = await BlobService.addBlob("audit-details", details);
-      if (blobData) {
-        dataPass.details = blobData.url;
-      }
-
-      const currentAuditors = audit!.auditors.map((auditor) => auditor.user.id);
-      const passedAuditors = auditors.map((auditor) => auditor.id);
-
-      const auditorsCreate = passedAuditors.filter((auditor) => !currentAuditors.includes(auditor));
-      const auditorsRemove = currentAuditors.filter((auditor) => !passedAuditors.includes(auditor));
-
-      const data = await this.ownerService.updateAudit(
-        id,
-        dataPass,
-        auditorsCreate,
-        auditorsRemove,
-      );
-
-      return { success: true, data };
-    } catch (error) {
-      return handleValidationErrorReturn(error);
+    const user = await this.roleService.requireAuth();
+    const { audit, allowed } = await this.roleService.canEdit(user, auditId);
+    if (!allowed) {
+      throw new RoleError("you cannot update this audit");
     }
+
+    const parsed = parseForm(formData, auditFormSchema) as z.infer<typeof auditFormSchema>;
+
+    const { details, ...rest } = parsed;
+    const dataPass: Omit<typeof parsed, "details"> & { details?: string } = { ...rest };
+
+    const blobData = await BlobService.addBlob("audit-details", details);
+    if (blobData) {
+      dataPass.details = blobData.url;
+    }
+
+    const currentAuditors = audit!.auditors.map((auditor) => auditor.user.id);
+    const passedAuditors = auditors.map((auditor) => auditor.id);
+
+    const auditorsCreate = passedAuditors.filter((auditor) => !currentAuditors.includes(auditor));
+    const auditorsRemove = currentAuditors.filter((auditor) => !passedAuditors.includes(auditor));
+
+    const data = await this.ownerService.updateAudit(
+      auditId,
+      dataPass,
+      auditorsCreate,
+      auditorsRemove,
+    );
+
+    return { success: true, data };
   }
 
-  async lockAudit(id: string): Promise<ValidationResponseI<Audits>> {
-    try {
-      const { allowed } = await this.roleService.canLock(id);
-      if (!allowed) {
-        throw new RoleError("you cannot open this audit");
-      }
-
-      const data = await this.ownerService.lockAudit(id);
-      revalidatePath(`/audits/view/${id}`, "page");
-      return { success: true, data };
-    } catch (error) {
-      return handleValidationErrorReturn(error);
+  @handleErrors
+  async lockAudit(auditId: string): Promise<ValidationResponseI<Audits>> {
+    const user = await this.roleService.requireAuth();
+    const { allowed } = await this.roleService.canLock(user, auditId);
+    if (!allowed) {
+      throw new RoleError("you cannot open this audit");
     }
+
+    const data = await this.ownerService.lockAudit(auditId);
+    revalidatePath(`/audits/view/${auditId}`, "page");
+    return { success: true, data };
   }
 
-  async openAudit(id: string): Promise<ValidationResponseI<Audits>> {
-    try {
-      const { allowed } = await this.roleService.canOpen(id);
-      if (!allowed) {
-        throw new RoleError("you cannot open this audit");
-      }
-
-      const data = await this.ownerService.openAudit(id);
-      revalidatePath(`/audits/view/${id}`, "page");
-      return { success: true, data };
-    } catch (error) {
-      return handleValidationErrorReturn(error);
+  @handleErrors
+  async openAudit(auditId: string): Promise<ValidationResponseI<Audits>> {
+    const user = await this.roleService.requireAuth();
+    const { allowed } = await this.roleService.canOpen(user, auditId);
+    if (!allowed) {
+      throw new RoleError("you cannot open this audit");
     }
+
+    const data = await this.ownerService.openAudit(auditId);
+    revalidatePath(`/audits/view/${auditId}`, "page");
+    return { success: true, data };
   }
 
+  @handleErrors
   async updateRequestors(
-    id: string,
+    auditId: string,
     auditorsApprove: string[],
     auditorsReject: string[],
   ): Promise<ValidationResponseI<{ rejected: number; verified: number }>> {
-    try {
-      const { allowed } = await this.roleService.canEdit(id);
-      if (!allowed) {
-        throw new RoleError("you cannot edit this audit");
-      }
-
-      const promises = [
-        this.ownerService.updateRequestors(id, auditorsReject, AuditorStatus.REJECTED),
-        this.ownerService.updateRequestors(id, auditorsApprove, AuditorStatus.VERIFIED),
-      ];
-
-      const data = await Promise.all(promises);
-
-      revalidatePath(`/audits/view/${id}`, "page");
-
-      return {
-        success: true,
-        data: {
-          rejected: data[0].count,
-          verified: data[1].count,
-        },
-      };
-    } catch (error) {
-      return handleValidationErrorReturn(error);
+    const user = await this.roleService.requireAuth();
+    const { allowed } = await this.roleService.canEdit(user, auditId);
+    if (!allowed) {
+      throw new RoleError("you cannot edit this audit");
     }
+
+    const promises = [
+      this.ownerService.updateRequestors(auditId, auditorsReject, AuditorStatus.REJECTED),
+      this.ownerService.updateRequestors(auditId, auditorsApprove, AuditorStatus.VERIFIED),
+    ];
+
+    const data = await Promise.all(promises);
+
+    revalidatePath(`/audits/view/${auditId}`, "page");
+
+    return {
+      success: true,
+      data: {
+        rejected: data[0].count,
+        verified: data[1].count,
+      },
+    };
   }
 }
 
