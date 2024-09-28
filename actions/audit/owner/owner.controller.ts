@@ -1,7 +1,6 @@
 import BlobService from "@/actions/blob/blob.service";
 import RoleService from "@/actions/roles/roles.service";
 import { handleErrors } from "@/utils/decorators";
-import { RoleError } from "@/utils/error";
 import { ValidationResponseI } from "@/utils/types";
 import { auditFormSchema, parseForm } from "@/utils/validations";
 import { Audit, AuditorStatus, User } from "@prisma/client";
@@ -26,11 +25,8 @@ class OwnerController {
   ) {}
 
   @handleErrors
-  async createAudit(
-    id: string,
-    formData: FormData,
-    auditors: User[],
-  ): Promise<ValidationResponseI<Audit>> {
+  async createAudit(formData: FormData, auditors: User[]): Promise<ValidationResponseI<Audit>> {
+    const user = await this.roleService.requireAuth();
     const parsed = parseForm(formData, auditFormSchema) as z.infer<typeof auditFormSchema>;
 
     const { details, ...rest } = parsed;
@@ -43,7 +39,7 @@ class OwnerController {
       dataPass.details = blobData.url;
     }
 
-    const data = await this.ownerService.createAudit(id, dataPass, auditors);
+    const data = await this.ownerService.createAudit(user.id, dataPass, auditors);
 
     return { success: true, data };
   }
@@ -55,10 +51,7 @@ class OwnerController {
     auditors: User[],
   ): Promise<ValidationResponseI<Audit>> {
     const user = await this.roleService.requireAuth();
-    const { audit, allowed } = await this.roleService.canEdit(user, auditId);
-    if (!allowed) {
-      throw new RoleError("you cannot update this audit");
-    }
+    const audit = await this.roleService.canEdit(user, auditId);
 
     const parsed = parseForm(formData, auditFormSchema) as z.infer<typeof auditFormSchema>;
 
@@ -77,6 +70,7 @@ class OwnerController {
     const auditorsRemove = currentAuditors.filter((auditor) => !passedAuditors.includes(auditor));
 
     const data = await this.ownerService.updateAudit(
+      user.id,
       auditId,
       dataPass,
       auditorsCreate,
@@ -89,12 +83,9 @@ class OwnerController {
   @handleErrors
   async lockAudit(auditId: string): Promise<ValidationResponseI<Audit>> {
     const user = await this.roleService.requireAuth();
-    const { allowed } = await this.roleService.canLock(user, auditId);
-    if (!allowed) {
-      throw new RoleError("you cannot open this audit");
-    }
+    await this.roleService.canLock(user, auditId);
 
-    const data = await this.ownerService.lockAudit(auditId);
+    const data = await this.ownerService.lockAudit(user.id, auditId);
     revalidatePath(`/audits/view/${auditId}`, "page");
     return { success: true, data };
   }
@@ -102,12 +93,9 @@ class OwnerController {
   @handleErrors
   async openAudit(auditId: string): Promise<ValidationResponseI<Audit>> {
     const user = await this.roleService.requireAuth();
-    const { allowed } = await this.roleService.canOpen(user, auditId);
-    if (!allowed) {
-      throw new RoleError("you cannot open this audit");
-    }
+    await this.roleService.canOpen(user, auditId);
 
-    const data = await this.ownerService.openAudit(auditId);
+    const data = await this.ownerService.openAudit(user.id, auditId);
     revalidatePath(`/audits/view/${auditId}`, "page");
     return { success: true, data };
   }
@@ -119,10 +107,7 @@ class OwnerController {
     auditorsReject: string[],
   ): Promise<ValidationResponseI<{ rejected: number; verified: number }>> {
     const user = await this.roleService.requireAuth();
-    const { allowed } = await this.roleService.canEdit(user, auditId);
-    if (!allowed) {
-      throw new RoleError("you cannot edit this audit");
-    }
+    await this.roleService.canEdit(user, auditId);
 
     const promises = [
       this.ownerService.updateRequestors(auditId, auditorsReject, AuditorStatus.REJECTED),

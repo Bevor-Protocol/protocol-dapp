@@ -13,7 +13,7 @@ import { z } from "zod";
 
 class OwnerService {
   createAudit(
-    id: string,
+    userId: string,
     data: Omit<z.infer<typeof auditFormSchema>, "details"> & { details?: string },
     auditors: User[],
   ): Promise<Audit> {
@@ -21,7 +21,7 @@ class OwnerService {
       data: {
         auditee: {
           connect: {
-            id,
+            id: userId,
           },
         },
         ...data,
@@ -40,7 +40,8 @@ class OwnerService {
   }
 
   async updateAudit(
-    id: string,
+    userId: string,
+    auditId: string,
     data: Prisma.AuditUpdateInput,
     auditorsCreate: string[],
     auditorsRemove: string[],
@@ -57,21 +58,21 @@ class OwnerService {
 
     return prisma.audit.update({
       where: {
-        id,
+        id: auditId,
       },
       data: {
         ...data,
         auditors: {
           create: auditorsCreateConnected,
           deleteMany: {
-            auditId: id,
+            auditId,
             userId: {
               in: auditorsRemove,
             },
           },
           updateMany: {
             where: {
-              auditId: id,
+              auditId,
             },
             data: {
               attestedTerms: false,
@@ -83,22 +84,27 @@ class OwnerService {
           create: {
             userType: UserType.AUDITEE,
             action: HistoryAction.EDITED,
+            user: {
+              connect: {
+                id: userId,
+              },
+            },
           },
         },
       },
     });
   }
 
-  lockAudit(id: string): Promise<Audit> {
+  lockAudit(userId: string, auditId: string): Promise<Audit> {
     return prisma.audit.update({
       where: {
-        id,
+        id: auditId,
       },
       data: {
         status: AuditStatus.ATTESTATION,
         auditors: {
           deleteMany: {
-            auditId: id,
+            auditId,
             status: {
               not: AuditorStatus.VERIFIED,
             },
@@ -108,23 +114,28 @@ class OwnerService {
           create: {
             action: HistoryAction.LOCKED,
             userType: UserType.AUDITEE,
+            user: {
+              connect: {
+                id: userId,
+              },
+            },
           },
         },
       },
     });
   }
 
-  openAudit(id: string): Promise<Audit> {
+  openAudit(userId: string, auditId: string): Promise<Audit> {
     return prisma.audit.update({
       where: {
-        id,
+        id: auditId,
       },
       data: {
         status: AuditStatus.DISCOVERY,
         auditors: {
           updateMany: {
             where: {
-              auditId: id,
+              auditId,
             },
             data: {
               acceptedTerms: false,
@@ -136,6 +147,11 @@ class OwnerService {
           create: {
             userType: UserType.AUDITEE,
             action: HistoryAction.OPENED,
+            user: {
+              connect: {
+                id: userId,
+              },
+            },
           },
         },
       },
@@ -143,13 +159,13 @@ class OwnerService {
   }
 
   updateRequestors(
-    id: string,
+    auditId: string,
     auditors: string[],
     status: AuditorStatus,
   ): Promise<Prisma.BatchPayload> {
     return prisma.auditor.updateMany({
       where: {
-        auditId: id,
+        auditId,
         userId: {
           in: auditors,
         },

@@ -5,11 +5,10 @@ import { Audit, User } from "@prisma/client";
 import ownerController from "./owner.controller";
 
 const createAudit = async (
-  id: string,
   formData: FormData,
   auditors: User[],
 ): Promise<ValidationResponseI<Audit>> => {
-  return ownerController.createAudit(id, formData, auditors);
+  return ownerController.createAudit(formData, auditors);
 };
 
 const updateAudit = async (

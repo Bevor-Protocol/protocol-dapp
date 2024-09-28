@@ -1,7 +1,7 @@
 import BlobService from "@/actions/blob/blob.service";
 import RoleService from "@/actions/roles/roles.service";
 import { handleErrors } from "@/utils/decorators";
-import { RoleError, ValidationError } from "@/utils/error";
+import { ValidationError } from "@/utils/error";
 import { ValidationResponseI } from "@/utils/types";
 import { auditFindingsSchema, parseForm } from "@/utils/validations";
 import { Auditor, User } from "@prisma/client";
@@ -32,10 +32,8 @@ class AuditorController {
     comment: string,
   ): Promise<ValidationResponseI<User>> {
     const user = await this.roleService.requireAuth();
-    const { allowed } = await this.roleService.canAttest(user, auditId);
-    if (!allowed) {
-      throw new RoleError("cannot attest to terms");
-    }
+    await this.roleService.canAttest(user, auditId);
+
     const data = await this.auditorService.attestToTerms(auditId, user.id, status, comment);
 
     revalidatePath(`/audits/view/${auditId}`, "page");
@@ -45,10 +43,8 @@ class AuditorController {
   @handleErrors
   async leaveAudit(auditId: string): Promise<ValidationResponseI<User>> {
     const user = await this.roleService.requireAuth();
-    const { audit, allowed } = await this.roleService.canLeave(user, auditId);
-    if (!allowed) {
-      throw new RoleError("you cannot leave this audit");
-    }
+    const audit = await this.roleService.canLeave(user, auditId);
+
     const data = await this.auditorService.leaveAudit(audit.id, user.id, audit.status);
 
     revalidatePath(`/audits/view/${auditId}`, "page");
@@ -58,10 +54,7 @@ class AuditorController {
   @handleErrors
   async addFinding(auditId: string, formData: FormData): Promise<ValidationResponseI<User>> {
     const user = await this.roleService.requireAuth();
-    const { allowed } = await this.roleService.isAuditAuditor(user, auditId);
-    if (!allowed) {
-      throw new RoleError("you cannot add findings to this audit");
-    }
+    await this.roleService.isAuditAuditor(user, auditId);
 
     const parsed = parseForm(formData, auditFindingsSchema) as z.infer<typeof auditFindingsSchema>;
 
@@ -81,11 +74,8 @@ class AuditorController {
   @handleErrors
   async addRequest(auditId: string): Promise<ValidationResponseI<Auditor>> {
     const user = await this.roleService.requireAuth();
-    const { allowed } = await this.roleService.canRequest(user, auditId);
-    if (!allowed) {
-      // make sure they are NOT an auditor on the audit, but that they have the auditor role.
-      throw new RoleError("cannot add a request to this audit");
-    }
+    await this.roleService.canRequest(user, auditId);
+
     const data = await this.auditorService.addRequest(auditId, user.id);
 
     revalidatePath(`/audits/view/${auditId}`, "page");
@@ -95,10 +85,8 @@ class AuditorController {
   @handleErrors
   async deleteRequest(auditId: string): Promise<ValidationResponseI<Auditor>> {
     const user = await this.roleService.requireAuth();
-    const { allowed } = await this.roleService.isAuditAuditor(user, auditId);
-    if (!allowed) {
-      throw new RoleError("cannot delete request");
-    }
+    await this.roleService.isAuditAuditor(user, auditId);
+
     const data = await this.auditorService.deleteRequest(auditId, user.id);
 
     revalidatePath(`/audits/view/${auditId}`, "page");

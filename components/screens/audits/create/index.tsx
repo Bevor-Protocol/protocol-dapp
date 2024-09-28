@@ -15,7 +15,7 @@ const AuditCreation = ({ user }: { user: User }): JSX.Element => {
 
   const { mutate, isPending } = useMutation({
     mutationFn: (variables: { formData: FormData }) =>
-      auditController.owner.createAudit(user!.id, variables.formData, auditors),
+      auditController.owner.createAudit(variables.formData, auditors),
     onSuccess: (data) => {
       if (data.success) {
         router.push(`/user/${user.address}`);

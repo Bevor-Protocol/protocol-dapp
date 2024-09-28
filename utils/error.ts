@@ -17,10 +17,14 @@ export class ValidationError extends Error {
 
 export class RoleError extends Error {
   name = "RoleError";
+
+  message = "User does not have role";
 }
 
 export class AuthError extends Error {
   name = "AuthError";
+
+  message = "User not authenticated";
 }
 
 export const handleValidationErrorReturn = (error: any): ValidationFailureI => {

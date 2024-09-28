@@ -1,5 +1,5 @@
-import { AuthError } from "@/utils/error";
-import { RoleI } from "@/utils/types";
+import { AuthError, RoleError } from "@/utils/error";
+import { AuditI } from "@/utils/types/prisma";
 import { AuditorStatus, AuditStatus, User } from "@prisma/client";
 import AuditService from "../audit/audit.service";
 import UserService from "../user/user.service";
@@ -18,99 +18,93 @@ class RoleService {
     return user;
   }
 
-  async isAuditOwner(user: User, auditId: string): Promise<RoleI> {
+  async isAuditOwner(user: User, auditId: string): Promise<AuditI> {
     // I'm already fetching the audit. some of these are reused across permissions,
     // so might as well return it in the object.
     const audit = await this.auditService.getAudit(auditId);
     if (!audit) {
-      return { audit, allowed: false };
+      throw new RoleError();
     }
     if (user.id !== audit?.auditee.id) {
-      return { audit, allowed: false };
+      throw new RoleError();
     }
-    return { audit, allowed: true };
+    return audit;
   }
 
-  async isAuditAuditor(user: User, auditId: string): Promise<RoleI> {
+  async isAuditAuditor(user: User, auditId: string): Promise<AuditI> {
     const audit = await this.auditService.getAudit(auditId);
     if (!audit) {
-      return { audit, allowed: false };
+      throw new RoleError();
     }
     const foundAuditor = audit.auditors.find((a) => a.user.id == user.id);
 
     if (!foundAuditor) {
-      return { audit, allowed: false };
+      throw new RoleError();
     }
-    return { audit, allowed: true };
+    return audit;
   }
 
-  async canAttest(user: User, auditId: string): Promise<RoleI> {
-    const { audit, allowed } = await this.isAuditAuditor(user, auditId);
-    if (!allowed || audit?.status !== AuditStatus.ATTESTATION) {
-      return { audit, allowed: false };
+  async canAttest(user: User, auditId: string): Promise<AuditI> {
+    const audit = await this.isAuditAuditor(user, auditId);
+    if (audit.status !== AuditStatus.ATTESTATION) {
+      throw new RoleError();
     }
-    return { audit, allowed: true };
+    return audit;
   }
 
-  async canEdit(user: User, auditId: string): Promise<RoleI> {
-    const { audit, allowed } = await this.isAuditOwner(user, auditId);
-    if (
-      !allowed ||
-      (audit?.status != AuditStatus.DISCOVERY && audit?.status != AuditStatus.ATTESTATION)
-    ) {
-      return { audit, allowed: false };
+  async canEdit(user: User, auditId: string): Promise<AuditI> {
+    const audit = await this.isAuditOwner(user, auditId);
+    if (audit.status != AuditStatus.DISCOVERY && audit.status != AuditStatus.ATTESTATION) {
+      throw new RoleError();
     }
-    return { audit, allowed: true };
+    return audit;
   }
 
-  async canLock(user: User, auditId: string): Promise<RoleI> {
-    const { audit, allowed } = await this.isAuditOwner(user, auditId);
-    if (!allowed || audit?.status !== AuditStatus.DISCOVERY || !audit.details) {
-      return { audit, allowed: false };
+  async canLock(user: User, auditId: string): Promise<AuditI> {
+    const audit = await this.isAuditOwner(user, auditId);
+    if (audit.status !== AuditStatus.DISCOVERY || !audit.details) {
+      throw new RoleError();
     }
     const verifiedAuditorExists = audit.auditors.find(
       (auditor) => auditor.status === AuditorStatus.VERIFIED,
     );
     if (!verifiedAuditorExists) {
-      return { audit, allowed: false };
+      throw new RoleError();
     }
-    return { audit, allowed: true };
+    return audit;
   }
 
-  async canOpen(user: User, auditId: string): Promise<RoleI> {
-    const { audit, allowed } = await this.isAuditOwner(user, auditId);
-    if (!allowed || audit?.status !== AuditStatus.ATTESTATION) {
-      return { audit, allowed: false };
+  async canOpen(user: User, auditId: string): Promise<AuditI> {
+    const audit = await this.isAuditOwner(user, auditId);
+    if (audit.status !== AuditStatus.ATTESTATION) {
+      throw new RoleError();
     }
-    return { audit, allowed: true };
+    return audit;
   }
 
-  async canLeave(user: User, auditId: string): Promise<RoleI> {
-    const { audit, allowed } = await this.isAuditAuditor(user, auditId);
-    if (
-      !allowed ||
-      (audit?.status != AuditStatus.DISCOVERY && audit?.status != AuditStatus.ATTESTATION)
-    ) {
-      return { audit, allowed: false };
+  async canLeave(user: User, auditId: string): Promise<AuditI> {
+    const audit = await this.isAuditAuditor(user, auditId);
+    if (audit.status != AuditStatus.DISCOVERY && audit.status != AuditStatus.ATTESTATION) {
+      throw new RoleError();
     }
-    return { audit, allowed: true };
+    return audit;
   }
 
-  async canRequest(user: User, auditId: string): Promise<RoleI> {
+  async canRequest(user: User, auditId: string): Promise<AuditI> {
     const audit = await this.auditService.getAudit(auditId);
 
     if (!audit) {
-      return { audit, allowed: false };
+      throw new RoleError();
     }
     if (!user.auditorRole) {
-      return { audit, allowed: false };
+      throw new RoleError();
     }
     const foundAuditor = audit.auditors.find((a) => a.user.id == user.id);
 
     if (foundAuditor || audit.status != AuditStatus.DISCOVERY) {
-      return { audit, allowed: false };
+      throw new RoleError();
     }
-    return { audit, allowed: true };
+    return audit;
   }
 }
 
