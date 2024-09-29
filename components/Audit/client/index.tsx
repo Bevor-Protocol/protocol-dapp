@@ -16,7 +16,7 @@ export const AuditAuditor = ({
 }): JSX.Element => {
   return (
     <div style={{ transform: `translateX(${position})` }}>
-      <DynamicLink href={`/user/${auditor.address}`}>
+      <DynamicLink href={`/users/${auditor.address}`}>
         <Tooltip.Reference>
           <Tooltip.Trigger>
             <Icon image={auditor.image} size="md" seed={auditor.address} />

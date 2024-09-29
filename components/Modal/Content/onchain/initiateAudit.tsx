@@ -1,22 +1,22 @@
 "use client";
 
 import Image from "next/image";
-import { useClient } from "wagmi";
 import { Abi, Address } from "viem";
 import { readContract } from "viem/actions";
+import { useClient } from "wagmi";
 
-import { useModal } from "@/hooks/useContexts";
+import { auditAction } from "@/actions";
+import { X } from "@/assets";
 import { Column, Row } from "@/components/Box";
 import { Button } from "@/components/Button";
-import { X } from "@/assets";
+import { useModal } from "@/hooks/useContexts";
 import { useContractWriteListen } from "@/hooks/useContractWriteListen";
 import { AuditI } from "@/utils/types/prisma";
-import { auditController } from "@/actions";
 
-import BevorABI from "@/contracts/abis/BevorProtocol";
 import { Loader } from "@/components/Loader";
-import { useMemo } from "react";
+import BevorABI from "@/contracts/abis/BevorProtocol";
 import { cn } from "@/utils";
+import { useMemo } from "react";
 
 const InitiateAudit = ({
   audit,
@@ -75,10 +75,7 @@ const InitiateAudit = ({
       })
       .then(() => {
         // POST THE AUDITID OFF-CHAIN if user signed the transaction.
-        return auditController.addAuditInfo(
-          audit.id,
-          BigInt(auditIdGenerated as bigint).toString(),
-        );
+        return auditAction.addAuditInfo(audit.id, BigInt(auditIdGenerated as bigint).toString());
       })
       .catch((error) => {
         console.log(error);

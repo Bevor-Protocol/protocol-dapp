@@ -15,10 +15,10 @@ const LeaderboardData = ({
   if (isLoading) return <></>;
   return (
     <Column className="w-full gap-1">
-      {data.map((item) => (
+      {data.map((item, ind) => (
         <DynamicLink
-          key={item.id}
-          href={`/user/${item.address}`}
+          key={item.id + ind}
+          href={`/users/${item.address}`}
           className="w-full animate-fade-in"
         >
           <ul

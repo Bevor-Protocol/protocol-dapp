@@ -71,7 +71,7 @@ const Web3Profile = ({ address, user }: { address: string; user: User | null }):
           <span className="lg:hidden">{trimAddress(address)}</span>
         </Row>
       </Dropdown.Trigger>
-      <Dropdown.Content className="top-full right-0 w-40">
+      <Dropdown.Content className="top-full right-0">
         <Profile address={address} user={user} />
       </Dropdown.Content>
     </Dropdown.Main>

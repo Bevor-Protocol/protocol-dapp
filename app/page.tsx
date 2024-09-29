@@ -1,9 +1,9 @@
+import { statAction } from "@/actions";
 import { Arrow } from "@/assets";
-import { HomeStat } from "@/components/screens/home";
-import { statController } from "@/actions";
-import { cn } from "@/utils";
 import { Column, Row } from "@/components/Box";
 import DynamicLink from "@/components/Link";
+import { HomeStat } from "@/components/screens/home";
+import { cn } from "@/utils";
 
 const Page = (): JSX.Element => {
   return (
@@ -45,23 +45,23 @@ const Page = (): JSX.Element => {
           )}
         >
           <HomeStat
-            action={statController.getProtocolNumAudits}
+            action={statAction.getProtocolNumAudits}
             text="audits conducted"
             queryKey="audits"
           />
           <HomeStat
-            action={statController.getProtocolVulnerabilities}
+            action={statAction.getProtocolVulnerabilities}
             text="vulnerabilities uncovered"
             queryKey="vulnerabilities"
           />
           <HomeStat
-            action={statController.getProtocolFunds}
+            action={statAction.getProtocolFunds}
             symbol="$"
             text="funds facilitated"
             queryKey="funds"
           />
           <HomeStat
-            action={statController.getProtocolNumAuditors}
+            action={statAction.getProtocolNumAuditors}
             text="registered auditors"
             queryKey="auditors"
           />

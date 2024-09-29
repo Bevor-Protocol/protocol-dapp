@@ -5,4 +5,5 @@ export const ACTIONS = "ACTIONS";
 export const AUDITS = "AUDITS";
 export const MARKDOWN = "MARKDOWN";
 export const LEADERBOARD = "LEADERBOARD";
+export const USERS = "USERS";
 export const USER = "USER";

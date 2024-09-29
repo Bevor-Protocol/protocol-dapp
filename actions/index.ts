@@ -1,15 +1,15 @@
-export * as wishlistController from "./wishlist";
-export * as userController from "./user";
-export * as authController from "./auth";
-export * as contractController from "./contract";
-export * as statController from "./stat";
+export * as authAction from "./auth";
+export * as contractAction from "./contract";
+export * as statAction from "./stat";
+export * as userAction from "./user";
+export * as wishlistAction from "./wishlist";
 
-import * as auditControllerTemp from "./audit";
-import * as auditorController from "./audit/auditor";
-import * as ownerController from "./audit/owner";
+import * as auditActionTemp from "./audit";
+import * as auditorAction from "./audit/auditor";
+import * as ownerAction from "./audit/owner";
 
-export const auditController = {
-  ...auditControllerTemp,
-  owner: ownerController,
-  auditor: auditorController,
+export const auditAction = {
+  ...auditActionTemp,
+  owner: ownerAction,
+  auditor: auditorAction,
 };

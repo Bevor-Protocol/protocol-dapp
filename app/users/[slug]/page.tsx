@@ -1,6 +1,6 @@
 import { Suspense } from "react";
 
-import { statController, userController, wishlistController } from "@/actions";
+import { statAction, userAction, wishlistAction } from "@/actions";
 import { Loader } from "@/components/Loader";
 import UserContent from "@/components/screens/user";
 import UserProfileActions from "@/components/screens/user/actions";
@@ -11,14 +11,14 @@ import UserWishlist from "@/components/screens/user/wishlist";
 const Fetcher = async ({ address }: { address: string }): Promise<JSX.Element> => {
   // this is already stored in a context, but since we conditionally fetch the stats server-side,
   // I'll throw a re-request here. Memoization should prevent actually going back to data store.
-  const user = await userController.getProfile(address);
+  const user = await userAction.getProfile(address);
 
   if (!user) {
     return <UserNotExist address={address} />;
   }
-  const stats = await statController.getUserStats(address);
-  const currentUser = await userController.currentUser();
-  const audits = await userController.getUserAudits(address);
+  const stats = await statAction.getUserStats(address);
+  const currentUser = await userAction.currentUser();
+  const audits = await userAction.getUserAudits(address);
 
   const isOwner = currentUser.address === address;
 
@@ -28,7 +28,7 @@ const Fetcher = async ({ address }: { address: string }): Promise<JSX.Element> =
   const canWishlist =
     !isOwner && user.auditorRole && !!currentUser.user && currentUser.user.auditeeRole;
   if (canWishlist) {
-    isWishlistedFlag = await wishlistController.isWishlisted(currentUser.user!.id, user.id);
+    isWishlistedFlag = await wishlistAction.isWishlisted(currentUser.user!.id, user.id);
   }
 
   return (

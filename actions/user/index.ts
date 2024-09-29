@@ -1,6 +1,6 @@
 "use server";
 
-import { ResponseI } from "@/utils/types";
+import { ResponseI, UserSearchI } from "@/utils/types";
 import { AuditTruncatedI, UserWithCount } from "@/utils/types/prisma";
 import { User } from "@prisma/client";
 import userController from "./user.controller";
@@ -29,6 +29,10 @@ const getLeaderboard = async (key?: string, order?: string): Promise<UserWithCou
   return userController.getLeaderboard(key, order);
 };
 
+const searchUsers = async (filter: UserSearchI): Promise<User[]> => {
+  return userController.searchUsers(filter);
+};
+
 const searchAuditors = async (query?: string): Promise<User[]> => {
   return userController.searchAuditors(query);
 };
@@ -40,5 +44,6 @@ export {
   getProfile,
   getUserAudits,
   searchAuditors,
+  searchUsers,
   updateUser,
 };

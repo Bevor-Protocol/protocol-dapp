@@ -1,5 +1,5 @@
 import { handleErrors } from "@/utils/decorators";
-import { ResponseI } from "@/utils/types";
+import { ResponseI, UserSearchI } from "@/utils/types";
 import { AuditTruncatedI, UserWithCount } from "@/utils/types/prisma";
 import { parseForm, userSchema, userSchemaCreate } from "@/utils/validations";
 import { Prisma, User } from "@prisma/client";
@@ -68,7 +68,7 @@ class UserController {
 
     const data = await this.userService.updateUser(user.id, dataPass);
 
-    revalidatePath(`/user/${data.address}`, "page");
+    revalidatePath(`/users/${data.address}`, "page");
     return { success: true, data };
   }
 
@@ -78,6 +78,10 @@ class UserController {
 
   async getLeaderboard(key?: string, order?: string): Promise<UserWithCount[]> {
     return this.userService.getLeaderboard(key, order);
+  }
+
+  async searchUsers(filter: UserSearchI): Promise<User[]> {
+    return this.userService.searchUsers(filter);
   }
 
   async searchAuditors(query?: string): Promise<User[]> {

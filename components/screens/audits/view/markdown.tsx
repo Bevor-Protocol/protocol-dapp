@@ -2,7 +2,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { useState } from "react";
 
-import { auditController } from "@/actions";
+import { auditAction } from "@/actions";
 import { AuditorItem } from "@/components/Audit";
 import { Row } from "@/components/Box";
 import DynamicLink from "@/components/Link";
@@ -14,7 +14,7 @@ import { User } from "@prisma/client";
 const AuditMarkdown = ({ auditId, user }: { auditId: string; user: User | null }): JSX.Element => {
   const { data, isPending } = useQuery({
     queryKey: [MARKDOWN, auditId, user?.id ?? ""],
-    queryFn: () => auditController.safeMarkdown(auditId),
+    queryFn: () => auditAction.safeMarkdown(auditId),
   });
 
   const [active, setActive] = useState("details");
@@ -70,7 +70,7 @@ const AuditMarkdown = ({ auditId, user }: { auditId: string; user: User | null }
       {active == "findings" && (
         <Row className="items-center gap-4">
           <p>Auditor:</p>
-          <DynamicLink href={`/user/${data.findings[findingsActive].user.address}`}>
+          <DynamicLink href={`/users/${data.findings[findingsActive].user.address}`}>
             <AuditorItem
               auditor={data.findings[findingsActive].user}
               className="my-4 gap-2 items-center"

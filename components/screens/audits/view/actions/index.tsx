@@ -1,6 +1,6 @@
 import { AuditStatus, User } from "@prisma/client";
 
-import { auditController } from "@/actions";
+import { auditAction } from "@/actions";
 import { AuditI } from "@/utils/types/prisma";
 import AuditChallengeableActions from "./challengeable";
 import AuditLockedActions from "./locked";
@@ -14,7 +14,7 @@ const AuditDashboardActions = async ({
   audit: AuditI;
   user: User;
 }): Promise<JSX.Element> => {
-  const data = await auditController.getState(audit.id);
+  const data = await auditAction.getState(audit.id);
 
   if (audit.status === AuditStatus.DISCOVERY) {
     return <AuditOpenActions user={user} audit={audit} actionData={data} />;

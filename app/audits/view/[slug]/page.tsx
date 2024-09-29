@@ -1,21 +1,21 @@
 import { Suspense } from "react";
 
-import AuditPage from "@/components/screens/audits/view";
-import AuditMarkdown from "@/components/screens/audits/view/markdown";
-import { auditController, userController } from "@/actions";
+import { auditAction, userAction } from "@/actions";
 import { Loader, LoaderFill } from "@/components/Loader";
+import AuditPage from "@/components/screens/audits/view";
 import AuditHistory from "@/components/screens/audits/view/history";
+import AuditMarkdown from "@/components/screens/audits/view/markdown";
 import Vesting from "@/components/screens/audits/view/vesting";
 
 const Fetcher = async ({ auditId }: { auditId: string }): Promise<JSX.Element> => {
   // Parsed this into 3 separate requests.
   // One is general
   // Two are specific to the user.
-  const audit = await auditController.getAudit(auditId);
+  const audit = await auditAction.getAudit(auditId);
 
   if (!audit) return <h2>This audit does not exist</h2>;
 
-  const { user } = await userController.currentUser();
+  const { user } = await userAction.currentUser();
 
   let isMemberOfAudit = false;
   let isAuditorOfAudit = false;

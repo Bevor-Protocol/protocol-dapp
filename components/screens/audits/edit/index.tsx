@@ -5,7 +5,7 @@ import { useMutation } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
 import React, { useState } from "react";
 
-import { auditController } from "@/actions";
+import { auditAction } from "@/actions";
 import AuditFormEntries from "@/components/Audit/client/form";
 import ErrorToast from "@/components/Toast/Content/error";
 import { useToast } from "@/hooks/useContexts";
@@ -25,7 +25,7 @@ const AuditEditWrapper = ({ audit, user }: { audit: AuditI; user: User }): JSX.E
 
   const { mutate, isPending } = useMutation({
     mutationFn: (variables: { formData: FormData }) =>
-      auditController.owner.updateAudit(audit.id, variables.formData, auditors),
+      auditAction.owner.updateAudit(audit.id, variables.formData, auditors),
     onSuccess: (response) => {
       if (response.success) {
         router.push(`/audits/view/${audit.id}`);

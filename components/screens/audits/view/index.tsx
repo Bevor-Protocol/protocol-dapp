@@ -34,7 +34,7 @@ const AuditPage = ({ audit, user }: { audit: AuditI; user: User | null }): JSX.E
     <Row className="justify-between items-stretch relative">
       <Column className="items-stretch gap-4">
         <div>
-          <DynamicLink href={`/user/${audit.auditee.address}`}>
+          <DynamicLink href={`/users/${audit.auditee.address}`}>
             <Icon image={audit.auditee.image} seed={audit.auditee.address} size="xxl" />
           </DynamicLink>
           <p className="text-sm mt-4 mb-1">

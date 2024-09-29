@@ -1,4 +1,4 @@
-import { wishlistController } from "@/actions";
+import { wishlistAction } from "@/actions";
 import { Arrow, Heart, X } from "@/assets";
 import { AuditorItemSimple } from "@/components/Audit";
 import { Column, Row } from "@/components/Box";
@@ -20,7 +20,7 @@ export const WishlistPanel = ({ userId }: { userId: string }): JSX.Element => {
   const { data, isPending } = useQuery({
     queryKey: [WISHLIST, userId],
     queryFn: async () => {
-      const result = await wishlistController.getUserWishlist(userId);
+      const result = await wishlistAction.getUserWishlist(userId);
       if (result) {
         setIsWishlisted(result.map((d) => ({ id: d.receiver.id, wishlisted: true })));
         return result;
@@ -31,9 +31,9 @@ export const WishlistPanel = ({ userId }: { userId: string }): JSX.Element => {
   const { mutate } = useMutation({
     mutationFn: (variables: { receiver: User; type: string }) => {
       if (variables.type == "remove") {
-        return wishlistController.removeFromWishlist(variables.receiver.id);
+        return wishlistAction.removeFromWishlist(variables.receiver.id);
       }
-      return wishlistController.addToWishlist(variables.receiver.id);
+      return wishlistAction.addToWishlist(variables.receiver.id);
     },
     onSuccess: (response, variables: { receiver: User; type: string }) => {
       if (response.success) {
@@ -62,7 +62,7 @@ export const WishlistPanel = ({ userId }: { userId: string }): JSX.Element => {
                 <AuditorItemSimple auditor={wishlist.receiver} showStatus={true} />
               </div>
               <Row className="gap-2 items-center">
-                <Link href={`/user/${wishlist.receiver.address}`}>
+                <Link href={`/users/${wishlist.receiver.address}`}>
                   <Arrow height="0.75rem" fill="currentColor" />
                 </Link>
                 <div

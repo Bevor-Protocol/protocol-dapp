@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import SiweContext from "./context";
 
-import { authController } from "@/actions";
+import { authAction } from "@/actions";
 import * as Modal from "@/components/Modal";
 import RequestAccountChange from "@/components/Modal/Content/siwe/requestAccountChange";
 import SignIn from "@/components/Modal/Content/siwe/signin";
@@ -25,7 +25,7 @@ const SiweProvider = ({ children }: { children: React.ReactNode }): JSX.Element 
   const [isSuccess, setIsSuccess] = useState(false);
 
   const logout = (): void => {
-    authController.logout().then(() => {
+    authAction.logout().then(() => {
       disconnect();
       setIsAuthenticated(false);
     });
@@ -39,14 +39,14 @@ const SiweProvider = ({ children }: { children: React.ReactNode }): JSX.Element 
     let messageParsed = "";
     setIsPending(true);
     setIsSuccess(false);
-    authController
+    authAction
       .nonce()
       .then((nonce) => {
         messageParsed = createSiweMessage(addressUse, chainIdUse, nonce);
         return signMessageAsync({ message: messageParsed });
       })
       .then((signature) => {
-        return authController.verify(messageParsed, signature);
+        return authAction.verify(messageParsed, signature);
       })
       .then(() => {
         setIsAuthenticated(true);
@@ -77,7 +77,7 @@ const SiweProvider = ({ children }: { children: React.ReactNode }): JSX.Element 
     */
     let timer: ReturnType<typeof setTimeout>;
     const handleChange = async (): Promise<void> => {
-      await authController.getUser().then((user) => {
+      await authAction.getUser().then((user) => {
         const ANY_USER_AUTHED = user.success && !!user.address;
         const ANY_WALLET_CONNECTED = !!address;
         if (!ANY_USER_AUTHED && !ANY_WALLET_CONNECTED) {

@@ -3,7 +3,7 @@
 import { useMutation } from "@tanstack/react-query";
 import { useState } from "react";
 
-import { auditController } from "@/actions";
+import { auditAction } from "@/actions";
 import { Info } from "@/assets";
 import { Column, Row } from "@/components/Box";
 import { Button } from "@/components/Button";
@@ -51,7 +51,7 @@ const AuditeeReopenAudit = ({
   const { setContent, toggleOpen, setReadyAutoClose } = useToast({ autoClose: true });
 
   const { mutate } = useMutation({
-    mutationFn: () => auditController.owner.openAudit(id),
+    mutationFn: () => auditAction.owner.openAudit(id),
     onMutate: () => setDisabled(true),
     onSuccess: (response) => {
       if (response.success) {
@@ -137,7 +137,7 @@ const AuditorRemoveVerification = ({
   const { setContent, toggleOpen, setReadyAutoClose } = useToast({ autoClose: true });
 
   const { mutate } = useMutation({
-    mutationFn: () => auditController.auditor.leaveAudit(auditId),
+    mutationFn: () => auditAction.auditor.leaveAudit(auditId),
     onMutate: () => setDisabled(true),
     onSuccess: (response) => {
       if (response.success) {

@@ -3,7 +3,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { useState } from "react";
 
-import { auditController } from "@/actions";
+import { auditAction } from "@/actions";
 import { AuditCard } from "@/components/Audit";
 import { Column, Row } from "@/components/Box";
 import { Toggle } from "@/components/Toggle";
@@ -24,7 +24,7 @@ const Audits = ({ initialData }: { initialData: AuditDetailedI[] }): JSX.Element
 
   const { data, isPending } = useQuery({
     queryKey: [AUDITS, display],
-    queryFn: () => auditController.getAuditsDetailed(display),
+    queryFn: () => auditAction.getAuditsDetailed(display),
     initialData,
   });
 

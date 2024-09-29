@@ -6,7 +6,7 @@ import { Abi, Address } from "viem";
 import { readContract } from "viem/actions";
 import { useClient } from "wagmi";
 
-import { auditController, contractController } from "@/actions";
+import { auditAction, contractAction } from "@/actions";
 import { Check, X } from "@/assets";
 import { Column } from "@/components/Box";
 import { Button } from "@/components/Button";
@@ -32,7 +32,7 @@ const RevealAudit = ({ audit, user }: { audit: AuditI; user: User }): JSX.Elemen
     const token = AvailableTokens.localhost.find((t) => t.address == audit.token);
     if (!token) return;
     const convertedValue = parseUnits(audit.price.toString(), token.decimals);
-    contractController
+    contractAction
       .getBalance(user.address)
       .then((result) => {
         if (result >= convertedValue) {
@@ -84,7 +84,7 @@ const RevealAudit = ({ audit, user }: { audit: AuditI; user: User }): JSX.Elemen
     let tokenIdGenerated = BigInt(0);
     let auditIdGenerated = "";
     let findings: string[] = [];
-    auditController
+    auditAction
       .getAuditFindings(audit.id)
       .then((result) => {
         if (!result) return;
@@ -106,7 +106,7 @@ const RevealAudit = ({ audit, user }: { audit: AuditI; user: User }): JSX.Elemen
         return writeContractWithEvents([findings, auditIdGenerated]);
       })
       .then(() => {
-        return auditController.addNftInfo(audit.id, BigInt(tokenIdGenerated as bigint).toString());
+        return auditAction.addNftInfo(audit.id, BigInt(tokenIdGenerated as bigint).toString());
       })
       .then(() => {
         setStep(2);

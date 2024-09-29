@@ -1,10 +1,10 @@
 "use client";
 // import { useEffect, useState } from "react";
-import { HomeStatI } from "@/utils/types";
-import { useQuery } from "@tanstack/react-query";
 import * as Card from "@/components/Card";
 import { HomeStatSkeleton } from "@/components/Loader";
 import { HOME_STATS } from "@/constants/queryKeys";
+import { HomeStatI } from "@/utils/types";
+import { useQuery } from "@tanstack/react-query";
 
 export const HomeStat = ({ action, symbol, text, queryKey }: HomeStatI): JSX.Element => {
   // I converted this to a client component since it's not important for user interaction
@@ -24,8 +24,10 @@ export const HomeStat = ({ action, symbol, text, queryKey }: HomeStatI): JSX.Ele
 
   return (
     <Card.Main hover className="text-center p-6 items-center justify-center">
-      <p className="text-lg font-bold">{`${symbol || ""}${data?.toLocaleString()}`}</p>
-      <p className="text-sm">{text}</p>
+      <div>
+        <p className="text-lg font-bold">{`${symbol || ""}${data?.toLocaleString()}`}</p>
+        <p className="text-sm">{text}</p>
+      </div>
     </Card.Main>
   );
 };

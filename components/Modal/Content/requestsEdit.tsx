@@ -7,7 +7,7 @@ import { Column, Row } from "@/components/Box";
 import { useModal, useToast } from "@/hooks/useContexts";
 import { AuditI } from "@/utils/types/prisma";
 // import * as Form from "@/components/Form";
-import { auditController } from "@/actions";
+import { auditAction } from "@/actions";
 import { X } from "@/assets";
 import { AuditorItem } from "@/components/Audit";
 import { Button } from "@/components/Button";
@@ -39,7 +39,7 @@ const RequestsEdit = ({ audit }: { audit: AuditI }): JSX.Element => {
       auditorsApprove: string[];
       auditorsReject: string[];
     }) => {
-      return auditController.owner.updateRequestors(
+      return auditAction.owner.updateRequestors(
         variables.id,
         variables.auditorsApprove,
         variables.auditorsReject,

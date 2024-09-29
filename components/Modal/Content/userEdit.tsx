@@ -2,7 +2,7 @@
 import { useMutation } from "@tanstack/react-query";
 import React, { useState } from "react";
 
-import { userController } from "@/actions";
+import { userAction } from "@/actions";
 import { Info, X } from "@/assets";
 import { Column, Row } from "@/components/Box";
 import { Button } from "@/components/Button";
@@ -26,7 +26,7 @@ const UserEdit = ({ user, stats }: { user: User; stats: UserStats }): JSX.Elemen
 
   const { mutate, isPending } = useMutation({
     mutationFn: (variables: { formData: FormData }) => {
-      return userController.updateUser(variables.formData);
+      return userAction.updateUser(variables.formData);
     },
     onSuccess: (response) => {
       if (response.success) {

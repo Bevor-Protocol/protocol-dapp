@@ -27,7 +27,7 @@ class WishlistController {
     const user = await this.roleService.requireAuth();
     const data = await this.wishlistService.addToWishlist(user.id, receiver);
 
-    revalidatePath(`/user/${data.receiver.address}`, "page");
+    revalidatePath(`/users/${data.receiver.address}`, "page");
     return { success: true, data };
   }
 
@@ -36,7 +36,7 @@ class WishlistController {
     const user = await this.roleService.requireAuth();
     const data = await this.wishlistService.removeFromWishlist(user.id, receiver);
 
-    revalidatePath(`/user/${data.receiver.address}`, "page");
+    revalidatePath(`/users/${data.receiver.address}`, "page");
     return { success: true, data };
   }
 }

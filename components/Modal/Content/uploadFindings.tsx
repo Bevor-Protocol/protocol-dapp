@@ -2,7 +2,7 @@
 
 import { useMutation } from "@tanstack/react-query";
 
-import { auditController } from "@/actions";
+import { auditAction } from "@/actions";
 import { X } from "@/assets";
 import { Row } from "@/components/Box";
 import { Button } from "@/components/Button";
@@ -27,7 +27,7 @@ const UploadFindings = ({
 
   const { mutate, isPending } = useMutation({
     mutationFn: (variables: { formData: FormData }) => {
-      return auditController.auditor.addFinding(auditId, variables.formData);
+      return auditAction.auditor.addFinding(auditId, variables.formData);
     },
     onSuccess: (response) => {
       if (response.success) {

@@ -1,11 +1,11 @@
 "use client";
-import { useSwitchChain, useAccount, Register } from "wagmi";
+import { Register, useAccount, useSwitchChain } from "wagmi";
 
-import { Icon } from "@/components/Icon";
-import * as Card from "@/components/Card";
-import { ChainPresets } from "@/constants/web3";
-import { Column, HoverItem } from "@/components/Box";
 import { Check } from "@/assets";
+import { Column, HoverItem } from "@/components/Box";
+import * as Card from "@/components/Card";
+import { Icon } from "@/components/Icon";
+import { ChainPresets } from "@/constants/web3";
 import { cn } from "@/utils";
 
 const Networks = ({ close }: { close?: () => void }): JSX.Element => {
@@ -17,7 +17,7 @@ const Networks = ({ close }: { close?: () => void }): JSX.Element => {
   });
 
   return (
-    <Card.Main className="text-sm">
+    <Card.Main className="text-sm min-w-44">
       <Column className="px-2 py-2 gap-2">
         <p className="text-white/60 pl-2">Select Network:</p>
         {chains.map((chain) => (
@@ -46,7 +46,11 @@ const Networks = ({ close }: { close?: () => void }): JSX.Element => {
               {chain.name}
             </span>
             {currentChain?.id == chain.id && (
-              <Check height="1rem" width="1rem" className="absolute right-0 fill-blue-600/50" />
+              <Check
+                height="1rem"
+                width="1rem"
+                className="absolute right-0 fill-primary-light-50"
+              />
             )}
           </HoverItem>
         ))}

@@ -3,6 +3,12 @@ import { Address } from "viem";
 import { ErrorTypeEnum } from "./enum";
 import { AuditI } from "./prisma";
 
+export type UserSearchI = {
+  search: string;
+  isOwner: boolean;
+  isAuditor: boolean;
+};
+
 export type LeaderboardI = {
   name: string;
   money: number;

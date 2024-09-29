@@ -3,7 +3,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { useState } from "react";
 
-import { userController } from "@/actions";
+import { userAction } from "@/actions";
 import { Column } from "@/components/Box";
 import { LEADERBOARD } from "@/constants/queryKeys";
 import { UserWithCount } from "@/utils/types/prisma";
@@ -16,7 +16,7 @@ const LeaderboardWrapper = ({ initialData }: { initialData: UserWithCount[] }): 
 
   const { data, isLoading } = useQuery({
     queryKey: [LEADERBOARD, listSort, listOrder],
-    queryFn: () => userController.getLeaderboard(listSort, listOrder),
+    queryFn: () => userAction.getLeaderboard(listSort, listOrder),
     initialData,
   });
 

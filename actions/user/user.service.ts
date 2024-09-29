@@ -2,6 +2,7 @@ import { prisma } from "@/db/prisma.server";
 import { AuditTruncatedI, UserWithCount } from "@/utils/types/prisma";
 import { AuditorStatus, AuditStatus, Prisma, User } from "@prisma/client";
 import AuthService from "../auth/auth.service";
+import { UserSearchI } from "@/utils/types";
 
 class UserService {
   constructor(private readonly authService: typeof AuthService) {}
@@ -206,30 +207,51 @@ class UserService {
     });
   }
 
-  searchAuditors(query?: string): Promise<User[]> {
-    const search = query
+  searchUsers(filter: UserSearchI): Promise<User[]> {
+    const search = filter.search
       ? {
           OR: [
             {
               address: {
-                contains: query,
+                contains: filter.search,
                 mode: Prisma.QueryMode.insensitive,
               },
             },
             {
               name: {
-                contains: query,
+                contains: filter.search,
                 mode: Prisma.QueryMode.insensitive,
               },
             },
           ],
         }
       : {};
+
+    const roleFilters = [];
+    if (filter.isAuditor) {
+      roleFilters.push({ auditorRole: true });
+    }
+    if (filter.isOwner) {
+      roleFilters.push({ auditeeRole: true });
+    }
+
     return prisma.user.findMany({
       where: {
-        auditorRole: true,
-        ...search,
+        AND: [
+          search,
+          {
+            AND: roleFilters,
+          },
+        ],
       },
+    });
+  }
+
+  searchAuditors(query?: string): Promise<User[]> {
+    return this.searchUsers({
+      search: query ?? "",
+      isAuditor: true,
+      isOwner: false,
     });
   }
 }

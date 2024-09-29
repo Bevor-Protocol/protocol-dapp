@@ -1,17 +1,19 @@
 import { Suspense } from "react";
 
-import { auditAction } from "@/actions";
+import { userAction } from "@/actions";
 import { Loader } from "@/components/Loader";
-import Audits from "@/components/screens/audits";
-import { AuditStatus } from "@prisma/client";
+import UsersWrapper from "@/components/screens/user/users";
 
 const Fetcher = async (): Promise<JSX.Element> => {
-  const data = await auditAction.getAuditsDetailed(AuditStatus.DISCOVERY);
-
-  return <Audits initialData={data} />;
+  const data = await userAction.searchUsers({
+    search: "",
+    isAuditor: false,
+    isOwner: false,
+  });
+  return <UsersWrapper initialData={data} />;
 };
 
-const Audit = (): JSX.Element => {
+const UsersPage = (): JSX.Element => {
   return (
     <section className="flex flex-col h-full items-center">
       <Suspense fallback={<Loader className="h-12 w-12" />}>
@@ -21,4 +23,4 @@ const Audit = (): JSX.Element => {
   );
 };
 
-export default Audit;
+export default UsersPage;

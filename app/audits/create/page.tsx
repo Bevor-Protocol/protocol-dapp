@@ -1,4 +1,4 @@
-import { userController } from "@/actions";
+import { userAction } from "@/actions";
 import { Arrow } from "@/assets";
 import { Column } from "@/components/Box";
 import { Button } from "@/components/Button";
@@ -8,7 +8,7 @@ import AuditCreation from "@/components/screens/audits/create";
 import { Suspense } from "react";
 
 const Fetcher = async (): Promise<JSX.Element> => {
-  const { address, user } = await userController.currentUser();
+  const { address, user } = await userAction.currentUser();
 
   if (!address) {
     return (
@@ -22,7 +22,7 @@ const Fetcher = async (): Promise<JSX.Element> => {
     return (
       <Column className="items-center gap-4">
         <p>Create an account before accessing this page</p>
-        <DynamicLink href={`/user/${address}`}>
+        <DynamicLink href={`/users/${address}`}>
           <Button variant="gradient">
             <span>Dashboard</span>
             <Arrow height="0.75rem" width="0.75rem" />
@@ -36,7 +36,7 @@ const Fetcher = async (): Promise<JSX.Element> => {
     return (
       <Column className="items-center gap-4">
         <p>Claim the Auditee role before creating an audit</p>
-        <DynamicLink href={`/user/${address}`}>
+        <DynamicLink href={`/users/${address}`}>
           <Button variant="gradient">
             <span>Dashboard</span>
             <Arrow height="0.75rem" width="0.75rem" />

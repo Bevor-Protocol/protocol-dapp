@@ -4,7 +4,7 @@ import { useMutation } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
 import React, { useState } from "react";
 
-import { auditController } from "@/actions";
+import { auditAction } from "@/actions";
 import AuditFormEntries from "@/components/Audit/client/form";
 import ErrorToast from "@/components/Toast/Content/error";
 import { useToast } from "@/hooks/useContexts";
@@ -19,10 +19,10 @@ const AuditCreation = ({ user }: { user: User }): JSX.Element => {
 
   const { mutate, isPending } = useMutation({
     mutationFn: (variables: { formData: FormData }) =>
-      auditController.owner.createAudit(variables.formData, auditors),
+      auditAction.owner.createAudit(variables.formData, auditors),
     onSuccess: (response) => {
       if (response.success) {
-        router.push(`/user/${user.address}`);
+        router.push(`/users/${user.address}`);
       } else {
         const error = response.error;
         switch (error.type) {

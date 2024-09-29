@@ -7,8 +7,16 @@ import { AvailableTokens } from "@/constants/web3";
 import { cn } from "@/utils";
 import { trimAddress } from "@/utils/formatters";
 import { AuditDetailedI, AuditTruncatedI } from "@/utils/types/prisma";
-import { User } from "@prisma/client";
+import { AuditStatus, User } from "@prisma/client";
 import { AuditAuditor } from "./client";
+
+const statusMapper = {
+  [AuditStatus.DISCOVERY]: "open",
+  [AuditStatus.ATTESTATION]: "locked",
+  [AuditStatus.AUDITING]: "ongoing",
+  [AuditStatus.CHALLENGEABLE]: "challengeable",
+  [AuditStatus.FINALIZED]: "completed",
+};
 
 export const AuditCardTruncated = ({
   audit,
@@ -21,10 +29,13 @@ export const AuditCardTruncated = ({
 }): JSX.Element => {
   const token = AvailableTokens.localhost.find((t) => t.address == audit.token);
   return (
-    <div className="w-1/2 p-2">
+    <div className="w-1/2 p-2 animate-fade-in">
       <DynamicLink href={`/audits/view/${audit.id}`} className="w-full">
         <Card.Main className="w-full cursor-pointer transition-colors hover:bg-dark-primary-30">
-          <Card.Content className="gap-4 relative">
+          <Card.Content className="gap-4 relative p-4">
+            <div className="absolute -top-2 left-1 bg-primary-light-20 rounded-md text-xxs px-1">
+              {statusMapper[audit.status]}
+            </div>
             <Icon image={audit.auditee.image} seed={audit.auditee.address} size="lg" />
             <Column className="justify-start items-start w-full">
               <p className="text-lg font-bold line-clamp-1">{audit.title}</p>
@@ -53,8 +64,8 @@ export const AuditCard = ({ audit }: { audit: AuditDetailedI }): JSX.Element => 
   const token = AvailableTokens.localhost.find((t) => t.address == audit.token);
   return (
     <Card.Main className="w-full animate-fade-in">
-      <Card.Content className="gap-4">
-        <DynamicLink href={`/user/${audit.auditee.address}`}>
+      <Card.Content className="gap-4 p-4">
+        <DynamicLink href={`/users/${audit.auditee.address}`}>
           <Icon image={audit.auditee.image} seed={audit.auditee.address} size="lg" />
         </DynamicLink>
         <Column className="justify-start items-start overflow-hidden w-full">
@@ -84,7 +95,7 @@ export const AuditCard = ({ audit }: { audit: AuditDetailedI }): JSX.Element => 
           </p>
         </Column>
       </Card.Content>
-      <Card.Footer>
+      <Card.Footer className="p-2">
         <Row className="justify-center items-center gap-2">
           <span className="text-white/60">auditors:</span>
           {audit.auditors.length > 0 ? (

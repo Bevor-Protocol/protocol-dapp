@@ -2,7 +2,7 @@
 
 import { useMutation } from "@tanstack/react-query";
 
-import { auditController } from "@/actions";
+import { auditAction } from "@/actions";
 import { Info } from "@/assets";
 import { Column, Row } from "@/components/Box";
 import { Button } from "@/components/Button";
@@ -84,7 +84,7 @@ const AuditorRemoveRequest = ({
   const { setContent, toggleOpen, setReadyAutoClose } = useToast({ autoClose: true });
 
   const { mutate } = useMutation({
-    mutationFn: () => auditController.auditor.deleteRequest(auditId),
+    mutationFn: () => auditAction.auditor.deleteRequest(auditId),
     onMutate: () => setDisabled(true),
     onError: (error) => console.log(error),
     onSuccess: (response) => {
@@ -130,7 +130,7 @@ const AuditorAddRequest = ({
 }): JSX.Element => {
   const { setContent, toggleOpen, setReadyAutoClose } = useToast({ autoClose: true });
   const { mutate } = useMutation({
-    mutationFn: () => auditController.auditor.addRequest(auditId),
+    mutationFn: () => auditAction.auditor.addRequest(auditId),
     onMutate: () => setDisabled(true),
     onSuccess: (response) => {
       if (response.success) {
@@ -179,7 +179,7 @@ const AuditorRemoveVerification = ({
   });
 
   const { mutate } = useMutation({
-    mutationFn: () => auditController.auditor.deleteRequest(auditId),
+    mutationFn: () => auditAction.auditor.deleteRequest(auditId),
     onMutate: () => setDisabled(true),
     onSuccess: (response) => {
       if (response.success) {
@@ -249,7 +249,7 @@ const AuditeeLockAudit = ({
   const { setContent, toggleOpen, setReadyAutoClose } = useToast({ autoClose: true });
 
   const { mutate } = useMutation({
-    mutationFn: () => auditController.owner.lockAudit(auditId),
+    mutationFn: () => auditAction.owner.lockAudit(auditId),
     onMutate: () => setDisabled(true),
     onSuccess: (response) => {
       if (response.success) {

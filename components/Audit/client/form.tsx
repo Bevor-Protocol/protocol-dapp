@@ -3,9 +3,9 @@
 
 import { AuditorStatus, User } from "@prisma/client";
 import { useQuery } from "@tanstack/react-query";
-import React, { useMemo, useRef, useState } from "react";
+import React, { useMemo, useState } from "react";
 
-import { userController, wishlistController } from "@/actions";
+import { userAction, wishlistAction } from "@/actions";
 import { AuditorItem } from "@/components/Audit";
 import { Column, Row } from "@/components/Box";
 import { Button } from "@/components/Button";
@@ -13,6 +13,7 @@ import * as Form from "@/components/Form";
 import { Loader } from "@/components/Loader";
 import { AUDITORS, WISHLIST } from "@/constants/queryKeys";
 import { AvailableTokens } from "@/constants/web3";
+import { useDebounce } from "@/hooks/useDebounce";
 import { cn } from "@/utils";
 import { AuditI } from "@/utils/types/prisma";
 
@@ -35,19 +36,21 @@ const AuditFormEntries = ({
 }): JSX.Element => {
   const mockFileDefault = initialState?.details ? new File([], "") : undefined;
 
-  const [timoutPending, setTimoutPending] = useState(false);
   const [queryString, setQueryString] = useState("");
-  const timeoutRef = useRef<NodeJS.Timeout | null>(null);
   const [selectedFile, setSelectedFile] = useState<File | undefined>(mockFileDefault);
 
+  const { timeoutPending, debouncedData } = useDebounce({
+    data: queryString,
+  });
+
   const { data, isPending } = useQuery({
-    queryKey: [AUDITORS, queryString],
-    queryFn: () => userController.searchAuditors(queryString),
+    queryKey: [AUDITORS, debouncedData],
+    queryFn: () => userAction.searchAuditors(debouncedData),
   });
 
   const { data: dataWishlist, isPending: isPendingWishlist } = useQuery({
     queryKey: [WISHLIST, userId],
-    queryFn: () => wishlistController.getUserWishlist(userId),
+    queryFn: () => wishlistAction.getUserWishlist(userId),
   });
 
   const addAuditorSet = (auditor: User): void => {
@@ -57,18 +60,6 @@ const AuditFormEntries = ({
   const removeAuditorSet = (id: string): void => {
     const interAuditors = [...auditors].filter((auditor) => auditor.id != id);
     setAuditors(interAuditors);
-  };
-
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>): void => {
-    // throttling to prevent too many requests.
-    if (timeoutRef.current) {
-      clearTimeout(timeoutRef.current);
-    }
-    setTimoutPending(true);
-    timeoutRef.current = setTimeout(() => {
-      setTimoutPending(false);
-      setQueryString(e.target.value);
-    }, 500);
   };
 
   const uncontrolledReset = (): void => {
@@ -162,18 +153,18 @@ const AuditFormEntries = ({
           <p className="w-80">Your Wishlisted Auditors:</p>
         </Row>
         <Row className="justify-between">
-          <Form.Search disabled={disabled} onChange={handleChange}>
+          <Form.Search disabled={disabled} onChange={(e) => setQueryString(e.target.value)}>
             <Column
               className="w-full overflow-scroll px-2 justify-start"
               style={{ maxHeight: "calc(5 * 32px)", height: "calc(5 * 32px)" }}
             >
-              {(isPending || timoutPending) && (
+              {(isPending || timeoutPending) && (
                 <Column className="h-full justify-center">
                   <Loader className="h-5 w-5 self-center" />
                 </Column>
               )}
               {!isPending &&
-                !timoutPending &&
+                !timeoutPending &&
                 auditorsShow.length > 0 &&
                 auditorsShow.map((auditor) => (
                   <AuditorItem
@@ -184,7 +175,7 @@ const AuditFormEntries = ({
                     hover
                   />
                 ))}
-              {!isPending && !timoutPending && auditorsShow.length == 0 && (
+              {!isPending && !timeoutPending && auditorsShow.length == 0 && (
                 <p className="text-sm px-1">No results to show</p>
               )}
             </Column>

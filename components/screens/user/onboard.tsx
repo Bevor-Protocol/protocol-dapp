@@ -4,7 +4,7 @@ import { useRouter } from "next/navigation";
 import { useMemo, useState } from "react";
 import { useAccount } from "wagmi";
 
-import { userController } from "@/actions";
+import { userAction } from "@/actions";
 import { Column, Row } from "@/components/Box";
 import { Button } from "@/components/Button";
 import * as Form from "@/components/Form";
@@ -21,7 +21,7 @@ const UserOnboard = ({ address }: { address: string }): JSX.Element => {
 
   const { mutate, isPending } = useMutation({
     mutationFn: (variables: { userAddress: string; formData: FormData }) =>
-      userController.createUser(variables.userAddress, variables.formData),
+      userAction.createUser(variables.userAddress, variables.formData),
     onSuccess: (response) => {
       if (response.success) {
         router.refresh();

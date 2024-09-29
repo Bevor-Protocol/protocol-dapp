@@ -1,10 +1,10 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
 
-import { cn } from "@/utils";
+import { File, Pencil, Search as SearchIcon } from "@/assets";
 import { Column, Row } from "@/components/Box";
-import { Search as SearchIcon, Pencil, File } from "@/assets";
+import { cn } from "@/utils";
 
 interface InputI extends React.InputHTMLAttributes<HTMLInputElement> {
   text?: string;
@@ -230,7 +230,7 @@ export const Search: React.FC<SearchI> = ({ children, className, text, ...rest }
         <Row
           className={cn(
             "items-center gap-2 px-3 py-2 rounded border border-gray-200/20 outline-none",
-            "rounded-b-none",
+            !!children && "rounded-b-none",
           )}
         >
           <SearchIcon height="15px" width="15px" className="opacity-50" />
@@ -247,9 +247,11 @@ export const Search: React.FC<SearchI> = ({ children, className, text, ...rest }
           />
         </Row>
       </label>
-      <div className="border border-gray-200/20 border-t-0 rounded-b py-2 w-full overflow-hidden">
-        {children}
-      </div>
+      {!!children && (
+        <div className="border border-gray-200/20 border-t-0 rounded-b py-2 w-full overflow-hidden">
+          {children}
+        </div>
+      )}
     </div>
   );
 };

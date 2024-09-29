@@ -1,10 +1,10 @@
 import Image from "next/image";
 
-import { userController } from "@/actions";
+import { userAction } from "@/actions";
 import { Column, Row } from "@/components/Box";
 import DynamicLink from "@/components/Link";
 import { Suspense } from "react";
-import { NavDashboard, NavDropdown, NavMenuItems } from "./Nav/menuItems";
+import { NavDropdown, NavMenuItems } from "./Nav/menuItems";
 import NavWeb3 from "./Nav/web3";
 
 export const Layout = ({ children }: { children: React.ReactNode }): JSX.Element => {
@@ -23,7 +23,7 @@ export const Footer = (): JSX.Element => {
 };
 
 export const Nav = async (): Promise<JSX.Element> => {
-  const { address, user } = await userController.currentUser();
+  const { address, user } = await userAction.currentUser();
   return (
     <nav className="py-6 w-full flex flex-row justify-between items-center md:py-4">
       <Row className="gap-6">
@@ -33,9 +33,6 @@ export const Nav = async (): Promise<JSX.Element> => {
           </div>
         </DynamicLink>
         <Row className="gap-2 items-center sm:nav-fixed-bottom sm:text-sm">
-          <Suspense>
-            <NavDashboard address={address} />
-          </Suspense>
           <NavMenuItems />
           <NavDropdown />
         </Row>

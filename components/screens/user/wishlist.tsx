@@ -1,6 +1,6 @@
 "use client";
 
-import { wishlistController } from "@/actions";
+import { wishlistAction } from "@/actions";
 import { Heart } from "@/assets";
 import * as Tooltip from "@/components/Tooltip";
 import { cn } from "@/utils";
@@ -17,9 +17,9 @@ const UserWishlist = ({
   const { mutate } = useMutation({
     mutationFn: () => {
       if (isWishlistedFlag) {
-        return wishlistController.removeFromWishlist(receiver.id);
+        return wishlistAction.removeFromWishlist(receiver.id);
       }
-      return wishlistController.addToWishlist(receiver.id);
+      return wishlistAction.addToWishlist(receiver.id);
     },
   });
 
