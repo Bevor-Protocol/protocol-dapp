@@ -48,6 +48,8 @@ class AuditService {
         history: {
           select: {
             id: true,
+            auditId: true,
+            audit: true,
             action: true,
             userType: true,
             comment: true,

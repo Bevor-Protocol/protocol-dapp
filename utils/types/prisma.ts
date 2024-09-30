@@ -86,6 +86,7 @@ export type AuditI = Prisma.AuditGetPayload<{
     history: {
       select: {
         id: true;
+        auditId: true;
         action: true;
         userType: true;
         comment: true;
