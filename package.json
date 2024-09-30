@@ -14,19 +14,24 @@
     "format": "prettier --write \"**/*.{ts,tsx,js,jsx,md,json}\" && eslint --fix && prisma format",
     "db:studio": "doppler run -- npx prisma studio",
     "db:push": "doppler run -- npx prisma db push",
-    "db:migration:create": "doppler run -- npx prisma migrate dev --create-only",
+    "db:migration:generate": "doppler run -- bash prisma/scripts/migration_generate.sh",
     "db:migration:run": "doppler run -- npx prisma migrate dev",
-    "db:seed": "doppler run -- npx prisma db seed",
-    "db:seed:offchain": "doppler run -- tsx prisma/seed-offchain.ts",
-    "db:seed:onchain": "doppler run -- tsx prisma/seed-onchain.ts",
+    "db:migration:revert": "doppler run -- bash prisma/scripts/migration_revert.sh",
+    "db:migration:diff": "doppler run -- npx prisma migrate diff --from-schema-datamodel prisma/schema.prisma --to-schema-datasource prisma/schema.prisma --script",
+    "db:migration:show": "doppler run -- npx prisma migrate status",
     "db:reset": "doppler run -- npx prisma migrate reset",
     "db:clear": "doppler run -- npx prisma migrate reset --skip-seed",
-    "db:generate": "doppler run -- npx prisma generate",
+    "db:seed": "doppler run -- npx prisma db seed",
+    "db:seed:offchain": "doppler run -- tsx prisma/scripts/seed-offchain.ts",
+    "db:seed:onchain": "doppler run -- tsx prisma/scripts/seed-onchain.ts",
     "cy:open": "cypress open",
     "cy:run": "cypress run --browser chrome --headless"
   },
   "prisma": {
-    "seed": "bash prisma/seed.sh"
+    "seed": "bash prisma/seed.sh",
+    "migrate": {
+      "dev": ""
+    }
   },
   "lint-staged": {
     "**/*.{ts,tsx,js,jsx}": [

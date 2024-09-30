@@ -49,6 +49,9 @@ In practice, we use Neon to manage our postgres database, but locally, we'll rel
 
 # Prisma Client setup
 
+**A note on prisma ORM strategy**
+Support for migration reversions is not great. I wanted to keep the pattern of separating out the migration creation, and the running of the migration. I also create a script to generate down migrations automatically, which is quite useful compared to needing to manually revert the schema file, run a migration, then delete the files (in development, at least).
+
 To set up the prisma client, make sure the environment variables are set. For local testing, we can rely on a local connection that was setup above.
 
 **Generate the Prisma Client**

@@ -1,6 +1,6 @@
 import { Suspense } from "react";
 
-import { auditAction, userAction } from "@/actions";
+import { auditAction, historyAction, userAction } from "@/actions";
 import { Loader, LoaderFill } from "@/components/Loader";
 import AuditPage from "@/components/screens/audits/view";
 import AuditHistory from "@/components/screens/audits/view/history";
@@ -19,25 +19,33 @@ const Fetcher = async ({ auditId }: { auditId: string }): Promise<JSX.Element> =
 
   let isMemberOfAudit = false;
   let isAuditorOfAudit = false;
+  let hasPendingNotifications = false;
   if (user) {
     if (user.address == audit.auditee.address) {
       isMemberOfAudit = true;
     } else {
-      const auditors = audit.auditors.map((auditor) => auditor.user.address);
-      if (auditors.includes(user.address)) {
+      const isAuditor = audit.auditors.some((auditor) => auditor.user.address === user.address);
+      if (isAuditor) {
         isMemberOfAudit = true;
         isAuditorOfAudit = true;
       }
     }
   }
 
+  if (isMemberOfAudit && user) {
+    const pendingNotificationsCount = await historyAction.getUserHistoryAuditUnreadCount(
+      user.address,
+      auditId,
+    );
+    hasPendingNotifications = pendingNotificationsCount > 0;
+  }
+
   return (
     <div className="w-full max-w-[1000px]">
       <AuditHistory
+        auditId={auditId}
         history={audit.history}
-        auditId={audit.id}
-        address={user?.address}
-        displayNotification={isMemberOfAudit}
+        hasPendingNotifications={hasPendingNotifications}
       />
       <AuditPage audit={audit} user={user} />
       <Suspense fallback={<Loader className="h-4 w-4" />}>

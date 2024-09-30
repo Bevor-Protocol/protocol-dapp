@@ -1,19 +1,29 @@
 "use client";
 import { useAccount } from "wagmi";
 
-import { Copy, Dashboard, Heart, Logout } from "@/assets";
+import { Bell, Copy, Dashboard, Heart, Logout } from "@/assets";
 import { Column, HoverItem, Row } from "@/components/Box";
 import * as Card from "@/components/Card";
 import { Social } from "@/components/Icon";
 import DynamicLink from "@/components/Link";
+import { NotificationPanel } from "@/components/Panel/Content/notifications";
 import { WishlistPanel } from "@/components/Panel/Content/wishlist";
 import { useModal, useSiwe } from "@/hooks/useContexts";
 import { useCopyToClipboard } from "@/hooks/useCopyToClipboard";
 import { cn } from "@/utils";
 import { trimAddress } from "@/utils/formatters";
+import { HistoryI } from "@/utils/types";
 import { User } from "@prisma/client";
 
-const Profile = ({ address, user }: { address: string; user: User | null }): JSX.Element => {
+const Profile = ({
+  address,
+  user,
+  history,
+}: {
+  address: string;
+  user: User | null;
+  history: HistoryI[];
+}): JSX.Element => {
   const { chain, connector } = useAccount();
   const { isCopied, copy } = useCopyToClipboard();
   const { toggleOpen, setContent } = useModal();
@@ -22,6 +32,12 @@ const Profile = ({ address, user }: { address: string; user: User | null }): JSX
   const handleWishlist = (): void => {
     if (!user) return;
     setContent(<WishlistPanel userId={user.id} />);
+    toggleOpen("panel");
+  };
+
+  const handleNotifications = (): void => {
+    if (!history.length) return;
+    setContent(<NotificationPanel history={history} />);
     toggleOpen("panel");
   };
 
@@ -60,6 +76,15 @@ const Profile = ({ address, user }: { address: string; user: User | null }): JSX
       </Card.Content>
       <Card.Footer className="p-1">
         <Column className="w-full">
+          {history.length > 0 && (
+            <HoverItem
+              className="px-1 py-2 w-full justify-start gap-2 cursor-pointer"
+              onClick={handleNotifications}
+            >
+              <Bell height="0.85rem" width="0.85rem" className="fill-gray-400" />
+              <span>Notifications</span>
+            </HoverItem>
+          )}
           <HoverItem
             className="px-1 py-2 w-full justify-start gap-2 cursor-pointer"
             onClick={handleWishlist}

@@ -219,6 +219,25 @@ const seed = async (): Promise<void> => {
               address: WALLETS[0],
             },
           },
+          historyViews: {
+            create: [
+              {
+                user: {
+                  connect: {
+                    address: WALLETS[0],
+                  },
+                },
+              },
+              {
+                user: {
+                  connect: {
+                    address: WALLETS[1],
+                  },
+                },
+                hasViewed: true,
+              },
+            ],
+          },
         },
       },
     },
@@ -265,6 +284,24 @@ const seed = async (): Promise<void> => {
                 address: WALLETS[0],
               },
             },
+            historyViews: {
+              create: [
+                {
+                  user: {
+                    connect: {
+                      address: WALLETS[0],
+                    },
+                  },
+                },
+                {
+                  user: {
+                    connect: {
+                      address: WALLETS[1],
+                    },
+                  },
+                },
+              ],
+            },
           },
           {
             action: HistoryAction.REJECTED,
@@ -274,6 +311,24 @@ const seed = async (): Promise<void> => {
               connect: {
                 address: WALLETS[1],
               },
+            },
+            historyViews: {
+              create: [
+                {
+                  user: {
+                    connect: {
+                      address: WALLETS[0],
+                    },
+                  },
+                },
+                {
+                  user: {
+                    connect: {
+                      address: WALLETS[1],
+                    },
+                  },
+                },
+              ],
             },
           },
         ],
@@ -322,6 +377,24 @@ const seed = async (): Promise<void> => {
                 address: WALLETS[0],
               },
             },
+            historyViews: {
+              create: [
+                {
+                  user: {
+                    connect: {
+                      address: WALLETS[0],
+                    },
+                  },
+                },
+                {
+                  user: {
+                    connect: {
+                      address: WALLETS[1],
+                    },
+                  },
+                },
+              ],
+            },
           },
           {
             action: HistoryAction.APPROVED,
@@ -330,6 +403,24 @@ const seed = async (): Promise<void> => {
               connect: {
                 address: WALLETS[1],
               },
+            },
+            historyViews: {
+              create: [
+                {
+                  user: {
+                    connect: {
+                      address: WALLETS[0],
+                    },
+                  },
+                },
+                {
+                  user: {
+                    connect: {
+                      address: WALLETS[1],
+                    },
+                  },
+                },
+              ],
             },
           },
         ],
@@ -392,6 +483,31 @@ const seed = async (): Promise<void> => {
                 address: WALLETS[0],
               },
             },
+            historyViews: {
+              create: [
+                {
+                  user: {
+                    connect: {
+                      address: WALLETS[0],
+                    },
+                  },
+                },
+                {
+                  user: {
+                    connect: {
+                      address: WALLETS[1],
+                    },
+                  },
+                },
+                {
+                  user: {
+                    connect: {
+                      address: WALLETS[4],
+                    },
+                  },
+                },
+              ],
+            },
           },
           {
             action: HistoryAction.FINALIZED,
@@ -401,6 +517,31 @@ const seed = async (): Promise<void> => {
               connect: {
                 address: WALLETS[0],
               },
+            },
+            historyViews: {
+              create: [
+                {
+                  user: {
+                    connect: {
+                      address: WALLETS[0],
+                    },
+                  },
+                },
+                {
+                  user: {
+                    connect: {
+                      address: WALLETS[1],
+                    },
+                  },
+                },
+                {
+                  user: {
+                    connect: {
+                      address: WALLETS[4],
+                    },
+                  },
+                },
+              ],
             },
           },
           {
@@ -412,6 +553,31 @@ const seed = async (): Promise<void> => {
                 address: WALLETS[1],
               },
             },
+            historyViews: {
+              create: [
+                {
+                  user: {
+                    connect: {
+                      address: WALLETS[0],
+                    },
+                  },
+                },
+                {
+                  user: {
+                    connect: {
+                      address: WALLETS[1],
+                    },
+                  },
+                },
+                {
+                  user: {
+                    connect: {
+                      address: WALLETS[4],
+                    },
+                  },
+                },
+              ],
+            },
           },
           {
             action: HistoryAction.APPROVED,
@@ -422,6 +588,31 @@ const seed = async (): Promise<void> => {
                 address: WALLETS[4],
               },
             },
+            historyViews: {
+              create: [
+                {
+                  user: {
+                    connect: {
+                      address: WALLETS[0],
+                    },
+                  },
+                },
+                {
+                  user: {
+                    connect: {
+                      address: WALLETS[1],
+                    },
+                  },
+                },
+                {
+                  user: {
+                    connect: {
+                      address: WALLETS[4],
+                    },
+                  },
+                },
+              ],
+            },
           },
           {
             action: HistoryAction.FINDINGS,
@@ -430,6 +621,31 @@ const seed = async (): Promise<void> => {
               connect: {
                 address: WALLETS[1],
               },
+            },
+            historyViews: {
+              create: [
+                {
+                  user: {
+                    connect: {
+                      address: WALLETS[0],
+                    },
+                  },
+                },
+                {
+                  user: {
+                    connect: {
+                      address: WALLETS[1],
+                    },
+                  },
+                },
+                {
+                  user: {
+                    connect: {
+                      address: WALLETS[4],
+                    },
+                  },
+                },
+              ],
             },
           },
         ],
@@ -493,6 +709,31 @@ const seed = async (): Promise<void> => {
                 address: WALLETS[0],
               },
             },
+            historyViews: {
+              create: [
+                {
+                  user: {
+                    connect: {
+                      address: WALLETS[0],
+                    },
+                  },
+                },
+                {
+                  user: {
+                    connect: {
+                      address: WALLETS[1],
+                    },
+                  },
+                },
+                {
+                  user: {
+                    connect: {
+                      address: WALLETS[4],
+                    },
+                  },
+                },
+              ],
+            },
           },
           {
             action: HistoryAction.FINALIZED,
@@ -502,6 +743,31 @@ const seed = async (): Promise<void> => {
               connect: {
                 address: WALLETS[0],
               },
+            },
+            historyViews: {
+              create: [
+                {
+                  user: {
+                    connect: {
+                      address: WALLETS[0],
+                    },
+                  },
+                },
+                {
+                  user: {
+                    connect: {
+                      address: WALLETS[1],
+                    },
+                  },
+                },
+                {
+                  user: {
+                    connect: {
+                      address: WALLETS[4],
+                    },
+                  },
+                },
+              ],
             },
           },
           {
@@ -513,6 +779,31 @@ const seed = async (): Promise<void> => {
                 address: WALLETS[1],
               },
             },
+            historyViews: {
+              create: [
+                {
+                  user: {
+                    connect: {
+                      address: WALLETS[0],
+                    },
+                  },
+                },
+                {
+                  user: {
+                    connect: {
+                      address: WALLETS[1],
+                    },
+                  },
+                },
+                {
+                  user: {
+                    connect: {
+                      address: WALLETS[4],
+                    },
+                  },
+                },
+              ],
+            },
           },
           {
             action: HistoryAction.FINDINGS,
@@ -522,6 +813,31 @@ const seed = async (): Promise<void> => {
               connect: {
                 address: WALLETS[1],
               },
+            },
+            historyViews: {
+              create: [
+                {
+                  user: {
+                    connect: {
+                      address: WALLETS[0],
+                    },
+                  },
+                },
+                {
+                  user: {
+                    connect: {
+                      address: WALLETS[1],
+                    },
+                  },
+                },
+                {
+                  user: {
+                    connect: {
+                      address: WALLETS[4],
+                    },
+                  },
+                },
+              ],
             },
           },
           {
@@ -533,6 +849,31 @@ const seed = async (): Promise<void> => {
                 address: WALLETS[4],
               },
             },
+            historyViews: {
+              create: [
+                {
+                  user: {
+                    connect: {
+                      address: WALLETS[0],
+                    },
+                  },
+                },
+                {
+                  user: {
+                    connect: {
+                      address: WALLETS[1],
+                    },
+                  },
+                },
+                {
+                  user: {
+                    connect: {
+                      address: WALLETS[4],
+                    },
+                  },
+                },
+              ],
+            },
           },
           {
             action: HistoryAction.FINDINGS,
@@ -542,6 +883,31 @@ const seed = async (): Promise<void> => {
               connect: {
                 address: WALLETS[4],
               },
+            },
+            historyViews: {
+              create: [
+                {
+                  user: {
+                    connect: {
+                      address: WALLETS[0],
+                    },
+                  },
+                },
+                {
+                  user: {
+                    connect: {
+                      address: WALLETS[1],
+                    },
+                  },
+                },
+                {
+                  user: {
+                    connect: {
+                      address: WALLETS[4],
+                    },
+                  },
+                },
+              ],
             },
           },
         ],
@@ -614,6 +980,31 @@ const seed = async (): Promise<void> => {
                 address: WALLETS[2],
               },
             },
+            historyViews: {
+              create: [
+                {
+                  user: {
+                    connect: {
+                      address: WALLETS[1],
+                    },
+                  },
+                },
+                {
+                  user: {
+                    connect: {
+                      address: WALLETS[2],
+                    },
+                  },
+                },
+                {
+                  user: {
+                    connect: {
+                      address: WALLETS[4],
+                    },
+                  },
+                },
+              ],
+            },
           },
           {
             action: HistoryAction.OPENED,
@@ -623,6 +1014,31 @@ const seed = async (): Promise<void> => {
               connect: {
                 address: WALLETS[2],
               },
+            },
+            historyViews: {
+              create: [
+                {
+                  user: {
+                    connect: {
+                      address: WALLETS[1],
+                    },
+                  },
+                },
+                {
+                  user: {
+                    connect: {
+                      address: WALLETS[2],
+                    },
+                  },
+                },
+                {
+                  user: {
+                    connect: {
+                      address: WALLETS[4],
+                    },
+                  },
+                },
+              ],
             },
           },
         ],
@@ -688,6 +1104,31 @@ that needs to come from on-chain",
                 address: WALLETS[3],
               },
             },
+            historyViews: {
+              create: [
+                {
+                  user: {
+                    connect: {
+                      address: WALLETS[3],
+                    },
+                  },
+                },
+                {
+                  user: {
+                    connect: {
+                      address: WALLETS[2],
+                    },
+                  },
+                },
+                {
+                  user: {
+                    connect: {
+                      address: WALLETS[5],
+                    },
+                  },
+                },
+              ],
+            },
           },
           {
             action: HistoryAction.FINALIZED,
@@ -697,6 +1138,31 @@ that needs to come from on-chain",
               connect: {
                 address: WALLETS[3],
               },
+            },
+            historyViews: {
+              create: [
+                {
+                  user: {
+                    connect: {
+                      address: WALLETS[3],
+                    },
+                  },
+                },
+                {
+                  user: {
+                    connect: {
+                      address: WALLETS[2],
+                    },
+                  },
+                },
+                {
+                  user: {
+                    connect: {
+                      address: WALLETS[5],
+                    },
+                  },
+                },
+              ],
             },
           },
           {
@@ -708,6 +1174,31 @@ that needs to come from on-chain",
                 address: WALLETS[2],
               },
             },
+            historyViews: {
+              create: [
+                {
+                  user: {
+                    connect: {
+                      address: WALLETS[3],
+                    },
+                  },
+                },
+                {
+                  user: {
+                    connect: {
+                      address: WALLETS[2],
+                    },
+                  },
+                },
+                {
+                  user: {
+                    connect: {
+                      address: WALLETS[5],
+                    },
+                  },
+                },
+              ],
+            },
           },
           {
             action: HistoryAction.FINDINGS,
@@ -717,6 +1208,31 @@ that needs to come from on-chain",
               connect: {
                 address: WALLETS[2],
               },
+            },
+            historyViews: {
+              create: [
+                {
+                  user: {
+                    connect: {
+                      address: WALLETS[3],
+                    },
+                  },
+                },
+                {
+                  user: {
+                    connect: {
+                      address: WALLETS[2],
+                    },
+                  },
+                },
+                {
+                  user: {
+                    connect: {
+                      address: WALLETS[5],
+                    },
+                  },
+                },
+              ],
             },
           },
           {
@@ -728,6 +1244,31 @@ that needs to come from on-chain",
                 address: WALLETS[5],
               },
             },
+            historyViews: {
+              create: [
+                {
+                  user: {
+                    connect: {
+                      address: WALLETS[3],
+                    },
+                  },
+                },
+                {
+                  user: {
+                    connect: {
+                      address: WALLETS[2],
+                    },
+                  },
+                },
+                {
+                  user: {
+                    connect: {
+                      address: WALLETS[5],
+                    },
+                  },
+                },
+              ],
+            },
           },
           {
             action: HistoryAction.FINDINGS,
@@ -737,6 +1278,31 @@ that needs to come from on-chain",
               connect: {
                 address: WALLETS[5],
               },
+            },
+            historyViews: {
+              create: [
+                {
+                  user: {
+                    connect: {
+                      address: WALLETS[3],
+                    },
+                  },
+                },
+                {
+                  user: {
+                    connect: {
+                      address: WALLETS[2],
+                    },
+                  },
+                },
+                {
+                  user: {
+                    connect: {
+                      address: WALLETS[5],
+                    },
+                  },
+                },
+              ],
             },
           },
         ],
@@ -805,6 +1371,31 @@ that needs to come from on-chain, but I'll mark is as such",
                 address: WALLETS[3],
               },
             },
+            historyViews: {
+              create: [
+                {
+                  user: {
+                    connect: {
+                      address: WALLETS[3],
+                    },
+                  },
+                },
+                {
+                  user: {
+                    connect: {
+                      address: WALLETS[2],
+                    },
+                  },
+                },
+                {
+                  user: {
+                    connect: {
+                      address: WALLETS[5],
+                    },
+                  },
+                },
+              ],
+            },
           },
           {
             action: HistoryAction.FINALIZED,
@@ -814,6 +1405,31 @@ that needs to come from on-chain, but I'll mark is as such",
               connect: {
                 address: WALLETS[3],
               },
+            },
+            historyViews: {
+              create: [
+                {
+                  user: {
+                    connect: {
+                      address: WALLETS[3],
+                    },
+                  },
+                },
+                {
+                  user: {
+                    connect: {
+                      address: WALLETS[2],
+                    },
+                  },
+                },
+                {
+                  user: {
+                    connect: {
+                      address: WALLETS[5],
+                    },
+                  },
+                },
+              ],
             },
           },
           {
@@ -825,6 +1441,31 @@ that needs to come from on-chain, but I'll mark is as such",
                 address: WALLETS[2],
               },
             },
+            historyViews: {
+              create: [
+                {
+                  user: {
+                    connect: {
+                      address: WALLETS[3],
+                    },
+                  },
+                },
+                {
+                  user: {
+                    connect: {
+                      address: WALLETS[2],
+                    },
+                  },
+                },
+                {
+                  user: {
+                    connect: {
+                      address: WALLETS[5],
+                    },
+                  },
+                },
+              ],
+            },
           },
           {
             action: HistoryAction.FINDINGS,
@@ -834,6 +1475,31 @@ that needs to come from on-chain, but I'll mark is as such",
               connect: {
                 address: WALLETS[2],
               },
+            },
+            historyViews: {
+              create: [
+                {
+                  user: {
+                    connect: {
+                      address: WALLETS[3],
+                    },
+                  },
+                },
+                {
+                  user: {
+                    connect: {
+                      address: WALLETS[2],
+                    },
+                  },
+                },
+                {
+                  user: {
+                    connect: {
+                      address: WALLETS[5],
+                    },
+                  },
+                },
+              ],
             },
           },
           {
@@ -845,6 +1511,31 @@ that needs to come from on-chain, but I'll mark is as such",
                 address: WALLETS[5],
               },
             },
+            historyViews: {
+              create: [
+                {
+                  user: {
+                    connect: {
+                      address: WALLETS[3],
+                    },
+                  },
+                },
+                {
+                  user: {
+                    connect: {
+                      address: WALLETS[2],
+                    },
+                  },
+                },
+                {
+                  user: {
+                    connect: {
+                      address: WALLETS[5],
+                    },
+                  },
+                },
+              ],
+            },
           },
           {
             action: HistoryAction.FINDINGS,
@@ -854,6 +1545,31 @@ that needs to come from on-chain, but I'll mark is as such",
               connect: {
                 address: WALLETS[5],
               },
+            },
+            historyViews: {
+              create: [
+                {
+                  user: {
+                    connect: {
+                      address: WALLETS[3],
+                    },
+                  },
+                },
+                {
+                  user: {
+                    connect: {
+                      address: WALLETS[2],
+                    },
+                  },
+                },
+                {
+                  user: {
+                    connect: {
+                      address: WALLETS[5],
+                    },
+                  },
+                },
+              ],
             },
           },
         ],

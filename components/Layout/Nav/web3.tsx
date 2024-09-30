@@ -14,6 +14,7 @@ import { useModal } from "@/hooks/useContexts";
 import { cn } from "@/utils";
 import { trimAddress } from "@/utils/formatters";
 import { getNetworkImage } from "@/utils/helpers";
+import { HistoryI } from "@/utils/types";
 import { User } from "@prisma/client";
 
 const Web3Network = (): JSX.Element => {
@@ -54,7 +55,15 @@ const Web3Network = (): JSX.Element => {
   );
 };
 
-const Web3Profile = ({ address, user }: { address: string; user: User | null }): JSX.Element => {
+const Web3Profile = ({
+  address,
+  user,
+  history,
+}: {
+  address: string;
+  user: User | null;
+  history: HistoryI[];
+}): JSX.Element => {
   return (
     <Dropdown.Main
       className="flex flex-row relative cursor-pointer rounded-lg focus-border"
@@ -72,13 +81,21 @@ const Web3Profile = ({ address, user }: { address: string; user: User | null }):
         </Row>
       </Dropdown.Trigger>
       <Dropdown.Content className="top-full right-0">
-        <Profile address={address} user={user} />
+        <Profile address={address} user={user} history={history} />
       </Dropdown.Content>
     </Dropdown.Main>
   );
 };
 
-const Web3Holder = ({ address, user }: { address: string; user: User | null }): JSX.Element => {
+const Web3Holder = ({
+  address,
+  user,
+  history,
+}: {
+  address: string;
+  user: User | null;
+  history: HistoryI[];
+}): JSX.Element => {
   // need to pass both because a user can get authenticated via SIWE,
   // but not have an account yet.
 
@@ -94,7 +111,7 @@ const Web3Holder = ({ address, user }: { address: string; user: User | null }): 
       {!!address && (
         <>
           <Web3Network />
-          <Web3Profile address={address} user={user} />
+          <Web3Profile address={address} user={user} history={history} />
         </>
       )}
       {!address && <Button onClick={handleWalletModal}>connect</Button>}

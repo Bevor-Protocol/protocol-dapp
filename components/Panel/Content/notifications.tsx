@@ -1,13 +1,14 @@
 import { X } from "@/assets";
 import { AuditorItemSimple } from "@/components/Audit";
 import { Column, Row } from "@/components/Box";
+import DynamicLink from "@/components/Link";
 import { useModal } from "@/hooks/useContexts";
 import { cn } from "@/utils";
 import { timeSince } from "@/utils/dates";
 import { HistoryI } from "@/utils/types";
 import { HistoryAction, UserType } from "@prisma/client";
 
-export const HistoryPanel = ({ history }: { history: HistoryI[] }): JSX.Element => {
+export const NotificationPanel = ({ history }: { history: HistoryI[] }): JSX.Element => {
   const { toggleOpen } = useModal();
 
   return (
@@ -15,10 +16,10 @@ export const HistoryPanel = ({ history }: { history: HistoryI[] }): JSX.Element 
       <div onClick={(): void => toggleOpen()} className="cursor-pointer absolute top-0 right-4">
         <X height="1.25rem" width="1.25rem" />
       </div>
-      <div className="mb-4">Audit History</div>
+      <div className="mb-4">Unread Notifications</div>
       <Column className="gap-6 text-left overflow-y-scroll flex-grow">
         {history.map((item) => (
-          <div key={item.id} className="pr-4">
+          <DynamicLink key={item.id} className="pr-4" href={`/audits/view/${item.auditId}`}>
             <Row className="justify-between items-center">
               <div className="text-sm">
                 {item.userType == UserType.AUDITEE ? "Protocol Owner" : "Auditor"}
@@ -54,7 +55,7 @@ export const HistoryPanel = ({ history }: { history: HistoryI[] }): JSX.Element 
               </span>
             </Row>
             {item.comment && <div className="text-xs text-white/60 mt-2">{item.comment}</div>}
-          </div>
+          </DynamicLink>
         ))}
       </Column>
     </Column>

@@ -24,9 +24,9 @@ const getProtocolNumAuditors = async (): Promise<number> => {
 };
 
 export {
-  getUserStats,
   getProtocolFunds,
-  getProtocolVulnerabilities,
   getProtocolNumAuditors,
   getProtocolNumAudits,
+  getProtocolVulnerabilities,
+  getUserStats,
 };

@@ -1,12 +1,11 @@
 "use client";
 
 import { AuditStatus } from "@prisma/client";
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 
 import { AuditCardTruncated } from "@/components/Audit";
 import { Column, Row } from "@/components/Box";
 import { cn } from "@/utils";
-import { checkLocalMostRecentMany } from "@/utils/browser";
 import { AuditTruncatedI } from "@/utils/types/prisma";
 
 const initialStateType = {
@@ -34,13 +33,13 @@ const UserAudits = ({
   address,
   audits,
   isOwner,
+  pendingNotifications,
 }: {
   address: string;
   audits: AuditTruncatedI[];
   isOwner: boolean;
+  pendingNotifications: Record<string, boolean>;
 }): JSX.Element => {
-  const [show, setShow] = useState<Record<string, boolean>>({});
-
   const [typeFilter, setTypeFilter] = useState(initialStateType);
   const [ownerFilter, setOwnerFilter] = useState(initialOwnerState);
   const [unreadOnlyFilter, setUnreadOnlyFilter] = useState(false);
@@ -61,19 +60,13 @@ const UserAudits = ({
         }
       }
       if (unreadOnlyFilter) {
-        if (!show[audit.id]) {
+        if (!pendingNotifications[audit.id]) {
           return false;
         }
       }
       return true;
     });
-  }, [address, audits, show, typeFilter, ownerFilter, unreadOnlyFilter]);
-
-  useEffect(() => {
-    if (!isOwner) return;
-    const out = checkLocalMostRecentMany(address, audits);
-    if (out) setShow(out);
-  }, [isOwner, address, audits]);
+  }, [address, audits, typeFilter, ownerFilter, unreadOnlyFilter, pendingNotifications]);
 
   return (
     <div className="grid grid-cols-5 relative">
@@ -153,7 +146,7 @@ const UserAudits = ({
             key={audit.id}
             audit={audit}
             isProtocolOwner={address == audit.auditee.address}
-            showNoti={show && show[audit.id]}
+            showNoti={pendingNotifications && pendingNotifications[audit.id]}
           />
         ))}
       </Row>

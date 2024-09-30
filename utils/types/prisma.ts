@@ -38,11 +38,6 @@ export type AuditTruncatedI = Prisma.AuditGetPayload<{
     token: true;
     status: true;
     auditee: true;
-    history: {
-      select: {
-        id: true;
-      };
-    };
   };
 }>;
 
@@ -104,5 +99,21 @@ export type AuditI = Prisma.AuditGetPayload<{
 export type WishlistI = Prisma.WishlistGetPayload<{
   select: {
     receiver: true;
+  };
+}>;
+
+export type HistoryViewI = Prisma.HistoryViewGetPayload<{
+  select: {
+    history: {
+      select: {
+        id: true;
+        auditId: true;
+        action: true;
+        userType: true;
+        comment: true;
+        createdAt: true;
+        user: true;
+      };
+    };
   };
 }>;

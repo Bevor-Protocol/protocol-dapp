@@ -45,6 +45,7 @@ export type HomeStatI = {
 
 export type HistoryI = {
   id: string;
+  auditId: string;
   action: HistoryAction;
   userType: UserType;
   comment: string | null;

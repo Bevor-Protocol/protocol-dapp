@@ -1,8 +1,8 @@
 import { prisma } from "@/db/prisma.server";
+import { UserSearchI } from "@/utils/types";
 import { AuditTruncatedI, UserWithCount } from "@/utils/types/prisma";
 import { AuditorStatus, AuditStatus, Prisma, User } from "@prisma/client";
 import AuthService from "../auth/auth.service";
-import { UserSearchI } from "@/utils/types";
 
 class UserService {
   constructor(private readonly authService: typeof AuthService) {}
@@ -191,15 +191,6 @@ class UserService {
         token: true,
         status: true,
         auditee: true,
-        history: {
-          select: {
-            id: true,
-          },
-          take: 1,
-          orderBy: {
-            createdAt: "desc",
-          },
-        },
       },
       orderBy: {
         createdAt: "desc",

@@ -1,4 +1,5 @@
 import { UserStats } from "@/utils/types";
+import { revalidateTag } from "next/cache";
 import StatService from "./stat.service";
 
 class StatController {
@@ -14,6 +15,7 @@ class StatController {
         StatService.getUserNumWishlistReciever(address),
       ]);
 
+    revalidateTag(`USER_STAT ${address}`);
     return {
       moneyPaid,
       moneyEarned,

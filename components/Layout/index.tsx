@@ -1,8 +1,9 @@
 import Image from "next/image";
 
-import { userAction } from "@/actions";
+import { historyAction, userAction } from "@/actions";
 import { Column, Row } from "@/components/Box";
 import DynamicLink from "@/components/Link";
+import { HistoryI } from "@/utils/types";
 import { Suspense } from "react";
 import { NavDropdown, NavMenuItems } from "./Nav/menuItems";
 import NavWeb3 from "./Nav/web3";
@@ -24,6 +25,10 @@ export const Footer = (): JSX.Element => {
 
 export const Nav = async (): Promise<JSX.Element> => {
   const { address, user } = await userAction.currentUser();
+  let history: HistoryI[] = [];
+  if (user) {
+    history = await historyAction.getUserHistory(user.address, { hasViewed: false });
+  }
   return (
     <nav className="py-6 w-full flex flex-row justify-between items-center md:py-4">
       <Row className="gap-6">
@@ -38,7 +43,7 @@ export const Nav = async (): Promise<JSX.Element> => {
         </Row>
       </Row>
       <Suspense>
-        <NavWeb3 address={address} user={user} />
+        <NavWeb3 address={address} user={user} history={history} />
       </Suspense>
     </nav>
   );

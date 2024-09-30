@@ -22,9 +22,10 @@ model User {
 
   auditors            Auditor[]
   auditees            Audit[]
-  wishlistAsRequestor Wishlist[] @relation("UserWishlist")
-  wishlistAsReceiver  Wishlist[] @relation("UserWishedBy")
+  wishlistAsRequestor Wishlist[]    @relation("UserWishlist")
+  wishlistAsReceiver  Wishlist[]    @relation("UserWishedBy")
   history             History[]
+  historyViews        HistoryView[]
 }
 
 enum AuditStatus {
@@ -103,13 +104,26 @@ model History {
   comment   String?
   createdAt DateTime @default(now())
 
-  audit    Audit         @relation(fields: [auditId], references: [id], onDelete: Cascade)
-  user     User          @relation(fields: [userId], references: [id], onDelete: Cascade)
-  action   HistoryAction
-  userType UserType
+  audit        Audit         @relation(fields: [auditId], references: [id], onDelete: Cascade)
+  user         User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  action       HistoryAction
+  userType     UserType
+  historyViews HistoryView[]
 
   @@index([auditId], name: "idx_history_audit")
   @@index([userId], name: "idx_history_user")
+}
+
+model HistoryView {
+  id        String  @id @default(cuid())
+  userId    String
+  historyId String
+  hasViewed Boolean @default(false)
+
+  user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  history History @relation(fields: [historyId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, historyId], name: "uniqueHistoryView")
 }
 
 model Wishlist {
