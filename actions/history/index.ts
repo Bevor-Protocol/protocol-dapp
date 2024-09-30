@@ -7,7 +7,7 @@ import historyController from "./history.controller";
 const getUserHistory = async (
   address: string,
   filter: Prisma.HistoryViewWhereInput = {},
-): Promise<HistoryI[]> => {
+): Promise<Record<string, { meta: string; history: HistoryI[] }>> => {
   return historyController.getUserHistory(address, filter);
 };
 

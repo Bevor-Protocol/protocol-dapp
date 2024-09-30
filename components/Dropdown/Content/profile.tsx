@@ -19,10 +19,12 @@ const Profile = ({
   address,
   user,
   history,
+  close,
 }: {
   address: string;
   user: User | null;
-  history: HistoryI[];
+  history: Record<string, { meta: string; history: HistoryI[] }>;
+  close?: () => void;
 }): JSX.Element => {
   const { chain, connector } = useAccount();
   const { isCopied, copy } = useCopyToClipboard();
@@ -36,7 +38,7 @@ const Profile = ({
   };
 
   const handleNotifications = (): void => {
-    if (!history.length) return;
+    if (!Object.keys(history).length) return;
     setContent(<NotificationPanel history={history} />);
     toggleOpen("panel");
   };
@@ -76,7 +78,7 @@ const Profile = ({
       </Card.Content>
       <Card.Footer className="p-1">
         <Column className="w-full">
-          {history.length > 0 && (
+          {Object.keys(history).length > 0 && (
             <HoverItem
               className="px-1 py-2 w-full justify-start gap-2 cursor-pointer"
               onClick={handleNotifications}
@@ -92,7 +94,7 @@ const Profile = ({
             <Heart height="0.85rem" width="0.85rem" className="fill-gray-400" />
             <span>See my wishlist</span>
           </HoverItem>
-          <DynamicLink href={`/users/${address}`} className="w-full">
+          <DynamicLink href={`/users/${address}`} className="w-full" onClick={close}>
             <HoverItem className="px-1 py-2 w-full justify-start gap-2">
               <Dashboard height="0.85rem" width="0.85rem" stroke="currentColor" />
               <span>Dashboard</span>

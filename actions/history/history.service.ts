@@ -18,7 +18,12 @@ class HistoryService {
         history: {
           select: {
             id: true,
-            auditId: true,
+            audit: {
+              select: {
+                id: true,
+                title: true,
+              },
+            },
             action: true,
             userType: true,
             comment: true,

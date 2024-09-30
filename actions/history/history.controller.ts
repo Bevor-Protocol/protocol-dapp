@@ -14,9 +14,19 @@ class HistoryController {
   async getUserHistory(
     address: string,
     filter: Prisma.HistoryViewWhereInput = {},
-  ): Promise<HistoryI[]> {
+  ): Promise<Record<string, { meta: string; history: HistoryI[] }>> {
     return this.historyService.getUserHistory(address, filter).then((views) => {
-      return views.map((view) => view.history).flat();
+      return views.reduce((prev: Record<string, { meta: string; history: HistoryI[] }>, next) => {
+        const { audit, ...rest } = next.history;
+        if (!(audit.id in prev)) {
+          prev[audit.id] = {
+            meta: audit.title,
+            history: [],
+          };
+        }
+        prev[audit.id].history = prev[audit.id].history.concat(rest as HistoryI);
+        return prev;
+      }, {});
     });
   }
 

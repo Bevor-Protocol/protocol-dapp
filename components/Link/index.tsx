@@ -17,6 +17,7 @@ const DynamicLink: React.FC<PropsI> = ({
   href,
   asButton = false,
   disabled = false,
+  ...rest
 }): JSX.Element => {
   // Anchor tags don't actually have "disabled" attributes like buttons do, so handle that with css.
   // According to HTML5, we can wrap anchor tags around non-interactive elements. Not a button, or link.
@@ -39,6 +40,7 @@ const DynamicLink: React.FC<PropsI> = ({
         className,
       )}
       tabIndex={disabled ? -1 : undefined}
+      {...rest}
     >
       {children}
     </Link>

@@ -25,7 +25,7 @@ export const Footer = (): JSX.Element => {
 
 export const Nav = async (): Promise<JSX.Element> => {
   const { address, user } = await userAction.currentUser();
-  let history: HistoryI[] = [];
+  let history: Record<string, { meta: string; history: HistoryI[] }> = {};
   if (user) {
     history = await historyAction.getUserHistory(user.address, { hasViewed: false });
   }

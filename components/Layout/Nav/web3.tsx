@@ -62,7 +62,7 @@ const Web3Profile = ({
 }: {
   address: string;
   user: User | null;
-  history: HistoryI[];
+  history: Record<string, { meta: string; history: HistoryI[] }>;
 }): JSX.Element => {
   return (
     <Dropdown.Main
@@ -80,7 +80,7 @@ const Web3Profile = ({
           <span className="lg:hidden">{trimAddress(address)}</span>
         </Row>
       </Dropdown.Trigger>
-      <Dropdown.Content className="top-full right-0">
+      <Dropdown.Content className="top-full right-0" hasCloseTrigger>
         <Profile address={address} user={user} history={history} />
       </Dropdown.Content>
     </Dropdown.Main>
@@ -94,7 +94,7 @@ const Web3Holder = ({
 }: {
   address: string;
   user: User | null;
-  history: HistoryI[];
+  history: Record<string, { meta: string; history: HistoryI[] }>;
 }): JSX.Element => {
   // need to pass both because a user can get authenticated via SIWE,
   // but not have an account yet.
