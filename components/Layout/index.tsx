@@ -1,9 +1,9 @@
 import Image from "next/image";
 
-import { historyAction, userAction } from "@/actions";
+import { notificationAction, userAction } from "@/actions";
 import { Column, Row } from "@/components/Box";
 import DynamicLink from "@/components/Link";
-import { HistoryI } from "@/utils/types";
+import { UserNotificationI } from "@/utils/types/prisma";
 import { Suspense } from "react";
 import { NavDropdown, NavMenuItems } from "./Nav/menuItems";
 import NavWeb3 from "./Nav/web3";
@@ -25,9 +25,9 @@ export const Footer = (): JSX.Element => {
 
 export const Nav = async (): Promise<JSX.Element> => {
   const { address, user } = await userAction.currentUser();
-  let history: Record<string, { meta: string; history: HistoryI[] }> = {};
+  let notifications: Record<string, { meta: string; notifications: UserNotificationI[] }> = {};
   if (user) {
-    history = await historyAction.getUserHistory(user.address, { hasViewed: false });
+    notifications = await notificationAction.getUserNotifications(user.id);
   }
   return (
     <nav className="py-6 w-full flex flex-row justify-between items-center md:py-4">
@@ -43,7 +43,7 @@ export const Nav = async (): Promise<JSX.Element> => {
         </Row>
       </Row>
       <Suspense>
-        <NavWeb3 address={address} user={user} history={history} />
+        <NavWeb3 address={address} user={user} notifications={notifications} />
       </Suspense>
     </nav>
   );

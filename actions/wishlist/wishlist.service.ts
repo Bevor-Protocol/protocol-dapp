@@ -1,13 +1,13 @@
+import { prisma } from "@/db/prisma.server";
 import { WishlistI } from "@/utils/types/prisma";
 import { Wishlist } from "@prisma/client";
-import { prisma } from "@/db/prisma.server";
 
 class WishlistService {
   getWishlistEntry(requestor: string, receiver: string): Promise<Wishlist | null> {
     return prisma.wishlist.findUnique({
       where: {
         uniqueWishlistEntry: {
-          requestorId: requestor,
+          senderId: requestor,
           receiverId: receiver,
         },
       },
@@ -17,9 +17,9 @@ class WishlistService {
   getUserWishlist(requestor: string): Promise<WishlistI[]> {
     return prisma.wishlist.findMany({
       where: {
-        requestorId: requestor,
+        senderId: requestor,
       },
-      select: {
+      include: {
         receiver: true,
       },
     });
@@ -29,9 +29,9 @@ class WishlistService {
     return prisma.wishlist.create({
       data: {
         receiverId: receiver,
-        requestorId: requestor,
+        senderId: requestor,
       },
-      select: {
+      include: {
         receiver: true,
       },
     });
@@ -41,11 +41,11 @@ class WishlistService {
     return prisma.wishlist.delete({
       where: {
         uniqueWishlistEntry: {
-          requestorId: requestor,
+          senderId: requestor,
           receiverId: receiver,
         },
       },
-      select: {
+      include: {
         receiver: true,
       },
     });

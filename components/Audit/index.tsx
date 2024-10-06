@@ -6,16 +6,16 @@ import DynamicLink from "@/components/Link";
 import { AvailableTokens } from "@/constants/web3";
 import { cn } from "@/utils";
 import { trimAddress } from "@/utils/formatters";
-import { AuditDetailedI, AuditTruncatedI } from "@/utils/types/prisma";
-import { AuditStatus, User } from "@prisma/client";
+import { AuditDetailedI } from "@/utils/types/prisma";
+import { AuditStatusType, MembershipStatusType, RoleType, User } from "@prisma/client";
 import { AuditAuditor } from "./client";
 
 const statusMapper = {
-  [AuditStatus.DISCOVERY]: "open",
-  [AuditStatus.ATTESTATION]: "locked",
-  [AuditStatus.AUDITING]: "ongoing",
-  [AuditStatus.CHALLENGEABLE]: "challengeable",
-  [AuditStatus.FINALIZED]: "completed",
+  [AuditStatusType.DISCOVERY]: "open",
+  [AuditStatusType.ATTESTATION]: "locked",
+  [AuditStatusType.AUDITING]: "ongoing",
+  [AuditStatusType.CHALLENGEABLE]: "challengeable",
+  [AuditStatusType.FINALIZED]: "completed",
 };
 
 export const AuditCardTruncated = ({
@@ -23,7 +23,7 @@ export const AuditCardTruncated = ({
   isProtocolOwner,
   showNoti,
 }: {
-  audit: AuditTruncatedI;
+  audit: AuditDetailedI;
   isProtocolOwner: boolean;
   showNoti: boolean;
 }): JSX.Element => {
@@ -36,7 +36,7 @@ export const AuditCardTruncated = ({
             <div className="absolute -top-2 left-1 bg-primary-light-20 rounded-md text-xxs px-1">
               {statusMapper[audit.status]}
             </div>
-            <Icon image={audit.auditee.image} seed={audit.auditee.address} size="lg" />
+            <Icon image={audit.owner.image} seed={audit.owner.address} size="lg" />
             <Column className="justify-start items-start w-full">
               <p className="text-lg font-bold line-clamp-1">{audit.title}</p>
               <p className="text-ellipsis overflow-hidden w-full text-xs line-clamp-2 h-8">
@@ -62,11 +62,17 @@ export const AuditCardTruncated = ({
 
 export const AuditCard = ({ audit }: { audit: AuditDetailedI }): JSX.Element => {
   const token = AvailableTokens.localhost.find((t) => t.address == audit.token);
+  const verifiedAuditors = audit.memberships.filter(
+    (member) =>
+      member.role === RoleType.AUDITOR &&
+      member.status === MembershipStatusType.VERIFIED &&
+      member.isActive,
+  );
   return (
     <Card.Main className="w-full animate-fade-in">
       <Card.Content className="gap-4 p-4">
-        <DynamicLink href={`/users/${audit.auditee.address}`}>
-          <Icon image={audit.auditee.image} seed={audit.auditee.address} size="lg" />
+        <DynamicLink href={`/users/${audit.owner.address}`}>
+          <Icon image={audit.owner.image} seed={audit.owner.address} size="lg" />
         </DynamicLink>
         <Column className="justify-start items-start overflow-hidden w-full">
           <p className="text-lg font-bold">{audit.title}</p>
@@ -98,9 +104,9 @@ export const AuditCard = ({ audit }: { audit: AuditDetailedI }): JSX.Element => 
       <Card.Footer className="p-2">
         <Row className="justify-center items-center gap-2">
           <span className="text-white/60">auditors:</span>
-          {audit.auditors.length > 0 ? (
+          {verifiedAuditors.length > 0 ? (
             <Row>
-              {audit.auditors.map(({ user }, ind2) => (
+              {verifiedAuditors.map(({ user }, ind2) => (
                 <AuditAuditor position={`-${ind2 * 12.5}px`} key={ind2} auditor={user} />
               ))}
             </Row>

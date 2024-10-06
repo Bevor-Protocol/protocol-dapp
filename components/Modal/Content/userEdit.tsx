@@ -22,7 +22,7 @@ const UserEdit = ({ user, stats }: { user: User; stats: UserStats }): JSX.Elemen
   const [errors, setErrors] = useState<Record<string, string>>({});
 
   const allowAuditorUpdate = !user.auditorRole || (user.auditorRole && stats.numAuditsAudited == 0);
-  const allowAuditeeUpdate = !user.auditeeRole || (user.auditeeRole && stats.numAuditsCreated == 0);
+  const allowAuditeeUpdate = !user.ownerRole || (user.ownerRole && stats.numAuditsCreated == 0);
 
   const { mutate, isPending } = useMutation({
     mutationFn: (variables: { formData: FormData }) => {
@@ -116,12 +116,12 @@ const UserEdit = ({ user, stats }: { user: User; stats: UserStats }): JSX.Elemen
               isError={"auditorRole" in errors}
             />
             <Form.Radio
-              name="auditeeRole"
+              name="ownerRole"
               text="auditee role"
-              defaultChecked={user.auditeeRole}
+              defaultChecked={user.ownerRole}
               disabled={!allowAuditeeUpdate || isPending}
               aria-disabled={!allowAuditeeUpdate || isPending}
-              isError={"auditeeRole" in errors}
+              isError={"ownerRole" in errors}
             />
           </Column>
           <Column className="gap-2">

@@ -1,11 +1,12 @@
 import { Suspense } from "react";
 
-import { auditAction, historyAction, userAction } from "@/actions";
+import { auditAction, notificationAction, userAction } from "@/actions";
 import { Loader, LoaderFill } from "@/components/Loader";
 import AuditPage from "@/components/screens/audits/view";
 import AuditHistory from "@/components/screens/audits/view/history";
 import AuditMarkdown from "@/components/screens/audits/view/markdown";
 import Vesting from "@/components/screens/audits/view/vesting";
+import { MembershipStatusType, RoleType } from "@prisma/client";
 
 const Fetcher = async ({ auditId }: { auditId: string }): Promise<JSX.Element> => {
   // Parsed this into 3 separate requests.
@@ -15,26 +16,32 @@ const Fetcher = async ({ auditId }: { auditId: string }): Promise<JSX.Element> =
 
   if (!audit) return <h2>This audit does not exist</h2>;
 
+  const actions = await auditAction.getAuditActions(auditId);
+
   const { user } = await userAction.currentUser();
 
   let isMemberOfAudit = false;
   let isAuditorOfAudit = false;
   let hasPendingNotifications = false;
   if (user) {
-    if (user.address == audit.auditee.address) {
-      isMemberOfAudit = true;
-    } else {
-      const isAuditor = audit.auditors.some((auditor) => auditor.user.address === user.address);
-      if (isAuditor) {
-        isMemberOfAudit = true;
-        isAuditorOfAudit = true;
-      }
-    }
+    const isOwner = audit.memberships.some(
+      (member) => member.userId === user.id && member.role === RoleType.OWNER,
+    );
+    const isAuditor = audit.memberships.some(
+      (member) =>
+        member.userId === user.id &&
+        member.role === RoleType.AUDITOR &&
+        member.isActive &&
+        member.status === MembershipStatusType.VERIFIED,
+    );
+
+    isMemberOfAudit = isOwner || isAuditor;
+    isAuditorOfAudit = isAuditor;
   }
 
   if (isMemberOfAudit && user) {
-    const pendingNotificationsCount = await historyAction.getUserHistoryAuditUnreadCount(
-      user.address,
+    const pendingNotificationsCount = await notificationAction.getUserHistoryCountByAuditId(
+      user.id,
       auditId,
     );
     hasPendingNotifications = pendingNotificationsCount > 0;
@@ -44,7 +51,7 @@ const Fetcher = async ({ auditId }: { auditId: string }): Promise<JSX.Element> =
     <div className="w-full max-w-[1000px]">
       <AuditHistory
         auditId={auditId}
-        history={audit.history}
+        actions={actions}
         hasPendingNotifications={hasPendingNotifications}
       />
       <AuditPage audit={audit} user={user} />
@@ -52,7 +59,7 @@ const Fetcher = async ({ auditId }: { auditId: string }): Promise<JSX.Element> =
         <Vesting audit={audit} isAuditor={isAuditorOfAudit} address={user?.address} />
       </Suspense>
       <hr className="w-full h-[1px] border-gray-200/20 my-4" />
-      <AuditMarkdown auditId={audit.id} user={user} />
+      <AuditMarkdown audit={audit} user={user} />
     </div>
   );
 };

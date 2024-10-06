@@ -1,6 +1,6 @@
 generator client {
   provider        = "prisma-client-js"
-  previewFeatures = ["driverAdapters"]
+  previewFeatures = ["driverAdapters", "omitApi"]
 }
 
 datasource db {
@@ -9,26 +9,7 @@ datasource db {
   directUrl = env("DATABASE_URL_UNPOOLED")
 }
 
-model User {
-  id          String   @id @default(cuid())
-  address     String   @unique
-  auditeeRole Boolean  @default(false)
-  auditorRole Boolean  @default(false)
-  name        String?
-  image       String?
-  available   Boolean  @default(false)
-  updatedAt   DateTime @updatedAt
-  createdAt   DateTime @default(now())
-
-  auditors            Auditor[]
-  auditees            Audit[]
-  wishlistAsRequestor Wishlist[]    @relation("UserWishlist")
-  wishlistAsReceiver  Wishlist[]    @relation("UserWishedBy")
-  history             History[]
-  historyViews        HistoryView[]
-}
-
-enum AuditStatus {
+enum AuditStatusType {
   DISCOVERY // discovery phase
   ATTESTATION // audit is locked, auditors attest to terms
   AUDITING // auditors are auditing, can submit findings. Auditee implements findings
@@ -36,104 +17,126 @@ enum AuditStatus {
   FINALIZED // audit is complete and cannot be challenged
 }
 
-model Audit {
-  id                 String   @id @default(cuid())
-  auditeeId          String
-  title              String
-  description        String
-  details            String? // references blob storage URL
-  price              Int      @default(0)
-  duration           Int      @default(30) // duration in days
-  cliff              Int      @default(3) // cliff duration in days (determines reveal).
-  token              String?
-  onchainAuditInfoId String?
-  onchainNftId       String?
-  createdAt          DateTime @default(now())
-  updatedAt          DateTime @updatedAt
-
-  auditee  User        @relation(fields: [auditeeId], references: [id], onDelete: Cascade)
-  status   AuditStatus @default(DISCOVERY)
-  auditors Auditor[]
-  history  History[]
-}
-
-enum AuditorStatus {
+enum MembershipStatusType {
   VERIFIED
   REQUESTED
   REJECTED
 }
 
-model Auditor {
-  id            String   @id @default(cuid())
-  auditId       String
-  userId        String
-  attestedTerms Boolean  @default(false)
-  acceptedTerms Boolean  @default(false)
-  findings      String? // references blob storage URL
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
-
-  audit  Audit         @relation(fields: [auditId], references: [id], onDelete: Cascade)
-  user   User          @relation(fields: [userId], references: [id], onDelete: Cascade)
-  status AuditorStatus
-
-  @@unique([auditId, userId])
+enum ActionType {
+  AUDITOR_TERMS_APPROVED
+  AUDITOR_TERMS_REJECTED
+  AUDITOR_FINDINGS
+  AUDITOR_LEFT
+  OWNER_APPROVED
+  OWNER_LOCKED
+  OWNER_OPENED
+  OWNER_EDITED
+  OWNER_FINALIZED
+  OWNER_REVEALED
 }
 
-enum HistoryAction {
-  APPROVED
-  REJECTED
-  LEFT
-  LOCKED
-  OPENED
-  EDITED
-  FINALIZED
-  FINDINGS
-  MINTED
-}
-
-enum UserType {
-  AUDITEE
+enum RoleType {
+  OWNER
   AUDITOR
 }
 
-model History {
-  id        String   @id @default(cuid())
-  auditId   String
-  userId    String
-  comment   String?
-  createdAt DateTime @default(now())
+model User {
+  id          String   @id @default(cuid())
+  address     String   @unique
+  ownerRole   Boolean  @default(false)
+  auditorRole Boolean  @default(false)
+  name        String?
+  image       String?
+  available   Boolean  @default(false)
+  updatedAt   DateTime @updatedAt
+  createdAt   DateTime @default(now())
 
-  audit        Audit         @relation(fields: [auditId], references: [id], onDelete: Cascade)
-  user         User          @relation(fields: [userId], references: [id], onDelete: Cascade)
-  action       HistoryAction
-  userType     UserType
-  historyViews HistoryView[]
+  memberships AuditMembership[]
 
-  @@index([auditId], name: "idx_history_audit")
-  @@index([userId], name: "idx_history_user")
+  wishlistAsSender   Wishlist[]     @relation("UserWishlist")
+  wishlistAsReceiver Wishlist[]     @relation("UserWishedBy")
+  notifications      Notification[]
+  audits             Audit[]
 }
 
-model HistoryView {
-  id        String  @id @default(cuid())
+model Audit {
+  id                 String          @id @default(cuid())
+  ownerId            String
+  title              String
+  description        String
+  details            String? // references blob storage URL
+  price              Int             @default(0)
+  duration           Int             @default(30)
+  cliff              Int             @default(3)
+  token              String?
+  onchainAuditInfoId String?
+  onchainNftId       String?
+  status             AuditStatusType @default(DISCOVERY)
+  createdAt          DateTime        @default(now())
+  updatedAt          DateTime        @updatedAt
+
+  memberships AuditMembership[]
+  owner       User              @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+}
+
+model AuditMembership {
+  id            String               @id @default(cuid())
+  userId        String
+  auditId       String
+  role          RoleType
+  status        MembershipStatusType
+  isActive      Boolean              @default(true)
+  attestedTerms Boolean              @default(false)
+  acceptedTerms Boolean              @default(false)
+  findings      String? // references blob storage URL
+  createdAt     DateTime             @default(now())
+  updatedAt     DateTime             @updatedAt
+
+  user    User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  audit   Audit    @relation(fields: [auditId], references: [id], onDelete: Cascade)
+  actions Action[]
+
+  @@unique([userId, auditId])
+  @@index([userId, auditId, isActive])
+  @@index([userId, auditId, isActive, status])
+}
+
+model Action {
+  id           String     @id @default(cuid())
+  membershipId String
+  comment      String?
+  createdAt    DateTime   @default(now())
+  type         ActionType
+
+  membership    AuditMembership @relation(fields: [membershipId], references: [id], onDelete: Cascade)
+  notifications Notification[]
+}
+
+model Notification {
+  id        String   @id @default(cuid())
   userId    String
-  historyId String
-  hasViewed Boolean @default(false)
+  actionId  String
+  hasViewed Boolean  @default(false)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
-  user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
-  history History @relation(fields: [historyId], references: [id], onDelete: Cascade)
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  action Action @relation(fields: [actionId], references: [id], onDelete: Cascade)
 
-  @@unique([userId, historyId], name: "uniqueHistoryView")
+  @@unique([userId, actionId], name: "uniqueUserAction")
+  @@index([userId])
+  @@index([userId, hasViewed])
 }
 
 model Wishlist {
-  id          String   @id @default(cuid())
-  requestorId String
-  receiverId  String
-  createdAt   DateTime @default(now())
+  id         String   @id @default(cuid())
+  senderId   String
+  receiverId String
+  createdAt  DateTime @default(now())
 
-  requestor User @relation("UserWishlist", fields: [requestorId], references: [id], onDelete: Cascade)
-  receiver  User @relation("UserWishedBy", fields: [receiverId], references: [id], onDelete: Cascade)
+  sender   User @relation("UserWishlist", fields: [senderId], references: [id], onDelete: Cascade)
+  receiver User @relation("UserWishedBy", fields: [receiverId], references: [id], onDelete: Cascade)
 
-  @@unique([requestorId, receiverId], name: "uniqueWishlistEntry")
+  @@unique([senderId, receiverId], name: "uniqueWishlistEntry")
 }

@@ -1,3 +1,12 @@
+import { AvailableTokens } from "@/constants/web3";
+import BevorABI from "@/contracts/abis/BevorProtocol";
+import ERC20ABI from "@/contracts/abis/ERC20Token";
+import {
+  AuditContractStructuredI,
+  AuditContractView,
+  VestingContractView,
+  VestingScheduleStructuredI,
+} from "@/utils/types/contracts";
 import { ethers, JsonRpcProvider } from "ethers";
 import {
   Abi,
@@ -9,10 +18,6 @@ import {
   PublicClient,
 } from "viem";
 import { localhost } from "viem/chains";
-import ERC20ABI from "@/contracts/abis/ERC20Token";
-import BevorABI from "@/contracts/abis/BevorProtocol";
-import { AuditContractView, VestingContractView } from "@/utils/types";
-import { AvailableTokens } from "@/constants/web3";
 
 class ContractService {
   publicClient: Record<string, PublicClient<HttpTransport>>;
@@ -46,7 +51,7 @@ class ContractService {
       });
   }
 
-  getAudit(auditId: bigint): Promise<AuditContractView | null> {
+  getAudit(auditId: bigint): Promise<AuditContractStructuredI | null> {
     return this.publicClient.localhost
       .readContract({
         address: BevorABI.address as Address,
@@ -56,7 +61,16 @@ class ContractService {
       })
       .then((data) => {
         const dataTyped = data as AuditContractView;
-        return dataTyped;
+        return {
+          protocolOwner: dataTyped[0],
+          token: dataTyped[1],
+          amount: dataTyped[2],
+          duration: dataTyped[3],
+          cliff: dataTyped[4],
+          start: dataTyped[5],
+          invalidatingProposalId: dataTyped[6],
+          isActive: dataTyped[7],
+        };
       })
       .catch((error) => {
         console.log(error);
@@ -68,15 +82,11 @@ class ContractService {
     auditId: bigint,
     user: Address,
     token: Address,
-  ): Promise<{
-    vestingScheduleId: bigint | null;
-    releasable: string | null;
-    withdrawn: string | null;
-  }> {
-    const returnObj = {
-      vestingScheduleId: null as bigint | null,
-      releasable: null as string | null,
-      withdrawn: null as string | null,
+  ): Promise<VestingScheduleStructuredI> {
+    const returnObj: VestingScheduleStructuredI = {
+      vestingScheduleId: null,
+      releasable: null,
+      withdrawn: null,
     };
     // BE SURE TO REMOVE THIS WHEN OFF LOCALHOST.
     // WE MANUALLY FAST-FORWARD 1hr on every refresh.

@@ -1,27 +1,27 @@
 "use client";
 
-import { AuditStatus } from "@prisma/client";
+import { AuditStatusType } from "@prisma/client";
 import { useMemo, useState } from "react";
 
 import { AuditCardTruncated } from "@/components/Audit";
 import { Column, Row } from "@/components/Box";
 import { cn } from "@/utils";
-import { AuditTruncatedI } from "@/utils/types/prisma";
+import { AuditDetailedI } from "@/utils/types/prisma";
 
 const initialStateType = {
-  [AuditStatus.DISCOVERY]: true,
-  [AuditStatus.ATTESTATION]: true,
-  [AuditStatus.AUDITING]: true,
-  [AuditStatus.CHALLENGEABLE]: true,
-  [AuditStatus.FINALIZED]: true,
+  [AuditStatusType.DISCOVERY]: true,
+  [AuditStatusType.ATTESTATION]: true,
+  [AuditStatusType.AUDITING]: true,
+  [AuditStatusType.CHALLENGEABLE]: true,
+  [AuditStatusType.FINALIZED]: true,
 };
 
 const statusMapper = {
-  [AuditStatus.DISCOVERY]: "open",
-  [AuditStatus.ATTESTATION]: "locked",
-  [AuditStatus.AUDITING]: "ongoing",
-  [AuditStatus.CHALLENGEABLE]: "challengeable",
-  [AuditStatus.FINALIZED]: "completed",
+  [AuditStatusType.DISCOVERY]: "open",
+  [AuditStatusType.ATTESTATION]: "locked",
+  [AuditStatusType.AUDITING]: "ongoing",
+  [AuditStatusType.CHALLENGEABLE]: "challengeable",
+  [AuditStatusType.FINALIZED]: "completed",
 };
 
 const initialOwnerState = {
@@ -36,9 +36,9 @@ const UserAudits = ({
   pendingNotifications,
 }: {
   address: string;
-  audits: AuditTruncatedI[];
+  audits: AuditDetailedI[];
   isOwner: boolean;
-  pendingNotifications: Record<string, boolean>;
+  pendingNotifications: string[];
 }): JSX.Element => {
   const [typeFilter, setTypeFilter] = useState(initialStateType);
   const [ownerFilter, setOwnerFilter] = useState(initialOwnerState);
@@ -50,17 +50,17 @@ const UserAudits = ({
         return false;
       }
       if (!ownerFilter.owner) {
-        if (address == audit.auditee.address) {
+        if (address == audit.owner.address) {
           return false;
         }
       }
       if (!ownerFilter.auditor) {
-        if (address !== audit.auditee.address) {
+        if (address !== audit.owner.address) {
           return false;
         }
       }
       if (unreadOnlyFilter) {
-        if (!pendingNotifications[audit.id]) {
+        if (!pendingNotifications.includes(audit.id)) {
           return false;
         }
       }
@@ -89,7 +89,7 @@ const UserAudits = ({
                     onChange={() => setTypeFilter((prev) => ({ ...prev, [k]: !v }))}
                     onKeyDownCapture={() => setTypeFilter((prev) => ({ ...prev, [k]: !v }))}
                   />
-                  <p>{statusMapper[k as keyof typeof AuditStatus]}</p>
+                  <p>{statusMapper[k as keyof typeof AuditStatusType]}</p>
                 </label>
               </li>
             ))}
@@ -145,8 +145,8 @@ const UserAudits = ({
           <AuditCardTruncated
             key={audit.id}
             audit={audit}
-            isProtocolOwner={address == audit.auditee.address}
-            showNoti={pendingNotifications && pendingNotifications[audit.id]}
+            isProtocolOwner={address == audit.owner.address}
+            showNoti={pendingNotifications.includes(audit.id)}
           />
         ))}
       </Row>

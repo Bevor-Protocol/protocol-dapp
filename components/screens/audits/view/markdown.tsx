@@ -9,12 +9,13 @@ import DynamicLink from "@/components/Link";
 import { Loader } from "@/components/Loader";
 import { Toggle } from "@/components/Toggle";
 import { MARKDOWN } from "@/constants/queryKeys";
+import { AuditI } from "@/utils/types/prisma";
 import { User } from "@prisma/client";
 
-const AuditMarkdown = ({ auditId, user }: { auditId: string; user: User | null }): JSX.Element => {
+const AuditMarkdown = ({ audit, user }: { audit: AuditI; user: User | null }): JSX.Element => {
   const { data, isPending } = useQuery({
-    queryKey: [MARKDOWN, auditId, user?.id ?? ""],
-    queryFn: () => auditAction.safeMarkdown(auditId),
+    queryKey: [MARKDOWN, audit.id, user?.id ?? ""],
+    queryFn: () => auditAction.safeMarkdown(audit),
   });
 
   const [active, setActive] = useState("details");

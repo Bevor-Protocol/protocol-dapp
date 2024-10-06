@@ -114,25 +114,25 @@ const AuditeeLockStake = ({
 const AuditOngoingActions = ({
   user,
   audit,
-  actionData,
+  state,
 }: {
   user: User;
   audit: AuditI;
-  actionData: AuditStateI;
+  state: AuditStateI;
 }): JSX.Element => {
-  if (actionData.isAnAuditor) {
+  if (state.isAuditAuditor) {
     return (
       <Column className="gap-2 items-end w-fit *:w-full">
-        <AuditorSubmitFindings auditId={audit.id} disabled={actionData.userSubmitted} />
+        <AuditorSubmitFindings auditId={audit.id} disabled={!state.states.CAN_SUBMIT_FINDINGS} />
       </Column>
     );
   }
 
-  if (actionData.isTheAuditee) {
+  if (state.isAuditOwner) {
     return (
       <Column className="gap-2 items-end w-fit *:w-full">
-        {!actionData.allSubmitted && <AuditeePendingFindings />}
-        {actionData.allSubmitted && <AuditeeLockStake user={user} audit={audit} />}
+        {!state.states.CAN_UNLOCK && <AuditeePendingFindings />}
+        {state.states.CAN_UNLOCK && <AuditeeLockStake user={user} audit={audit} />}
       </Column>
     );
   }

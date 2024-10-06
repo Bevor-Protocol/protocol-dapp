@@ -1,7 +1,7 @@
 "use server";
 
 import { ResponseI, UserSearchI } from "@/utils/types";
-import { AuditTruncatedI, UserWithCount } from "@/utils/types/prisma";
+import { AuditDetailedI, UserWithCount } from "@/utils/types/prisma";
 import { User } from "@prisma/client";
 import userController from "./user.controller";
 
@@ -21,11 +21,11 @@ const updateUser = async (formData: FormData): Promise<ResponseI<User>> => {
   return userController.updateUser(formData);
 };
 
-const getUserAudits = async (address: string): Promise<AuditTruncatedI[]> => {
+const getUserAudits = async (address: string): Promise<AuditDetailedI[]> => {
   return userController.getUserAudits(address);
 };
 
-const getLeaderboard = async (key?: string, order?: string): Promise<UserWithCount[]> => {
+const getLeaderboard = async (key?: string, order?: "asc" | "desc"): Promise<UserWithCount[]> => {
   return userController.getLeaderboard(key, order);
 };
 

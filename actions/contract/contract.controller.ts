@@ -1,6 +1,6 @@
-import { AuditContractView } from "@/utils/types";
-import ContractService from "./contract.service";
+import { AuditContractStructuredI } from "@/utils/types/contracts";
 import { Address } from "viem";
+import ContractService from "./contract.service";
 
 class ContractController {
   constructor(private readonly contractService: typeof ContractService) {}
@@ -9,7 +9,7 @@ class ContractController {
     return this.contractService.getBalance(address);
   }
 
-  async getAudit(auditId: bigint): Promise<AuditContractView | null> {
+  async getAudit(auditId: bigint): Promise<AuditContractStructuredI | null> {
     return this.contractService.getAudit(auditId);
   }
 

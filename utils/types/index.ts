@@ -1,6 +1,5 @@
-import { HistoryAction, User, UserType } from "@prisma/client";
-import { Address } from "viem";
-import { ErrorTypeEnum } from "./enum";
+import { User } from "@prisma/client";
+import { AuditStateEnum, ErrorTypeEnum } from "./enum";
 import { AuditI } from "./prisma";
 
 export type UserSearchI = {
@@ -43,29 +42,21 @@ export type HomeStatI = {
   queryKey: string;
 };
 
-export type HistoryI = {
-  id: string;
-  auditId: string;
-  action: HistoryAction;
-  userType: UserType;
-  comment: string | null;
-  createdAt: Date;
-  user: User;
-};
-
 export type AuditStateI = {
-  isTheAuditee: boolean;
-  isAnAuditor: boolean;
-  userIsVerified: boolean;
-  userIsRequested: boolean;
-  userIsRejected: boolean;
-  auditeeCanManageAuditors: boolean;
-  auditeeCanLock: boolean;
-  userAttested: boolean;
-  userAccepted: boolean;
-  userSubmitted: boolean;
-  allAttested: boolean;
-  allSubmitted: boolean;
+  isAuditOwner: boolean;
+  isAuditAuditor: boolean;
+  states: {
+    [AuditStateEnum.CAN_ADD_REQUEST]: boolean;
+    [AuditStateEnum.CAN_MANAGE_REQUESTS]: boolean;
+    [AuditStateEnum.CAN_LOCK_AUDIT]: boolean;
+    [AuditStateEnum.CAN_REMOVE_VERIFICATION]: boolean;
+    [AuditStateEnum.CAN_REMOVE_REQUEST]: boolean;
+    [AuditStateEnum.IS_REJECTED]: boolean;
+    [AuditStateEnum.CAN_FINALIZE]: boolean;
+    [AuditStateEnum.CAN_SUBMIT_FINDINGS]: boolean;
+    [AuditStateEnum.CAN_UNLOCK]: boolean;
+    [AuditStateEnum.CAN_ATTEST]: boolean;
+  };
 };
 
 export interface UserStats {
@@ -108,24 +99,6 @@ export interface RoleFailure {
 }
 
 export type RoleI = RoleSuccess | RoleFailure;
-
-export type AuditContractView = [
-  protocolOwner: Address,
-  token: Address,
-  amount: bigint,
-  duration: bigint,
-  cliff: bigint,
-  start: bigint,
-  invalidatingProposalId: bigint,
-  isActive: boolean,
-];
-
-export type VestingContractView = [
-  auditor: Address,
-  amount: bigint,
-  withdrawn: bigint,
-  auditId: bigint,
-];
 
 export type CustomErrorType = Error & {
   type: ErrorTypeEnum;

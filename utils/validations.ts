@@ -37,17 +37,17 @@ export const userSchema = z.object({
     .string()
     .transform((value) => value == "yes")
     .optional(),
-  auditeeRole: z
+  ownerRole: z
     .string()
     .transform((value) => value == "yes")
     .optional(),
 });
 
 export const userSchemaCreate = userSchema
-  .required({ available: true, auditeeRole: true, auditorRole: true })
+  .required({ available: true, ownerRole: true, auditorRole: true })
   .refine(
     (schema) => {
-      if (!schema.auditeeRole && !schema.auditorRole) {
+      if (!schema.ownerRole && !schema.auditorRole) {
         return false;
       }
       return true;

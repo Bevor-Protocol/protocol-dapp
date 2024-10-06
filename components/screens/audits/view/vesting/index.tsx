@@ -1,7 +1,7 @@
 import { contractAction } from "@/actions";
 import { AvailableTokens } from "@/constants/web3";
 import { AuditI } from "@/utils/types/prisma";
-import { AuditStatus } from "@prisma/client";
+import { AuditStatusType } from "@prisma/client";
 import { Address } from "viem";
 import VestingDisplay from "./display";
 
@@ -14,7 +14,10 @@ const Vesting = async ({
   isAuditor: boolean;
   address: string | undefined;
 }): Promise<JSX.Element> => {
-  if (audit.status !== AuditStatus.CHALLENGEABLE && audit.status !== AuditStatus.FINALIZED) {
+  if (
+    audit.status !== AuditStatusType.CHALLENGEABLE &&
+    audit.status !== AuditStatusType.FINALIZED
+  ) {
     return <></>;
   }
 
@@ -44,9 +47,9 @@ const Vesting = async ({
   }
 
   const state = {
-    startTime: Number(auditView[5]),
-    duration: Number(auditView[3]),
-    cliff: Number(auditView[4]),
+    startTime: Number(auditView.start),
+    duration: Number(auditView.duration),
+    cliff: Number(auditView.cliff),
     tokenSymbol: tokenUse?.symbol,
     ...vestingScheduleInfo,
   };

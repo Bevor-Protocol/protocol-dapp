@@ -1,7 +1,14 @@
 import { prisma } from "@/db/prisma.server";
 import { UserSearchI } from "@/utils/types";
-import { AuditTruncatedI, UserWithCount } from "@/utils/types/prisma";
-import { AuditorStatus, AuditStatus, Prisma, User } from "@prisma/client";
+import { AuditDetailedI, UserWithCount } from "@/utils/types/prisma";
+import {
+  AuditStatusType,
+  MembershipStatusType,
+  Prisma,
+  PrismaPromise,
+  RoleType,
+  User,
+} from "@prisma/client";
 import AuthService from "../auth/auth.service";
 
 class UserService {
@@ -26,7 +33,7 @@ class UserService {
       });
   }
 
-  getProfile(address: string): Promise<User | null> {
+  getProfile(address: string): PrismaPromise<User | null> {
     return prisma.user.findUnique({
       where: {
         address,
@@ -34,13 +41,13 @@ class UserService {
     });
   }
 
-  createUser(data: Prisma.UserCreateInput): Promise<User> {
+  createUser(data: Prisma.UserCreateInput): PrismaPromise<User> {
     return prisma.user.create({
       data,
     });
   }
 
-  updateUser(id: string, data: Prisma.UserUpdateInput): Promise<User> {
+  updateUser(id: string, data: Prisma.UserUpdateInput): PrismaPromise<User> {
     return prisma.user.update({
       where: {
         id,
@@ -49,15 +56,15 @@ class UserService {
     });
   }
 
-  getLeaderboard(key?: string, order?: string): Promise<UserWithCount[]> {
+  getLeaderboard(key?: string, order?: "asc" | "desc"): Promise<UserWithCount[]> {
     // Can't currently sort on aggregations or further filtered counts of relations...
     // Handle these more unique cases post-query.
-    const orderClause: { orderBy: { [key: string]: string }[] } = {
+    const orderClause: { orderBy: Prisma.UserOrderByWithRelationInput[] } = {
       orderBy: [],
     };
     if (key === "name") {
       orderClause.orderBy.push({
-        [key ?? "name"]: order ?? "asc",
+        name: order ?? "asc",
       });
       orderClause.orderBy.push({
         address: order ?? "asc",
@@ -76,12 +83,14 @@ class UserService {
           auditorRole: true,
         },
         include: {
-          auditors: {
+          memberships: {
             where: {
-              status: AuditorStatus.VERIFIED,
+              status: MembershipStatusType.VERIFIED,
+              role: RoleType.AUDITOR,
+              isActive: true,
               audit: {
                 status: {
-                  not: AuditStatus.DISCOVERY,
+                  not: AuditStatusType.DISCOVERY,
                 },
               },
             },
@@ -95,30 +104,26 @@ class UserService {
       })
       .then((users) => {
         const toReturn = users.map((user) => {
-          const { auditors, wishlistAsReceiver, ...rest } = user;
-
-          const valuePotential = auditors.reduce((acc, auditor) => {
-            const include =
-              auditor.audit.status == AuditStatus.AUDITING ||
-              auditor.audit.status == AuditStatus.CHALLENGEABLE;
-            return acc + Number(include) * auditor.audit.price;
-          }, 0);
-
-          const valueComplete = auditors.reduce((acc, auditor) => {
-            return (
-              acc + Number(auditor.audit.status == AuditStatus.FINALIZED) * auditor.audit.price
-            );
-          }, 0);
-
-          const numActive = auditors.filter(
-            (auditor) => auditor.audit.status !== AuditStatus.FINALIZED,
-          ).length;
-
-          const numComplete = auditors.filter(
-            (auditor) => auditor.audit.status === AuditStatus.FINALIZED,
-          ).length;
+          const { memberships, wishlistAsReceiver, ...rest } = user;
 
           const numWishlist = wishlistAsReceiver.length;
+          let valuePotential = 0;
+          let valueComplete = 0;
+          let numActive = 0;
+          let numComplete = 0;
+
+          memberships.forEach((member) => {
+            const { status, price } = member.audit;
+            if (status === AuditStatusType.AUDITING || status === AuditStatusType.CHALLENGEABLE) {
+              valuePotential += price;
+            }
+            if (status === AuditStatusType.FINALIZED) {
+              valueComplete += price;
+              numComplete += 1;
+            } else {
+              numActive += 1;
+            }
+          });
 
           return {
             ...rest,
@@ -164,33 +169,28 @@ class UserService {
       });
   }
 
-  userAudits(address: string): Promise<AuditTruncatedI[]> {
+  userAudits(address: string): PrismaPromise<AuditDetailedI[]> {
     return prisma.audit.findMany({
       where: {
-        OR: [
-          {
-            auditee: {
+        memberships: {
+          some: {
+            user: {
               address,
             },
+            isActive: true,
           },
-          {
-            auditors: {
-              some: {
-                user: {
-                  address,
-                },
-              },
-            },
-          },
-        ],
+        },
       },
-      select: {
-        id: true,
-        title: true,
-        description: true,
-        token: true,
-        status: true,
-        auditee: true,
+      include: {
+        owner: true,
+        memberships: {
+          where: {
+            isActive: true,
+          },
+          include: {
+            user: true,
+          },
+        },
       },
       orderBy: {
         createdAt: "desc",
@@ -198,7 +198,7 @@ class UserService {
     });
   }
 
-  searchUsers(filter: UserSearchI): Promise<User[]> {
+  searchUsers(filter: UserSearchI): PrismaPromise<User[]> {
     const search = filter.search
       ? {
           OR: [
@@ -223,7 +223,7 @@ class UserService {
       roleFilters.push({ auditorRole: true });
     }
     if (filter.isOwner) {
-      roleFilters.push({ auditeeRole: true });
+      roleFilters.push({ ownerRole: true });
     }
 
     return prisma.user.findMany({
@@ -238,7 +238,7 @@ class UserService {
     });
   }
 
-  searchAuditors(query?: string): Promise<User[]> {
+  searchAuditors(query?: string): PrismaPromise<User[]> {
     return this.searchUsers({
       search: query ?? "",
       isAuditor: true,

@@ -10,50 +10,36 @@ export interface UserWithCount extends User {
   };
 }
 
-export type AuditFindingsI = Prisma.AuditGetPayload<{
-  select: {
-    onchainAuditInfoId: true;
-    duration: true;
-    price: true;
-    cliff: true;
-    token: true;
-    auditors: {
-      select: {
-        findings: true;
-        user: {
-          select: {
-            address: true;
-          };
-        };
+export type MembershipAuditI = Prisma.AuditMembershipGetPayload<{
+  include: {
+    audit: true;
+  };
+}>;
+
+export type MembershipUserI = Prisma.AuditMembershipGetPayload<{
+  include: {
+    user: true;
+  };
+}>;
+
+export type AuditDetailedI = Prisma.AuditGetPayload<{
+  include: {
+    owner: true;
+    memberships: {
+      include: {
+        user: true;
       };
     };
   };
 }>;
 
-export type AuditTruncatedI = Prisma.AuditGetPayload<{
-  select: {
-    id: true;
-    title: true;
-    description: true;
-    token: true;
-    status: true;
-    auditee: true;
-  };
-}>;
-
-export type AuditDetailedI = Prisma.AuditGetPayload<{
-  select: {
-    id: true;
-    title: true;
-    description: true;
-    price: true;
-    duration: true;
-    cliff: true;
-    token: true;
-    createdAt: true;
-    auditee: true;
-    auditors: {
-      select: {
+export type AuditFindingsI = Prisma.AuditGetPayload<{
+  include: {
+    memberships: {
+      omit: {
+        findings: false;
+      };
+      include: {
         user: true;
       };
     };
@@ -61,65 +47,43 @@ export type AuditDetailedI = Prisma.AuditGetPayload<{
 }>;
 
 export type AuditI = Prisma.AuditGetPayload<{
-  select: {
-    id: true;
-    title: true;
-    description: true;
-    price: true;
-    duration: true;
-    cliff: true;
-    token: true;
-    createdAt: true;
-    status: true;
-    auditee: true;
-    details: true;
-    onchainAuditInfoId: true;
-    onchainNftId: true;
-    auditors: {
-      select: {
+  include: {
+    owner: true;
+    memberships: {
+      include: {
         user: true;
-        status: true;
-        attestedTerms: true;
-        acceptedTerms: true;
       };
     };
-    history: {
-      select: {
-        id: true;
-        auditId: true;
-        action: true;
-        userType: true;
-        comment: true;
-        createdAt: true;
+  };
+}>;
+
+export type ActionI = Prisma.ActionGetPayload<{
+  include: {
+    membership: {
+      include: {
         user: true;
+      };
+    };
+  };
+}>;
+
+export type UserNotificationI = Prisma.NotificationGetPayload<{
+  include: {
+    action: {
+      include: {
+        membership: {
+          include: {
+            audit: true;
+            user: true;
+          };
+        };
       };
     };
   };
 }>;
 
 export type WishlistI = Prisma.WishlistGetPayload<{
-  select: {
+  include: {
     receiver: true;
-  };
-}>;
-
-export type HistoryViewI = Prisma.HistoryViewGetPayload<{
-  select: {
-    history: {
-      select: {
-        id: true;
-        audit: {
-          select: {
-            id: true;
-            title: true;
-          };
-        };
-        action: true;
-        userType: true;
-        comment: true;
-        createdAt: true;
-        user: true;
-      };
-    };
   };
 }>;

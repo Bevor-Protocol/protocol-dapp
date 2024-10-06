@@ -2,59 +2,155 @@ import { prisma } from "@/db/prisma.server";
 import { auditFormSchema } from "@/utils/validations";
 import {
   Audit,
-  AuditorStatus,
-  AuditStatus,
-  HistoryAction,
+  AuditMembership,
+  AuditStatusType,
+  MembershipStatusType,
   Prisma,
+  PrismaPromise,
+  RoleType,
   User,
-  UserType,
 } from "@prisma/client";
 import { z } from "zod";
 
 class OwnerService {
+  requiresAuditUpdate(
+    audit: Audit,
+    data: Prisma.AuditUpdateInput,
+    auditorsPassed: User[],
+    currentMembers: AuditMembership[],
+  ): {
+    requiresUpdate: boolean;
+    activate: string[];
+    deactivate: string[];
+    create: string[];
+  } {
+    let requiresUpdate = false;
+    for (const [k, v] of Object.entries(data)) {
+      if (audit[k as keyof Audit] !== v) {
+        requiresUpdate = true;
+      }
+    }
+
+    const passedIds = auditorsPassed.map((auditor) => auditor.id);
+    const currentIds = currentMembers.map((member) => member.userId);
+    const activate: string[] = [];
+    const deactivate: string[] = [];
+    const create: string[] = [];
+
+    currentMembers.forEach((member) => {
+      if (passedIds.includes(member.userId)) {
+        if (member.isActive && member.status === MembershipStatusType.VERIFIED) {
+          return;
+        }
+        activate.push(member.userId);
+      } else {
+        deactivate.push(member.userId);
+      }
+    });
+
+    passedIds.forEach((auditor) => {
+      if (!currentIds.includes(auditor)) {
+        create.push(auditor);
+      }
+    });
+
+    return {
+      requiresUpdate:
+        requiresUpdate || activate.length > 0 || deactivate.length > 0 || create.length > 0,
+      activate,
+      deactivate,
+      create,
+    };
+  }
+
   createAudit(
     userId: string,
     data: Omit<z.infer<typeof auditFormSchema>, "details"> & { details?: string },
     auditors: User[],
-  ): Promise<Audit> {
+  ): PrismaPromise<Audit> {
+    const auditorMembershipsCreate = auditors.map((auditor) => {
+      return {
+        role: RoleType.AUDITOR,
+        userId: auditor.id,
+        status: MembershipStatusType.VERIFIED,
+      };
+    });
+
     return prisma.audit.create({
       data: {
-        auditee: {
+        ...data,
+        owner: {
           connect: {
             id: userId,
           },
         },
-        ...data,
-        auditors: {
-          create: auditors.map((auditor) => ({
-            status: AuditorStatus.VERIFIED,
-            user: {
-              connect: {
-                id: auditor.id,
-              },
+        memberships: {
+          create: [
+            {
+              role: RoleType.OWNER,
+              status: MembershipStatusType.VERIFIED,
+              userId,
             },
-          })),
+            ...auditorMembershipsCreate,
+          ],
         },
       },
     });
   }
 
-  async updateAudit(
-    userId: string,
+  updateAudit(
     auditId: string,
     data: Prisma.AuditUpdateInput,
-    auditorsCreate: string[],
-    auditorsRemove: string[],
+    activate: string[],
+    deactivate: string[],
+    create: string[],
   ): Promise<Audit> {
-    // would throw before this function is ever called. We can assure currentAudit exists.
-    const auditorsCreateConnected = auditorsCreate.map((auditor) => ({
-      status: AuditorStatus.VERIFIED,
-      user: {
-        connect: {
-          id: auditor,
+    const toUpsert: Prisma.AuditMembershipUpsertArgs[] = [];
+
+    activate.concat(create).forEach((userId) => {
+      // an upsert is redundant, but it allows us to work around prisma
+      // and simultaneously handle all the following cases in a single query.
+      toUpsert.push({
+        where: {
+          userId_auditId: {
+            userId,
+            auditId,
+          },
         },
-      },
-    }));
+        update: {
+          isActive: true,
+          status: MembershipStatusType.VERIFIED,
+        },
+        create: {
+          userId,
+          auditId,
+          role: RoleType.AUDITOR,
+          status: MembershipStatusType.VERIFIED,
+          isActive: true,
+        },
+      });
+    });
+    deactivate.forEach((userId) => {
+      toUpsert.push({
+        where: {
+          userId_auditId: {
+            userId,
+            auditId,
+          },
+        },
+        update: {
+          isActive: false,
+          status: MembershipStatusType.REJECTED,
+        },
+        create: {
+          userId,
+          auditId,
+          role: RoleType.AUDITOR,
+          status: MembershipStatusType.REJECTED,
+          isActive: false,
+        },
+      });
+    });
 
     return prisma.audit.update({
       where: {
@@ -62,32 +158,29 @@ class OwnerService {
       },
       data: {
         ...data,
-        auditors: {
-          create: auditorsCreateConnected,
-          deleteMany: {
-            auditId,
-            userId: {
-              in: auditorsRemove,
-            },
-          },
+        memberships: {
+          upsert: toUpsert,
+        },
+      },
+    });
+  }
+
+  lockAudit(auditId: string): PrismaPromise<Audit> {
+    return prisma.audit.update({
+      where: {
+        id: auditId,
+      },
+      data: {
+        status: AuditStatusType.ATTESTATION,
+        memberships: {
           updateMany: {
             where: {
-              auditId,
+              status: {
+                not: MembershipStatusType.VERIFIED,
+              },
             },
             data: {
-              attestedTerms: false,
-              acceptedTerms: false,
-            },
-          },
-        },
-        history: {
-          create: {
-            userType: UserType.AUDITEE,
-            action: HistoryAction.EDITED,
-            user: {
-              connect: {
-                id: userId,
-              },
+              isActive: false,
             },
           },
         },
@@ -95,44 +188,14 @@ class OwnerService {
     });
   }
 
-  lockAudit(userId: string, auditId: string): Promise<Audit> {
+  openAudit(auditId: string): PrismaPromise<Audit> {
     return prisma.audit.update({
       where: {
         id: auditId,
       },
       data: {
-        status: AuditStatus.ATTESTATION,
-        auditors: {
-          deleteMany: {
-            auditId,
-            status: {
-              not: AuditorStatus.VERIFIED,
-            },
-          },
-        },
-        history: {
-          create: {
-            action: HistoryAction.LOCKED,
-            userType: UserType.AUDITEE,
-            user: {
-              connect: {
-                id: userId,
-              },
-            },
-          },
-        },
-      },
-    });
-  }
-
-  openAudit(userId: string, auditId: string): Promise<Audit> {
-    return prisma.audit.update({
-      where: {
-        id: auditId,
-      },
-      data: {
-        status: AuditStatus.DISCOVERY,
-        auditors: {
+        status: AuditStatusType.DISCOVERY,
+        memberships: {
           updateMany: {
             where: {
               auditId,
@@ -143,35 +206,6 @@ class OwnerService {
             },
           },
         },
-        history: {
-          create: {
-            userType: UserType.AUDITEE,
-            action: HistoryAction.OPENED,
-            user: {
-              connect: {
-                id: userId,
-              },
-            },
-          },
-        },
-      },
-    });
-  }
-
-  updateRequestors(
-    auditId: string,
-    auditors: string[],
-    status: AuditorStatus,
-  ): Promise<Prisma.BatchPayload> {
-    return prisma.auditor.updateMany({
-      where: {
-        auditId,
-        userId: {
-          in: auditors,
-        },
-      },
-      data: {
-        status,
       },
     });
   }

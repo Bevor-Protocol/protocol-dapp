@@ -1,66 +1,66 @@
 import { prisma } from "@/db/prisma.server";
-import { AuditorStatus } from "@prisma/client";
+import { AuditStatusType, MembershipStatusType, RoleType } from "@prisma/client";
 
 class StatService {
   getUserMoneyPaid(address: string): Promise<number> {
+    // doesn't take into account the asset.
     return prisma.audit
-      .findMany({
+      .aggregate({
         where: {
-          auditee: {
+          status: AuditStatusType.FINALIZED,
+          owner: {
             address,
           },
-          // status: AuditStatus.FINAL,
-          price: {
-            gt: 0,
-          },
         },
-        select: {
+        _sum: {
           price: true,
         },
       })
-      .then((audits) => audits.reduce((a, audit) => audit.price + a, 0));
+      .then((result) => result._sum.price || 0);
   }
 
   getUserMoneyEarned(address: string): Promise<number> {
+    // doesn't take into account the asset.
     return prisma.audit
-      .findMany({
+      .aggregate({
         where: {
-          // status: AuditStatus.FINAL, might add this back.
-          auditors: {
+          status: AuditStatusType.FINALIZED,
+          memberships: {
             some: {
               user: {
                 address,
               },
+              role: RoleType.AUDITOR,
+              status: MembershipStatusType.VERIFIED,
+              isActive: true,
             },
           },
-          price: {
-            gt: 0,
-          },
         },
-        select: {
+        _sum: {
           price: true,
         },
       })
-      .then((audits) => audits.reduce((a, audit) => audit.price + a, 0));
+      .then((result) => result._sum.price || 0);
   }
 
   getUserNumAuditsOwner(address: string): Promise<number> {
-    return prisma.audit.count({
+    return prisma.auditMembership.count({
       where: {
-        auditee: {
+        user: {
           address,
         },
+        role: RoleType.OWNER,
+        status: MembershipStatusType.VERIFIED,
       },
     });
   }
 
   getUserNumAuditsAuditor(address: string): Promise<number> {
-    return prisma.auditor.count({
+    return prisma.audit.count({
       where: {
-        user: {
+        owner: {
           address,
         },
-        status: AuditorStatus.VERIFIED,
       },
     });
   }
@@ -82,14 +82,20 @@ class StatService {
   getProtocolDataFunds(): Promise<number> {
     return prisma.audit
       .aggregate({
-        // where: {
-        //   isFinal: true,
-        // },
+        where: {
+          status: {
+            in: [
+              AuditStatusType.AUDITING,
+              AuditStatusType.CHALLENGEABLE,
+              AuditStatusType.FINALIZED,
+            ],
+          },
+        },
         _sum: {
           price: true,
         },
       })
-      .then((result: { _sum: { price: number | null } }) => result._sum.price || 0);
+      .then((result) => result._sum.price || 0);
   }
 
   async getProtocolDataVulnerabilities(): Promise<number> {

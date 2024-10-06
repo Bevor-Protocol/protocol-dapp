@@ -1,7 +1,7 @@
 /* eslint-disable @next/next/no-img-element */
 "use client";
 
-import { AuditorStatus, User } from "@prisma/client";
+import { MembershipStatusType, User } from "@prisma/client";
 import { useQuery } from "@tanstack/react-query";
 import React, { useMemo, useState } from "react";
 
@@ -77,12 +77,13 @@ const AuditFormEntries = ({
     // 2) Filter the requested or rejected auditors from the search results -> managed separately.
     const chosenAuditors = auditors.map((auditor) => auditor.id);
     const alreadyRequested =
-      initialState?.auditors
+      initialState?.memberships
         .filter(
-          (auditor) =>
-            auditor.status === AuditorStatus.REQUESTED || auditor.status === AuditorStatus.REJECTED,
+          (member) =>
+            member.status === MembershipStatusType.REQUESTED ||
+            member.status === MembershipStatusType.REJECTED,
         )
-        .map((auditor) => auditor.user.id) || [];
+        .map((member) => member.user.id) || [];
     // also want to exclude auditors who has previously requested to audit. Managing those will
     // be a different task.
     return (
@@ -99,12 +100,13 @@ const AuditFormEntries = ({
   const wishlistShow = useMemo(() => {
     const chosenAuditors = auditors.map((auditor) => auditor.id);
     const alreadyRequested =
-      initialState?.auditors
+      initialState?.memberships
         .filter(
-          (auditor) =>
-            auditor.status === AuditorStatus.REQUESTED || auditor.status === AuditorStatus.REJECTED,
+          (member) =>
+            member.status === MembershipStatusType.REQUESTED ||
+            member.status === MembershipStatusType.REJECTED,
         )
-        .map((auditor) => auditor.user.id) || [];
+        .map((member) => member.user.id) || [];
     // also want to exclude auditors who has previously requested to audit. Managing those will
     // be a different task.
     return (

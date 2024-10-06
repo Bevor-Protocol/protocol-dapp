@@ -1,154 +1,68 @@
 import { prisma } from "@/db/prisma.server";
-import { Auditor, AuditorStatus, AuditStatus, HistoryAction, User, UserType } from "@prisma/client";
+import {
+  AuditMembership,
+  MembershipStatusType,
+  Prisma,
+  PrismaPromise,
+  RoleType,
+} from "@prisma/client";
 
 class AuditorService {
-  async attestToTerms(
-    auditId: string,
-    userId: string,
-    status: boolean,
-    comment: string,
-  ): Promise<User> {
+  attestToTerms(membershipId: string, status: boolean): PrismaPromise<AuditMembership> {
     // via an entry of User, we can simultaneously update Auditors, and create
     // a History observation.
-    return prisma.user.update({
+    return prisma.auditMembership.update({
       where: {
-        id: userId,
+        id: membershipId,
       },
       data: {
-        auditors: {
-          update: {
-            where: {
-              auditId_userId: {
-                auditId,
-                userId,
-              },
-            },
-            data: {
-              acceptedTerms: status,
-              attestedTerms: true,
-            },
-          },
-        },
-        history: {
-          create: {
-            userType: UserType.AUDITOR,
-            action: status ? HistoryAction.APPROVED : HistoryAction.REJECTED,
-            comment: comment.length > 0 ? comment : null,
-            audit: {
-              connect: {
-                id: auditId,
-              },
-            },
-          },
-        },
+        acceptedTerms: status,
+        attestedTerms: true,
       },
     });
   }
 
-  async leaveAudit(auditId: string, auditorId: string, auditStatus: AuditStatus): Promise<User> {
-    let historyObj = {};
-    if (auditStatus == AuditStatus.AUDITING) {
-      historyObj = {
-        history: {
-          create: {
-            userType: UserType.AUDITOR,
-            action: HistoryAction.LEFT,
-            audit: {
-              connect: {
-                id: auditId,
-              },
-            },
-          },
-        },
-      };
-    }
-
-    return prisma.user.update({
+  resetAttestations(auditId: string): PrismaPromise<Prisma.BatchPayload> {
+    return prisma.auditMembership.updateMany({
       where: {
-        id: auditorId,
+        auditId,
       },
       data: {
-        auditors: {
-          delete: {
-            auditId_userId: {
-              auditId,
-              userId: auditorId,
-            },
-          },
-          updateMany: {
-            where: {
-              auditId: auditorId,
-            },
-            data: {
-              acceptedTerms: false,
-              attestedTerms: false,
-            },
-          },
-        },
-        ...historyObj,
+        acceptedTerms: false,
+        attestedTerms: false,
       },
     });
   }
 
-  addFindings(auditId: string, userId: string, findings: string): Promise<User> {
-    return prisma.user.update({
+  leaveAudit(membershipId: string): PrismaPromise<AuditMembership> {
+    return prisma.auditMembership.update({
       where: {
-        id: userId,
+        id: membershipId,
       },
       data: {
-        auditors: {
-          update: {
-            where: {
-              auditId_userId: {
-                auditId: auditId,
-                userId: userId,
-              },
-            },
-            data: {
-              findings,
-            },
-          },
-        },
-        history: {
-          create: {
-            userType: UserType.AUDITOR,
-            action: HistoryAction.FINDINGS,
-            audit: {
-              connect: {
-                id: auditId,
-              },
-            },
-          },
-        },
+        isActive: false,
       },
     });
   }
 
-  addRequest(id: string, userId: string): Promise<Auditor> {
-    return prisma.auditor.create({
+  addFindings(membershipId: string, findings: string): PrismaPromise<AuditMembership> {
+    return prisma.auditMembership.update({
+      where: {
+        id: membershipId,
+      },
       data: {
-        status: AuditorStatus.REQUESTED,
-        audit: {
-          connect: {
-            id,
-          },
-        },
-        user: {
-          connect: {
-            id: userId,
-          },
-        },
+        findings,
       },
     });
   }
 
-  deleteRequest(id: string, userId: string): Promise<Auditor> {
-    return prisma.auditor.delete({
-      where: {
-        auditId_userId: {
-          auditId: id,
-          userId,
-        },
+  addRequest(userId: string, auditId: string): PrismaPromise<AuditMembership> {
+    return prisma.auditMembership.create({
+      data: {
+        userId,
+        auditId,
+        role: RoleType.AUDITOR,
+        status: MembershipStatusType.REQUESTED,
       },
     });
   }

@@ -4,10 +4,10 @@ import { Column, Row } from "@/components/Box";
 import { useModal } from "@/hooks/useContexts";
 import { cn } from "@/utils";
 import { timeSince } from "@/utils/dates";
-import { HistoryI } from "@/utils/types";
-import { HistoryAction, UserType } from "@prisma/client";
+import { ActionI } from "@/utils/types/prisma";
+import { ActionType, RoleType } from "@prisma/client";
 
-export const HistoryPanel = ({ history }: { history: HistoryI[] }): JSX.Element => {
+export const HistoryPanel = ({ actions }: { actions: ActionI[] }): JSX.Element => {
   const { toggleOpen } = useModal();
 
   return (
@@ -17,43 +17,44 @@ export const HistoryPanel = ({ history }: { history: HistoryI[] }): JSX.Element 
       </div>
       <div className="mb-4">Audit History</div>
       <Column className="gap-6 text-left overflow-y-scroll flex-grow">
-        {history.map((item) => (
-          <div key={item.id} className="pr-4">
+        {actions.map((action) => (
+          <div key={action.id} className="pr-4">
             <Row className="justify-between items-center">
               <div className="text-sm">
-                {item.userType == UserType.AUDITEE ? "Protocol Owner" : "Auditor"}
+                {action.membership.role == RoleType.OWNER ? "Protocol Owner" : "Auditor"}
               </div>
-              <div className="text-xs text-white/60">{timeSince(item.createdAt)}</div>
+              <div className="text-xs text-white/60">{timeSince(action.createdAt)}</div>
             </Row>
-            <AuditorItemSimple auditor={item.user} />
+            <AuditorItemSimple auditor={action.membership.user} />
             <Row className="bg-dark shadow rounded-lg p-1 w-fit text-xs items-center gap-1 m-1">
               <span
                 className={cn(
                   "h-1 w-1 rounded-full mb-auto",
-                  item.action == HistoryAction.LEFT && "bg-red-400",
-                  item.action == HistoryAction.APPROVED && "bg-green-600",
-                  item.action == HistoryAction.REJECTED && "bg-red-400",
-                  item.action == HistoryAction.EDITED && "bg-gray-600",
-                  item.action == HistoryAction.FINDINGS && "bg-green-600",
-                  item.action == HistoryAction.LOCKED && "bg-gray-600",
-                  item.action == HistoryAction.OPENED && "bg-gray-600",
-                  item.action == HistoryAction.FINALIZED && "bg-green-600",
-                  item.action == HistoryAction.MINTED && "bg-green-600",
+                  action.type == ActionType.AUDITOR_LEFT && "bg-red-400",
+                  action.type == ActionType.AUDITOR_TERMS_APPROVED && "bg-green-600",
+                  action.type == ActionType.AUDITOR_TERMS_REJECTED && "bg-red-400",
+                  action.type == ActionType.OWNER_EDITED && "bg-gray-600",
+                  action.type == ActionType.AUDITOR_FINDINGS && "bg-green-600",
+                  action.type == ActionType.OWNER_LOCKED && "bg-gray-600",
+                  action.type == ActionType.OWNER_OPENED && "bg-gray-600",
+                  action.type == ActionType.OWNER_FINALIZED && "bg-green-600",
+                  action.type == ActionType.OWNER_REVEALED && "bg-green-600",
                 )}
               />
               <span>
-                {item.action == HistoryAction.LEFT && "Left Audit"}
-                {item.action == HistoryAction.APPROVED && "Approved Terms"}
-                {item.action == HistoryAction.REJECTED && "Rejected Audit"}
-                {item.action == HistoryAction.EDITED && "Edited Audit"}
-                {item.action == HistoryAction.FINDINGS && "Submitted Findings"}
-                {item.action == HistoryAction.LOCKED && "Locked Audit"}
-                {item.action == HistoryAction.OPENED && "Re-Opened Audit"}
-                {item.action == HistoryAction.FINALIZED && "Kicked off Audit (on-chain)"}
-                {item.action == HistoryAction.MINTED && "Requested to view Findings (on-chain)"}
+                {action.type == ActionType.AUDITOR_LEFT && "Left Audit"}
+                {action.type == ActionType.AUDITOR_TERMS_APPROVED && "Approved Terms"}
+                {action.type == ActionType.AUDITOR_TERMS_REJECTED && "Rejected Audit"}
+                {action.type == ActionType.OWNER_EDITED && "Edited Audit"}
+                {action.type == ActionType.AUDITOR_FINDINGS && "Submitted Findings"}
+                {action.type == ActionType.OWNER_LOCKED && "Locked Audit"}
+                {action.type == ActionType.OWNER_OPENED && "Re-Opened Audit"}
+                {action.type == ActionType.OWNER_FINALIZED && "Kicked off Audit (on-chain)"}
+                {action.type == ActionType.OWNER_REVEALED &&
+                  "Requested to view Findings (on-chain)"}
               </span>
             </Row>
-            {item.comment && <div className="text-xs text-white/60 mt-2">{item.comment}</div>}
+            {action.comment && <div className="text-xs text-white/60 mt-2">{action.comment}</div>}
           </div>
         ))}
       </Column>

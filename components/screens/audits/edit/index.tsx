@@ -1,6 +1,6 @@
 "use client";
 
-import { AuditorStatus, User } from "@prisma/client";
+import { MembershipStatusType, RoleType, User } from "@prisma/client";
 import { useMutation } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
 import React, { useState } from "react";
@@ -14,9 +14,14 @@ import { AuditI } from "@/utils/types/prisma";
 
 const AuditEditWrapper = ({ audit, user }: { audit: AuditI; user: User }): JSX.Element => {
   // only show the selected auditors that were already verified.
-  const initialAuditors = audit.auditors
-    .filter((auditor) => auditor.status === AuditorStatus.VERIFIED)
-    .map((auditor) => auditor.user);
+  const initialAuditors = audit.memberships
+    .filter(
+      (member) =>
+        member.status === MembershipStatusType.VERIFIED &&
+        member.role === RoleType.AUDITOR &&
+        member.isActive,
+    )
+    .map((member) => member.user);
 
   const router = useRouter();
   const [errors, setErrors] = useState<Record<string, string>>({});

@@ -1,15 +1,15 @@
 "use server";
 
-import { AuditContractView } from "@/utils/types";
 import { Address } from "viem";
 
+import { AuditContractStructuredI } from "@/utils/types/contracts";
 import contractController from "./contract.controller";
 
 const getBalance = async (address: string): Promise<number> => {
   return contractController.getBalance(address);
 };
 
-const getAudit = async (auditId: bigint): Promise<AuditContractView | null> => {
+const getAudit = async (auditId: bigint): Promise<AuditContractStructuredI | null> => {
   return contractController.getAudit(auditId);
 };
 
@@ -25,4 +25,4 @@ const getAuditorVestingSchedule = async (
   return contractController.getAuditorVestingSchedule(auditId, user, token);
 };
 
-export { getBalance, getAudit, getAuditorVestingSchedule };
+export { getAudit, getAuditorVestingSchedule, getBalance };

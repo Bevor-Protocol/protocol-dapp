@@ -1,13 +1,21 @@
 import { prisma } from "@/db/prisma.server";
 import { AuditStateI, MarkdownAuditsI } from "@/utils/types";
-import { AuditDetailedI, AuditFindingsI, AuditI } from "@/utils/types/prisma";
+import { AuditStateEnum } from "@/utils/types/enum";
+import {
+  ActionI,
+  AuditDetailedI,
+  AuditFindingsI,
+  AuditI,
+  MembershipUserI,
+} from "@/utils/types/prisma";
 import {
   Audit,
-  Auditor,
-  AuditorStatus,
-  AuditStatus,
-  HistoryAction,
-  UserType,
+  AuditMembership,
+  AuditStatusType,
+  MembershipStatusType,
+  PrismaPromise,
+  RoleType,
+  User,
 } from "@prisma/client";
 import matter from "gray-matter";
 import { remark } from "remark";
@@ -18,72 +26,62 @@ import ContractService from "../contract/contract.service";
 class AuditService {
   constructor(private readonly contractService: typeof ContractService) {}
 
-  getAudit(id: string): Promise<AuditI | null> {
+  getAudit(auditId: string): PrismaPromise<AuditI | null> {
     return prisma.audit.findUnique({
       where: {
-        id,
+        id: auditId,
       },
-      select: {
-        id: true,
-        title: true,
-        description: true,
-        price: true,
-        duration: true,
-        cliff: true,
-        createdAt: true,
-        status: true,
-        details: true,
-        token: true,
-        auditee: true,
-        onchainAuditInfoId: true,
-        onchainNftId: true,
-        auditors: {
-          select: {
+      include: {
+        owner: true,
+        memberships: {
+          include: {
             user: true,
-            status: true,
-            attestedTerms: true,
-            acceptedTerms: true,
-          },
-        },
-        history: {
-          select: {
-            id: true,
-            auditId: true,
-            audit: true,
-            action: true,
-            userType: true,
-            comment: true,
-            createdAt: true,
-            user: true,
-          },
-          orderBy: {
-            createdAt: "asc",
           },
         },
       },
     });
   }
 
-  getAuditsDetailed(status?: AuditStatus): Promise<AuditDetailedI[]> {
+  getAuditActions(auditId: string): PrismaPromise<ActionI[]> {
+    return prisma.action.findMany({
+      where: {
+        membership: {
+          auditId,
+        },
+      },
+      include: {
+        membership: {
+          include: {
+            user: true,
+          },
+        },
+      },
+    });
+  }
+
+  getAuditAuditors(auditId: string): PrismaPromise<AuditMembership[]> {
+    return prisma.auditMembership.findMany({
+      where: {
+        auditId,
+        role: RoleType.AUDITOR,
+      },
+    });
+  }
+
+  getAuditsDetailed(status?: AuditStatusType): PrismaPromise<AuditDetailedI[]> {
     return prisma.audit.findMany({
       where: {
-        status: status ?? AuditStatus.DISCOVERY,
+        status: status ?? AuditStatusType.DISCOVERY,
       },
-      select: {
-        id: true,
-        title: true,
-        description: true,
-        price: true,
-        duration: true,
-        token: true,
-        cliff: true,
-        createdAt: true,
-        auditee: true,
-        auditors: {
+      include: {
+        owner: true,
+        memberships: {
           where: {
-            status: AuditorStatus.VERIFIED,
+            isActive: true,
+            role: RoleType.AUDITOR,
+            status: MembershipStatusType.VERIFIED,
           },
-          select: {
+          include: {
             user: true,
           },
         },
@@ -94,173 +92,150 @@ class AuditService {
     });
   }
 
-  getAuditFindings(id: string): Promise<AuditFindingsI | null> {
+  getAuditFindings(auditId: string): PrismaPromise<AuditFindingsI | null> {
     return prisma.audit.findUnique({
       where: {
-        id,
+        id: auditId,
       },
-      select: {
-        onchainAuditInfoId: true,
-        duration: true,
-        price: true,
-        cliff: true,
-        token: true,
-        auditors: {
+      include: {
+        memberships: {
           where: {
+            role: RoleType.AUDITOR,
+            isActive: true,
+            status: MembershipStatusType.VERIFIED,
             acceptedTerms: true,
-            findings: {
-              not: null,
-            },
           },
-          select: {
-            findings: true,
-            user: {
-              select: {
-                address: true,
-              },
-            },
+          omit: {
+            findings: false,
+          },
+          include: {
+            user: true,
           },
         },
       },
     });
   }
 
-  getAuditState(id: string, userId: string | undefined): Promise<AuditStateI> {
+  getAuditState(audit: AuditI, user: User | null): AuditStateI {
     const objOut = {
-      isTheAuditee: false,
-      isAnAuditor: false,
-      userIsVerified: false,
-      userIsRequested: false,
-      userIsRejected: false,
-      auditeeCanManageAuditors: false,
-      auditeeCanLock: false,
-      userAttested: false,
-      userAccepted: false,
-      userSubmitted: false,
-      allAttested: false,
-      allSubmitted: false,
+      isAuditOwner: false,
+      isAuditAuditor: false,
+      states: {
+        [AuditStateEnum.CAN_ADD_REQUEST]: false,
+        [AuditStateEnum.CAN_MANAGE_REQUESTS]: false,
+        [AuditStateEnum.CAN_LOCK_AUDIT]: false,
+        [AuditStateEnum.CAN_REMOVE_VERIFICATION]: false,
+        [AuditStateEnum.CAN_REMOVE_REQUEST]: false,
+        [AuditStateEnum.IS_REJECTED]: false,
+        [AuditStateEnum.CAN_FINALIZE]: false,
+        [AuditStateEnum.CAN_SUBMIT_FINDINGS]: false,
+        [AuditStateEnum.CAN_UNLOCK]: false,
+        [AuditStateEnum.CAN_ATTEST]: false,
+      },
     };
-    return prisma.audit
-      .findUnique({
-        where: {
-          id,
-        },
-        include: {
-          auditors: {
-            include: {
-              user: true,
-            },
-          },
-          auditee: true,
-        },
-      })
-      .then((result) => {
-        if (!result) return objOut;
 
-        const verifiedAuditors = result.auditors.filter(
-          (auditor) => auditor.status == AuditorStatus.VERIFIED,
+    if (!user) return objOut;
+
+    const owner = audit.owner;
+    const auditors = audit.memberships;
+
+    if (!owner) return objOut;
+
+    const verified: MembershipUserI[] = [];
+    const requested: MembershipUserI[] = [];
+    const rejected: MembershipUserI[] = [];
+
+    auditors.forEach((auditor) => {
+      switch (auditor.status) {
+        case MembershipStatusType.VERIFIED:
+          verified.push(auditor);
+          break;
+        case MembershipStatusType.REQUESTED:
+          requested.push(auditor);
+          break;
+        case MembershipStatusType.REJECTED:
+          rejected.push(auditor);
+          break;
+      }
+    });
+
+    objOut.isAuditOwner = owner.id === user.id;
+    const userAuditor = auditors.find((auditor) => auditor.userId === user.id);
+
+    if (audit.status === AuditStatusType.DISCOVERY) {
+      objOut.states[AuditStateEnum.CAN_ADD_REQUEST] = !userAuditor && user.auditorRole;
+      if (userAuditor) {
+        const { status } = userAuditor;
+        objOut.states[AuditStateEnum.CAN_REMOVE_REQUEST] = status !== MembershipStatusType.REJECTED;
+        objOut.states[AuditStateEnum.CAN_REMOVE_VERIFICATION] =
+          status === MembershipStatusType.VERIFIED;
+        objOut.states[AuditStateEnum.IS_REJECTED] = status === MembershipStatusType.REJECTED;
+      }
+      if (objOut.isAuditOwner) {
+        objOut.states[AuditStateEnum.CAN_LOCK_AUDIT] = verified.length > 0 && !!audit.details;
+        objOut.states[AuditStateEnum.CAN_MANAGE_REQUESTS] = requested.length > 0;
+      }
+
+      return objOut;
+    }
+    if (audit.status === AuditStatusType.ATTESTATION) {
+      if (objOut.isAuditOwner) {
+        objOut.states[AuditStateEnum.CAN_FINALIZE] = verified.every(
+          (member) => member.attestedTerms,
         );
-        const requestedAuditors = result.auditors.filter(
-          (auditor) => auditor.status == AuditorStatus.REQUESTED,
-        );
-        const rejectedAuditors = result.auditors.filter(
-          (auditor) => auditor.status == AuditorStatus.REJECTED,
-        );
+      }
+      if (userAuditor) {
+        objOut.states[AuditStateEnum.CAN_ATTEST] = !userAuditor.attestedTerms;
+      }
 
-        const userAuditor: Auditor | undefined = result.auditors.find(
-          (auditor) => auditor.userId == userId,
-        );
+      return objOut;
+    }
+    if (audit.status === AuditStatusType.AUDITING) {
+      if (userAuditor) {
+        objOut.states[AuditStateEnum.CAN_SUBMIT_FINDINGS] = !userAuditor.findings;
+      }
+      if (objOut.isAuditAuditor) {
+        objOut.states[AuditStateEnum.CAN_UNLOCK] = verified.every((member) => !!member.findings);
+      }
+    }
 
-        objOut.isTheAuditee = result.auditeeId == userId;
-
-        if (userAuditor) {
-          objOut.isAnAuditor = true;
-          objOut.userIsVerified = userAuditor.status == AuditorStatus.VERIFIED;
-          objOut.userIsRequested = userAuditor.status == AuditorStatus.REQUESTED;
-          objOut.userIsRejected = userAuditor.status == AuditorStatus.REJECTED;
-
-          objOut.userAttested = userAuditor.attestedTerms;
-          objOut.userAccepted = userAuditor.acceptedTerms;
-          objOut.userSubmitted = !!userAuditor.findings;
-        }
-
-        objOut.auditeeCanManageAuditors =
-          requestedAuditors.length > 0 || rejectedAuditors.length > 0;
-        objOut.auditeeCanLock = verifiedAuditors.length > 0 && !!result.details;
-
-        objOut.allAttested =
-          verifiedAuditors.filter((auditor) => auditor.acceptedTerms).length ==
-          verifiedAuditors.length;
-
-        objOut.allSubmitted =
-          verifiedAuditors.filter((auditor) => !!auditor.findings).length ==
-          verifiedAuditors.length;
-
-        return objOut;
-      })
-      .catch((error) => {
-        console.log(error);
-        return objOut;
-      });
+    return objOut;
   }
 
-  addAuditInfo(auditId: string, infoId: string): Promise<Audit> {
+  getAuditOwnerMembership(auditId: string): PrismaPromise<AuditMembership | null> {
+    return prisma.auditMembership.findFirst({
+      where: {
+        auditId,
+        role: RoleType.OWNER,
+      },
+    });
+  }
+
+  addAuditInfo(auditId: string, infoId: string): PrismaPromise<Audit> {
     return prisma.audit.update({
       where: {
         id: auditId,
       },
       data: {
         onchainAuditInfoId: infoId,
-        status: AuditStatus.AUDITING,
-        auditee: {
-          update: {
-            history: {
-              create: {
-                userType: UserType.AUDITEE,
-                action: HistoryAction.FINALIZED,
-                audit: {
-                  connect: {
-                    id: auditId,
-                  },
-                },
-              },
-            },
-          },
-        },
+        status: AuditStatusType.AUDITING,
       },
     });
   }
 
-  addNftInfo(auditId: string, nftId: string): Promise<Audit> {
+  addNftInfo(auditId: string, nftId: string): PrismaPromise<Audit> {
     return prisma.audit.update({
       where: {
         id: auditId,
       },
       data: {
         onchainNftId: nftId,
-        status: AuditStatus.CHALLENGEABLE,
-        auditee: {
-          update: {
-            history: {
-              create: {
-                userType: UserType.AUDITEE,
-                action: HistoryAction.MINTED,
-                audit: {
-                  connect: {
-                    id: auditId,
-                  },
-                },
-              },
-            },
-          },
-        },
+        status: AuditStatusType.CHALLENGEABLE,
       },
     });
   }
 
   parseMarkdown(path: string): Promise<string> {
-    // I should move this to inside Audit Page, since we're already fetching the Audit, which is what
-    // we'd do here.
     return fetch(path)
       .then((response) => {
         if (!response.ok) {
@@ -277,7 +252,21 @@ class AuditService {
       });
   }
 
-  async safeMarkdownDisplay(id: string, userId: string | undefined): Promise<MarkdownAuditsI> {
+  /**
+   * Safely displays markdown content for an audit, ensuring proper visibility
+   * based on user roles and audit status.
+   *
+   * @param {AuditI} audit - The audit object containing details and memberships.
+   * @param {User | null} currentUser - The current user viewing the audit, or null if not logged in.
+   * @returns {Promise<MarkdownAuditsI>} - A promise that resolves to an object
+   * containing markdown details, global reveal status, pending cliff status, and findings.
+   *
+   * The function processes the audit details and findings, ensuring that only
+   * authorized users can view certain content based on their roles and the audit's status.
+   * It fetches on-chain information to determine the audit's start and cliff period,
+   * and adjusts the visibility of findings accordingly.
+   */
+  async safeMarkdownDisplay(audit: AuditI, currentUser: User | null): Promise<MarkdownAuditsI> {
     const markdownObject: MarkdownAuditsI = {
       details: "",
       globalReveal: false,
@@ -285,48 +274,41 @@ class AuditService {
       findings: [],
     };
 
-    const state = await this.getAuditState(id, userId);
+    const verified = audit.memberships.filter(
+      (member) =>
+        member.role === RoleType.AUDITOR && member.status == MembershipStatusType.VERIFIED,
+    );
 
-    const audit = await prisma.audit.findUnique({
-      where: {
-        id,
-      },
-      include: {
-        auditors: {
-          include: {
-            user: true,
-          },
-        },
-      },
-    });
-
-    if (!audit) return markdownObject;
-
-    // if details exist, get them.
     if (audit.details) {
       markdownObject.details = await this.parseMarkdown(audit.details);
     }
-
-    // can early stop
-    if (audit.status == AuditStatus.DISCOVERY || audit.status == AuditStatus.ATTESTATION) {
+    if (audit.status == AuditStatusType.DISCOVERY || audit.status == AuditStatusType.ATTESTATION) {
       return markdownObject;
     }
 
     // if finalized, we'll reveal to everyone.
-    let globalReveal = audit.status == AuditStatus.FINALIZED;
+    let globalReveal = audit.status == AuditStatusType.FINALIZED;
     // auditor can always see their own findings.
     // Protocol owner can see once they put money in escrow.
-    const auditeeReveal =
-      audit.auditeeId == userId && (globalReveal || audit.status == AuditStatus.CHALLENGEABLE);
+    const state = this.getAuditState(audit, currentUser);
+
+    // effectively refetches the audit, but doesn't omit the findings.
+    const auditWithFindings = await this.getAuditFindings(audit.id);
+
+    // will never happen. But need it for type safety.
+    if (!auditWithFindings) return markdownObject;
+    let ownerReveal = globalReveal;
 
     const now = Math.round(new Date().getTime() / 1000);
     // fetch on-chain information to get audit start
-    if (audit.onchainAuditInfoId && audit.status == AuditStatus.CHALLENGEABLE) {
+    if (audit.onchainAuditInfoId && audit.status == AuditStatusType.CHALLENGEABLE) {
+      if (state.isAuditOwner) {
+        ownerReveal = true;
+      }
       try {
         const onchainAudit = await this.contractService.getAudit(BigInt(audit.onchainAuditInfoId));
         if (onchainAudit) {
-          const start = Number(onchainAudit[5]);
-          const cliff = Number(onchainAudit[4]);
+          const { start, cliff } = onchainAudit;
           if (now < start + cliff) {
             markdownObject.pendingCliff = true;
           } else {
@@ -336,32 +318,29 @@ class AuditService {
         }
       } catch (error) {
         console.log(error);
-        globalReveal = false;
       }
     }
 
     markdownObject.globalReveal = globalReveal;
 
-    for (const auditor of audit.auditors) {
-      if (auditor.status === AuditorStatus.VERIFIED) {
-        const user = auditor.user;
-        const submitted = !!auditor.findings;
-        const owner = auditor.userId === userId;
-        const reveal = globalReveal || (state.userSubmitted && owner) || auditeeReveal;
+    for (const member of verified) {
+      const { user } = member;
+      const submitted = !!member.findings;
+      const isOwner = user.id === currentUser?.id;
+      const reveal = globalReveal || (!state.states.CAN_SUBMIT_FINDINGS && isOwner) || ownerReveal;
 
-        let markdown = "";
-        if (submitted && reveal) {
-          markdown = await this.parseMarkdown(auditor.findings as string);
-        }
-
-        markdownObject.findings.push({
-          user,
-          owner,
-          reveal,
-          submitted,
-          markdown,
-        });
+      let markdown = "";
+      if (submitted && reveal) {
+        markdown = await this.parseMarkdown(member.findings as string);
       }
+
+      markdownObject.findings.push({
+        user,
+        owner: isOwner,
+        reveal,
+        submitted,
+        markdown,
+      });
     }
 
     return markdownObject;

@@ -3,10 +3,10 @@ import { Suspense } from "react";
 import { auditAction } from "@/actions";
 import { Loader } from "@/components/Loader";
 import Audits from "@/components/screens/audits";
-import { AuditStatus } from "@prisma/client";
+import { AuditStatusType } from "@prisma/client";
 
 const Fetcher = async (): Promise<JSX.Element> => {
-  const data = await auditAction.getAuditsDetailed(AuditStatus.DISCOVERY);
+  const data = await auditAction.getAuditsDetailed(AuditStatusType.DISCOVERY);
 
   return <Audits initialData={data} />;
 };

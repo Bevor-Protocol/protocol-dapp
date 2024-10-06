@@ -42,9 +42,9 @@ const UserContent = async ({
             aria-disabled={true}
           />
           <Form.Radio
-            name="auditeeRole"
+            name="ownerRole"
             text="auditee role"
-            checked={user.auditeeRole}
+            checked={user.ownerRole}
             disabled={true}
             aria-disabled={true}
           />

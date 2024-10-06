@@ -1,6 +1,6 @@
 export * as authAction from "./auth";
 export * as contractAction from "./contract";
-export * as historyAction from "./history";
+export * as notificationAction from "./notification";
 export * as statAction from "./stat";
 export * as userAction from "./user";
 export * as wishlistAction from "./wishlist";

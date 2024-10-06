@@ -1,16 +1,20 @@
 "use server";
 
 import { AuditStateI, MarkdownAuditsI, ResponseI } from "@/utils/types";
-import { AuditDetailedI, AuditFindingsI, AuditI } from "@/utils/types/prisma";
+import { ActionI, AuditDetailedI, AuditFindingsI, AuditI } from "@/utils/types/prisma";
 
-import { Audit, AuditStatus } from "@prisma/client";
+import { Audit, AuditStatusType, User } from "@prisma/client";
 import auditController from "./audit.controller";
 
 const getAudit = async (id: string): Promise<AuditI | null> => {
   return auditController.getAudit(id);
 };
 
-const getAuditsDetailed = async (status?: AuditStatus): Promise<AuditDetailedI[]> => {
+const getAuditActions = async (auditId: string): Promise<ActionI[]> => {
+  return auditController.getAuditActions(auditId);
+};
+
+const getAuditsDetailed = async (status?: AuditStatusType): Promise<AuditDetailedI[]> => {
   return auditController.getAuditsDetailed(status);
 };
 
@@ -22,12 +26,12 @@ const addNftInfo = async (id: string, nftId: string): Promise<ResponseI<Audit>> 
   return auditController.addNftInfo(id, nftId);
 };
 
-const getState = async (id: string): Promise<AuditStateI> => {
-  return auditController.getState(id);
+const getState = async (audit: AuditI, user: User): Promise<AuditStateI> => {
+  return auditController.getState(audit, user);
 };
 
-const safeMarkdown = async (id: string): Promise<MarkdownAuditsI> => {
-  return auditController.safeMarkdown(id);
+const safeMarkdown = async (audit: AuditI): Promise<MarkdownAuditsI> => {
+  return auditController.safeMarkdown(audit);
 };
 
 const getAuditFindings = async (id: string): Promise<AuditFindingsI | null> => {
@@ -38,6 +42,7 @@ export {
   addAuditInfo,
   addNftInfo,
   getAudit,
+  getAuditActions,
   getAuditFindings,
   getAuditsDetailed,
   getState,

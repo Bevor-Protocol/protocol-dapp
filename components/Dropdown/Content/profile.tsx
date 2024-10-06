@@ -12,18 +12,18 @@ import { useModal, useSiwe } from "@/hooks/useContexts";
 import { useCopyToClipboard } from "@/hooks/useCopyToClipboard";
 import { cn } from "@/utils";
 import { trimAddress } from "@/utils/formatters";
-import { HistoryI } from "@/utils/types";
+import { UserNotificationI } from "@/utils/types/prisma";
 import { User } from "@prisma/client";
 
 const Profile = ({
   address,
   user,
-  history,
+  notifications,
   close,
 }: {
   address: string;
   user: User | null;
-  history: Record<string, { meta: string; history: HistoryI[] }>;
+  notifications: Record<string, { meta: string; notifications: UserNotificationI[] }>;
   close?: () => void;
 }): JSX.Element => {
   const { chain, connector } = useAccount();
@@ -39,7 +39,7 @@ const Profile = ({
 
   const handleNotifications = (): void => {
     if (!Object.keys(history).length) return;
-    setContent(<NotificationPanel history={history} />);
+    setContent(<NotificationPanel notifications={notifications} />);
     toggleOpen("panel");
   };
 

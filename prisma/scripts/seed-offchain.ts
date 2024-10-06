@@ -1,9 +1,9 @@
 // import { Role, Prisma } from "@prisma/client";
 import { prisma } from "@/db/prisma.server";
-import { AuditorStatus, AuditStatus, HistoryAction, UserType } from "@prisma/client";
 import { ethers } from "ethers";
 
 import ERC20ABI from "@/contracts/abis/ERC20Token";
+import { ActionType, AuditStatusType, MembershipStatusType, RoleType } from "@prisma/client";
 
 const seed = async (): Promise<void> => {
   // In practice, users will only be created once they've gotten a role
@@ -33,7 +33,7 @@ const seed = async (): Promise<void> => {
   const userData = [
     {
       address: WALLETS[0],
-      auditeeRole: true,
+      ownerRole: true,
       name: "My main auditee wallet",
     },
     {
@@ -43,13 +43,13 @@ const seed = async (): Promise<void> => {
     },
     {
       address: WALLETS[2],
-      auditeeRole: true,
+      ownerRole: true,
       auditorRole: true,
       name: "I have both roles",
     },
     {
       address: WALLETS[3],
-      auditeeRole: true,
+      ownerRole: true,
       name: "Test User 1",
       available: true,
     },
@@ -93,7 +93,7 @@ const seed = async (): Promise<void> => {
       id: users[0].id,
     },
     data: {
-      wishlistAsRequestor: {
+      wishlistAsSender: {
         create: {
           receiver: {
             connect: {
@@ -115,9 +115,20 @@ const seed = async (): Promise<void> => {
       title: "Empty audit - Open",
       description: "Open, no requestors, no auditors, no details provided",
       token: tokenAddress,
-      auditee: {
+      owner: {
         connect: {
           address: WALLETS[0],
+        },
+      },
+      memberships: {
+        create: {
+          user: {
+            connect: {
+              address: WALLETS[0],
+            },
+          },
+          role: RoleType.OWNER,
+          status: MembershipStatusType.VERIFIED,
         },
       },
     },
@@ -135,20 +146,24 @@ const seed = async (): Promise<void> => {
       duration: 30,
       token: tokenAddress,
       details: `${process.env.BLOB_URL}/audit-details/example-7Ap1GR49l2yVbJtvIJ0dVnleKuM8pj.md`,
-      auditee: {
+      owner: {
         connect: {
           address: WALLETS[0],
         },
       },
-      auditors: {
-        create: {
-          status: AuditorStatus.REQUESTED,
-          user: {
-            connect: {
-              address: WALLETS[1],
-            },
+      memberships: {
+        create: [
+          {
+            userId: users[0].id,
+            role: RoleType.OWNER,
+            status: MembershipStatusType.VERIFIED,
           },
-        },
+          {
+            userId: users[1].id,
+            role: RoleType.AUDITOR,
+            status: MembershipStatusType.REQUESTED,
+          },
+        ],
       },
     },
   });
@@ -164,20 +179,24 @@ const seed = async (): Promise<void> => {
       price: 10_000,
       duration: 50,
       token: tokenAddress,
-      auditee: {
+      owner: {
         connect: {
           address: WALLETS[0],
         },
       },
-      auditors: {
-        create: {
-          status: AuditorStatus.VERIFIED,
-          user: {
-            connect: {
-              address: WALLETS[1],
-            },
+      memberships: {
+        create: [
+          {
+            userId: users[0].id,
+            role: RoleType.OWNER,
+            status: MembershipStatusType.VERIFIED,
           },
-        },
+          {
+            userId: users[1].id,
+            role: RoleType.AUDITOR,
+            status: MembershipStatusType.VERIFIED,
+          },
+        ],
       },
     },
   });
@@ -185,6 +204,56 @@ const seed = async (): Promise<void> => {
   //////////////////////////////////////////////////////////////////////////////
   //////////////////////////////////////////////////////////////////////////////
   //////////////////////////////////////////////////////////////////////////////
+
+  const broadcastActions = async (): Promise<void> => {
+    // can just use the most recent audit for this seeding process.
+    // will exclude a noti for the person who created the action.
+    const audit = await prisma.audit.findFirst({
+      orderBy: {
+        createdAt: "desc",
+      },
+      include: {
+        memberships: {
+          include: {
+            actions: true,
+          },
+        },
+      },
+    });
+
+    if (!audit) return;
+
+    const userIds: string[] = [];
+    const allActions: { userId: string; actionId: string; createdAt: Date }[] = [];
+    audit.memberships.forEach((membership) => {
+      const { userId, actions } = membership;
+      userIds.push(userId);
+      actions.forEach((action) =>
+        allActions.push({
+          userId: userId,
+          actionId: action.id,
+          createdAt: action.createdAt,
+        }),
+      );
+    });
+
+    const actionsBroadcast: { userId: string; actionId: string; createdAt: Date }[] = [];
+    for (const userId of userIds) {
+      for (const action of allActions) {
+        if (action.userId !== userId) {
+          actionsBroadcast.push({
+            userId,
+            actionId: action.actionId,
+            createdAt: action.createdAt,
+          });
+        }
+      }
+    }
+
+    await prisma.notification.createMany({
+      data: actionsBroadcast,
+    });
+  };
 
   await prisma.audit.create({
     data: {
@@ -194,54 +263,35 @@ const seed = async (): Promise<void> => {
       duration: 50,
       token: tokenAddress,
       details: `${process.env.BLOB_URL}/audit-details/example-7Ap1GR49l2yVbJtvIJ0dVnleKuM8pj.md`,
-      status: AuditStatus.ATTESTATION,
-      auditee: {
+      status: AuditStatusType.ATTESTATION,
+      owner: {
         connect: {
           address: WALLETS[0],
         },
       },
-      auditors: {
-        create: {
-          status: AuditorStatus.VERIFIED,
-          user: {
-            connect: {
-              address: WALLETS[1],
+      memberships: {
+        create: [
+          {
+            userId: users[0].id,
+            role: RoleType.OWNER,
+            status: MembershipStatusType.VERIFIED,
+            actions: {
+              create: {
+                type: ActionType.OWNER_LOCKED,
+              },
             },
           },
-        },
-      },
-      history: {
-        create: {
-          action: HistoryAction.LOCKED,
-          userType: UserType.AUDITEE,
-          user: {
-            connect: {
-              address: WALLETS[0],
-            },
+          {
+            userId: users[1].id,
+            role: RoleType.AUDITOR,
+            status: MembershipStatusType.REQUESTED,
           },
-          historyViews: {
-            create: [
-              {
-                user: {
-                  connect: {
-                    address: WALLETS[0],
-                  },
-                },
-              },
-              {
-                user: {
-                  connect: {
-                    address: WALLETS[1],
-                  },
-                },
-                hasViewed: true,
-              },
-            ],
-          },
-        },
+        ],
       },
     },
   });
+
+  await broadcastActions();
 
   //////////////////////////////////////////////////////////////////////////////
   //////////////////////////////////////////////////////////////////////////////
@@ -255,86 +305,44 @@ const seed = async (): Promise<void> => {
       duration: 50,
       token: tokenAddress,
       details: `${process.env.BLOB_URL}/audit-details/example-7Ap1GR49l2yVbJtvIJ0dVnleKuM8pj.md`,
-      status: AuditStatus.ATTESTATION,
-      auditee: {
+      status: AuditStatusType.ATTESTATION,
+      owner: {
         connect: {
           address: WALLETS[0],
         },
       },
-      auditors: {
-        create: {
-          status: AuditorStatus.VERIFIED,
-          attestedTerms: true,
-          acceptedTerms: false,
-          user: {
-            connect: {
-              address: WALLETS[1],
-            },
-          },
-        },
-      },
-      history: {
+      memberships: {
         create: [
           {
-            action: HistoryAction.LOCKED,
-            userType: UserType.AUDITEE,
-            createdAt: new Date(new Date().getTime() - 1000),
-            user: {
-              connect: {
-                address: WALLETS[0],
+            userId: users[0].id,
+            role: RoleType.OWNER,
+            status: MembershipStatusType.VERIFIED,
+            actions: {
+              create: {
+                type: ActionType.OWNER_LOCKED,
+                createdAt: new Date(new Date().getTime() - 1000),
               },
-            },
-            historyViews: {
-              create: [
-                {
-                  user: {
-                    connect: {
-                      address: WALLETS[0],
-                    },
-                  },
-                },
-                {
-                  user: {
-                    connect: {
-                      address: WALLETS[1],
-                    },
-                  },
-                },
-              ],
             },
           },
           {
-            action: HistoryAction.REJECTED,
-            userType: UserType.AUDITOR,
-            comment: "I don't like the terms",
-            user: {
-              connect: {
-                address: WALLETS[1],
+            userId: users[1].id,
+            role: RoleType.AUDITOR,
+            status: MembershipStatusType.VERIFIED,
+            attestedTerms: true,
+            acceptedTerms: false,
+            actions: {
+              create: {
+                type: ActionType.AUDITOR_TERMS_REJECTED,
+                comment: "I don't like the terms",
               },
-            },
-            historyViews: {
-              create: [
-                {
-                  user: {
-                    connect: {
-                      address: WALLETS[0],
-                    },
-                  },
-                },
-                {
-                  user: {
-                    connect: {
-                      address: WALLETS[1],
-                    },
-                  },
-                },
-              ],
             },
           },
         ],
       },
     },
   });
+
+  await broadcastActions();
 
   //////////////////////////////////////////////////////////////////////////////
   //////////////////////////////////////////////////////////////////////////////
@@ -344,89 +352,47 @@ const seed = async (): Promise<void> => {
     data: {
       title: "Auditor Audit - Locked, Accepted",
       description: "Locked, 1 auditor, accepted terms, details provided. Can be kicked off.",
-      status: AuditStatus.ATTESTATION,
+      status: AuditStatusType.ATTESTATION,
       price: 20_000,
       duration: 50,
       token: tokenAddress,
       details: `${process.env.BLOB_URL}/audit-details/example-7Ap1GR49l2yVbJtvIJ0dVnleKuM8pj.md`,
-      auditee: {
+      owner: {
         connect: {
           address: WALLETS[0],
         },
       },
-      auditors: {
-        create: {
-          status: AuditorStatus.VERIFIED,
-          attestedTerms: true,
-          acceptedTerms: true,
-          user: {
-            connect: {
-              address: WALLETS[1],
-            },
-          },
-        },
-      },
-      history: {
+      memberships: {
         create: [
           {
-            action: HistoryAction.LOCKED,
-            userType: UserType.AUDITEE,
-            createdAt: new Date(new Date().getTime() - 1000),
-            user: {
-              connect: {
-                address: WALLETS[0],
+            userId: users[0].id,
+            role: RoleType.OWNER,
+            status: MembershipStatusType.VERIFIED,
+            actions: {
+              create: {
+                type: ActionType.OWNER_LOCKED,
+                createdAt: new Date(new Date().getTime() - 1000),
               },
-            },
-            historyViews: {
-              create: [
-                {
-                  user: {
-                    connect: {
-                      address: WALLETS[0],
-                    },
-                  },
-                },
-                {
-                  user: {
-                    connect: {
-                      address: WALLETS[1],
-                    },
-                  },
-                },
-              ],
             },
           },
           {
-            action: HistoryAction.APPROVED,
-            userType: UserType.AUDITOR,
-            user: {
-              connect: {
-                address: WALLETS[1],
+            userId: users[1].id,
+            role: RoleType.AUDITOR,
+            status: MembershipStatusType.VERIFIED,
+            attestedTerms: true,
+            acceptedTerms: true,
+            actions: {
+              create: {
+                type: ActionType.AUDITOR_TERMS_APPROVED,
               },
-            },
-            historyViews: {
-              create: [
-                {
-                  user: {
-                    connect: {
-                      address: WALLETS[0],
-                    },
-                  },
-                },
-                {
-                  user: {
-                    connect: {
-                      address: WALLETS[1],
-                    },
-                  },
-                },
-              ],
             },
           },
         ],
       },
     },
   });
+
+  await broadcastActions();
 
   //////////////////////////////////////////////////////////////////////////////
   //////////////////////////////////////////////////////////////////////////////
@@ -437,213 +403,66 @@ const seed = async (): Promise<void> => {
       id: "number1",
       title: "Auditor Audit - Locked, Accepted, 1 Findings Submitted",
       description: "Ongoing, 2 auditors, 1 findings submitted, 1 pending.",
-      status: AuditStatus.AUDITING,
+      status: AuditStatusType.AUDITING,
       price: 20_000,
       duration: 50,
       token: tokenAddress,
       details: `${process.env.BLOB_URL}/audit-details/example-7Ap1GR49l2yVbJtvIJ0dVnleKuM8pj.md`,
-      auditee: {
+      owner: {
         connect: {
           address: WALLETS[0],
         },
       },
-      auditors: {
+      memberships: {
         create: [
           {
-            status: AuditorStatus.VERIFIED,
-            attestedTerms: true,
-            acceptedTerms: true,
-            user: {
-              connect: {
-                address: WALLETS[1],
-              },
+            userId: users[0].id,
+            role: RoleType.OWNER,
+            status: MembershipStatusType.VERIFIED,
+            actions: {
+              create: [
+                {
+                  type: ActionType.OWNER_LOCKED,
+                  createdAt: new Date(new Date().getTime() - 4000),
+                },
+                {
+                  type: ActionType.OWNER_FINALIZED,
+                  createdAt: new Date(new Date().getTime() - 2000),
+                },
+              ],
             },
           },
           {
-            status: AuditorStatus.VERIFIED,
+            userId: users[1].id,
+            role: RoleType.AUDITOR,
+            status: MembershipStatusType.VERIFIED,
             attestedTerms: true,
             acceptedTerms: true,
-            user: {
-              connect: {
-                address: WALLETS[4],
-              },
+            actions: {
+              create: [
+                {
+                  type: ActionType.AUDITOR_TERMS_APPROVED,
+                  createdAt: new Date(new Date().getTime() - 3600),
+                },
+              ],
             },
+          },
+          {
+            userId: users[4].id,
+            role: RoleType.AUDITOR,
+            status: MembershipStatusType.VERIFIED,
+            attestedTerms: true,
+            acceptedTerms: true,
             findings: `${process.env.BLOB_URL}/audit-findings/example-q0D5zQMv65hQJ4mWfJfstcnagI5kUI.md`,
-          },
-        ],
-      },
-      history: {
-        create: [
-          {
-            action: HistoryAction.LOCKED,
-            userType: UserType.AUDITEE,
-            createdAt: new Date(new Date().getTime() - 4000),
-            user: {
-              connect: {
-                address: WALLETS[0],
-              },
-            },
-            historyViews: {
+            actions: {
               create: [
                 {
-                  user: {
-                    connect: {
-                      address: WALLETS[0],
-                    },
-                  },
+                  type: ActionType.AUDITOR_TERMS_APPROVED,
+                  createdAt: new Date(new Date().getTime() - 3500),
                 },
                 {
-                  user: {
-                    connect: {
-                      address: WALLETS[1],
-                    },
-                  },
-                },
-                {
-                  user: {
-                    connect: {
-                      address: WALLETS[4],
-                    },
-                  },
-                },
-              ],
-            },
-          },
-          {
-            action: HistoryAction.FINALIZED,
-            userType: UserType.AUDITEE,
-            createdAt: new Date(new Date().getTime() - 2000),
-            user: {
-              connect: {
-                address: WALLETS[0],
-              },
-            },
-            historyViews: {
-              create: [
-                {
-                  user: {
-                    connect: {
-                      address: WALLETS[0],
-                    },
-                  },
-                },
-                {
-                  user: {
-                    connect: {
-                      address: WALLETS[1],
-                    },
-                  },
-                },
-                {
-                  user: {
-                    connect: {
-                      address: WALLETS[4],
-                    },
-                  },
-                },
-              ],
-            },
-          },
-          {
-            action: HistoryAction.APPROVED,
-            userType: UserType.AUDITOR,
-            createdAt: new Date(new Date().getTime() - 3600),
-            user: {
-              connect: {
-                address: WALLETS[1],
-              },
-            },
-            historyViews: {
-              create: [
-                {
-                  user: {
-                    connect: {
-                      address: WALLETS[0],
-                    },
-                  },
-                },
-                {
-                  user: {
-                    connect: {
-                      address: WALLETS[1],
-                    },
-                  },
-                },
-                {
-                  user: {
-                    connect: {
-                      address: WALLETS[4],
-                    },
-                  },
-                },
-              ],
-            },
-          },
-          {
-            action: HistoryAction.APPROVED,
-            userType: UserType.AUDITOR,
-            createdAt: new Date(new Date().getTime() - 3500),
-            user: {
-              connect: {
-                address: WALLETS[4],
-              },
-            },
-            historyViews: {
-              create: [
-                {
-                  user: {
-                    connect: {
-                      address: WALLETS[0],
-                    },
-                  },
-                },
-                {
-                  user: {
-                    connect: {
-                      address: WALLETS[1],
-                    },
-                  },
-                },
-                {
-                  user: {
-                    connect: {
-                      address: WALLETS[4],
-                    },
-                  },
-                },
-              ],
-            },
-          },
-          {
-            action: HistoryAction.FINDINGS,
-            userType: UserType.AUDITOR,
-            user: {
-              connect: {
-                address: WALLETS[1],
-              },
-            },
-            historyViews: {
-              create: [
-                {
-                  user: {
-                    connect: {
-                      address: WALLETS[0],
-                    },
-                  },
-                },
-                {
-                  user: {
-                    connect: {
-                      address: WALLETS[1],
-                    },
-                  },
-                },
-                {
-                  user: {
-                    connect: {
-                      address: WALLETS[4],
-                    },
-                  },
+                  type: ActionType.AUDITOR_FINDINGS,
+                  createdAt: new Date(new Date().getTime() - 3500),
                 },
               ],
             },
@@ -652,6 +471,8 @@ const seed = async (): Promise<void> => {
       },
     },
   });
+
+  await broadcastActions();
 
   //////////////////////////////////////////////////////////////////////////////
   //////////////////////////////////////////////////////////////////////////////
@@ -662,250 +483,71 @@ const seed = async (): Promise<void> => {
       id: "number2",
       title: "Auditor Audit - Ready for on-chain",
       description: "Ongoing, all parties submitted findings. Can be pushed on-chain",
-      status: AuditStatus.AUDITING,
+      status: AuditStatusType.AUDITING,
       price: 20_000,
       duration: 50,
       token: tokenAddress,
       details: `${process.env.BLOB_URL}/audit-details/example-7Ap1GR49l2yVbJtvIJ0dVnleKuM8pj.md`,
-      auditee: {
+      owner: {
         connect: {
           address: WALLETS[0],
         },
       },
-      auditors: {
+      memberships: {
         create: [
           {
-            status: AuditorStatus.VERIFIED,
+            userId: users[0].id,
+            role: RoleType.OWNER,
+            status: MembershipStatusType.VERIFIED,
+            actions: {
+              create: [
+                {
+                  type: ActionType.OWNER_LOCKED,
+                  createdAt: new Date(new Date().getTime() - 4000),
+                },
+                {
+                  type: ActionType.OWNER_FINALIZED,
+                  createdAt: new Date(new Date().getTime() - 2000),
+                },
+              ],
+            },
+          },
+          {
+            userId: users[1].id,
+            role: RoleType.AUDITOR,
+            status: MembershipStatusType.VERIFIED,
             attestedTerms: true,
             acceptedTerms: true,
-            user: {
-              connect: {
-                address: WALLETS[1],
-              },
-            },
             findings: `${process.env.BLOB_URL}/audit-findings/example-q0D5zQMv65hQJ4mWfJfstcnagI5kUI.md`,
+            actions: {
+              create: [
+                {
+                  type: ActionType.AUDITOR_TERMS_APPROVED,
+                  createdAt: new Date(new Date().getTime() - 3600),
+                },
+                {
+                  type: ActionType.AUDITOR_FINDINGS,
+                  createdAt: new Date(new Date().getTime() - 1000),
+                },
+              ],
+            },
           },
           {
-            status: AuditorStatus.VERIFIED,
+            userId: users[4].id,
+            role: RoleType.AUDITOR,
+            status: MembershipStatusType.VERIFIED,
             attestedTerms: true,
             acceptedTerms: true,
-            user: {
-              connect: {
-                address: WALLETS[4],
-              },
-            },
             findings: `${process.env.BLOB_URL}/audit-findings/example-q0D5zQMv65hQJ4mWfJfstcnagI5kUI.md`,
-          },
-        ],
-      },
-      history: {
-        create: [
-          {
-            action: HistoryAction.LOCKED,
-            userType: UserType.AUDITEE,
-            createdAt: new Date(new Date().getTime() - 4000),
-            user: {
-              connect: {
-                address: WALLETS[0],
-              },
-            },
-            historyViews: {
+            actions: {
               create: [
                 {
-                  user: {
-                    connect: {
-                      address: WALLETS[0],
-                    },
-                  },
+                  type: ActionType.AUDITOR_TERMS_APPROVED,
+                  createdAt: new Date(new Date().getTime() - 3500),
                 },
                 {
-                  user: {
-                    connect: {
-                      address: WALLETS[1],
-                    },
-                  },
-                },
-                {
-                  user: {
-                    connect: {
-                      address: WALLETS[4],
-                    },
-                  },
-                },
-              ],
-            },
-          },
-          {
-            action: HistoryAction.FINALIZED,
-            userType: UserType.AUDITEE,
-            createdAt: new Date(new Date().getTime() - 2000),
-            user: {
-              connect: {
-                address: WALLETS[0],
-              },
-            },
-            historyViews: {
-              create: [
-                {
-                  user: {
-                    connect: {
-                      address: WALLETS[0],
-                    },
-                  },
-                },
-                {
-                  user: {
-                    connect: {
-                      address: WALLETS[1],
-                    },
-                  },
-                },
-                {
-                  user: {
-                    connect: {
-                      address: WALLETS[4],
-                    },
-                  },
-                },
-              ],
-            },
-          },
-          {
-            action: HistoryAction.APPROVED,
-            userType: UserType.AUDITOR,
-            createdAt: new Date(new Date().getTime() - 3600),
-            user: {
-              connect: {
-                address: WALLETS[1],
-              },
-            },
-            historyViews: {
-              create: [
-                {
-                  user: {
-                    connect: {
-                      address: WALLETS[0],
-                    },
-                  },
-                },
-                {
-                  user: {
-                    connect: {
-                      address: WALLETS[1],
-                    },
-                  },
-                },
-                {
-                  user: {
-                    connect: {
-                      address: WALLETS[4],
-                    },
-                  },
-                },
-              ],
-            },
-          },
-          {
-            action: HistoryAction.FINDINGS,
-            userType: UserType.AUDITOR,
-            createdAt: new Date(new Date().getTime() - 1000),
-            user: {
-              connect: {
-                address: WALLETS[1],
-              },
-            },
-            historyViews: {
-              create: [
-                {
-                  user: {
-                    connect: {
-                      address: WALLETS[0],
-                    },
-                  },
-                },
-                {
-                  user: {
-                    connect: {
-                      address: WALLETS[1],
-                    },
-                  },
-                },
-                {
-                  user: {
-                    connect: {
-                      address: WALLETS[4],
-                    },
-                  },
-                },
-              ],
-            },
-          },
-          {
-            action: HistoryAction.APPROVED,
-            userType: UserType.AUDITOR,
-            createdAt: new Date(new Date().getTime() - 3500),
-            user: {
-              connect: {
-                address: WALLETS[4],
-              },
-            },
-            historyViews: {
-              create: [
-                {
-                  user: {
-                    connect: {
-                      address: WALLETS[0],
-                    },
-                  },
-                },
-                {
-                  user: {
-                    connect: {
-                      address: WALLETS[1],
-                    },
-                  },
-                },
-                {
-                  user: {
-                    connect: {
-                      address: WALLETS[4],
-                    },
-                  },
-                },
-              ],
-            },
-          },
-          {
-            action: HistoryAction.FINDINGS,
-            userType: UserType.AUDITOR,
-            createdAt: new Date(new Date().getTime() - 200),
-            user: {
-              connect: {
-                address: WALLETS[4],
-              },
-            },
-            historyViews: {
-              create: [
-                {
-                  user: {
-                    connect: {
-                      address: WALLETS[0],
-                    },
-                  },
-                },
-                {
-                  user: {
-                    connect: {
-                      address: WALLETS[1],
-                    },
-                  },
-                },
-                {
-                  user: {
-                    connect: {
-                      address: WALLETS[4],
-                    },
-                  },
+                  type: ActionType.AUDITOR_FINDINGS,
+                  createdAt: new Date(new Date().getTime() - 200),
                 },
               ],
             },
@@ -914,6 +556,8 @@ const seed = async (): Promise<void> => {
       },
     },
   });
+
+  await broadcastActions();
 
   //////////////////////////////////////////////////////////////////////////////
   //////////////////////////////////////////////////////////////////////////////
@@ -924,9 +568,20 @@ const seed = async (): Promise<void> => {
       title: "Random Auditee Audit - Open",
       description: "Open, no requestors, no auditors, no details",
       token: tokenAddress,
-      auditee: {
+      owner: {
         connect: {
           address: WALLETS[3],
+        },
+      },
+      memberships: {
+        create: {
+          user: {
+            connect: {
+              address: WALLETS[3],
+            },
+          },
+          role: RoleType.OWNER,
+          status: MembershipStatusType.VERIFIED,
         },
       },
     },
@@ -944,102 +599,39 @@ const seed = async (): Promise<void> => {
       duration: 30,
       token: tokenAddress,
       details: `${process.env.BLOB_URL}/audit-details/example-7Ap1GR49l2yVbJtvIJ0dVnleKuM8pj.md`,
-      auditee: {
+      owner: {
         connect: {
           address: WALLETS[2],
         },
       },
-      auditors: {
+      memberships: {
         create: [
           {
-            status: AuditorStatus.VERIFIED,
-            user: {
-              connect: {
-                address: WALLETS[4],
-              },
-            },
-          },
-          {
-            status: AuditorStatus.REQUESTED,
-            user: {
-              connect: {
-                address: WALLETS[1],
-              },
-            },
-          },
-        ],
-      },
-      history: {
-        create: [
-          {
-            action: HistoryAction.LOCKED,
-            userType: UserType.AUDITEE,
-            createdAt: new Date(new Date().getTime() - 4000),
-            user: {
-              connect: {
-                address: WALLETS[2],
-              },
-            },
-            historyViews: {
+            userId: users[2].id,
+            role: RoleType.OWNER,
+            status: MembershipStatusType.VERIFIED,
+            actions: {
               create: [
                 {
-                  user: {
-                    connect: {
-                      address: WALLETS[1],
-                    },
-                  },
+                  type: ActionType.OWNER_LOCKED,
+                  createdAt: new Date(new Date().getTime() - 4000),
                 },
                 {
-                  user: {
-                    connect: {
-                      address: WALLETS[2],
-                    },
-                  },
-                },
-                {
-                  user: {
-                    connect: {
-                      address: WALLETS[4],
-                    },
-                  },
+                  type: ActionType.OWNER_OPENED,
+                  createdAt: new Date(new Date().getTime() - 2000),
                 },
               ],
             },
           },
           {
-            action: HistoryAction.OPENED,
-            userType: UserType.AUDITEE,
-            createdAt: new Date(new Date().getTime() - 2000),
-            user: {
-              connect: {
-                address: WALLETS[2],
-              },
-            },
-            historyViews: {
-              create: [
-                {
-                  user: {
-                    connect: {
-                      address: WALLETS[1],
-                    },
-                  },
-                },
-                {
-                  user: {
-                    connect: {
-                      address: WALLETS[2],
-                    },
-                  },
-                },
-                {
-                  user: {
-                    connect: {
-                      address: WALLETS[4],
-                    },
-                  },
-                },
-              ],
-            },
+            userId: users[1].id,
+            role: RoleType.AUDITOR,
+            status: MembershipStatusType.REQUESTED,
+          },
+          {
+            userId: users[4].id,
+            role: RoleType.AUDITOR,
+            status: MembershipStatusType.VERIFIED,
           },
         ],
       },
@@ -1057,250 +649,72 @@ const seed = async (): Promise<void> => {
       description:
         "This audit is closed and will be viewable. Doesn't tell us if challengeable, \
 that needs to come from on-chain",
-      status: AuditStatus.CHALLENGEABLE,
+      status: AuditStatusType.CHALLENGEABLE,
       price: 2_000,
       duration: 50,
       token: tokenAddress,
       details: `${process.env.BLOB_URL}/audit-details/example-7Ap1GR49l2yVbJtvIJ0dVnleKuM8pj.md`,
-      auditee: {
+      owner: {
         connect: {
           address: WALLETS[3],
         },
       },
-      auditors: {
+      memberships: {
         create: [
           {
-            status: AuditorStatus.VERIFIED,
+            userId: users[3].id,
+            role: RoleType.OWNER,
+            status: MembershipStatusType.VERIFIED,
+            actions: {
+              create: [
+                {
+                  type: ActionType.OWNER_LOCKED,
+                  createdAt: new Date(new Date().getTime() - 4000),
+                },
+                {
+                  type: ActionType.OWNER_FINALIZED,
+                  createdAt: new Date(new Date().getTime() - 2000),
+                },
+              ],
+            },
+          },
+          {
+            userId: users[2].id,
+            role: RoleType.AUDITOR,
+            status: MembershipStatusType.VERIFIED,
             attestedTerms: true,
             acceptedTerms: true,
-            user: {
-              connect: {
-                address: WALLETS[2],
-              },
-            },
             findings: `${process.env.BLOB_URL}/audit-findings/example-q0D5zQMv65hQJ4mWfJfstcnagI5kUI.md`,
+            actions: {
+              create: [
+                {
+                  type: ActionType.AUDITOR_TERMS_APPROVED,
+                  createdAt: new Date(new Date().getTime() - 3600),
+                },
+                {
+                  type: ActionType.AUDITOR_FINDINGS,
+                  createdAt: new Date(new Date().getTime() - 1000),
+                },
+              ],
+            },
           },
           {
-            status: AuditorStatus.VERIFIED,
+            userId: users[5].id,
+            role: RoleType.AUDITOR,
+            status: MembershipStatusType.VERIFIED,
             attestedTerms: true,
             acceptedTerms: true,
-            user: {
-              connect: {
-                address: WALLETS[5],
-              },
-            },
             findings: `${process.env.BLOB_URL}/audit-findings/example-q0D5zQMv65hQJ4mWfJfstcnagI5kUI.md`,
-          },
-        ],
-      },
-      history: {
-        create: [
-          {
-            action: HistoryAction.LOCKED,
-            userType: UserType.AUDITEE,
-            createdAt: new Date(new Date().getTime() - 4000),
-            user: {
-              connect: {
-                address: WALLETS[3],
-              },
-            },
-            historyViews: {
+
+            actions: {
               create: [
                 {
-                  user: {
-                    connect: {
-                      address: WALLETS[3],
-                    },
-                  },
+                  type: ActionType.AUDITOR_TERMS_APPROVED,
+                  createdAt: new Date(new Date().getTime() - 3500),
                 },
                 {
-                  user: {
-                    connect: {
-                      address: WALLETS[2],
-                    },
-                  },
-                },
-                {
-                  user: {
-                    connect: {
-                      address: WALLETS[5],
-                    },
-                  },
-                },
-              ],
-            },
-          },
-          {
-            action: HistoryAction.FINALIZED,
-            userType: UserType.AUDITEE,
-            createdAt: new Date(new Date().getTime() - 2000),
-            user: {
-              connect: {
-                address: WALLETS[3],
-              },
-            },
-            historyViews: {
-              create: [
-                {
-                  user: {
-                    connect: {
-                      address: WALLETS[3],
-                    },
-                  },
-                },
-                {
-                  user: {
-                    connect: {
-                      address: WALLETS[2],
-                    },
-                  },
-                },
-                {
-                  user: {
-                    connect: {
-                      address: WALLETS[5],
-                    },
-                  },
-                },
-              ],
-            },
-          },
-          {
-            action: HistoryAction.APPROVED,
-            userType: UserType.AUDITOR,
-            createdAt: new Date(new Date().getTime() - 3600),
-            user: {
-              connect: {
-                address: WALLETS[2],
-              },
-            },
-            historyViews: {
-              create: [
-                {
-                  user: {
-                    connect: {
-                      address: WALLETS[3],
-                    },
-                  },
-                },
-                {
-                  user: {
-                    connect: {
-                      address: WALLETS[2],
-                    },
-                  },
-                },
-                {
-                  user: {
-                    connect: {
-                      address: WALLETS[5],
-                    },
-                  },
-                },
-              ],
-            },
-          },
-          {
-            action: HistoryAction.FINDINGS,
-            userType: UserType.AUDITOR,
-            createdAt: new Date(new Date().getTime() - 1000),
-            user: {
-              connect: {
-                address: WALLETS[2],
-              },
-            },
-            historyViews: {
-              create: [
-                {
-                  user: {
-                    connect: {
-                      address: WALLETS[3],
-                    },
-                  },
-                },
-                {
-                  user: {
-                    connect: {
-                      address: WALLETS[2],
-                    },
-                  },
-                },
-                {
-                  user: {
-                    connect: {
-                      address: WALLETS[5],
-                    },
-                  },
-                },
-              ],
-            },
-          },
-          {
-            action: HistoryAction.APPROVED,
-            userType: UserType.AUDITOR,
-            createdAt: new Date(new Date().getTime() - 3500),
-            user: {
-              connect: {
-                address: WALLETS[5],
-              },
-            },
-            historyViews: {
-              create: [
-                {
-                  user: {
-                    connect: {
-                      address: WALLETS[3],
-                    },
-                  },
-                },
-                {
-                  user: {
-                    connect: {
-                      address: WALLETS[2],
-                    },
-                  },
-                },
-                {
-                  user: {
-                    connect: {
-                      address: WALLETS[5],
-                    },
-                  },
-                },
-              ],
-            },
-          },
-          {
-            action: HistoryAction.FINDINGS,
-            userType: UserType.AUDITOR,
-            createdAt: new Date(new Date().getTime() - 100),
-            user: {
-              connect: {
-                address: WALLETS[5],
-              },
-            },
-            historyViews: {
-              create: [
-                {
-                  user: {
-                    connect: {
-                      address: WALLETS[3],
-                    },
-                  },
-                },
-                {
-                  user: {
-                    connect: {
-                      address: WALLETS[2],
-                    },
-                  },
-                },
-                {
-                  user: {
-                    connect: {
-                      address: WALLETS[5],
-                    },
-                  },
+                  type: ActionType.AUDITOR_FINDINGS,
+                  createdAt: new Date(new Date().getTime() - 100),
                 },
               ],
             },
@@ -1309,6 +723,8 @@ that needs to come from on-chain",
       },
     },
   });
+
+  await broadcastActions();
 
   //////////////////////////////////////////////////////////////////////////////
   //////////////////////////////////////////////////////////////////////////////
@@ -1324,250 +740,73 @@ that needs to come from on-chain",
       description:
         "This audit is closed and will be viewable. Doesn't tell us if challengeable, \
 that needs to come from on-chain, but I'll mark is as such",
-      status: AuditStatus.FINALIZED,
+      status: AuditStatusType.FINALIZED,
       price: 2_000,
       duration: 70,
       token: tokenAddress,
       details: `${process.env.BLOB_URL}/audit-details/example-7Ap1GR49l2yVbJtvIJ0dVnleKuM8pj.md`,
-      auditee: {
+      owner: {
         connect: {
           address: WALLETS[3],
         },
       },
-      auditors: {
+      memberships: {
         create: [
           {
-            status: AuditorStatus.VERIFIED,
+            userId: users[3].id,
+            role: RoleType.OWNER,
+            status: MembershipStatusType.VERIFIED,
+            actions: {
+              create: [
+                {
+                  type: ActionType.OWNER_LOCKED,
+                  createdAt: new Date(new Date().getTime() - 4000),
+                },
+                {
+                  type: ActionType.OWNER_FINALIZED,
+                  createdAt: new Date(new Date().getTime() - 2000),
+                },
+              ],
+            },
+          },
+          {
+            userId: users[2].id,
+            role: RoleType.AUDITOR,
+            status: MembershipStatusType.VERIFIED,
             attestedTerms: true,
             acceptedTerms: true,
-            user: {
-              connect: {
-                address: WALLETS[2],
-              },
-            },
             findings: `${process.env.BLOB_URL}/audit-findings/example-q0D5zQMv65hQJ4mWfJfstcnagI5kUI.md`,
+
+            actions: {
+              create: [
+                {
+                  type: ActionType.AUDITOR_TERMS_APPROVED,
+                  createdAt: new Date(new Date().getTime() - 3600),
+                },
+                {
+                  type: ActionType.AUDITOR_FINDINGS,
+                  createdAt: new Date(new Date().getTime() - 1000),
+                },
+              ],
+            },
           },
           {
-            status: AuditorStatus.VERIFIED,
+            userId: users[5].id,
+            role: RoleType.AUDITOR,
+            status: MembershipStatusType.VERIFIED,
             attestedTerms: true,
             acceptedTerms: true,
-            user: {
-              connect: {
-                address: WALLETS[5],
-              },
-            },
             findings: `${process.env.BLOB_URL}/audit-findings/example-q0D5zQMv65hQJ4mWfJfstcnagI5kUI.md`,
-          },
-        ],
-      },
-      history: {
-        create: [
-          {
-            action: HistoryAction.LOCKED,
-            userType: UserType.AUDITEE,
-            createdAt: new Date(new Date().getTime() - 4000),
-            user: {
-              connect: {
-                address: WALLETS[3],
-              },
-            },
-            historyViews: {
+
+            actions: {
               create: [
                 {
-                  user: {
-                    connect: {
-                      address: WALLETS[3],
-                    },
-                  },
+                  type: ActionType.AUDITOR_TERMS_APPROVED,
+                  createdAt: new Date(new Date().getTime() - 3500),
                 },
                 {
-                  user: {
-                    connect: {
-                      address: WALLETS[2],
-                    },
-                  },
-                },
-                {
-                  user: {
-                    connect: {
-                      address: WALLETS[5],
-                    },
-                  },
-                },
-              ],
-            },
-          },
-          {
-            action: HistoryAction.FINALIZED,
-            userType: UserType.AUDITEE,
-            createdAt: new Date(new Date().getTime() - 2000),
-            user: {
-              connect: {
-                address: WALLETS[3],
-              },
-            },
-            historyViews: {
-              create: [
-                {
-                  user: {
-                    connect: {
-                      address: WALLETS[3],
-                    },
-                  },
-                },
-                {
-                  user: {
-                    connect: {
-                      address: WALLETS[2],
-                    },
-                  },
-                },
-                {
-                  user: {
-                    connect: {
-                      address: WALLETS[5],
-                    },
-                  },
-                },
-              ],
-            },
-          },
-          {
-            action: HistoryAction.APPROVED,
-            userType: UserType.AUDITOR,
-            createdAt: new Date(new Date().getTime() - 3600),
-            user: {
-              connect: {
-                address: WALLETS[2],
-              },
-            },
-            historyViews: {
-              create: [
-                {
-                  user: {
-                    connect: {
-                      address: WALLETS[3],
-                    },
-                  },
-                },
-                {
-                  user: {
-                    connect: {
-                      address: WALLETS[2],
-                    },
-                  },
-                },
-                {
-                  user: {
-                    connect: {
-                      address: WALLETS[5],
-                    },
-                  },
-                },
-              ],
-            },
-          },
-          {
-            action: HistoryAction.FINDINGS,
-            userType: UserType.AUDITOR,
-            createdAt: new Date(new Date().getTime() - 1000),
-            user: {
-              connect: {
-                address: WALLETS[2],
-              },
-            },
-            historyViews: {
-              create: [
-                {
-                  user: {
-                    connect: {
-                      address: WALLETS[3],
-                    },
-                  },
-                },
-                {
-                  user: {
-                    connect: {
-                      address: WALLETS[2],
-                    },
-                  },
-                },
-                {
-                  user: {
-                    connect: {
-                      address: WALLETS[5],
-                    },
-                  },
-                },
-              ],
-            },
-          },
-          {
-            action: HistoryAction.APPROVED,
-            userType: UserType.AUDITOR,
-            createdAt: new Date(new Date().getTime() - 3500),
-            user: {
-              connect: {
-                address: WALLETS[5],
-              },
-            },
-            historyViews: {
-              create: [
-                {
-                  user: {
-                    connect: {
-                      address: WALLETS[3],
-                    },
-                  },
-                },
-                {
-                  user: {
-                    connect: {
-                      address: WALLETS[2],
-                    },
-                  },
-                },
-                {
-                  user: {
-                    connect: {
-                      address: WALLETS[5],
-                    },
-                  },
-                },
-              ],
-            },
-          },
-          {
-            action: HistoryAction.FINDINGS,
-            userType: UserType.AUDITOR,
-            createdAt: new Date(new Date().getTime() - 100),
-            user: {
-              connect: {
-                address: WALLETS[5],
-              },
-            },
-            historyViews: {
-              create: [
-                {
-                  user: {
-                    connect: {
-                      address: WALLETS[3],
-                    },
-                  },
-                },
-                {
-                  user: {
-                    connect: {
-                      address: WALLETS[2],
-                    },
-                  },
-                },
-                {
-                  user: {
-                    connect: {
-                      address: WALLETS[5],
-                    },
-                  },
+                  type: ActionType.AUDITOR_FINDINGS,
+                  createdAt: new Date(new Date().getTime() - 100),
                 },
               ],
             },
@@ -1576,6 +815,8 @@ that needs to come from on-chain, but I'll mark is as such",
       },
     },
   });
+
+  await broadcastActions();
 
   console.log("Seeded Audits + Auditors");
 };

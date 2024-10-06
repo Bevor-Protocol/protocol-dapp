@@ -21,7 +21,7 @@ const UserProfileActions = ({ user, stats }: { user: User; stats: UserStats }): 
       <Button onClick={handleModal} variant="outline">
         Edit
       </Button>
-      {user.auditeeRole && (
+      {user.ownerRole && (
         <DynamicLink href="/audits/create" asButton>
           <Row className="btn-outline">Create Audit</Row>
         </DynamicLink>

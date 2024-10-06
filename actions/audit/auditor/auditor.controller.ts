@@ -1,10 +1,11 @@
 import BlobService from "@/actions/blob/blob.service";
+import NotificationService from "@/actions/notification/notification.service";
 import RoleService from "@/actions/roles/roles.service";
 import { handleErrors } from "@/utils/decorators";
 import { ValidationError } from "@/utils/error";
 import { ResponseI } from "@/utils/types";
 import { auditFindingsSchema, parseForm } from "@/utils/validations";
-import { Auditor, User } from "@prisma/client";
+import { ActionType, AuditMembership, AuditStatusType } from "@prisma/client";
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
 import AuditorService from "./auditor.service";
@@ -23,34 +24,50 @@ class AuditorController {
     private readonly roleService: typeof RoleService,
     private readonly auditorService: typeof AuditorService,
     private readonly blobService: typeof BlobService,
+    private readonly notificationService: typeof NotificationService,
   ) {}
 
   @handleErrors
-  async attestToTerms(auditId: string, status: boolean, comment: string): Promise<ResponseI<User>> {
+  async attestToTerms(
+    auditId: string,
+    status: boolean,
+    comment: string,
+  ): Promise<ResponseI<AuditMembership>> {
     const user = await this.roleService.requireAuth();
-    await this.roleService.canAttest(user, auditId);
+    const membership = await this.roleService.canAttest(user, auditId);
 
-    const data = await this.auditorService.attestToTerms(auditId, user.id, status, comment);
+    const data = await this.auditorService.attestToTerms(membership.id, status);
+
+    this.notificationService.createAndBroadcastAction(
+      membership,
+      status ? ActionType.AUDITOR_TERMS_APPROVED : ActionType.AUDITOR_TERMS_REJECTED,
+      comment,
+    );
 
     revalidatePath(`/audits/view/${auditId}`, "page");
     return { success: true, data };
   }
 
   @handleErrors
-  async leaveAudit(auditId: string): Promise<ResponseI<User>> {
+  async leaveAudit(auditId: string): Promise<ResponseI<AuditMembership>> {
     const user = await this.roleService.requireAuth();
-    const audit = await this.roleService.canLeave(user, auditId);
+    const membership = await this.roleService.canLeave(user, auditId);
 
-    const data = await this.auditorService.leaveAudit(audit.id, user.id, audit.status);
+    const data = await this.auditorService.leaveAudit(membership.id);
+
+    if (membership.audit.status === AuditStatusType.AUDITING) {
+      await this.auditorService.resetAttestations(membership.auditId);
+      this.notificationService.createAndBroadcastAction(membership, ActionType.AUDITOR_LEFT);
+    }
 
     revalidatePath(`/audits/view/${auditId}`, "page");
     return { success: true, data };
   }
 
   @handleErrors
-  async addFinding(auditId: string, formData: FormData): Promise<ResponseI<User>> {
+  async addFinding(auditId: string, formData: FormData): Promise<ResponseI<AuditMembership>> {
     const user = await this.roleService.requireAuth();
-    await this.roleService.isAuditAuditor(user, auditId);
+    const membership = await this.roleService.canAddFindings(user, auditId);
 
     const parsed = parseForm(formData, auditFindingsSchema) as z.infer<typeof auditFindingsSchema>;
 
@@ -61,14 +78,16 @@ class AuditorController {
       });
     }
 
-    const data = await this.auditorService.addFindings(auditId, user.id, blobData.url);
+    const data = await this.auditorService.addFindings(membership.id, blobData!.url);
+
+    this.notificationService.createAndBroadcastAction(membership, ActionType.AUDITOR_FINDINGS);
 
     revalidatePath(`/audits/view/${auditId}`, "page");
     return { success: true, data };
   }
 
   @handleErrors
-  async addRequest(auditId: string): Promise<ResponseI<Auditor>> {
+  async addRequest(auditId: string): Promise<ResponseI<AuditMembership>> {
     const user = await this.roleService.requireAuth();
     await this.roleService.canRequest(user, auditId);
 
@@ -77,18 +96,12 @@ class AuditorController {
     revalidatePath(`/audits/view/${auditId}`, "page");
     return { success: true, data };
   }
-
-  @handleErrors
-  async deleteRequest(auditId: string): Promise<ResponseI<Auditor>> {
-    const user = await this.roleService.requireAuth();
-    await this.roleService.isAuditAuditor(user, auditId);
-
-    const data = await this.auditorService.deleteRequest(auditId, user.id);
-
-    revalidatePath(`/audits/view/${auditId}`, "page");
-    return { success: true, data };
-  }
 }
 
-const auditorController = new AuditorController(RoleService, AuditorService, BlobService);
+const auditorController = new AuditorController(
+  RoleService,
+  AuditorService,
+  BlobService,
+  NotificationService,
+);
 export default auditorController;

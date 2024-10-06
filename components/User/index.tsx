@@ -1,10 +1,10 @@
-import { User } from "@prisma/client";
-import DynamicLink from "../Link";
 import * as Card from "@/components/Card";
-import { Icon } from "../Icon";
-import { trimAddress } from "@/utils/formatters";
 import { cn } from "@/utils";
+import { trimAddress } from "@/utils/formatters";
+import { User } from "@prisma/client";
 import { Column, Row } from "../Box";
+import { Icon } from "../Icon";
+import DynamicLink from "../Link";
 
 export const UserCard = ({ user, isLoading }: { user: User; isLoading: boolean }): JSX.Element => {
   return (
@@ -29,8 +29,8 @@ export const UserCard = ({ user, isLoading }: { user: User; isLoading: boolean }
             <Row className="justify-start gap-2">
               <div
                 className={cn(
-                  user.auditeeRole ? " bg-primary-light-20" : " bg-gray-400/20",
-                  !user.auditeeRole && "opacity-50",
+                  user.ownerRole ? " bg-primary-light-20" : " bg-gray-400/20",
+                  !user.ownerRole && "opacity-50",
                   "rounded-md px-1",
                 )}
               >

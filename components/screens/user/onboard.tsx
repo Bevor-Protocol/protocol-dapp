@@ -103,7 +103,7 @@ const UserOnboard = ({ address }: { address: string }): JSX.Element => {
             text="auditor role"
           />
           <Form.Radio
-            name="auditeeRole"
+            name="ownerRole"
             disabled={isPending}
             aria-disabled={isPending}
             defaultChecked={false}

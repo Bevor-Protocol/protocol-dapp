@@ -9,18 +9,26 @@ import { Column, Row } from "@/components/Box";
 import { Toggle } from "@/components/Toggle";
 import { AUDITS } from "@/constants/queryKeys";
 import { AuditDetailedI } from "@/utils/types/prisma";
-import { AuditStatus } from "@prisma/client";
+import { AuditStatusType } from "@prisma/client";
 
 const statusMapper = {
-  [AuditStatus.DISCOVERY]: "open",
-  [AuditStatus.ATTESTATION]: "locked",
-  [AuditStatus.AUDITING]: "ongoing",
-  [AuditStatus.CHALLENGEABLE]: "challengeable",
-  [AuditStatus.FINALIZED]: "completed",
+  [AuditStatusType.DISCOVERY]: "open",
+  [AuditStatusType.ATTESTATION]: "locked",
+  [AuditStatusType.AUDITING]: "ongoing",
+  [AuditStatusType.CHALLENGEABLE]: "challengeable",
+  [AuditStatusType.FINALIZED]: "completed",
 };
 
+const statusOrder = [
+  AuditStatusType.DISCOVERY,
+  AuditStatusType.ATTESTATION,
+  AuditStatusType.AUDITING,
+  AuditStatusType.CHALLENGEABLE,
+  AuditStatusType.FINALIZED,
+];
+
 const Audits = ({ initialData }: { initialData: AuditDetailedI[] }): JSX.Element => {
-  const [display, setDisplay] = useState<AuditStatus>(AuditStatus.DISCOVERY);
+  const [display, setDisplay] = useState<AuditStatusType>(AuditStatusType.DISCOVERY);
 
   const { data, isPending } = useQuery({
     queryKey: [AUDITS, display],
@@ -34,31 +42,14 @@ const Audits = ({ initialData }: { initialData: AuditDetailedI[] }): JSX.Element
         <h2 className="text-4xl font-extrabold leading-[normal]">Audits</h2>
       </div>
       <Row className="gap-4">
-        <Toggle
-          active={display === AuditStatus.DISCOVERY}
-          title={statusMapper[AuditStatus.DISCOVERY]}
-          onClick={() => setDisplay(AuditStatus.DISCOVERY)}
-        />
-        <Toggle
-          active={display === AuditStatus.ATTESTATION}
-          title={statusMapper[AuditStatus.ATTESTATION]}
-          onClick={() => setDisplay(AuditStatus.ATTESTATION)}
-        />
-        <Toggle
-          active={display === AuditStatus.AUDITING}
-          title={statusMapper[AuditStatus.AUDITING]}
-          onClick={() => setDisplay(AuditStatus.AUDITING)}
-        />
-        <Toggle
-          active={display === AuditStatus.CHALLENGEABLE}
-          title={statusMapper[AuditStatus.CHALLENGEABLE]}
-          onClick={() => setDisplay(AuditStatus.CHALLENGEABLE)}
-        />
-        <Toggle
-          active={display === AuditStatus.FINALIZED}
-          title={statusMapper[AuditStatus.FINALIZED]}
-          onClick={() => setDisplay(AuditStatus.FINALIZED)}
-        />
+        {statusOrder.map((status, ind) => (
+          <Toggle
+            key={ind}
+            active={display === status}
+            title={statusMapper[status]}
+            onClick={() => setDisplay(status)}
+          />
+        ))}
       </Row>
       {!isPending && (
         <Column className="gap-4 justify-center items-center w-full">

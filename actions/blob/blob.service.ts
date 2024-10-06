@@ -3,6 +3,7 @@ import { del, put, type PutBlobResult } from "@vercel/blob";
 
 class BlobService {
   addBlob(folder: string, file: File | undefined): Promise<PutBlobResult | null> {
+    // This function intentionally allows for empty files without throwing
     const fileEmpty = isFileEmpty(file);
     if (fileEmpty) {
       return Promise.resolve(null);

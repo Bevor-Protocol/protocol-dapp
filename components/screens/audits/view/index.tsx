@@ -1,4 +1,4 @@
-import { AuditorStatus, AuditStatus, User } from "@prisma/client";
+import { AuditStatusType, MembershipStatusType, RoleType, User } from "@prisma/client";
 
 import { AuditAuditor } from "@/components/Audit/client";
 import { Column, Row } from "@/components/Box";
@@ -12,20 +12,29 @@ import { Suspense } from "react";
 import AuditDashboardActions from "./actions";
 
 const AuditPage = ({ audit, user }: { audit: AuditI; user: User | null }): JSX.Element => {
-  const verifiedAuditors = audit.auditors.filter(
-    (auditor) => auditor.status == AuditorStatus.VERIFIED,
+  const verifiedAuditors = audit.memberships.filter(
+    (member) =>
+      member.status == MembershipStatusType.VERIFIED &&
+      member.role === RoleType.AUDITOR &&
+      member.isActive,
   );
-  const requestedAuditors = audit.auditors.filter(
-    (auditor) => auditor.status == AuditorStatus.REQUESTED,
+  const requestedAuditors = audit.memberships.filter(
+    (member) =>
+      member.status == MembershipStatusType.REQUESTED &&
+      member.role === RoleType.AUDITOR &&
+      member.isActive,
   );
-  const rejectedAuditors = audit.auditors.filter(
-    (auditor) => auditor.status == AuditorStatus.REJECTED,
+  const rejectedAuditors = audit.memberships.filter(
+    (member) =>
+      member.status == MembershipStatusType.REJECTED &&
+      member.role === RoleType.AUDITOR &&
+      member.isActive,
   );
 
-  const attestationPending = audit.auditors.filter((auditor) => !auditor.attestedTerms);
-  const attestationAccepted = audit.auditors.filter((auditor) => auditor.acceptedTerms);
-  const attestationRejected = audit.auditors.filter(
-    (auditor) => auditor.attestedTerms && !auditor.acceptedTerms,
+  const attestationPending = verifiedAuditors.filter((member) => !member.attestedTerms);
+  const attestationAccepted = verifiedAuditors.filter((member) => member.acceptedTerms);
+  const attestationRejected = verifiedAuditors.filter(
+    (member) => member.attestedTerms && !member.acceptedTerms,
   );
 
   const token = AvailableTokens.localhost.find((t) => t.address == audit.token);
@@ -34,12 +43,12 @@ const AuditPage = ({ audit, user }: { audit: AuditI; user: User | null }): JSX.E
     <Row className="justify-between items-stretch relative">
       <Column className="items-stretch gap-4">
         <div>
-          <DynamicLink href={`/users/${audit.auditee.address}`}>
-            <Icon image={audit.auditee.image} seed={audit.auditee.address} size="xxl" />
+          <DynamicLink href={`/users/${audit.owner.address}`}>
+            <Icon image={audit.owner.image} seed={audit.owner.address} size="xxl" />
           </DynamicLink>
           <p className="text-sm mt-4 mb-1">
-            {audit.auditee.name && <span>{audit.auditee.name} | </span>}
-            <span>{trimAddress(audit.auditee.address)}</span>
+            {audit.owner.name && <span>{audit.owner.name} | </span>}
+            <span>{trimAddress(audit.owner.address)}</span>
           </p>
         </div>
         <div>
@@ -47,7 +56,7 @@ const AuditPage = ({ audit, user }: { audit: AuditI; user: User | null }): JSX.E
           <p className="text-base my-2">{audit.description}</p>
         </div>
         <div>
-          {audit.status === AuditStatus.DISCOVERY && (
+          {audit.status === AuditStatusType.DISCOVERY && (
             <>
               <Row className="items-center gap-4 h-[32px] md:h-[27px]">
                 <p className="w-40">Verified to Audit:</p>
@@ -99,7 +108,7 @@ const AuditPage = ({ audit, user }: { audit: AuditI; user: User | null }): JSX.E
               </Row>
             </>
           )}
-          {audit.status === AuditStatus.ATTESTATION && (
+          {audit.status === AuditStatusType.ATTESTATION && (
             <>
               <Row className="items-center gap-4 h-[32px] md:h-[27px]">
                 <p className="w-44">Pending Attestation:</p>
@@ -151,24 +160,25 @@ const AuditPage = ({ audit, user }: { audit: AuditI; user: User | null }): JSX.E
               </Row>
             </>
           )}
-          {audit.status !== AuditStatus.DISCOVERY && audit.status !== AuditStatus.ATTESTATION && (
-            <Row className="items-center gap-4 h-[32px] md:h-[27px]">
-              <p className="w-40">Auditors:</p>
-              {verifiedAuditors.length > 0 ? (
-                <Row>
-                  {verifiedAuditors.map((auditor, ind2) => (
-                    <AuditAuditor
-                      position={`-${ind2 * 12.5}px`}
-                      key={ind2}
-                      auditor={auditor.user}
-                    />
-                  ))}
-                </Row>
-              ) : (
-                <span className="text-white/60">TBD</span>
-              )}
-            </Row>
-          )}
+          {audit.status !== AuditStatusType.DISCOVERY &&
+            audit.status !== AuditStatusType.ATTESTATION && (
+              <Row className="items-center gap-4 h-[32px] md:h-[27px]">
+                <p className="w-40">Auditors:</p>
+                {verifiedAuditors.length > 0 ? (
+                  <Row>
+                    {verifiedAuditors.map((auditor, ind2) => (
+                      <AuditAuditor
+                        position={`-${ind2 * 12.5}px`}
+                        key={ind2}
+                        auditor={auditor.user}
+                      />
+                    ))}
+                  </Row>
+                ) : (
+                  <span className="text-white/60">TBD</span>
+                )}
+              </Row>
+            )}
         </div>
       </Column>
       <Column className="gap-6 justify-between items-end">

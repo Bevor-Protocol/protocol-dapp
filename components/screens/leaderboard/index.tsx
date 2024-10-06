@@ -12,7 +12,7 @@ import LeaderboardNav from "./nav";
 
 const LeaderboardWrapper = ({ initialData }: { initialData: UserWithCount[] }): JSX.Element => {
   const [listSort, setListSort] = useState("name");
-  const [listOrder, setListOrder] = useState("asc");
+  const [listOrder, setListOrder] = useState<"asc" | "desc">("asc");
 
   const { data, isLoading } = useQuery({
     queryKey: [LEADERBOARD, listSort, listOrder],

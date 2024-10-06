@@ -84,7 +84,7 @@ const AuditorRemoveRequest = ({
   const { setContent, toggleOpen, setReadyAutoClose } = useToast({ autoClose: true });
 
   const { mutate } = useMutation({
-    mutationFn: () => auditAction.auditor.deleteRequest(auditId),
+    mutationFn: () => auditAction.auditor.leaveAudit(auditId),
     onMutate: () => setDisabled(true),
     onError: (error) => console.log(error),
     onSuccess: (response) => {
@@ -179,7 +179,7 @@ const AuditorRemoveVerification = ({
   });
 
   const { mutate } = useMutation({
-    mutationFn: () => auditAction.auditor.deleteRequest(auditId),
+    mutationFn: () => auditAction.auditor.leaveAudit(auditId),
     onMutate: () => setDisabled(true),
     onSuccess: (response) => {
       if (response.success) {
@@ -290,35 +290,35 @@ const AuditeeLockAudit = ({
 const AuditOpenActions = ({
   user,
   audit,
-  actionData,
+  state,
 }: {
   user: User;
   audit: AuditI;
-  actionData: AuditStateI;
+  state: AuditStateI;
 }): JSX.Element => {
   // All of the possible audit actions to take for OPEN audits.
 
   // I'll set a global disabled state for all mutations within children.
   const [disabled, setDisabled] = useState(false);
 
-  if (actionData.isTheAuditee) {
+  if (state.isAuditOwner) {
     return (
       <Column className="gap-2 items-end w-fit *:w-full">
         <AuditeeEditAudit id={audit.id} />
         <AuditeeManageRequest
           audit={audit}
-          disabled={!actionData.auditeeCanManageAuditors || disabled}
+          disabled={!state.states.CAN_MANAGE_REQUESTS || disabled}
         />
         <AuditeeLockAudit
           auditId={audit.id}
-          disabled={!actionData.auditeeCanLock || disabled}
+          disabled={!state.states.CAN_LOCK_AUDIT || disabled}
           setDisabled={setDisabled}
         />
       </Column>
     );
   }
 
-  if (actionData.isAnAuditor) {
+  if (state.isAuditAuditor) {
     return (
       <Column className="gap-2 items-end w-fit *:w-full">
         <AuditorRemoveVerification
@@ -330,7 +330,7 @@ const AuditOpenActions = ({
     );
   }
 
-  if (actionData.userIsRequested) {
+  if (!state.states.CAN_ADD_REQUEST) {
     return (
       <Column className="gap-2 items-end w-fit *:w-full">
         <AuditorRemoveRequest auditId={audit.id} disabled={disabled} setDisabled={setDisabled} />
@@ -338,7 +338,7 @@ const AuditOpenActions = ({
     );
   }
 
-  if (actionData.userIsRejected) {
+  if (state.states.IS_REJECTED) {
     return (
       <Column className="gap-2 items-end w-fit *:w-full">
         <AuditorRejected />

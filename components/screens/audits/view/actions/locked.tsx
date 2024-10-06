@@ -211,29 +211,29 @@ const AuditorAttestTerms = ({
 
 const AuditLockedActions = ({
   audit,
-  actionData,
+  state,
 }: {
   audit: AuditI;
-  actionData: AuditStateI;
+  state: AuditStateI;
 }): JSX.Element => {
   // I'll set a global disabled state for all mutations within children.
   const [disabled, setDisabled] = useState(false);
 
-  if (actionData.isTheAuditee) {
+  if (state.isAuditOwner) {
     return (
       <Column className="gap-2 items-end w-fit *:w-full">
         <AuditeeEditAudit id={audit.id} disabled={disabled} />
         <AuditeeReopenAudit id={audit.id} disabled={disabled} setDisabled={setDisabled} />
         <AuditeeInitiateAudit
           audit={audit}
-          disabled={!actionData.allAttested || disabled}
+          disabled={!state.states.CAN_LOCK_AUDIT || disabled}
           setDisabled={setDisabled}
         />
       </Column>
     );
   }
 
-  if (actionData.isAnAuditor) {
+  if (state.isAuditAuditor) {
     return (
       <Column className="gap-2 items-end w-fit *:w-full">
         <AuditorRemoveVerification
@@ -241,7 +241,7 @@ const AuditLockedActions = ({
           disabled={disabled}
           setDisabled={setDisabled}
         />
-        <AuditorAttestTerms audit={audit} disabled={actionData.userAttested || disabled} />
+        <AuditorAttestTerms audit={audit} disabled={!state.states.CAN_ATTEST || disabled} />
       </Column>
     );
   }

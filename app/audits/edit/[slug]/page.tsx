@@ -7,6 +7,7 @@ import { Button } from "@/components/Button";
 import DynamicLink from "@/components/Link";
 import { LoaderFill } from "@/components/Loader";
 import AuditEditWrapper from "@/components/screens/audits/edit";
+import { RoleType } from "@prisma/client";
 
 const Fetcher = async ({ auditId }: { auditId: string }): Promise<JSX.Element> => {
   const audit = await auditAction.getAudit(auditId);
@@ -20,6 +21,9 @@ const Fetcher = async ({ auditId }: { auditId: string }): Promise<JSX.Element> =
   }
 
   const { address, user } = await userAction.currentUser();
+  const isOwner = audit.memberships.some(
+    (member) => member.userId === user?.id && member.role === RoleType.OWNER,
+  );
 
   if (!address) {
     return (
@@ -43,7 +47,7 @@ const Fetcher = async ({ auditId }: { auditId: string }): Promise<JSX.Element> =
     );
   }
 
-  if (user.id !== audit.auditee.id) {
+  if (!isOwner) {
     return (
       <Column className="items-center gap-4">
         <p>You cannot update this audit because you are not the owner of it</p>

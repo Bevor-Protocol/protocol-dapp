@@ -26,6 +26,15 @@ export class RoleError extends Error {
   }
 }
 
+export class AuditStateError extends Error {
+  type: ErrorTypeEnum;
+
+  constructor() {
+    super("Audit isn't in correct state for this action");
+    this.type = ErrorTypeEnum.AUDIT_STATE;
+  }
+}
+
 export class AuthError extends Error {
   type: ErrorTypeEnum;
 

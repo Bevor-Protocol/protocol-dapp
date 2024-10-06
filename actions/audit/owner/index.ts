@@ -12,15 +12,15 @@ const updateAudit = async (
   id: string,
   formData: FormData,
   auditors: User[],
-): Promise<ResponseI<Audit>> => {
+): Promise<ResponseI<boolean>> => {
   return ownerController.updateAudit(id, formData, auditors);
 };
 
-const lockAudit = async (id: string): Promise<ResponseI<Audit>> => {
+const lockAudit = async (id: string): Promise<ResponseI<boolean>> => {
   return ownerController.lockAudit(id);
 };
 
-const openAudit = async (id: string): Promise<ResponseI<Audit>> => {
+const openAudit = async (id: string): Promise<ResponseI<boolean>> => {
   return ownerController.openAudit(id);
 };
 
@@ -28,7 +28,7 @@ const updateRequestors = async (
   id: string,
   auditorsApprove: string[],
   auditorsReject: string[],
-): Promise<ResponseI<{ rejected: number; verified: number }>> => {
+): Promise<ResponseI<boolean>> => {
   return ownerController.updateRequestors(id, auditorsApprove, auditorsReject);
 };
 

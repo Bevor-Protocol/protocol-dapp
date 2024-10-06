@@ -64,7 +64,7 @@ const RevealAudit = ({ audit, user }: { audit: AuditI; user: User }): JSX.Elemen
 
   const handleSubmitApproval = (): void => {
     if (!client) return;
-    if (user.address !== audit.auditee.address) return;
+    if (user.address !== audit.owner.address) return;
     const token = AvailableTokens.localhost.find((t) => t.address == audit.token);
     if (!token) return;
     const convertedValue = parseUnits(audit.price.toString(), token.decimals);
@@ -80,7 +80,7 @@ const RevealAudit = ({ audit, user }: { audit: AuditI; user: User }): JSX.Elemen
 
   const handleSubmitReveal = (): void => {
     if (!client) return;
-    if (user.address !== audit.auditee.address) return;
+    if (user.address !== audit.owner.address) return;
     let tokenIdGenerated = BigInt(0);
     let auditIdGenerated = "";
     let findings: string[] = [];
@@ -88,8 +88,8 @@ const RevealAudit = ({ audit, user }: { audit: AuditI; user: User }): JSX.Elemen
       .getAuditFindings(audit.id)
       .then((result) => {
         if (!result) return;
-        findings = result.auditors.map((auditor) => {
-          const finding = auditor.findings!;
+        findings = result.memberships.map((member) => {
+          const finding = member.findings!;
           return finding.substring(finding.lastIndexOf("/") + 1).replace(".md", "");
         });
         auditIdGenerated = result.onchainAuditInfoId as string;

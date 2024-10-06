@@ -12,17 +12,17 @@ import { X } from "@/assets";
 import { AuditorItem } from "@/components/Audit";
 import { Button } from "@/components/Button";
 import ErrorToast from "@/components/Toast/Content/error";
-import { AuditorStatus } from "@prisma/client";
+import { MembershipStatusType, RoleType } from "@prisma/client";
 
 const RequestsEdit = ({ audit }: { audit: AuditI }): JSX.Element => {
-  const requestedAuditors = audit.auditors.filter(
-    (auditor) => auditor.status !== AuditorStatus.VERIFIED,
+  const requestedAuditors = audit.memberships.filter(
+    (member) => member.status !== MembershipStatusType.VERIFIED && member.role === RoleType.AUDITOR,
   );
   const initialState = requestedAuditors.map((auditor) => {
     switch (auditor.status) {
-      case AuditorStatus.REJECTED:
+      case MembershipStatusType.REJECTED:
         return -1;
-      case AuditorStatus.REQUESTED:
+      case MembershipStatusType.REQUESTED:
         return 0;
     }
     return 0;

@@ -35,16 +35,16 @@ const InitiateAudit = ({
   });
 
   const args = useMemo(() => {
-    const auditorsPass: Address[] = audit.auditors
-      .filter((auditor) => auditor.acceptedTerms)
-      .map((auditor) => auditor.user.address as Address);
+    const auditorsPass: Address[] = audit.memberships
+      .filter((member) => member.acceptedTerms)
+      .map((member) => member.user.address as Address);
     const DETAILS = audit
       .details!.substring(audit.details!.lastIndexOf("/") + 1)
       .replace(".md", "");
     const DURATION = audit.duration * 24 * 60 * 60;
     const CLIFF = audit.cliff * 24 * 60 * 60;
     return [
-      audit.auditee.address,
+      audit.owner.address,
       auditorsPass,
       CLIFF,
       DURATION,

@@ -1,8 +1,10 @@
 import { handleErrors } from "@/utils/decorators";
+import { RoleError } from "@/utils/error";
 import { AuditStateI, MarkdownAuditsI, ResponseI } from "@/utils/types";
-import { AuditDetailedI, AuditFindingsI, AuditI } from "@/utils/types/prisma";
-import { Audit, AuditStatus } from "@prisma/client";
+import { ActionI, AuditDetailedI, AuditFindingsI, AuditI } from "@/utils/types/prisma";
+import { ActionType, Audit, AuditStatusType, User } from "@prisma/client";
 import { revalidatePath } from "next/cache";
+import NotificationService from "../notification/notification.service";
 import UserService from "../user/user.service";
 import AuditService from "./audit.service";
 
@@ -19,42 +21,59 @@ class AuditController {
   constructor(
     private readonly auditService: typeof AuditService,
     private readonly userService: typeof UserService,
+    private readonly notificationService: typeof NotificationService,
   ) {}
 
   async getAudit(id: string): Promise<AuditI | null> {
     return this.auditService.getAudit(id);
   }
 
-  async getAuditsDetailed(status?: AuditStatus): Promise<AuditDetailedI[]> {
+  async getAuditActions(auditId: string): Promise<ActionI[]> {
+    return this.auditService.getAuditActions(auditId);
+  }
+
+  async getAuditsDetailed(status?: AuditStatusType): Promise<AuditDetailedI[]> {
     return this.auditService.getAuditsDetailed(status);
   }
 
   @handleErrors
-  async addAuditInfo(id: string, infoId: string): Promise<ResponseI<Audit>> {
-    const data = await this.auditService.addAuditInfo(id, infoId);
+  async addAuditInfo(auditId: string, infoId: string): Promise<ResponseI<Audit>> {
+    const membership = await this.auditService.getAuditOwnerMembership(auditId);
+    if (!membership) {
+      throw new RoleError();
+    }
 
-    revalidatePath(`/audits/view/${id}`, "page");
+    const data = await this.auditService.addAuditInfo(auditId, infoId);
+
+    await this.notificationService.createAndBroadcastAction(membership, ActionType.OWNER_FINALIZED);
+
+    revalidatePath(`/audits/view/${auditId}`, "page");
     return { success: true, data };
   }
 
   @handleErrors
-  async addNftInfo(id: string, nftId: string): Promise<ResponseI<Audit>> {
-    const data = await this.auditService.addNftInfo(id, nftId);
+  async addNftInfo(auditId: string, nftId: string): Promise<ResponseI<Audit>> {
+    const membership = await this.auditService.getAuditOwnerMembership(auditId);
+    if (!membership) {
+      throw new RoleError();
+    }
 
-    revalidatePath(`/audits/view/${id}`, "page");
+    const data = await this.auditService.addNftInfo(auditId, nftId);
+
+    await this.notificationService.createAndBroadcastAction(membership, ActionType.OWNER_REVEALED);
+
+    revalidatePath(`/audits/view/${auditId}`, "page");
     return { success: true, data };
   }
 
-  async getState(id: string): Promise<AuditStateI> {
-    const { user } = await this.userService.currentUser();
-
-    return this.auditService.getAuditState(id, user?.id);
+  getState(audit: AuditI, user: User): AuditStateI {
+    return this.auditService.getAuditState(audit, user);
   }
 
-  async safeMarkdown(id: string): Promise<MarkdownAuditsI> {
+  async safeMarkdown(audit: AuditI): Promise<MarkdownAuditsI> {
     const { user } = await this.userService.currentUser();
 
-    return this.auditService.safeMarkdownDisplay(id, user?.id);
+    return this.auditService.safeMarkdownDisplay(audit, user);
   }
 
   async getAuditFindings(id: string): Promise<AuditFindingsI | null> {
@@ -62,5 +81,5 @@ class AuditController {
   }
 }
 
-const auditController = new AuditController(AuditService, UserService);
+const auditController = new AuditController(AuditService, UserService, NotificationService);
 export default auditController;

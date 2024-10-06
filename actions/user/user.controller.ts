@@ -1,6 +1,6 @@
 import { handleErrors } from "@/utils/decorators";
 import { ResponseI, UserSearchI } from "@/utils/types";
-import { AuditTruncatedI, UserWithCount } from "@/utils/types/prisma";
+import { AuditDetailedI, UserWithCount } from "@/utils/types/prisma";
 import { parseForm, userSchema, userSchemaCreate } from "@/utils/validations";
 import { Prisma, User } from "@prisma/client";
 import { revalidatePath } from "next/cache";
@@ -72,11 +72,11 @@ class UserController {
     return { success: true, data };
   }
 
-  async getUserAudits(address: string): Promise<AuditTruncatedI[]> {
+  async getUserAudits(address: string): Promise<AuditDetailedI[]> {
     return this.userService.userAudits(address);
   }
 
-  async getLeaderboard(key?: string, order?: string): Promise<UserWithCount[]> {
+  async getLeaderboard(key?: string, order?: "asc" | "desc"): Promise<UserWithCount[]> {
     return this.userService.getLeaderboard(key, order);
   }
 
