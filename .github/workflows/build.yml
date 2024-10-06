@@ -1,0 +1,62 @@
+name: Build + Migrate
+
+on: [push]
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  setup-and-build:
+    runs-on: ubuntu-22.04
+    env:
+      DOPPLER_TOKEN: ${{ secrets.DOPPLER_TOKEN }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install Doppler CLI
+        uses: dopplerhq/cli-action@v1
+        with:
+          path: ~/.doppler
+          key: ${{ runner.os }}-doppler-${{ hashFiles('**/doppler.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-doppler-
+
+      - name: Install Doppler CLI
+        if: steps.cache.outputs.cache-hit != 'true'
+        uses: dopplerhq/cli-action@v1
+
+      # Install npm dependencies
+      - name: Install dependencies
+        run: yarn install
+
+      # Generate Prisma Client to reflect latest database schema
+      - name: Generate Prisma Client
+        run: doppler run -- yarn prisma generate
+
+      # Build the application
+      - name: Build
+        run: yarn build
+
+  migration:
+    runs-on: ubuntu-22.04
+    needs: setup-and-build
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install Doppler CLI
+        uses: actions/cache@v3
+        with:
+          path: ~/.doppler
+          key: ${{ runner.os }}-doppler-${{ hashFiles('**/doppler.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-doppler-
+
+      - name: Install Doppler CLI
+        if: steps.cache.outputs.cache-hit != 'true'
+        uses: dopplerhq/cli-action@v1
+
+      - name: Deploy DB changes
+        run: doppler run -- yarn prisma migrate deploy
