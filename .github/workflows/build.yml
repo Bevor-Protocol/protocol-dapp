@@ -1,4 +1,4 @@
-name: Build + Migrate
+name: Build and Migrate
 
 on: [push]
 
@@ -31,5 +31,6 @@ jobs:
       - name: Build
         run: yarn build
 
+      # TODO: setup services here
       - name: Deploy DB
         run: doppler run -- yarn prisma migrate deploy
