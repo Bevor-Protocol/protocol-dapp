@@ -19,16 +19,11 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Install Doppler CLI
-        uses: actions/cache@v3
-        with:
-          path: ~/.doppler
-          key: ${{ runner.os }}-doppler-${{ hashFiles('**/doppler.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-doppler-
+      # Install npm dependencies
+      - name: Install dependencies
+        run: yarn install
 
       - name: Install Doppler CLI
-        if: steps.cache.outputs.cache-hit != 'true'
         uses: dopplerhq/cli-action@v1
 
       - name: Cypress run
