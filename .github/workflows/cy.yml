@@ -2,12 +2,13 @@ name: Cypress Tests
 
 on: [push]
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
-  cypress-run:
+  setup-and-build:
     runs-on: ubuntu-22.04
-    concurrency:
-      group: ${{ github.workflow }}-${{ github.ref }}
-      cancel-in-progress: true
     env:
       DOPPLER_TOKEN: ${{ secrets.DOPPLER_TOKEN }}
     steps:
@@ -16,7 +17,7 @@ jobs:
 
       - name: Install Doppler CLI
         uses: dopplerhq/cli-action@v1
-      
+
       # Install npm dependencies
       - name: Install dependencies
         run: yarn install
@@ -25,13 +26,21 @@ jobs:
       - name: Generate Prisma Client
         run: doppler run -- yarn prisma generate
 
-      - name: Deploy DB changes
-        run: doppler run -- yarn prisma migrate deploy
-
       # Build the application
       - name: Build
         run: yarn build
 
+  migration:
+    runs-on: ubuntu-22.04
+    needs: setup-and-build
+    steps:
+      - name: Deploy DB changes
+        run: doppler run -- yarn prisma migrate deploy
+
+  cypress-run:
+    runs-on: ubuntu-22.04
+    needs: migration
+    steps:
       - name: Cypress run
         uses: cypress-io/github-action@v6
         with:
