@@ -1,0 +1,73 @@
+name: Build and Test
+
+on: [push]
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  DOPPLER_TOKEN: ${{ secrets.DOPPLER_TOKEN }}
+
+jobs:
+  setup-and-build:
+    runs-on: ubuntu-22.04
+    services:
+      postgres:
+        image: postgres:12
+        env:
+          POSTGRES_DB: postgres
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: "18"
+
+      - name: Cache Yarn dependencies
+        uses: actions/cache@v2
+        with:
+          path: node_modules
+          key: ${{ runner.os }}-yarn-${{ hashFiles('yarn.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-yarn-
+
+      # Install npm dependencies
+      - name: Install dependencies
+        run: yarn install
+
+      - uses: dopplerhq/cli-action@v3
+
+      # Build the application
+      - name: Build
+        run: yarn build
+        env:
+          DATABASE_URL_UNPOOLED: postgres://postgres:postgres@localhost:5432/postgres
+
+      # Generate Prisma Client to reflect latest database schema
+      - name: Generate Prisma Client
+        run: yarn prisma generate
+        env:
+          DATABASE_URL_UNPOOLED: postgres://postgres:postgres@localhost:5432/postgres
+
+      - name: Deploy DB
+        run: yarn prisma migrate deploy
+        env:
+          DATABASE_URL_UNPOOLED: postgres://postgres:postgres@localhost:5432/postgres
+
+      - name: Run Tests
+        uses: cypress-io/github-action@v6
+        with:
+          start: yarn start
+          browser: chrome
+          wait-on: "http://localhost:3000"
