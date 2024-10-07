@@ -22,7 +22,7 @@ const UploadFindings = ({
   const initialFile = initial ? new File([], "") : undefined;
   const { toggleOpen } = useModal();
   const [selectedFile, setSelectedFile] = useState<File | undefined>(initialFile);
-  const { toggleOpen: toggleToast, setContent, setReadyAutoClose } = useToast({ autoClose: true });
+  const { show } = useToast();
   const [errors, setErrors] = useState<Record<string, string>>({});
 
   const { mutate, isPending } = useMutation({
@@ -40,17 +40,21 @@ const UploadFindings = ({
             setErrors(error.validationErrors);
             break;
           default:
-            setContent(<ErrorToast text="something went wrong, try again later" />);
-            toggleToast();
-            setReadyAutoClose(true);
+            show({
+              content: <ErrorToast text="something went wrong, try again later" />,
+              autoClose: true,
+              autoCloseReady: true,
+            });
         }
       }
     },
     onError: (error) => {
       console.log(error);
-      setContent(<ErrorToast text="something went wrong, try again later" />);
-      toggleToast();
-      setReadyAutoClose(true);
+      show({
+        content: <ErrorToast text="something went wrong, try again later" />,
+        autoClose: true,
+        autoCloseReady: true,
+      });
     },
   });
 

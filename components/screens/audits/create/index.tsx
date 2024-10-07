@@ -6,14 +6,15 @@ import React, { useState } from "react";
 
 import { auditAction } from "@/actions";
 import AuditFormEntries from "@/components/Audit/client/form";
-import { useErrorToast } from "@/hooks/useErrorToast";
+import ErrorToast from "@/components/Toast/Content/error";
+import { useToast } from "@/hooks/useContexts";
 import { ErrorTypeEnum } from "@/utils/types/enum";
 import { User } from "@prisma/client";
 
 const AuditCreation = ({ user }: { user: User }): JSX.Element => {
   const router = useRouter();
   const [auditors, setAuditors] = useState<User[]>([]);
-  const showError = useErrorToast();
+  const { show } = useToast();
   const [errors, setErrors] = useState<Record<string, string>>({});
 
   const { mutate, isPending } = useMutation({
@@ -30,13 +31,23 @@ const AuditCreation = ({ user }: { user: User }): JSX.Element => {
             setErrors(error.validationErrors);
             break;
           default:
-            showError();
+            show({
+              content: <ErrorToast text="something went wrong, try again later" />,
+              autoClose: true,
+              autoCloseReady: true,
+              direction: "bottom-center",
+            });
         }
       }
     },
     onError: (error) => {
       console.log(error);
-      showError();
+      show({
+        content: <ErrorToast text="something went wrong, try again later" />,
+        autoClose: true,
+        autoCloseReady: true,
+        direction: "bottom-center",
+      });
     },
   });
 

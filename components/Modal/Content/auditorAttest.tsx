@@ -18,7 +18,7 @@ import React from "react";
 const AuditorAttest = ({ audit }: { audit: AuditI }): JSX.Element => {
   const { toggleOpen } = useModal(); // const [showRejected, setShowRejected] = useState(false);
   const [comment, setComment] = useState("");
-  const { toggleOpen: toggleToast, setContent, setReadyAutoClose } = useToast({ autoClose: true });
+  const { show } = useToast();
   const [errors, setErrors] = useState<Record<string, string>>({});
 
   const { mutate, isPending } = useMutation({
@@ -36,17 +36,21 @@ const AuditorAttest = ({ audit }: { audit: AuditI }): JSX.Element => {
             setErrors(error.validationErrors);
             break;
           default:
-            setContent(<ErrorToast text="something went wrong, try again later" />);
-            toggleToast();
-            setReadyAutoClose(true);
+            show({
+              content: <ErrorToast text="something went wrong, try again later" />,
+              autoClose: true,
+              autoCloseReady: true,
+            });
         }
       }
     },
     onError: (error) => {
       console.log(error);
-      setContent(<ErrorToast text="something went wrong, try again later" />);
-      toggleToast();
-      setReadyAutoClose(true);
+      show({
+        content: <ErrorToast text="something went wrong, try again later" />,
+        autoClose: true,
+        autoCloseReady: true,
+      });
     },
   });
 

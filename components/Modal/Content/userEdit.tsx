@@ -17,7 +17,7 @@ import { User } from "@prisma/client";
 
 const UserEdit = ({ user, stats }: { user: User; stats: UserStats }): JSX.Element => {
   const { toggleOpen } = useModal();
-  const { toggleOpen: toggleToast, setContent, setReadyAutoClose } = useToast({ autoClose: true });
+  const { show } = useToast();
   const [selectedImage, setSelectedImage] = useState<File | undefined>();
   const [errors, setErrors] = useState<Record<string, string>>({});
 
@@ -39,17 +39,21 @@ const UserEdit = ({ user, stats }: { user: User; stats: UserStats }): JSX.Elemen
             setErrors(error.validationErrors);
             break;
           default:
-            setContent(<ErrorToast text="something went wrong, try again later" />);
-            toggleToast();
-            setReadyAutoClose(true);
+            show({
+              content: <ErrorToast text="something went wrong, try again later" />,
+              autoClose: true,
+              autoCloseReady: true,
+            });
         }
       }
     },
     onError: (error) => {
       console.log(error);
-      setContent(<ErrorToast text="something went wrong, try again later" />);
-      toggleToast();
-      setReadyAutoClose(true);
+      show({
+        content: <ErrorToast text="something went wrong, try again later" />,
+        autoClose: true,
+        autoCloseReady: true,
+      });
     },
   });
 

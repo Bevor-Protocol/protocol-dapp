@@ -1,13 +1,13 @@
-import { Abi, Address } from "viem";
-import { localhost } from "viem/chains";
-import { useClient, useWriteContract } from "wagmi";
-import { useToast } from "./useContexts";
-import { useReducer, useState } from "react";
-import { waitForTransactionReceipt } from "viem/actions";
+import Transaction from "@/components/Toast/Content/transaction";
 import { contractWriteReducer } from "@/reducers";
 import { CONTRACT_WRITE_INITIAL_STATE } from "@/utils/initialState";
 import { TransactionEnum } from "@/utils/types/enum";
-import Transaction from "@/components/Toast/Content/transaction";
+import { useReducer, useState } from "react";
+import { Abi, Address } from "viem";
+import { waitForTransactionReceipt } from "viem/actions";
+import { localhost } from "viem/chains";
+import { useClient, useWriteContract } from "wagmi";
+import { useToast } from "./useContexts";
 
 export const useContractWriteListen = ({
   abi,
@@ -26,7 +26,7 @@ export const useContractWriteListen = ({
   dispatch: React.Dispatch<Record<string, boolean>>;
 } => {
   const [txn, setTxn] = useState("123");
-  const { toggleOpen, setContent } = useToast();
+  const { show } = useToast();
   const [state, dispatch] = useReducer(contractWriteReducer, { ...CONTRACT_WRITE_INITIAL_STATE });
   // rather than using react-query mutations, I explicitly throw "callbacks" in the
   // thenable statements, for cleaner error handling.
@@ -46,18 +46,25 @@ export const useContractWriteListen = ({
       .then((hash) => {
         setTxn(hash as string);
         dispatch({ isPendingSign: false, isSuccessSign: true, isPendingWrite: true });
-        setContent(<Transaction txn={hash as string} status={TransactionEnum.PENDING} />);
-        toggleOpen();
+        show({
+          content: <Transaction txn={hash as string} status={TransactionEnum.PENDING} />,
+        });
         return waitForTransactionReceipt(client, { hash });
       })
       .then((receipt) => {
         if (receipt.status === "success") {
-          setContent(<Transaction txn={txn} status={TransactionEnum.SUCCESS} />);
-          toggleOpen();
+          show({
+            content: <Transaction txn={txn} status={TransactionEnum.SUCCESS} />,
+            autoClose: true,
+            autoCloseReady: true,
+          });
           dispatch({ isPendingWrite: false, isSuccessWrite: true });
         } else {
-          setContent(<Transaction txn={txn} status={TransactionEnum.ERROR} />);
-          toggleOpen();
+          show({
+            content: <Transaction txn={txn} status={TransactionEnum.ERROR} />,
+            autoClose: true,
+            autoCloseReady: true,
+          });
           dispatch({ isPendingWrite: false, isErrorWrite: true });
           throw new Error("Transaction Error");
         }

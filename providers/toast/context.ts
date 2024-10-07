@@ -3,10 +3,10 @@ import { createContext, MutableRefObject } from "react";
 import { ToastContextI } from "@/utils/types/providers";
 
 const ToastContext = createContext<ToastContextI>({
-  toggleOpen: () => {},
+  setIsOpen: () => {},
   setContent: () => {},
-  setReadyAutoClose: () => {},
-  setAutoClose: () => {},
+  setIsReadyAutoClose: () => {},
+  setShouldAutoClose: () => {},
   setDirection: () => {},
   autoCloseTime: { current: 5_000 } as MutableRefObject<number>,
 });

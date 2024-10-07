@@ -25,7 +25,7 @@ const AuditEditWrapper = ({ audit, user }: { audit: AuditI; user: User }): JSX.E
 
   const router = useRouter();
   const [errors, setErrors] = useState<Record<string, string>>({});
-  const { toggleOpen: toggleToast, setContent, setReadyAutoClose } = useToast({ autoClose: true });
+  const { show } = useToast();
   const [auditors, setAuditors] = useState<User[]>([...initialAuditors]);
 
   const { mutate, isPending } = useMutation({
@@ -42,17 +42,21 @@ const AuditEditWrapper = ({ audit, user }: { audit: AuditI; user: User }): JSX.E
             setErrors(error.validationErrors);
             break;
           default:
-            setContent(<ErrorToast text="something went wrong, try again later" />);
-            toggleToast();
-            setReadyAutoClose(true);
+            show({
+              content: <ErrorToast text="something went wrong, try again later" />,
+              autoClose: true,
+              autoCloseReady: true,
+            });
         }
       }
     },
     onError: (error) => {
       console.log(error);
-      setContent(<ErrorToast text="something went wrong, try again later" />);
-      toggleToast();
-      setReadyAutoClose(true);
+      show({
+        content: <ErrorToast text="something went wrong, try again later" />,
+        autoClose: true,
+        autoCloseReady: true,
+      });
     },
   });
 

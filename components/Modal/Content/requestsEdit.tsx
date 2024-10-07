@@ -30,7 +30,7 @@ const RequestsEdit = ({ audit }: { audit: AuditI }): JSX.Element => {
 
   const { toggleOpen } = useModal();
   const [checked, setChecked] = useState<(1 | -1 | 0)[]>([...initialState]);
-  const { toggleOpen: toggleToast, setContent, setReadyAutoClose } = useToast({ autoClose: true });
+  const { show } = useToast();
   // const [showRejected, setShowRejected] = useState(false);
 
   const { mutate, isPending } = useMutation({
@@ -49,16 +49,20 @@ const RequestsEdit = ({ audit }: { audit: AuditI }): JSX.Element => {
       if (response.success) {
         toggleOpen();
       } else {
-        setContent(<ErrorToast text="something went wrong, try again later" />);
-        toggleToast();
-        setReadyAutoClose(true);
+        show({
+          content: <ErrorToast text="something went wrong, try again later" />,
+          autoClose: true,
+          autoCloseReady: true,
+        });
       }
     },
     onError: (error) => {
       console.log(error);
-      setContent(<ErrorToast text="something went wrong, try again later" />);
-      toggleToast();
-      setReadyAutoClose(true);
+      show({
+        content: <ErrorToast text="something went wrong, try again later" />,
+        autoClose: true,
+        autoCloseReady: true,
+      });
     },
   });
 

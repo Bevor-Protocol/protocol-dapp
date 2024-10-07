@@ -4,13 +4,13 @@ import React from "react";
 
 interface Props extends React.HTMLAttributes<HTMLDivElement> {
   children: React.ReactNode;
-  open: boolean;
+  isOpen: boolean;
   animateOut: boolean;
   direction: "bottom-right" | "bottom-center";
 }
 
-export const Wrapper: React.FC<Props> = ({ children, open, animateOut, direction, ...rest }) => {
-  if (!open) return <></>;
+export const Wrapper: React.FC<Props> = ({ children, isOpen, animateOut, direction, ...rest }) => {
+  if (!isOpen) return <></>;
   return (
     <Column
       className={cn(
@@ -18,9 +18,9 @@ export const Wrapper: React.FC<Props> = ({ children, open, animateOut, direction
         "rounded-md border border-gray-200/20 gap-2",
         direction === "bottom-right" && "right-2 bottom-2",
         direction === "bottom-center" && "left-1/2 bottom-2",
-        direction === "bottom-right" && open && "animate-toast-in-bottom-right",
+        direction === "bottom-right" && isOpen && "animate-toast-in-bottom-right",
         direction === "bottom-right" && animateOut && "animate-toast-out-bottom-right",
-        direction === "bottom-center" && open && "animate-toast-in-bottom-center",
+        direction === "bottom-center" && isOpen && "animate-toast-in-bottom-center",
         direction === "bottom-center" && animateOut && "animate-toast-out-bottom-center",
       )}
       {...rest}

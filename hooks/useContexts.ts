@@ -2,32 +2,40 @@ import ModalContext from "@/providers/modal/context";
 import SiweContext from "@/providers/siwe/context";
 import ToastContext from "@/providers/toast/context";
 import { ModalStateI, SiweStateI, ToastStateI } from "@/utils/types/providers";
-import { useContext, useEffect } from "react";
+import { useContext } from "react";
 
 export const useModal = (): ModalStateI => useContext(ModalContext);
 export const useSiwe = (): SiweStateI => useContext(SiweContext);
 
-export const useToast = ({
-  autoClose = false,
-  autoCloseTime = 5_000,
-  direction = "bottom-right",
-}: {
-  autoClose?: boolean;
-  autoCloseTime?: number;
-  direction?: "bottom-right" | "bottom-center";
-} = {}): ToastStateI => {
+// rather than using the ToastContext directly, we create an abstraction
+// over it, since there's no need to require all underlying logic in a component.
+export const useToast = (): ToastStateI => {
   const toast = useContext(ToastContext);
 
-  useEffect(() => {
-    toast.setAutoClose(autoClose);
+  const handleShow = ({
+    autoClose = false,
+    autoCloseReady = false,
+    autoCloseTime = 5_000,
+    direction = "bottom-right",
+    content,
+  }: {
+    autoClose?: boolean;
+    autoCloseReady?: boolean;
+    autoCloseTime?: number;
+    direction?: "bottom-right" | "bottom-center";
+    content: React.ReactNode;
+  }): void => {
+    toast.setContent(content);
+    toast.setShouldAutoClose(autoClose);
+    toast.setIsReadyAutoClose(autoCloseReady);
     toast.setDirection(direction);
+    toast.setIsOpen(true);
     toast.autoCloseTime.current = autoCloseTime;
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [autoClose, autoCloseTime, direction]);
+  };
 
   return {
-    toggleOpen: toast.toggleOpen,
-    setContent: toast.setContent,
-    setReadyAutoClose: toast.setReadyAutoClose,
+    show: handleShow,
+    hide: () => toast.setIsOpen(false),
+    isReadyAutoClose: () => toast.setIsReadyAutoClose(true),
   };
 };
