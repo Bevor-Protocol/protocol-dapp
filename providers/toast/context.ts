@@ -7,6 +7,7 @@ const ToastContext = createContext<ToastContextI>({
   setContent: () => {},
   setReadyAutoClose: () => {},
   setAutoClose: () => {},
+  setDirection: () => {},
   autoCloseTime: { current: 5_000 } as MutableRefObject<number>,
 });
 

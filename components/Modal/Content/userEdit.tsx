@@ -22,7 +22,7 @@ const UserEdit = ({ user, stats }: { user: User; stats: UserStats }): JSX.Elemen
   const [errors, setErrors] = useState<Record<string, string>>({});
 
   const allowAuditorUpdate = !user.auditorRole || (user.auditorRole && stats.numAuditsAudited == 0);
-  const allowAuditeeUpdate = !user.ownerRole || (user.ownerRole && stats.numAuditsCreated == 0);
+  const allowOwnerUpdate = !user.ownerRole || (user.ownerRole && stats.numAuditsCreated == 0);
 
   const { mutate, isPending } = useMutation({
     mutationFn: (variables: { formData: FormData }) => {
@@ -117,10 +117,10 @@ const UserEdit = ({ user, stats }: { user: User; stats: UserStats }): JSX.Elemen
             />
             <Form.Radio
               name="ownerRole"
-              text="auditee role"
+              text="owner role"
               defaultChecked={user.ownerRole}
-              disabled={!allowAuditeeUpdate || isPending}
-              aria-disabled={!allowAuditeeUpdate || isPending}
+              disabled={!allowOwnerUpdate || isPending}
+              aria-disabled={!allowOwnerUpdate || isPending}
               isError={"ownerRole" in errors}
             />
           </Column>
@@ -165,9 +165,9 @@ const UserEdit = ({ user, stats }: { user: User; stats: UserStats }): JSX.Elemen
               <Tooltip.Content side="top" align="end">
                 <div className="bg-dark shadow rounded-lg cursor-default min-w-48">
                   <div className="p-2">
-                    Adjust your role and whether you want to register as an Auditee. This will
-                    change your UI and possible actions. Note that if you are already an Auditee,
-                    and you have created an Audit, you cannot toggle this off.
+                    Adjust your role and whether you want to register as a Protocol Owner. This will
+                    change your UI and possible actions. Note that if you are already an Owner, and
+                    you have created an Audit, you cannot toggle this off.
                   </div>
                 </div>
               </Tooltip.Content>

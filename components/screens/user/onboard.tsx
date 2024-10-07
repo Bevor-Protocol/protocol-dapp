@@ -107,7 +107,7 @@ const UserOnboard = ({ address }: { address: string }): JSX.Element => {
             disabled={isPending}
             aria-disabled={isPending}
             defaultChecked={false}
-            text="auditee role"
+            text="owner role"
           />
         </Column>
       </Row>

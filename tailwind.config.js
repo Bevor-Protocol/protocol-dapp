@@ -87,20 +87,38 @@ module.exports = {
             transform: "translateX(0%)",
           },
         },
-        "toast-in": {
+        "toast-in-bottom-right": {
           "0%": {
+            display: "none",
             transform: "translateX(120%)",
           },
           "100%": {
+            display: "block",
             transform: "translateX(0%)",
           },
         },
-        "toast-out": {
+        "toast-out-bottom-right": {
           "0%": {
             transform: "translateX(0%)",
           },
           "100%": {
             transform: "translateX(120%)",
+          },
+        },
+        "toast-in-bottom-center": {
+          "0%": {
+            transform: "translate(-50%, 120%)",
+          },
+          "100%": {
+            transform: "translate(-50%, 0%)",
+          },
+        },
+        "toast-out-bottom-center": {
+          "0%": {
+            transform: "translate(-50%, 0%)",
+          },
+          "100%": {
+            transform: "translate(-50%, 120%)",
           },
         },
       },
@@ -109,8 +127,10 @@ module.exports = {
         appear: "appear 0.15s",
         "fade-in": "fade-in 1s",
         panel: "panel 0.15s",
-        "toast-in": "toast-in 0.25s",
-        "toast-out": "toast-out 0.25s forwards 1s",
+        "toast-in-bottom-right": "toast-in-bottom-right 250ms",
+        "toast-out-bottom-right": "toast-out-bottom-right 500ms forwards",
+        "toast-in-bottom-center": "toast-in-bottom-center 250ms forwards",
+        "toast-out-bottom-center": "toast-out-bottom-center 500ms forwards",
         modal: "modal 0.15s forwards",
       },
       colors: {

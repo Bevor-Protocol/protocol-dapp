@@ -10,9 +10,11 @@ import EventContext from "./context";
 const ToastProvider = ({ children }: { children: React.ReactNode }): JSX.Element => {
   const [show, setShow] = useState(false);
   const [readyAutoClose, setReadyAutoClose] = useState(false);
+  const [animateOut, setAnimateOut] = useState(false);
   const [open, toggleOpen] = useReducer(toggleReducer, false);
   const [content, setContent] = useState<React.ReactNode>(null);
   const [autoClose, setAutoClose] = useState(false);
+  const [direction, setDirection] = useState<"bottom-right" | "bottom-center">("bottom-right");
   const autoCloseTime = useRef(5_000);
 
   useEffect(() => {
@@ -33,13 +35,21 @@ const ToastProvider = ({ children }: { children: React.ReactNode }): JSX.Element
     // condition not met to start the auto close timeout.
     if (show && autoClose && !readyAutoClose) return;
 
+    const timeoutAnimate = setTimeout(() => {
+      setAnimateOut(true);
+    }, autoCloseTime.current - 500);
+
     const timeout = setTimeout(() => {
       setShow(false);
       setReadyAutoClose(false);
+      setAnimateOut(false);
       toggleOpen();
     }, autoCloseTime.current);
 
-    return () => clearTimeout(timeout);
+    return () => {
+      clearTimeout(timeoutAnimate);
+      clearTimeout(timeout);
+    };
   }, [open, autoClose, readyAutoClose, show]);
 
   const eventState = {
@@ -47,13 +57,16 @@ const ToastProvider = ({ children }: { children: React.ReactNode }): JSX.Element
     setContent,
     setReadyAutoClose,
     setAutoClose,
+    setDirection,
     autoCloseTime,
   };
 
   return (
     <EventContext.Provider value={eventState}>
       {children}
-      <Toast.Wrapper open={show}>{content}</Toast.Wrapper>
+      <Toast.Wrapper open={show} animateOut={animateOut} direction={direction}>
+        {content}
+      </Toast.Wrapper>
     </EventContext.Provider>
   );
 };

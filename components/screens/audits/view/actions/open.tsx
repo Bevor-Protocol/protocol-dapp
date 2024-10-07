@@ -110,7 +110,7 @@ const AuditorRemoveRequest = ({
         <Tooltip.Content side="top" align="end">
           <div className="bg-dark shadow rounded-lg cursor-default min-w-48">
             <div className="p-2">
-              Delete your request to conduct this audit. The auditee may still add you themselves.
+              Delete your request to conduct this audit. The Owner may still add you themselves.
             </div>
           </div>
         </Tooltip.Content>
@@ -155,7 +155,7 @@ const AuditorAddRequest = ({
         <Tooltip.Content side="top" align="end">
           <div className="bg-dark shadow rounded-lg cursor-default min-w-48">
             <div className="p-2">
-              As an Auditor, you can request to conduct this audit. The auditee may reject or accept
+              As an Auditor, you can request to conduct this audit. The Owner may reject or accept
               you. If they reject you, you cannot request again.
             </div>
           </div>

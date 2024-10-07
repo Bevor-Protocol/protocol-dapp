@@ -71,3 +71,5 @@ jobs:
           start: yarn start
           browser: chrome
           wait-on: "http://localhost:3000"
+        env:
+          DATABASE_URL_UNPOOLED: postgres://postgres:postgres@localhost:5432/postgres

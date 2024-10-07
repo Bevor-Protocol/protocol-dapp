@@ -35,7 +35,7 @@ const Fetcher = async (): Promise<JSX.Element> => {
   if (!user.ownerRole) {
     return (
       <Column className="items-center gap-4">
-        <p>Claim the Auditee role before creating an audit</p>
+        <p>Claim the Owner role before creating an audit</p>
         <DynamicLink href={`/users/${address}`}>
           <Button variant="gradient">
             <span>Dashboard</span>

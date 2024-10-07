@@ -37,8 +37,8 @@ const AuditorSubmitFindings = ({
         <Tooltip.Content side="top" align="end">
           <div className="bg-dark shadow rounded-lg cursor-default min-w-48">
             <div className="p-2">
-              Submit your findings. The Auditee will not be able to see these yet until the
-              selective disclosure period.
+              Submit your findings. The Owner will not be able to see these yet until the selective
+              disclosure period.
             </div>
           </div>
         </Tooltip.Content>
@@ -47,7 +47,7 @@ const AuditorSubmitFindings = ({
   );
 };
 
-const AuditeePendingFindings = (): JSX.Element => {
+const OwnerPendingFindings = (): JSX.Element => {
   return (
     <Row className="items-center gap-4">
       <Button disabled={true} className="flex-1">
@@ -69,7 +69,7 @@ const AuditeePendingFindings = (): JSX.Element => {
   );
 };
 
-const AuditeeLockStake = ({
+const OwnerLockStake = ({
   audit,
   user,
   // disabled,
@@ -131,8 +131,8 @@ const AuditOngoingActions = ({
   if (state.isAuditOwner) {
     return (
       <Column className="gap-2 items-end w-fit *:w-full">
-        {!state.states.CAN_UNLOCK && <AuditeePendingFindings />}
-        {state.states.CAN_UNLOCK && <AuditeeLockStake user={user} audit={audit} />}
+        {!state.states.CAN_UNLOCK && <OwnerPendingFindings />}
+        {state.states.CAN_UNLOCK && <OwnerLockStake user={user} audit={audit} />}
       </Column>
     );
   }

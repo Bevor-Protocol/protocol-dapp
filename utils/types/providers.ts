@@ -16,6 +16,7 @@ export type ToastContextI = {
   setContent: React.Dispatch<React.SetStateAction<React.ReactNode>>;
   setReadyAutoClose: React.Dispatch<React.SetStateAction<boolean>>;
   setAutoClose: React.Dispatch<React.SetStateAction<boolean>>;
+  setDirection: React.Dispatch<React.SetStateAction<"bottom-right" | "bottom-center">>;
   autoCloseTime: React.MutableRefObject<number>;
 };
 

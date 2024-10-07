@@ -16,7 +16,7 @@ import { useModal, useToast } from "@/hooks/useContexts";
 import { AuditStateI } from "@/utils/types";
 import { AuditI } from "@/utils/types/prisma";
 
-const AuditeeEditAudit = ({ id, disabled }: { id: string; disabled: boolean }): JSX.Element => {
+const OwnerEditAudit = ({ id, disabled }: { id: string; disabled: boolean }): JSX.Element => {
   return (
     <Row className="items-center gap-4">
       <DynamicLink href={`/audits/edit/${id}`} asButton className="flex-1" disabled={disabled}>
@@ -29,8 +29,8 @@ const AuditeeEditAudit = ({ id, disabled }: { id: string; disabled: boolean }): 
         <Tooltip.Content side="top" align="end">
           <div className="bg-dark shadow rounded-lg cursor-default min-w-48">
             <div className="p-2">
-              As the Auditee, you can edit this audit. However, since it is in the locked period,
-              this will reset all attestations. You can update terms or remove auditors.
+              As the Owner, you can edit this audit. However, since it is in the locked period, this
+              will reset all attestations. You can update terms or remove auditors.
             </div>
           </div>
         </Tooltip.Content>
@@ -39,7 +39,7 @@ const AuditeeEditAudit = ({ id, disabled }: { id: string; disabled: boolean }): 
   );
 };
 
-const AuditeeReopenAudit = ({
+const OwnerReopenAudit = ({
   id,
   disabled,
   setDisabled,
@@ -76,8 +76,8 @@ const AuditeeReopenAudit = ({
         <Tooltip.Content side="top" align="end">
           <div className="bg-dark shadow rounded-lg cursor-default min-w-48">
             <div className="p-2">
-              As the auditee, you can re-open this audit and allow other auditors to request to
-              join. All attestations will be undone.
+              As the Owner, you can re-open this audit and allow other auditors to request to join.
+              All attestations will be undone.
             </div>
           </div>
         </Tooltip.Content>
@@ -86,7 +86,7 @@ const AuditeeReopenAudit = ({
   );
 };
 
-const AuditeeInitiateAudit = ({
+const OwnerInitiateAudit = ({
   audit,
   disabled,
   setDisabled,
@@ -115,8 +115,8 @@ const AuditeeInitiateAudit = ({
         <Tooltip.Content side="top" align="end">
           <div className="bg-dark shadow rounded-lg cursor-default min-w-48">
             <div className="p-2">
-              As the Auditee, once all parties attest and accept the terms, you can kick off the
-              audit period. This requires posting data on-chain.
+              As the Owner, once all parties attest and accept the terms, you can kick off the audit
+              period. This requires posting data on-chain.
             </div>
           </div>
         </Tooltip.Content>
@@ -222,9 +222,9 @@ const AuditLockedActions = ({
   if (state.isAuditOwner) {
     return (
       <Column className="gap-2 items-end w-fit *:w-full">
-        <AuditeeEditAudit id={audit.id} disabled={disabled} />
-        <AuditeeReopenAudit id={audit.id} disabled={disabled} setDisabled={setDisabled} />
-        <AuditeeInitiateAudit
+        <OwnerEditAudit id={audit.id} disabled={disabled} />
+        <OwnerReopenAudit id={audit.id} disabled={disabled} setDisabled={setDisabled} />
+        <OwnerInitiateAudit
           audit={audit}
           disabled={!state.states.CAN_LOCK_AUDIT || disabled}
           setDisabled={setDisabled}
