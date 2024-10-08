@@ -43,11 +43,10 @@ const AuditeeManageRequest = ({
   audit: AuditI;
   disabled: boolean;
 }): JSX.Element => {
-  const { toggleOpen, setContent } = useModal();
+  const { show } = useModal();
 
   const handleRequestsModal = (): void => {
-    setContent(<RequestsEdit audit={audit} />);
-    toggleOpen();
+    show(<RequestsEdit audit={audit} />);
   };
 
   return (

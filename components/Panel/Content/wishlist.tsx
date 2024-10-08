@@ -3,7 +3,7 @@ import { Arrow, Heart, X } from "@/assets";
 import { AuditorItemSimple } from "@/components/Audit";
 import { Column, Row } from "@/components/Box";
 import { WISHLIST } from "@/constants/queryKeys";
-import { useModal } from "@/hooks/useContexts";
+import { usePanel } from "@/hooks/useContexts";
 import { cn } from "@/utils";
 import { User } from "@prisma/client";
 import { useMutation, useQuery } from "@tanstack/react-query";
@@ -14,7 +14,7 @@ export const WishlistPanel = ({ userId }: { userId: string }): JSX.Element => {
   // We won't remove people from the panel immediately upon being removed.
   // Meaning we won't requery or invalidate tags. We'll allow users to re-add a user
   // to the wishlist. Once the panel is reset, then we'll lose the state.
-  const { toggleOpen } = useModal();
+  const { hide } = usePanel();
   const [isWishlisted, setIsWishlisted] = useState<{ id: string; wishlisted: boolean }[]>([]);
 
   const { data, isPending } = useQuery({
@@ -50,7 +50,7 @@ export const WishlistPanel = ({ userId }: { userId: string }): JSX.Element => {
 
   return (
     <Column className="relative max-h-full">
-      <div onClick={(): void => toggleOpen()} className="cursor-pointer absolute top-0 right-4">
+      <div onClick={hide} className="cursor-pointer absolute top-0 right-4">
         <X height="1.25rem" width="1.25rem" />
       </div>
       <div className="mb-4">My Wishlist</div>

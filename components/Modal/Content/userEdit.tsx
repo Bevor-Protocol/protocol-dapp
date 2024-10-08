@@ -16,7 +16,7 @@ import { ErrorTypeEnum } from "@/utils/types/enum";
 import { User } from "@prisma/client";
 
 const UserEdit = ({ user, stats }: { user: User; stats: UserStats }): JSX.Element => {
-  const { toggleOpen } = useModal();
+  const { hide } = useModal();
   const { show } = useToast();
   const [selectedImage, setSelectedImage] = useState<File | undefined>();
   const [errors, setErrors] = useState<Record<string, string>>({});
@@ -30,7 +30,7 @@ const UserEdit = ({ user, stats }: { user: User; stats: UserStats }): JSX.Elemen
     },
     onSuccess: (response) => {
       if (response.success) {
-        toggleOpen();
+        hide();
       } else {
         const error = response.error;
         switch (error.type) {
@@ -74,10 +74,7 @@ const UserEdit = ({ user, stats }: { user: User; stats: UserStats }): JSX.Elemen
     <form onSubmit={handleSubmit} onReset={handleReset} onChange={() => setErrors({})}>
       <p>Update Profile</p>
       <hr className="w-full h-[1px] border-gray-200/20 my-4" />
-      <div
-        onClick={(): void => toggleOpen()}
-        className="absolute top-4 right-4 w-5 h-5 cursor-pointer z-10"
-      >
+      <div onClick={hide} className="absolute top-4 right-4 w-5 h-5 cursor-pointer z-10">
         <X height="1rem" width="1rem" />
       </div>
       <Row className="justify-center items-center gap-8">

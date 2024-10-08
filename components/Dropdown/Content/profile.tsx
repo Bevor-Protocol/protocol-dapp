@@ -8,7 +8,7 @@ import { Social } from "@/components/Icon";
 import DynamicLink from "@/components/Link";
 import { NotificationPanel } from "@/components/Panel/Content/notifications";
 import { WishlistPanel } from "@/components/Panel/Content/wishlist";
-import { useModal, useSiwe } from "@/hooks/useContexts";
+import { usePanel, useSiwe } from "@/hooks/useContexts";
 import { useCopyToClipboard } from "@/hooks/useCopyToClipboard";
 import { cn } from "@/utils";
 import { trimAddress } from "@/utils/formatters";
@@ -28,19 +28,17 @@ const Profile = ({
 }): JSX.Element => {
   const { chain, connector } = useAccount();
   const { isCopied, copy } = useCopyToClipboard();
-  const { toggleOpen, setContent } = useModal();
+  const { show } = usePanel();
   const { logout } = useSiwe();
 
   const handleWishlist = (): void => {
     if (!user) return;
-    setContent(<WishlistPanel userId={user.id} />);
-    toggleOpen("panel");
+    show(<WishlistPanel userId={user.id} />);
   };
 
   const handleNotifications = (): void => {
     if (!Object.keys(history).length) return;
-    setContent(<NotificationPanel notifications={notifications} />);
-    toggleOpen("panel");
+    show(<NotificationPanel notifications={notifications} />);
   };
 
   return (

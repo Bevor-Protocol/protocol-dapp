@@ -97,12 +97,11 @@ const OwnerInitiateAudit = ({
   disabled: boolean;
   setDisabled: React.Dispatch<React.SetStateAction<boolean>>;
 }): JSX.Element => {
-  const { toggleOpen, setContent } = useModal();
+  const { show } = useModal();
 
   const handleSubmit = (): void => {
     setDisabled(true);
-    setContent(<InitiateAudit audit={audit} setDisabled={setDisabled} />);
-    toggleOpen();
+    show(<InitiateAudit audit={audit} setDisabled={setDisabled} />);
   };
 
   return (
@@ -184,11 +183,10 @@ const AuditorAttestTerms = ({
   audit: AuditI;
   disabled: boolean;
 }): JSX.Element => {
-  const { toggleOpen, setContent } = useModal();
+  const { show } = useModal();
 
   const handleAttestModal = (): void => {
-    setContent(<AuditorAttest audit={audit} />);
-    toggleOpen();
+    show(<AuditorAttest audit={audit} />);
   };
 
   return (

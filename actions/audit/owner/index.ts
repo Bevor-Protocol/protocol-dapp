@@ -5,7 +5,6 @@ import { Audit, User } from "@prisma/client";
 import ownerController from "./owner.controller";
 
 const createAudit = async (formData: FormData, auditors: User[]): Promise<ResponseI<Audit>> => {
-  throw new Error();
   return ownerController.createAudit(formData, auditors);
 };
 

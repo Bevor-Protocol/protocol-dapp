@@ -99,11 +99,10 @@ const Web3Holder = ({
   // need to pass both because a user can get authenticated via SIWE,
   // but not have an account yet.
 
-  const { setContent, toggleOpen } = useModal();
+  const { show } = useModal();
 
   const handleWalletModal = (): void => {
-    setContent(<Wallets />);
-    toggleOpen("panel");
+    show(<Wallets />);
   };
 
   return (

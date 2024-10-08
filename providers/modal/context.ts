@@ -1,9 +1,9 @@
 import { createContext } from "react";
 
-import { ModalStateI } from "@/utils/types/providers";
+import { ModalContextI } from "@/utils/types/providers";
 
-const ModalContext = createContext<ModalStateI>({
-  toggleOpen: () => {},
+const ModalContext = createContext<ModalContextI>({
+  setOpen: () => {},
   setContent: () => {},
 });
 

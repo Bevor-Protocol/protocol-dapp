@@ -20,7 +20,7 @@ const UploadFindings = ({
   initial?: boolean;
 }): JSX.Element => {
   const initialFile = initial ? new File([], "") : undefined;
-  const { toggleOpen } = useModal();
+  const { hide } = useModal();
   const [selectedFile, setSelectedFile] = useState<File | undefined>(initialFile);
   const { show } = useToast();
   const [errors, setErrors] = useState<Record<string, string>>({});
@@ -31,7 +31,7 @@ const UploadFindings = ({
     },
     onSuccess: (response) => {
       if (response.success) {
-        toggleOpen();
+        hide();
       } else {
         const error = response.error;
         switch (error.type) {
@@ -67,10 +67,7 @@ const UploadFindings = ({
 
   return (
     <div>
-      <div
-        onClick={(): void => toggleOpen()}
-        className="absolute top-4 right-4 w-5 h-5 cursor-pointer z-10"
-      >
+      <div onClick={hide} className="absolute top-4 right-4 w-5 h-5 cursor-pointer z-10">
         <X height="1rem" width="1rem" />
       </div>
       <p>Upload your Findings</p>
@@ -91,7 +88,7 @@ const UploadFindings = ({
           <Button disabled={isPending} type="submit">
             Upload Findings
           </Button>
-          <Button disabled={isPending} onClick={(): void => toggleOpen()}>
+          <Button disabled={isPending} onClick={hide}>
             Cancel
           </Button>
         </Row>

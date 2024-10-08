@@ -1,12 +1,12 @@
 import { X } from "@/assets";
+import { CoinbaseWallet, WalletConnect } from "@/assets/wallets";
 import { Column, Row } from "@/components/Box";
+import { Icon } from "@/components/Icon";
 import { useModal } from "@/hooks/useContexts";
-import { useEffect, useState } from "react";
-import { Connector, useConnect, useConnectors } from "wagmi";
 import { config } from "@/providers/wallet/config";
 import { sortWallets } from "@/utils/sorters";
-import { Icon } from "@/components/Icon";
-import { CoinbaseWallet, WalletConnect } from "@/assets/wallets";
+import { useEffect, useState } from "react";
+import { Connector, useConnect, useConnectors } from "wagmi";
 
 const IconMapper: Record<string, React.ReactNode> = {
   walletConnect: <WalletConnect height="20" width="20" />,
@@ -16,7 +16,7 @@ const IconMapper: Record<string, React.ReactNode> = {
 const Wallets = (): JSX.Element => {
   const [recentConnector, setRecentConnector] = useState("");
   const { connectAsync } = useConnect();
-  const { toggleOpen } = useModal();
+  const { hide } = useModal();
 
   const connectors = useConnectors();
 
@@ -33,14 +33,14 @@ const Wallets = (): JSX.Element => {
   const handleConnect = ({ connector }: { connector: Connector }): void => {
     connectAsync({ connector })
       .catch((error) => console.log(error))
-      .finally(() => toggleOpen());
+      .finally(hide);
   };
 
   const walletsShow = sortWallets([...connectors], recentConnector, true);
 
   return (
     <Column className="relative max-h-full">
-      <div onClick={(): void => toggleOpen()} className="cursor-pointer absolute top-0 right-4">
+      <div onClick={hide} className="cursor-pointer absolute top-0 right-4">
         <X height="1.25rem" width="1.25rem" />
       </div>
       <div className="mb-4">Connect a Wallet</div>

@@ -9,11 +9,10 @@ import { UserStats } from "@/utils/types";
 import { User } from "@prisma/client";
 
 const UserProfileActions = ({ user, stats }: { user: User; stats: UserStats }): JSX.Element => {
-  const { toggleOpen, setContent } = useModal();
+  const { show } = useModal();
 
   const handleModal = (): void => {
-    setContent(<UserEdit user={user} stats={stats} />);
-    toggleOpen();
+    show(<UserEdit user={user} stats={stats} />);
   };
 
   return (

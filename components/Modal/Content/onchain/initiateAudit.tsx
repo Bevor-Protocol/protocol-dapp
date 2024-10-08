@@ -25,7 +25,7 @@ const InitiateAudit = ({
   audit: AuditI;
   setDisabled: React.Dispatch<React.SetStateAction<boolean>>;
 }): JSX.Element => {
-  const { toggleOpen } = useModal();
+  const { hide } = useModal();
   const client = useClient();
 
   const { state, writeContractWithEvents } = useContractWriteListen({
@@ -57,7 +57,7 @@ const InitiateAudit = ({
 
   const handleClose = (): void => {
     setDisabled(false);
-    toggleOpen();
+    hide();
   };
 
   const handleSubmit = (): void => {

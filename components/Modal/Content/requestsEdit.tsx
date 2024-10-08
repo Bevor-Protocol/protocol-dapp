@@ -28,7 +28,7 @@ const RequestsEdit = ({ audit }: { audit: AuditI }): JSX.Element => {
     return 0;
   });
 
-  const { toggleOpen } = useModal();
+  const { hide } = useModal();
   const [checked, setChecked] = useState<(1 | -1 | 0)[]>([...initialState]);
   const { show } = useToast();
   // const [showRejected, setShowRejected] = useState(false);
@@ -47,7 +47,7 @@ const RequestsEdit = ({ audit }: { audit: AuditI }): JSX.Element => {
     },
     onSuccess: (response) => {
       if (response.success) {
-        toggleOpen();
+        hide();
       } else {
         show({
           content: <ErrorToast text="something went wrong, try again later" />,
@@ -98,10 +98,7 @@ const RequestsEdit = ({ audit }: { audit: AuditI }): JSX.Element => {
 
   return (
     <form onSubmit={handleSubmit} onReset={handleReset}>
-      <div
-        onClick={(): void => toggleOpen()}
-        className="absolute top-4 right-4 w-5 h-5 cursor-pointer z-10"
-      >
+      <div onClick={hide} className="absolute top-4 right-4 w-5 h-5 cursor-pointer z-10">
         <X height="1rem" width="1rem" />
       </div>
       <p>Reject or Verify Auditors</p>

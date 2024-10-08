@@ -19,11 +19,10 @@ const AuditorSubmitFindings = ({
   auditId: string;
   disabled: boolean;
 }): JSX.Element => {
-  const { toggleOpen, setContent } = useModal();
+  const { show } = useModal();
 
   const handleUploadModal = (): void => {
-    setContent(<UploadFindings auditId={auditId} />);
-    toggleOpen();
+    show(<UploadFindings auditId={auditId} />);
   };
   return (
     <Row className="items-center gap-4">
@@ -80,11 +79,10 @@ const OwnerLockStake = ({
   // disabled: boolean;
   // setDisabled: React.Dispatch<React.SetStateAction<boolean>>;
 }): JSX.Element => {
-  const { toggleOpen, setContent } = useModal();
+  const { show } = useModal();
 
   const handleSubmit = (): void => {
-    setContent(<RevealAudit audit={audit} user={user} />);
-    toggleOpen();
+    show(<RevealAudit audit={audit} user={user} />);
   };
 
   return (

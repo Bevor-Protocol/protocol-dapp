@@ -1,8 +1,13 @@
 import React from "react";
 
 export type ModalStateI = {
-  toggleOpen: (s?: string) => void;
-  setContent: (content: React.ReactNode) => void;
+  show: (content: React.ReactNode) => void;
+  hide: () => void;
+};
+
+export type ModalContextI = {
+  setOpen: React.Dispatch<React.SetStateAction<"modal" | "panel" | "none">>;
+  setContent: React.Dispatch<React.SetStateAction<React.ReactNode>>;
 };
 
 export type ToastStateI = {
