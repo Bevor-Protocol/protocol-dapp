@@ -2,12 +2,12 @@ import { wishlistAction } from "@/actions";
 import { Arrow, Heart, X } from "@/assets";
 import { AuditorItemSimple } from "@/components/Audit";
 import { Column, Row } from "@/components/Box";
+import DynamicLink from "@/components/Link";
 import { WISHLIST } from "@/constants/queryKeys";
 import { usePanel } from "@/hooks/useContexts";
 import { cn } from "@/utils";
 import { User } from "@prisma/client";
 import { useMutation, useQuery } from "@tanstack/react-query";
-import Link from "next/link";
 import { useState } from "react";
 
 export const WishlistPanel = ({ userId }: { userId: string }): JSX.Element => {
@@ -62,9 +62,9 @@ export const WishlistPanel = ({ userId }: { userId: string }): JSX.Element => {
                 <AuditorItemSimple auditor={wishlist.receiver} showStatus={true} />
               </div>
               <Row className="gap-2 items-center">
-                <Link href={`/users/${wishlist.receiver.address}`}>
+                <DynamicLink href={`/users/${wishlist.receiver.address}`} onClick={hide}>
                   <Arrow height="0.75rem" fill="currentColor" />
-                </Link>
+                </DynamicLink>
                 <div
                   onClick={() =>
                     mutate({

@@ -35,7 +35,7 @@ const Web3Network = (): JSX.Element => {
                 image={networkImg}
                 className={cn(
                   !supported && "!bg-auto",
-                  networkImg.includes("unknown") && "!bg-auto", // for localhost for now.
+                  supported && networkImg.includes("unknown") && "!bg-auto", // for localhost for now.
                 )}
               />
               <Chevron />

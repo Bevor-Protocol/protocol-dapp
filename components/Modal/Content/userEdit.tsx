@@ -59,10 +59,6 @@ const UserEdit = ({ user, stats }: { user: User; stats: UserStats }): JSX.Elemen
         autoClose: true,
         direction: "bottom-center",
       });
-      // show({
-      //   content: <SuccessToast text="profile updated" />,
-      //   autoClose: true,
-      // });
     },
   });
 
@@ -120,6 +116,7 @@ const UserEdit = ({ user, stats }: { user: User; stats: UserStats }): JSX.Elemen
             <Form.Radio
               name="auditorRole"
               text="auditor role"
+              // potentially add a handler so that a user can set their availability if this is toggled on.
               defaultChecked={user.auditorRole}
               disabled={!allowAuditorUpdate || isPending}
               aria-disabled={!allowAuditorUpdate || isPending}

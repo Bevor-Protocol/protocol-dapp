@@ -278,6 +278,8 @@ export const TextArea: React.FC<TextAreaI> = ({ className, text, isError, ...res
 export const Radio: React.FC<InputI> = ({ className, text, isError, ...rest }) => {
   // We can force a form submission response when unchecked by using the hidden type.
   // When disabled, no response will be submitted, so we can fallback to the defaultChecked value.
+
+  // TODO: this is kind of buggy, come back to this.
   return (
     <Row className="gap-2 items-center justify-between *:text-sm">
       {text && <p className={cn(isError && "text-red-500")}>{text}</p>}
