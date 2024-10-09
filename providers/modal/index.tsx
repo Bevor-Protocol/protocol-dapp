@@ -18,8 +18,8 @@ const ModalProvider = ({ children }: { children: React.ReactNode }): JSX.Element
   const handlerPanelRef = useRef<undefined | (() => void)>(undefined);
 
   useEffect(() => {
-    handlerRef.current = open == "modal" ? (): void => setOpen("modal") : undefined;
-    handlerPanelRef.current = open == "panel" ? (): void => setOpen("panel") : undefined;
+    handlerRef.current = open == "modal" ? (): void => setOpen("none") : undefined;
+    handlerPanelRef.current = open == "panel" ? (): void => setOpen("none") : undefined;
 
     if (open !== "none") {
       document.body.classList.add("modal-show");
@@ -51,10 +51,10 @@ const ModalProvider = ({ children }: { children: React.ReactNode }): JSX.Element
   return (
     <ModalContext.Provider value={modalState}>
       {children}
-      <Modal.Wrapper open={open == "modal"}>
+      <Modal.Wrapper isOpen={open == "modal"}>
         <Modal.Content ref={contentRef}>{content}</Modal.Content>
       </Modal.Wrapper>
-      <Panel.Wrapper open={open == "panel"} ref={panelRef}>
+      <Panel.Wrapper isOpen={open == "panel"} ref={panelRef}>
         {content}
       </Panel.Wrapper>
     </ModalContext.Provider>

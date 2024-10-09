@@ -90,12 +90,20 @@ module.exports = {
             backdropFilter: "blur(1px)",
           },
         },
-        panel: {
+        "panel-in": {
           "0%": {
             transform: "translateX(100%)",
           },
           "100%": {
             transform: "translateX(0%)",
+          },
+        },
+        "panel-out": {
+          "0%": {
+            transform: "translateX(0%)",
+          },
+          "100%": {
+            transform: "translateX(100%)",
           },
         },
         "toast-in-bottom-right": {
@@ -132,18 +140,28 @@ module.exports = {
             transform: "translate(-50%, 120%)",
           },
         },
+        shrink: {
+          "0%": {
+            width: "100%",
+          },
+          "100%": {
+            width: "0%",
+          },
+        },
       },
       animation: {
         shrink: "shrink 1s infinite",
         appear: "appear 0.15s",
         disappear: "disappear 0.15s",
         "fade-in": "fade-in 1s",
-        panel: "panel 0.15s",
+        "panel-in": "panel-in 0.15s",
+        "panel-out": "panel-out 0.15s forwards",
         "toast-in-bottom-right": "toast-in-bottom-right 250ms",
         "toast-out-bottom-right": "toast-out-bottom-right 500ms forwards",
         "toast-in-bottom-center": "toast-in-bottom-center 250ms forwards",
         "toast-out-bottom-center": "toast-out-bottom-center 500ms forwards",
         modal: "modal 0.25s forwards",
+        shrink: "shrink forwards linear",
       },
       colors: {
         dark: "#121212",

@@ -45,7 +45,6 @@ const AuditEditWrapper = ({ audit, user }: { audit: AuditI; user: User }): JSX.E
             show({
               content: <ErrorToast text="something went wrong, try again later" />,
               autoClose: true,
-              autoCloseReady: true,
             });
         }
       }
@@ -55,7 +54,6 @@ const AuditEditWrapper = ({ audit, user }: { audit: AuditI; user: User }): JSX.E
       show({
         content: <ErrorToast text="something went wrong, try again later" />,
         autoClose: true,
-        autoCloseReady: true,
       });
     },
   });

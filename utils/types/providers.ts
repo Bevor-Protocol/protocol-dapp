@@ -13,20 +13,18 @@ export type ModalContextI = {
 export type ToastStateI = {
   show: (options: {
     autoClose?: boolean;
-    autoCloseReady?: boolean;
     autoCloseTime?: number;
     direction?: "bottom-right" | "bottom-center";
     content: React.ReactNode;
   }) => void;
   hide: () => void;
-  isReadyAutoClose: () => void;
+  autoClose: () => void;
 };
 
 export type ToastContextI = {
   setIsOpen: React.Dispatch<React.SetStateAction<boolean>>;
   setContent: React.Dispatch<React.SetStateAction<React.ReactNode>>;
-  setIsReadyAutoClose: React.Dispatch<React.SetStateAction<boolean>>;
-  setShouldAutoClose: React.Dispatch<React.SetStateAction<boolean>>;
+  setAutoClose: React.Dispatch<React.SetStateAction<boolean>>;
   setDirection: React.Dispatch<React.SetStateAction<"bottom-right" | "bottom-center">>;
   autoCloseTime: React.MutableRefObject<number>;
 };

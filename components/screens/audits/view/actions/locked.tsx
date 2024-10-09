@@ -60,7 +60,6 @@ const OwnerReopenAudit = ({
         show({
           content: <ErrorToast text={response.error.message} />,
           autoClose: true,
-          autoCloseReady: true,
         });
       }
     },
@@ -147,7 +146,6 @@ const AuditorRemoveVerification = ({
         show({
           content: <ErrorToast text={response.error.message} />,
           autoClose: true,
-          autoCloseReady: true,
         });
       }
     },

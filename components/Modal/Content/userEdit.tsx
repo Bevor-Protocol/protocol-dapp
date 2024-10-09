@@ -9,6 +9,7 @@ import { Button } from "@/components/Button";
 import * as Form from "@/components/Form";
 import { Icon } from "@/components/Icon";
 import ErrorToast from "@/components/Toast/Content/error";
+import SuccessToast from "@/components/Toast/Content/success";
 import * as Tooltip from "@/components/Tooltip";
 import { useModal, useToast } from "@/hooks/useContexts";
 import { UserStats } from "@/utils/types";
@@ -31,6 +32,10 @@ const UserEdit = ({ user, stats }: { user: User; stats: UserStats }): JSX.Elemen
     onSuccess: (response) => {
       if (response.success) {
         hide();
+        show({
+          content: <SuccessToast text="profile updated" />,
+          autoClose: true,
+        });
       } else {
         const error = response.error;
         switch (error.type) {
@@ -40,9 +45,9 @@ const UserEdit = ({ user, stats }: { user: User; stats: UserStats }): JSX.Elemen
             break;
           default:
             show({
-              content: <ErrorToast text="something went wrong, try again later" />,
+              content: <ErrorToast text="something went wrong" subText="try again later" />,
               autoClose: true,
-              autoCloseReady: true,
+              direction: "bottom-center",
             });
         }
       }
@@ -50,10 +55,14 @@ const UserEdit = ({ user, stats }: { user: User; stats: UserStats }): JSX.Elemen
     onError: (error) => {
       console.log(error);
       show({
-        content: <ErrorToast text="something went wrong, try again later" />,
+        content: <ErrorToast text="something went wrong" subText="try again later" />,
         autoClose: true,
-        autoCloseReady: true,
+        direction: "bottom-center",
       });
+      // show({
+      //   content: <SuccessToast text="profile updated" />,
+      //   autoClose: true,
+      // });
     },
   });
 

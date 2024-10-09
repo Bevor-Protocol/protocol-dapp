@@ -36,7 +36,6 @@ const UserOnboard = ({ address }: { address: string }): JSX.Element => {
             show({
               content: <ErrorToast text="something went wrong, try again later" />,
               autoClose: true,
-              autoCloseReady: true,
             });
         }
       }
@@ -46,7 +45,6 @@ const UserOnboard = ({ address }: { address: string }): JSX.Element => {
       show({
         content: <ErrorToast text="something went wrong, try again later" />,
         autoClose: true,
-        autoCloseReady: true,
       });
     },
   });

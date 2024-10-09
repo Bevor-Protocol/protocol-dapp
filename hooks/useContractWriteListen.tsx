@@ -56,14 +56,12 @@ export const useContractWriteListen = ({
           show({
             content: <Transaction txn={txn} status={TransactionEnum.SUCCESS} />,
             autoClose: true,
-            autoCloseReady: true,
           });
           dispatch({ isPendingWrite: false, isSuccessWrite: true });
         } else {
           show({
             content: <Transaction txn={txn} status={TransactionEnum.ERROR} />,
             autoClose: true,
-            autoCloseReady: true,
           });
           dispatch({ isPendingWrite: false, isErrorWrite: true });
           throw new Error("Transaction Error");

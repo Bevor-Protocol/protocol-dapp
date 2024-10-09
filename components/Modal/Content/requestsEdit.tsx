@@ -52,7 +52,6 @@ const RequestsEdit = ({ audit }: { audit: AuditI }): JSX.Element => {
         show({
           content: <ErrorToast text="something went wrong, try again later" />,
           autoClose: true,
-          autoCloseReady: true,
         });
       }
     },
@@ -61,7 +60,6 @@ const RequestsEdit = ({ audit }: { audit: AuditI }): JSX.Element => {
       show({
         content: <ErrorToast text="something went wrong, try again later" />,
         autoClose: true,
-        autoCloseReady: true,
       });
     },
   });

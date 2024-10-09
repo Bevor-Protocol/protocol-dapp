@@ -43,7 +43,6 @@ const UploadFindings = ({
             show({
               content: <ErrorToast text="something went wrong, try again later" />,
               autoClose: true,
-              autoCloseReady: true,
             });
         }
       }
@@ -53,7 +52,6 @@ const UploadFindings = ({
       show({
         content: <ErrorToast text="something went wrong, try again later" />,
         autoClose: true,
-        autoCloseReady: true,
       });
     },
   });

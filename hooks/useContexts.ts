@@ -13,20 +13,17 @@ export const useToast = (): ToastStateI => {
 
   const show = ({
     autoClose = false,
-    autoCloseReady = false,
     autoCloseTime = 5_000,
     direction = "bottom-right",
     content,
   }: {
     autoClose?: boolean;
-    autoCloseReady?: boolean;
     autoCloseTime?: number;
     direction?: "bottom-right" | "bottom-center";
     content: React.ReactNode;
   }): void => {
     toast.setContent(content);
-    toast.setShouldAutoClose(autoClose);
-    toast.setIsReadyAutoClose(autoCloseReady);
+    toast.setAutoClose(autoClose);
     toast.setDirection(direction);
     toast.setIsOpen(true);
     toast.autoCloseTime.current = autoCloseTime;
@@ -35,7 +32,7 @@ export const useToast = (): ToastStateI => {
   return {
     show,
     hide: () => toast.setIsOpen(false),
-    isReadyAutoClose: () => toast.setIsReadyAutoClose(true),
+    autoClose: () => toast.setAutoClose(true),
   };
 };
 

@@ -34,7 +34,6 @@ const AuditCreation = ({ user }: { user: User }): JSX.Element => {
             show({
               content: <ErrorToast text="something went wrong, try again later" />,
               autoClose: true,
-              autoCloseReady: true,
               direction: "bottom-center",
             });
         }
@@ -45,7 +44,6 @@ const AuditCreation = ({ user }: { user: User }): JSX.Element => {
       show({
         content: <ErrorToast text="something went wrong, try again later" />,
         autoClose: true,
-        autoCloseReady: true,
         direction: "bottom-center",
       });
     },

@@ -136,8 +136,8 @@ const SiweProvider = ({ children }: { children: React.ReactNode }): JSX.Element 
   return (
     <SiweContext.Provider value={value}>
       {children}
-      <Modal.Wrapper open={open} className={isAuthenticated ? "animate-modal-reverse" : ""}>
-        <Modal.Content open={open}>{content}</Modal.Content>
+      <Modal.Wrapper isOpen={open} className={isAuthenticated ? "animate-modal-reverse" : ""}>
+        <Modal.Content isOpen={open}>{content}</Modal.Content>
       </Modal.Wrapper>
     </SiweContext.Provider>
   );
