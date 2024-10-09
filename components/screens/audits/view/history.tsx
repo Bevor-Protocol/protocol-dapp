@@ -18,7 +18,7 @@ const AuditHistory = ({
   actions: ActionI[];
   hasPendingNotifications: boolean;
 }): JSX.Element => {
-  const { toggleOpen, setContent } = useModal();
+  const { show } = useModal();
   const { mutateAsync } = useMutation({
     mutationFn: () => notificationAction.updateUserNotificationByAuditId(auditId),
   });
@@ -26,8 +26,7 @@ const AuditHistory = ({
     if (hasPendingNotifications) {
       mutateAsync();
     }
-    setContent(<HistoryPanel actions={actions} />);
-    toggleOpen("panel");
+    show(<HistoryPanel actions={actions} />);
   };
 
   return (

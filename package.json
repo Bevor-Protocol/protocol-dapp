@@ -68,7 +68,7 @@
     "remark-gfm": "^4.0.0",
     "remark-html": "^16.0.1",
     "siwe": "^2.3.2",
-    "typescript": "^5.3.3",
+    "typescript": "5.4.5",
     "viem": "^2.7.12",
     "wagmi": "^2.5.12",
     "zod": "^3.22.4"

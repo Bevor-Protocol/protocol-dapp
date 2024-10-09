@@ -80,6 +80,10 @@ const SiweProvider = ({ children }: { children: React.ReactNode }): JSX.Element 
       await authAction.getUser().then((user) => {
         const ANY_USER_AUTHED = user.success && !!user.address;
         const ANY_WALLET_CONNECTED = !!address;
+
+        if (ANY_USER_AUTHED && !ANY_WALLET_CONNECTED) {
+          return logout();
+        }
         if (!ANY_USER_AUTHED && !ANY_WALLET_CONNECTED) {
           // no action to take here, safely skip and reset states.
           setOpen(false);
@@ -120,6 +124,7 @@ const SiweProvider = ({ children }: { children: React.ReactNode }): JSX.Element 
         clearTimeout(timer);
       }
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [address, isAuthenticated]);
 
   const login = (): void => requireSigning(address, chainId);
@@ -136,8 +141,8 @@ const SiweProvider = ({ children }: { children: React.ReactNode }): JSX.Element 
   return (
     <SiweContext.Provider value={value}>
       {children}
-      <Modal.Wrapper open={open} className={isAuthenticated ? "animate-modal-reverse" : ""}>
-        <Modal.Content open={open}>{content}</Modal.Content>
+      <Modal.Wrapper isOpen={open} className={isAuthenticated ? "animate-modal-reverse" : ""}>
+        <Modal.Content isOpen={open}>{content}</Modal.Content>
       </Modal.Wrapper>
     </SiweContext.Provider>
   );

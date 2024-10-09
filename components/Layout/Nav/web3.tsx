@@ -35,7 +35,7 @@ const Web3Network = (): JSX.Element => {
                 image={networkImg}
                 className={cn(
                   !supported && "!bg-auto",
-                  networkImg.includes("unknown") && "!bg-auto", // for localhost for now.
+                  supported && networkImg.includes("unknown") && "!bg-auto", // for localhost for now.
                 )}
               />
               <Chevron />
@@ -99,11 +99,10 @@ const Web3Holder = ({
   // need to pass both because a user can get authenticated via SIWE,
   // but not have an account yet.
 
-  const { setContent, toggleOpen } = useModal();
+  const { show } = useModal();
 
   const handleWalletModal = (): void => {
-    setContent(<Wallets />);
-    toggleOpen("panel");
+    show(<Wallets />);
   };
 
   return (

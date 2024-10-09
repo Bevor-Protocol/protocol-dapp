@@ -1,10 +1,10 @@
-import { X } from "@/assets";
+import { Check } from "@/assets";
 import { Row } from "@/components/Box";
 
-const ErrorToast = ({ text, subText }: { text: string; subText?: string }): JSX.Element => {
+const SuccessToast = ({ text, subText }: { text: string; subText?: string }): JSX.Element => {
   return (
     <Row className="text-sm gap-2 items-start relative">
-      <X height="1rem" width="1rem" className="stroke-red-400 mt-1" />
+      <Check height="1rem" width="1rem" className="fill-green-400 mt-1" />
       <div>
         <p>{text}</p>
         {subText && <p className="text-white/60 text-xs pt-1">{subText}</p>}
@@ -13,4 +13,4 @@ const ErrorToast = ({ text, subText }: { text: string; subText?: string }): JSX.
   );
 };
 
-export default ErrorToast;
+export default SuccessToast;

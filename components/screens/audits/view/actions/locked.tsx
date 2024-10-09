@@ -48,7 +48,7 @@ const OwnerReopenAudit = ({
   disabled: boolean;
   setDisabled: React.Dispatch<React.SetStateAction<boolean>>;
 }): JSX.Element => {
-  const { setContent, toggleOpen, setReadyAutoClose } = useToast({ autoClose: true });
+  const { show } = useToast();
 
   const { mutate } = useMutation({
     mutationFn: () => auditAction.owner.openAudit(id),
@@ -57,9 +57,10 @@ const OwnerReopenAudit = ({
       if (response.success) {
         setDisabled(false);
       } else {
-        setContent(<ErrorToast text={response.error.message} />);
-        toggleOpen();
-        setReadyAutoClose(true);
+        show({
+          content: <ErrorToast text={response.error.message} />,
+          autoClose: true,
+        });
       }
     },
   });
@@ -95,12 +96,11 @@ const OwnerInitiateAudit = ({
   disabled: boolean;
   setDisabled: React.Dispatch<React.SetStateAction<boolean>>;
 }): JSX.Element => {
-  const { toggleOpen, setContent } = useModal();
+  const { show } = useModal();
 
   const handleSubmit = (): void => {
     setDisabled(true);
-    setContent(<InitiateAudit audit={audit} setDisabled={setDisabled} />);
-    toggleOpen();
+    show(<InitiateAudit audit={audit} setDisabled={setDisabled} />);
   };
 
   return (
@@ -134,7 +134,7 @@ const AuditorRemoveVerification = ({
   disabled: boolean;
   setDisabled: React.Dispatch<React.SetStateAction<boolean>>;
 }): JSX.Element => {
-  const { setContent, toggleOpen, setReadyAutoClose } = useToast({ autoClose: true });
+  const { show } = useToast();
 
   const { mutate } = useMutation({
     mutationFn: () => auditAction.auditor.leaveAudit(auditId),
@@ -143,9 +143,10 @@ const AuditorRemoveVerification = ({
       if (response.success) {
         setDisabled(false);
       } else {
-        setContent(<ErrorToast text={response.error.message} />);
-        toggleOpen();
-        setReadyAutoClose(true);
+        show({
+          content: <ErrorToast text={response.error.message} />,
+          autoClose: true,
+        });
       }
     },
   });
@@ -180,11 +181,10 @@ const AuditorAttestTerms = ({
   audit: AuditI;
   disabled: boolean;
 }): JSX.Element => {
-  const { toggleOpen, setContent } = useModal();
+  const { show } = useModal();
 
   const handleAttestModal = (): void => {
-    setContent(<AuditorAttest audit={audit} />);
-    toggleOpen();
+    show(<AuditorAttest audit={audit} />);
   };
 
   return (

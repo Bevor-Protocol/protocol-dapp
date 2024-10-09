@@ -1,61 +1,41 @@
 "use client";
 
-import { useEffect, useReducer, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 import * as Toast from "@/components/Toast";
-import { toggleReducer } from "@/reducers";
 import EventContext from "./context";
 
-// Event provider component
+// TODO: implement 'content' as a queue? Would safely allow for N children of the toast
+// TODO: but, each each 'content' would have their own timer? Come back to this.
+
+// To allow for a smooth transition out, we set a timer for animate-out with Xms duration,
+// so once the intent of closing the toast is called, we don't actually unmount for Xms.
+// The alternative is to never unmount, but i don't want this behavior since the child
+// content often changes.
 const ToastProvider = ({ children }: { children: React.ReactNode }): JSX.Element => {
-  const [show, setShow] = useState(false);
-  const [readyAutoClose, setReadyAutoClose] = useState(false);
-  const [animateOut, setAnimateOut] = useState(false);
-  const [open, toggleOpen] = useReducer(toggleReducer, false);
-  const [content, setContent] = useState<React.ReactNode>(null);
+  const [isOpen, setIsOpen] = useState(false);
   const [autoClose, setAutoClose] = useState(false);
+  const [content, setContent] = useState<React.ReactNode>(null);
   const [direction, setDirection] = useState<"bottom-right" | "bottom-center">("bottom-right");
   const autoCloseTime = useRef(5_000);
 
   useEffect(() => {
-    if (!show && !open) return;
-    // explicit open (always the case for open)
-    if (!show && open) {
-      setShow(true);
-      return;
-    }
-    // explicit close (only applicable when not auto closing)
-    if (show && !open) {
-      setShow(false);
-      setReadyAutoClose(false);
-      return;
+    if (!isOpen) return;
+
+    let timeout: NodeJS.Timeout;
+    if (autoClose) {
+      timeout = setTimeout(() => {
+        setAutoClose(false);
+        setIsOpen(false);
+      }, autoCloseTime.current);
     }
 
-    if (show && !autoClose) return;
-    // condition not met to start the auto close timeout.
-    if (show && autoClose && !readyAutoClose) return;
-
-    const timeoutAnimate = setTimeout(() => {
-      setAnimateOut(true);
-    }, autoCloseTime.current - 500);
-
-    const timeout = setTimeout(() => {
-      setShow(false);
-      setReadyAutoClose(false);
-      setAnimateOut(false);
-      toggleOpen();
-    }, autoCloseTime.current);
-
-    return () => {
-      clearTimeout(timeoutAnimate);
-      clearTimeout(timeout);
-    };
-  }, [open, autoClose, readyAutoClose, show]);
+    return () => clearTimeout(timeout);
+  }, [isOpen, autoClose]);
 
   const eventState = {
-    toggleOpen,
+    setIsOpen,
     setContent,
-    setReadyAutoClose,
     setAutoClose,
     setDirection,
     autoCloseTime,
@@ -64,7 +44,12 @@ const ToastProvider = ({ children }: { children: React.ReactNode }): JSX.Element
   return (
     <EventContext.Provider value={eventState}>
       {children}
-      <Toast.Wrapper open={show} animateOut={animateOut} direction={direction}>
+      <Toast.Wrapper
+        isOpen={isOpen}
+        direction={direction}
+        showProgress={autoClose}
+        timing={autoCloseTime.current}
+      >
         {content}
       </Toast.Wrapper>
     </EventContext.Provider>

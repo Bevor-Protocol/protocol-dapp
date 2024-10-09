@@ -2,7 +2,7 @@ import { X } from "@/assets";
 import { AuditorItemSimple } from "@/components/Audit";
 import { Column, HoverItem, Row } from "@/components/Box";
 import DynamicLink from "@/components/Link";
-import { useModal } from "@/hooks/useContexts";
+import { usePanel } from "@/hooks/useContexts";
 import { cn } from "@/utils";
 import { timeSince } from "@/utils/dates";
 import { UserNotificationI } from "@/utils/types/prisma";
@@ -13,11 +13,11 @@ export const NotificationPanel = ({
 }: {
   notifications: Record<string, { meta: string; notifications: UserNotificationI[] }>;
 }): JSX.Element => {
-  const { toggleOpen } = useModal();
+  const { hide } = usePanel();
 
   return (
     <Column className="relative max-h-full">
-      <div onClick={(): void => toggleOpen()} className="cursor-pointer absolute top-0 right-4">
+      <div onClick={hide} className="cursor-pointer absolute top-0 right-4">
         <X height="1.25rem" width="1.25rem" />
       </div>
       <div className="mb-4">Unread Notifications</div>
@@ -26,11 +26,7 @@ export const NotificationPanel = ({
           <div key={auditId}>
             <p>{data.meta}</p>
             <HoverItem className="flex flex-col">
-              <DynamicLink
-                className="px-2 w-full"
-                href={`/audits/view/${auditId}`}
-                onClick={(): void => toggleOpen()}
-              >
+              <DynamicLink className="px-2 w-full" href={`/audits/view/${auditId}`} onClick={hide}>
                 <Column>
                   {data.notifications.map((notification) => (
                     <div key={notification.id}>

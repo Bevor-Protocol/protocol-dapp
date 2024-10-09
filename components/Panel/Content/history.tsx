@@ -1,18 +1,18 @@
 import { X } from "@/assets";
 import { AuditorItemSimple } from "@/components/Audit";
 import { Column, Row } from "@/components/Box";
-import { useModal } from "@/hooks/useContexts";
+import { usePanel } from "@/hooks/useContexts";
 import { cn } from "@/utils";
 import { timeSince } from "@/utils/dates";
 import { ActionI } from "@/utils/types/prisma";
 import { ActionType, RoleType } from "@prisma/client";
 
 export const HistoryPanel = ({ actions }: { actions: ActionI[] }): JSX.Element => {
-  const { toggleOpen } = useModal();
+  const { hide } = usePanel();
 
   return (
     <Column className="relative max-h-full">
-      <div onClick={(): void => toggleOpen()} className="cursor-pointer absolute top-0 right-4">
+      <div onClick={hide} className="cursor-pointer absolute top-0 right-4">
         <X height="1.25rem" width="1.25rem" />
       </div>
       <div className="mb-4">Audit History</div>

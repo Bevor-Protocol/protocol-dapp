@@ -9,6 +9,7 @@ import { Button } from "@/components/Button";
 import * as Form from "@/components/Form";
 import { Icon } from "@/components/Icon";
 import ErrorToast from "@/components/Toast/Content/error";
+import SuccessToast from "@/components/Toast/Content/success";
 import * as Tooltip from "@/components/Tooltip";
 import { useModal, useToast } from "@/hooks/useContexts";
 import { UserStats } from "@/utils/types";
@@ -16,8 +17,8 @@ import { ErrorTypeEnum } from "@/utils/types/enum";
 import { User } from "@prisma/client";
 
 const UserEdit = ({ user, stats }: { user: User; stats: UserStats }): JSX.Element => {
-  const { toggleOpen } = useModal();
-  const { toggleOpen: toggleToast, setContent, setReadyAutoClose } = useToast({ autoClose: true });
+  const { hide } = useModal();
+  const { show } = useToast();
   const [selectedImage, setSelectedImage] = useState<File | undefined>();
   const [errors, setErrors] = useState<Record<string, string>>({});
 
@@ -30,7 +31,11 @@ const UserEdit = ({ user, stats }: { user: User; stats: UserStats }): JSX.Elemen
     },
     onSuccess: (response) => {
       if (response.success) {
-        toggleOpen();
+        hide();
+        show({
+          content: <SuccessToast text="profile updated" />,
+          autoClose: true,
+        });
       } else {
         const error = response.error;
         switch (error.type) {
@@ -39,17 +44,21 @@ const UserEdit = ({ user, stats }: { user: User; stats: UserStats }): JSX.Elemen
             setErrors(error.validationErrors);
             break;
           default:
-            setContent(<ErrorToast text="something went wrong, try again later" />);
-            toggleToast();
-            setReadyAutoClose(true);
+            show({
+              content: <ErrorToast text="something went wrong" subText="try again later" />,
+              autoClose: true,
+              direction: "bottom-center",
+            });
         }
       }
     },
     onError: (error) => {
       console.log(error);
-      setContent(<ErrorToast text="something went wrong, try again later" />);
-      toggleToast();
-      setReadyAutoClose(true);
+      show({
+        content: <ErrorToast text="something went wrong" subText="try again later" />,
+        autoClose: true,
+        direction: "bottom-center",
+      });
     },
   });
 
@@ -70,10 +79,7 @@ const UserEdit = ({ user, stats }: { user: User; stats: UserStats }): JSX.Elemen
     <form onSubmit={handleSubmit} onReset={handleReset} onChange={() => setErrors({})}>
       <p>Update Profile</p>
       <hr className="w-full h-[1px] border-gray-200/20 my-4" />
-      <div
-        onClick={(): void => toggleOpen()}
-        className="absolute top-4 right-4 w-5 h-5 cursor-pointer z-10"
-      >
+      <div onClick={hide} className="absolute top-4 right-4 w-5 h-5 cursor-pointer z-10">
         <X height="1rem" width="1rem" />
       </div>
       <Row className="justify-center items-center gap-8">
@@ -110,6 +116,7 @@ const UserEdit = ({ user, stats }: { user: User; stats: UserStats }): JSX.Elemen
             <Form.Radio
               name="auditorRole"
               text="auditor role"
+              // potentially add a handler so that a user can set their availability if this is toggled on.
               defaultChecked={user.auditorRole}
               disabled={!allowAuditorUpdate || isPending}
               aria-disabled={!allowAuditorUpdate || isPending}

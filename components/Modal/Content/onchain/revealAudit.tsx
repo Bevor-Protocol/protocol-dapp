@@ -23,7 +23,7 @@ import ERC20ABI from "@/contracts/abis/ERC20Token";
 import { User } from "@prisma/client";
 
 const RevealAudit = ({ audit, user }: { audit: AuditI; user: User }): JSX.Element => {
-  const { toggleOpen } = useModal();
+  const { hide } = useModal();
   const client = useClient();
   const [step, setStep] = useState(0);
 
@@ -59,7 +59,7 @@ const RevealAudit = ({ audit, user }: { audit: AuditI; user: User }): JSX.Elemen
   });
 
   const handleClose = (): void => {
-    toggleOpen();
+    hide();
   };
 
   const handleSubmitApproval = (): void => {

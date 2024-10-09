@@ -1,15 +1,14 @@
 "use client";
 
-import { useState, useRef, useReducer, useEffect } from "react";
+import { useEffect, useRef, useState } from "react";
 
 import * as Modal from "@/components/Modal";
 import * as Panel from "@/components/Panel";
 import ModalContext from "./context";
-import { modalReducer } from "@/reducers";
 
 // Modal provider component
 const ModalProvider = ({ children }: { children: React.ReactNode }): JSX.Element => {
-  const [open, toggleOpen] = useReducer(modalReducer, "none");
+  const [open, setOpen] = useState<"modal" | "panel" | "none">("none");
   const [content, setContent] = useState<React.ReactNode>(null);
 
   const contentRef = useRef<HTMLDivElement>(null);
@@ -19,8 +18,8 @@ const ModalProvider = ({ children }: { children: React.ReactNode }): JSX.Element
   const handlerPanelRef = useRef<undefined | (() => void)>(undefined);
 
   useEffect(() => {
-    handlerRef.current = open == "modal" ? toggleOpen : undefined;
-    handlerPanelRef.current = open == "panel" ? toggleOpen : undefined;
+    handlerRef.current = open == "modal" ? (): void => setOpen("none") : undefined;
+    handlerPanelRef.current = open == "panel" ? (): void => setOpen("none") : undefined;
 
     if (open !== "none") {
       document.body.classList.add("modal-show");
@@ -45,19 +44,17 @@ const ModalProvider = ({ children }: { children: React.ReactNode }): JSX.Element
   }, [contentRef, panelRef]);
 
   const modalState = {
-    toggleOpen,
+    setOpen,
     setContent,
   };
 
   return (
     <ModalContext.Provider value={modalState}>
       {children}
-      <Modal.Wrapper open={open == "modal"}>
-        <Modal.Content open={open == "modal"} ref={contentRef}>
-          {content}
-        </Modal.Content>
+      <Modal.Wrapper isOpen={open == "modal"}>
+        <Modal.Content ref={contentRef}>{content}</Modal.Content>
       </Modal.Wrapper>
-      <Panel.Wrapper open={open == "panel"} ref={panelRef}>
+      <Panel.Wrapper isOpen={open == "panel"} ref={panelRef}>
         {content}
       </Panel.Wrapper>
     </ModalContext.Provider>

@@ -43,11 +43,10 @@ const AuditeeManageRequest = ({
   audit: AuditI;
   disabled: boolean;
 }): JSX.Element => {
-  const { toggleOpen, setContent } = useModal();
+  const { show } = useModal();
 
   const handleRequestsModal = (): void => {
-    setContent(<RequestsEdit audit={audit} />);
-    toggleOpen();
+    show(<RequestsEdit audit={audit} />);
   };
 
   return (
@@ -81,7 +80,7 @@ const AuditorRemoveRequest = ({
   disabled: boolean;
   setDisabled: React.Dispatch<React.SetStateAction<boolean>>;
 }): JSX.Element => {
-  const { setContent, toggleOpen, setReadyAutoClose } = useToast({ autoClose: true });
+  const { show } = useToast();
 
   const { mutate } = useMutation({
     mutationFn: () => auditAction.auditor.leaveAudit(auditId),
@@ -91,9 +90,10 @@ const AuditorRemoveRequest = ({
       if (response.success) {
         setDisabled(false);
       } else {
-        setContent(<ErrorToast text={response.error.message} />);
-        toggleOpen();
-        setReadyAutoClose(true);
+        show({
+          content: <ErrorToast text={response.error.message} />,
+          autoClose: true,
+        });
       }
     },
   });
@@ -128,7 +128,7 @@ const AuditorAddRequest = ({
   disabled: boolean;
   setDisabled: React.Dispatch<React.SetStateAction<boolean>>;
 }): JSX.Element => {
-  const { setContent, toggleOpen, setReadyAutoClose } = useToast({ autoClose: true });
+  const { show } = useToast();
   const { mutate } = useMutation({
     mutationFn: () => auditAction.auditor.addRequest(auditId),
     onMutate: () => setDisabled(true),
@@ -136,9 +136,10 @@ const AuditorAddRequest = ({
       if (response.success) {
         setDisabled(false);
       } else {
-        setContent(<ErrorToast text={response.error.message} />);
-        toggleOpen();
-        setReadyAutoClose(true);
+        show({
+          content: <ErrorToast text={response.error.message} />,
+          autoClose: true,
+        });
       }
     },
   });
@@ -174,9 +175,7 @@ const AuditorRemoveVerification = ({
   disabled: boolean;
   setDisabled: React.Dispatch<React.SetStateAction<boolean>>;
 }): JSX.Element => {
-  const { setContent, toggleOpen, setReadyAutoClose } = useToast({
-    autoClose: true,
-  });
+  const { show } = useToast();
 
   const { mutate } = useMutation({
     mutationFn: () => auditAction.auditor.leaveAudit(auditId),
@@ -185,9 +184,10 @@ const AuditorRemoveVerification = ({
       if (response.success) {
         setDisabled(false);
       } else {
-        setContent(<ErrorToast text={response.error.message} />);
-        toggleOpen();
-        setReadyAutoClose(true);
+        show({
+          content: <ErrorToast text={response.error.message} />,
+          autoClose: true,
+        });
       }
     },
   });
@@ -246,7 +246,7 @@ const AuditeeLockAudit = ({
   disabled: boolean;
   setDisabled: React.Dispatch<React.SetStateAction<boolean>>;
 }): JSX.Element => {
-  const { setContent, toggleOpen, setReadyAutoClose } = useToast({ autoClose: true });
+  const { show } = useToast();
 
   const { mutate } = useMutation({
     mutationFn: () => auditAction.owner.lockAudit(auditId),
@@ -255,9 +255,10 @@ const AuditeeLockAudit = ({
       if (response.success) {
         setDisabled(false);
       } else {
-        setContent(<ErrorToast text={response.error.message} />);
-        toggleOpen();
-        setReadyAutoClose(true);
+        show({
+          content: <ErrorToast text={response.error.message} />,
+          autoClose: true,
+        });
       }
     },
   });

@@ -16,9 +16,9 @@ import { AuditI } from "@/utils/types/prisma";
 import React from "react";
 
 const AuditorAttest = ({ audit }: { audit: AuditI }): JSX.Element => {
-  const { toggleOpen } = useModal(); // const [showRejected, setShowRejected] = useState(false);
+  const { hide } = useModal(); // const [showRejected, setShowRejected] = useState(false);
   const [comment, setComment] = useState("");
-  const { toggleOpen: toggleToast, setContent, setReadyAutoClose } = useToast({ autoClose: true });
+  const { show } = useToast();
   const [errors, setErrors] = useState<Record<string, string>>({});
 
   const { mutate, isPending } = useMutation({
@@ -27,7 +27,7 @@ const AuditorAttest = ({ audit }: { audit: AuditI }): JSX.Element => {
     },
     onSuccess: (response) => {
       if (response.success) {
-        toggleOpen();
+        hide();
       } else {
         const error = response.error;
         switch (error.type) {
@@ -36,17 +36,19 @@ const AuditorAttest = ({ audit }: { audit: AuditI }): JSX.Element => {
             setErrors(error.validationErrors);
             break;
           default:
-            setContent(<ErrorToast text="something went wrong, try again later" />);
-            toggleToast();
-            setReadyAutoClose(true);
+            show({
+              content: <ErrorToast text="something went wrong, try again later" />,
+              autoClose: true,
+            });
         }
       }
     },
     onError: (error) => {
       console.log(error);
-      setContent(<ErrorToast text="something went wrong, try again later" />);
-      toggleToast();
-      setReadyAutoClose(true);
+      show({
+        content: <ErrorToast text="something went wrong, try again later" />,
+        autoClose: true,
+      });
     },
   });
 
@@ -57,10 +59,7 @@ const AuditorAttest = ({ audit }: { audit: AuditI }): JSX.Element => {
 
   return (
     <div>
-      <div
-        onClick={(): void => toggleOpen()}
-        className="absolute top-4 right-4 w-5 h-5 cursor-pointer z-10"
-      >
+      <div onClick={hide} className="absolute top-4 right-4 w-5 h-5 cursor-pointer z-10">
         <X height="1rem" width="1rem" />
       </div>
       <p>Attest to the Terms</p>

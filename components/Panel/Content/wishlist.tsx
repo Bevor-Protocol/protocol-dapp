@@ -2,19 +2,19 @@ import { wishlistAction } from "@/actions";
 import { Arrow, Heart, X } from "@/assets";
 import { AuditorItemSimple } from "@/components/Audit";
 import { Column, Row } from "@/components/Box";
+import DynamicLink from "@/components/Link";
 import { WISHLIST } from "@/constants/queryKeys";
-import { useModal } from "@/hooks/useContexts";
+import { usePanel } from "@/hooks/useContexts";
 import { cn } from "@/utils";
 import { User } from "@prisma/client";
 import { useMutation, useQuery } from "@tanstack/react-query";
-import Link from "next/link";
 import { useState } from "react";
 
 export const WishlistPanel = ({ userId }: { userId: string }): JSX.Element => {
   // We won't remove people from the panel immediately upon being removed.
   // Meaning we won't requery or invalidate tags. We'll allow users to re-add a user
   // to the wishlist. Once the panel is reset, then we'll lose the state.
-  const { toggleOpen } = useModal();
+  const { hide } = usePanel();
   const [isWishlisted, setIsWishlisted] = useState<{ id: string; wishlisted: boolean }[]>([]);
 
   const { data, isPending } = useQuery({
@@ -50,7 +50,7 @@ export const WishlistPanel = ({ userId }: { userId: string }): JSX.Element => {
 
   return (
     <Column className="relative max-h-full">
-      <div onClick={(): void => toggleOpen()} className="cursor-pointer absolute top-0 right-4">
+      <div onClick={hide} className="cursor-pointer absolute top-0 right-4">
         <X height="1.25rem" width="1.25rem" />
       </div>
       <div className="mb-4">My Wishlist</div>
@@ -62,9 +62,9 @@ export const WishlistPanel = ({ userId }: { userId: string }): JSX.Element => {
                 <AuditorItemSimple auditor={wishlist.receiver} showStatus={true} />
               </div>
               <Row className="gap-2 items-center">
-                <Link href={`/users/${wishlist.receiver.address}`}>
+                <DynamicLink href={`/users/${wishlist.receiver.address}`} onClick={hide}>
                   <Arrow height="0.75rem" fill="currentColor" />
-                </Link>
+                </DynamicLink>
                 <div
                   onClick={() =>
                     mutate({

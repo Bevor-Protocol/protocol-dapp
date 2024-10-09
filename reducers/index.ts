@@ -17,8 +17,4 @@ export const modalReducer = (state: string, action?: string): string => {
   return "none";
 };
 
-export const toggleReducer = (state: boolean): boolean => {
-  return !state;
-};
-
 export const genericToggleReducer = (s: boolean): boolean => !s;

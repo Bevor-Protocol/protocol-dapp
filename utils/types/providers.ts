@@ -1,20 +1,29 @@
 import React from "react";
 
 export type ModalStateI = {
-  toggleOpen: (s?: string) => void;
-  setContent: (content: React.ReactNode) => void;
+  show: (content: React.ReactNode) => void;
+  hide: () => void;
+};
+
+export type ModalContextI = {
+  setOpen: React.Dispatch<React.SetStateAction<"modal" | "panel" | "none">>;
+  setContent: React.Dispatch<React.SetStateAction<React.ReactNode>>;
 };
 
 export type ToastStateI = {
-  toggleOpen: React.DispatchWithoutAction;
-  setContent: React.Dispatch<React.SetStateAction<React.ReactNode>>;
-  setReadyAutoClose: React.Dispatch<React.SetStateAction<boolean>>;
+  show: (options: {
+    autoClose?: boolean;
+    autoCloseTime?: number;
+    direction?: "bottom-right" | "bottom-center";
+    content: React.ReactNode;
+  }) => void;
+  hide: () => void;
+  autoClose: () => void;
 };
 
 export type ToastContextI = {
-  toggleOpen: React.DispatchWithoutAction;
+  setIsOpen: React.Dispatch<React.SetStateAction<boolean>>;
   setContent: React.Dispatch<React.SetStateAction<React.ReactNode>>;
-  setReadyAutoClose: React.Dispatch<React.SetStateAction<boolean>>;
   setAutoClose: React.Dispatch<React.SetStateAction<boolean>>;
   setDirection: React.Dispatch<React.SetStateAction<"bottom-right" | "bottom-center">>;
   autoCloseTime: React.MutableRefObject<number>;
