@@ -11,31 +11,49 @@ import { ethers, JsonRpcProvider } from "ethers";
 import {
   Abi,
   Address,
+  Chain,
   createPublicClient,
   formatUnits,
   http,
   HttpTransport,
   PublicClient,
 } from "viem";
-import { localhost } from "viem/chains";
+import { base, baseSepolia, localhost } from "viem/chains";
+
+/* 
+TODO: I might need to store the network in the DB.
+someone could not be connected to any network, but should still be able to
+view an audit. Maybe we just constrain it to a single network, so we always
+know exactly which network to read the contracts from.
+*/
+
+const getNetworkUse = (): Chain => {
+  switch (process.env.NETWORK_USE) {
+    case "localhost":
+      return localhost;
+    case "testnet":
+      return baseSepolia;
+  }
+  return base;
+};
 
 class ContractService {
-  publicClient: Record<string, PublicClient<HttpTransport>>;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  publicClient: PublicClient<HttpTransport, any>;
 
   provider: JsonRpcProvider;
 
   constructor() {
-    this.publicClient = {
-      localhost: createPublicClient({
-        chain: localhost,
-        transport: http(),
-      }),
-    };
+    const chain = getNetworkUse();
+    this.publicClient = createPublicClient({
+      chain,
+      transport: http(),
+    });
     this.provider = new ethers.JsonRpcProvider();
   }
 
   getBalance(address: string): Promise<number> {
-    return this.publicClient.localhost
+    return this.publicClient
       .readContract({
         address: ERC20ABI.address as Address,
         abi: ERC20ABI.abi as Abi,
@@ -52,7 +70,7 @@ class ContractService {
   }
 
   getAudit(auditId: bigint): Promise<AuditContractStructuredI | null> {
-    return this.publicClient.localhost
+    return this.publicClient
       .readContract({
         address: BevorABI.address as Address,
         abi: BevorABI.abi as Abi,
@@ -98,7 +116,7 @@ class ContractService {
       return Promise.resolve(returnObj);
     }
 
-    return this.publicClient.localhost
+    return this.publicClient
       .readContract({
         address: BevorABI.address as Address,
         abi: BevorABI.abi as Abi,
@@ -108,7 +126,7 @@ class ContractService {
       .then((scheduleId: unknown) => {
         const scheduleIdTyped = scheduleId as bigint;
         returnObj.vestingScheduleId = scheduleIdTyped;
-        return this.publicClient.localhost.readContract({
+        return this.publicClient.readContract({
           address: BevorABI.address as Address,
           abi: BevorABI.abi as Abi,
           functionName: "vestingSchedules",
@@ -118,7 +136,7 @@ class ContractService {
       .then((vestingSchedule: unknown) => {
         const vestingScheduleTyped = vestingSchedule as VestingContractView;
         returnObj.withdrawn = formatUnits(vestingScheduleTyped[2], tokenUse.decimals);
-        return this.publicClient.localhost.readContract({
+        return this.publicClient.readContract({
           address: BevorABI.address as Address,
           abi: BevorABI.abi as Abi,
           functionName: "computeReleasableAmount",

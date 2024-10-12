@@ -5,7 +5,7 @@ import { History as HistoryIcon } from "@/assets";
 import { Row } from "@/components/Box";
 import { Button } from "@/components/Button";
 import { HistoryPanel } from "@/components/Panel/Content/history";
-import { useModal } from "@/hooks/useContexts";
+import { usePanel } from "@/hooks/useContexts";
 import { ActionI } from "@/utils/types/prisma";
 import { useMutation } from "@tanstack/react-query";
 
@@ -18,7 +18,7 @@ const AuditHistory = ({
   actions: ActionI[];
   hasPendingNotifications: boolean;
 }): JSX.Element => {
-  const { show } = useModal();
+  const { show } = usePanel();
   const { mutateAsync } = useMutation({
     mutationFn: () => notificationAction.updateUserNotificationByAuditId(auditId),
   });
@@ -31,7 +31,7 @@ const AuditHistory = ({
 
   return (
     <Row className="w-full justify-end pb-2">
-      <Button className="relative" onClick={handleClick} disabled={!history.length}>
+      <Button className="relative" onClick={handleClick} disabled={!actions.length}>
         History
         <HistoryIcon height="0.75rem" width="0.75rem" fill="currentColor" />
         {hasPendingNotifications && (

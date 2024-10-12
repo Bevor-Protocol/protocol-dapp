@@ -31,7 +31,7 @@ const Vesting = async ({
     return <></>;
   }
 
-  const tokenUse = AvailableTokens.localhost.find((t) => t.address == audit.token);
+  const tokenUse = AvailableTokens.Localhost.find((t) => t.address == audit.token);
 
   let vestingScheduleInfo = {
     vestingScheduleId: null as bigint | null,

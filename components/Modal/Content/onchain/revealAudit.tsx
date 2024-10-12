@@ -29,7 +29,7 @@ const RevealAudit = ({ audit, user }: { audit: AuditI; user: User }): JSX.Elemen
 
   useEffect(() => {
     // if user already has approved the necessary amount, move them to next step.
-    const token = AvailableTokens.localhost.find((t) => t.address == audit.token);
+    const token = AvailableTokens.Localhost.find((t) => t.address == audit.token);
     if (!token) return;
     const convertedValue = parseUnits(audit.price.toString(), token.decimals);
     contractAction
@@ -65,7 +65,7 @@ const RevealAudit = ({ audit, user }: { audit: AuditI; user: User }): JSX.Elemen
   const handleSubmitApproval = (): void => {
     if (!client) return;
     if (user.address !== audit.owner.address) return;
-    const token = AvailableTokens.localhost.find((t) => t.address == audit.token);
+    const token = AvailableTokens.Localhost.find((t) => t.address == audit.token);
     if (!token) return;
     const convertedValue = parseUnits(audit.price.toString(), token.decimals);
 

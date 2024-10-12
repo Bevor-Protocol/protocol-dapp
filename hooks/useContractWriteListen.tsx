@@ -5,8 +5,7 @@ import { TransactionEnum } from "@/utils/types/enum";
 import { useReducer, useState } from "react";
 import { Abi, Address } from "viem";
 import { waitForTransactionReceipt } from "viem/actions";
-import { localhost } from "viem/chains";
-import { useClient, useWriteContract } from "wagmi";
+import { useAccount, useClient, useWriteContract } from "wagmi";
 import { useToast } from "./useContexts";
 
 export const useContractWriteListen = ({
@@ -27,6 +26,7 @@ export const useContractWriteListen = ({
 } => {
   const [txn, setTxn] = useState("123");
   const { show } = useToast();
+  const { chainId } = useAccount();
   const [state, dispatch] = useReducer(contractWriteReducer, { ...CONTRACT_WRITE_INITIAL_STATE });
   // rather than using react-query mutations, I explicitly throw "callbacks" in the
   // thenable statements, for cleaner error handling.
@@ -41,7 +41,7 @@ export const useContractWriteListen = ({
       address,
       functionName,
       args: writeArgs,
-      chainId: localhost.id,
+      chainId,
     })
       .then((hash) => {
         setTxn(hash as string);

@@ -231,7 +231,7 @@ const AuditFormEntries = ({
           disabled={disabled}
           isError={"token" in errors}
         >
-          {AvailableTokens.localhost.map((option) => (
+          {AvailableTokens.Localhost.map((option) => (
             <option key={option.symbol} value={option.address}>
               {option.symbol}
             </option>

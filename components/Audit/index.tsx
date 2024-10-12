@@ -27,7 +27,7 @@ export const AuditCardTruncated = ({
   isProtocolOwner: boolean;
   showNoti: boolean;
 }): JSX.Element => {
-  const token = AvailableTokens.localhost.find((t) => t.address == audit.token);
+  const token = AvailableTokens.Localhost.find((t) => t.address == audit.token);
   return (
     <div className="w-1/2 p-2 animate-fade-in">
       <DynamicLink href={`/audits/view/${audit.id}`} className="w-full">
@@ -61,7 +61,7 @@ export const AuditCardTruncated = ({
 };
 
 export const AuditCard = ({ audit }: { audit: AuditDetailedI }): JSX.Element => {
-  const token = AvailableTokens.localhost.find((t) => t.address == audit.token);
+  const token = AvailableTokens.Localhost.find((t) => t.address == audit.token);
   const verifiedAuditors = audit.memberships.filter(
     (member) =>
       member.role === RoleType.AUDITOR &&

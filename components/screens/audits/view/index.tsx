@@ -37,7 +37,7 @@ const AuditPage = ({ audit, user }: { audit: AuditI; user: User | null }): JSX.E
     (member) => member.attestedTerms && !member.acceptedTerms,
   );
 
-  const token = AvailableTokens.localhost.find((t) => t.address == audit.token);
+  const token = AvailableTokens.Localhost.find((t) => t.address == audit.token);
 
   return (
     <Row className="justify-between items-stretch relative">

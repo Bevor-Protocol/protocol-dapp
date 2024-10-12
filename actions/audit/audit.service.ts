@@ -274,11 +274,6 @@ class AuditService {
       findings: [],
     };
 
-    const verified = audit.memberships.filter(
-      (member) =>
-        member.role === RoleType.AUDITOR && member.status == MembershipStatusType.VERIFIED,
-    );
-
     if (audit.details) {
       markdownObject.details = await this.parseMarkdown(audit.details);
     }
@@ -295,8 +290,14 @@ class AuditService {
     // effectively refetches the audit, but doesn't omit the findings.
     const auditWithFindings = await this.getAuditFindings(audit.id);
 
-    // will never happen. But need it for type safety.
+    // will never happen. But add it for type safety.
     if (!auditWithFindings) return markdownObject;
+    // get the verified auditors from the call that doesn't omit findings.
+    const verified = auditWithFindings.memberships.filter(
+      (member) =>
+        member.role === RoleType.AUDITOR && member.status == MembershipStatusType.VERIFIED,
+    );
+
     let ownerReveal = globalReveal;
 
     const now = Math.round(new Date().getTime() / 1000);
