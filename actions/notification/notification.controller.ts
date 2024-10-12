@@ -54,11 +54,11 @@ class NotificationController {
 
   @handleErrors
   async updateUserNotificationByAuditId(auditId: string): Promise<ResponseI<Prisma.BatchPayload>> {
-    const user = await this.roleService.requireAuth();
-    const data = await this.notificationService.updateNotificationByAudit(user.id, auditId);
+    const { id } = await this.roleService.requireAccount();
+    const data = await this.notificationService.updateNotificationByAudit(id, auditId);
 
-    revalidateTag(`HISTORY ${user.address}`);
-    revalidateTag(`HISTORY ${user.address} ${auditId}`);
+    revalidateTag(`HISTORY ${id}`);
+    revalidateTag(`HISTORY ${id} ${auditId}`);
     return { success: true, data };
   }
 }

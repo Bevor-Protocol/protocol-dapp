@@ -34,13 +34,11 @@ const Audits = ({ initialData }: { initialData: AuditDetailedI[] }): JSX.Element
     queryKey: [AUDITS, display],
     queryFn: () => auditAction.getAuditsDetailed(display),
     initialData,
+    refetchOnMount: false,
   });
 
   return (
-    <Column className="gap-4 py-8 justify-start items-center w-full max-w-[1000px]">
-      <div className="grad-light text-grad">
-        <h2 className="text-4xl font-extrabold leading-[normal]">Audits</h2>
-      </div>
+    <>
       <Row className="gap-4">
         {statusOrder.map((status, ind) => (
           <Toggle
@@ -59,7 +57,7 @@ const Audits = ({ initialData }: { initialData: AuditDetailedI[] }): JSX.Element
           ))}
         </Column>
       )}
-    </Column>
+    </>
   );
 };
 

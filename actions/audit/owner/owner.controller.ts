@@ -2,10 +2,9 @@ import BlobService from "@/actions/blob/blob.service";
 import NotificationService from "@/actions/notification/notification.service";
 import RoleService from "@/actions/roles/roles.service";
 import { handleErrors } from "@/utils/decorators";
-import { RoleError } from "@/utils/error";
 import { ResponseI } from "@/utils/types";
 import { auditFormSchema, parseForm } from "@/utils/validations";
-import { ActionType, Audit, AuditStatusType, User } from "@prisma/client";
+import { ActionType, Audit, AuditStatusType, RoleType, User } from "@prisma/client";
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
 import AuditService from "../audit.service";
@@ -40,10 +39,7 @@ class OwnerController {
       ...rest,
     };
 
-    const user = await this.roleService.requireAuth();
-    if (!user.ownerRole) {
-      throw new RoleError();
-    }
+    const user = await this.roleService.requireRole(RoleType.OWNER);
 
     const blobData = await this.blobService.addBlob("audit-details", details);
     if (blobData) {
@@ -82,8 +78,8 @@ class OwnerController {
     const { details, ...rest } = parsed;
     const dataPass: Omit<typeof parsed, "details"> & { details?: string } = { ...rest };
 
-    const user = await this.roleService.requireAuth();
-    const membership = await this.roleService.canEdit(user, auditId);
+    const { id } = await this.roleService.requireAccount();
+    const membership = await this.roleService.canEdit(id, auditId);
 
     const blobData = await BlobService.addBlob("audit-details", details);
     if (blobData) {
@@ -109,6 +105,7 @@ class OwnerController {
       this.notificationService.createAndBroadcastAction(membership, ActionType.OWNER_EDITED);
     }
 
+    revalidatePath(`/audits/view/${auditId}`, "page");
     return { success: true, data: true };
   }
 
@@ -123,8 +120,8 @@ class OwnerController {
    */
   @handleErrors
   async lockAudit(auditId: string): Promise<ResponseI<boolean>> {
-    const user = await this.roleService.requireAuth();
-    const membership = await this.roleService.canLock(user, auditId);
+    const { id } = await this.roleService.requireAccount();
+    const membership = await this.roleService.canLock(id, auditId);
 
     await this.ownerService.lockAudit(membership.auditId);
 
@@ -144,8 +141,8 @@ class OwnerController {
    */
   @handleErrors
   async openAudit(auditId: string): Promise<ResponseI<boolean>> {
-    const user = await this.roleService.requireAuth();
-    const membership = await this.roleService.canOpen(user, auditId);
+    const { id } = await this.roleService.requireAccount();
+    const membership = await this.roleService.canOpen(id, auditId);
 
     await this.ownerService.openAudit(auditId);
 
@@ -161,8 +158,8 @@ class OwnerController {
     auditorsApprove: string[],
     auditorsReject: string[],
   ): Promise<ResponseI<boolean>> {
-    const user = await this.roleService.requireAuth();
-    const membership = await this.roleService.canEdit(user, auditId);
+    const { id } = await this.roleService.requireAccount();
+    const membership = await this.roleService.canEdit(id, auditId);
 
     await this.ownerService.updateAudit(auditId, {}, auditorsApprove, auditorsReject, []);
 

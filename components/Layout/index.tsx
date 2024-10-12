@@ -24,7 +24,7 @@ export const Footer = (): JSX.Element => {
 };
 
 export const Nav = async (): Promise<JSX.Element> => {
-  const { address, user } = await userAction.currentUser();
+  const { address, user } = await userAction.getCurrentUser();
   let notifications: Record<string, { meta: string; notifications: UserNotificationI[] }> = {};
   if (user) {
     notifications = await notificationAction.getUserNotifications(user.id);

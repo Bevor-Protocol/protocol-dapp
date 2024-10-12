@@ -44,6 +44,11 @@ interface SelectI extends React.SelectHTMLAttributes<HTMLSelectElement> {
   isError?: boolean;
 }
 
+interface CheckboxI extends React.InputHTMLAttributes<HTMLInputElement> {
+  text: string;
+  checked: boolean;
+}
+
 export const Input: React.FC<InputI> = ({ className, text, type, isError, ...rest }) => {
   return (
     <label className="w-fit max-w-fit *:text-sm">
@@ -231,6 +236,7 @@ export const Search: React.FC<SearchI> = ({ children, className, text, ...rest }
           className={cn(
             "items-center gap-2 px-3 py-2 rounded border border-gray-200/20 outline-none",
             !!children && "rounded-b-none",
+            "focus-within:ring-1 focus-within:ring-blue-300",
           )}
         >
           <SearchIcon height="15px" width="15px" className="opacity-50" />
@@ -320,6 +326,26 @@ export const Select: React.FC<SelectI> = ({
         </option>
         {children}
       </select>
+    </label>
+  );
+};
+
+export const Checkbox: React.FC<CheckboxI> = ({ text, checked, ...rest }) => {
+  // the hidden input field ensures that token gets passed even if nothing is submitted.
+  // order matters here.
+  return (
+    <label className="flex gap-2 *:text-sm w-fit *:cursor-pointer items-center">
+      <input
+        type="checkbox"
+        className={cn(
+          "appearance-none bg-transparent checked:bg-primary-light-50",
+          "border border-1 border-white",
+          "h-3 w-3 rounded-sm focus-input",
+        )}
+        checked={checked}
+        {...rest}
+      />
+      <p>{text}</p>
     </label>
   );
 };

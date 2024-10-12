@@ -9,30 +9,8 @@ import {
   RoleType,
   User,
 } from "@prisma/client";
-import AuthService from "../auth/auth.service";
 
 class UserService {
-  constructor(private readonly authService: typeof AuthService) {}
-
-  async currentUser(): Promise<{ address: string; user: User | null }> {
-    const session = await this.authService.getSession();
-    if (!session?.siwe) {
-      return {
-        address: "",
-        user: null,
-      };
-    }
-    const { address } = session.siwe;
-
-    return this.getProfile(address)
-      .then((user) => {
-        return { address, user };
-      })
-      .catch(() => {
-        return { address, user: null };
-      });
-  }
-
   getProfile(address: string): PrismaPromise<User | null> {
     return prisma.user.findUnique({
       where: {
@@ -247,5 +225,5 @@ class UserService {
   }
 }
 
-const userService = new UserService(AuthService);
+const userService = new UserService();
 export default userService;

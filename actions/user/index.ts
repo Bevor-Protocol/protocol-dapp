@@ -5,12 +5,12 @@ import { AuditDetailedI, UserWithCount } from "@/utils/types/prisma";
 import { User } from "@prisma/client";
 import userController from "./user.controller";
 
-const currentUser = async (): Promise<{ address: string; user: User | null }> => {
-  return userController.currentUser();
-};
-
 const getProfile = async (address: string): Promise<User | null> => {
   return userController.getProfile(address);
+};
+
+const getCurrentUser = async (): Promise<{ address: string; user: User | null }> => {
+  return userController.getCurrentUser();
 };
 
 const createUser = async (address: string, formData: FormData): Promise<ResponseI<User>> => {
@@ -39,7 +39,7 @@ const searchAuditors = async (query?: string): Promise<User[]> => {
 
 export {
   createUser,
-  currentUser,
+  getCurrentUser,
   getLeaderboard,
   getProfile,
   getUserAudits,

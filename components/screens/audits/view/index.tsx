@@ -25,10 +25,7 @@ const AuditPage = ({ audit, user }: { audit: AuditI; user: User | null }): JSX.E
       member.isActive,
   );
   const rejectedAuditors = audit.memberships.filter(
-    (member) =>
-      member.status == MembershipStatusType.REJECTED &&
-      member.role === RoleType.AUDITOR &&
-      member.isActive,
+    (member) => member.status == MembershipStatusType.REJECTED && member.role === RoleType.AUDITOR,
   );
 
   const attestationPending = verifiedAuditors.filter((member) => !member.attestedTerms);
@@ -204,7 +201,7 @@ const AuditPage = ({ audit, user }: { audit: AuditI; user: User | null }): JSX.E
             </div>
           </Row>
         </div>
-        {user && (
+        {!!user && (
           <Suspense fallback={<Loader className="h-4 w-4" />}>
             <AuditDashboardActions audit={audit} user={user} />
           </Suspense>

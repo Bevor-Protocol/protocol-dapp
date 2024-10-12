@@ -105,7 +105,7 @@ class OwnerService {
     deactivate: string[],
     create: string[],
   ): Promise<Audit> {
-    const toUpsert: Prisma.AuditMembershipUpsertArgs[] = [];
+    const toUpsert: Prisma.AuditMembershipUpsertWithWhereUniqueWithoutAuditInput[] = [];
 
     activate.concat(create).forEach((userId) => {
       // an upsert is redundant, but it allows us to work around prisma
@@ -123,7 +123,6 @@ class OwnerService {
         },
         create: {
           userId,
-          auditId,
           role: RoleType.AUDITOR,
           status: MembershipStatusType.VERIFIED,
           isActive: true,
@@ -144,7 +143,6 @@ class OwnerService {
         },
         create: {
           userId,
-          auditId,
           role: RoleType.AUDITOR,
           status: MembershipStatusType.REJECTED,
           isActive: false,

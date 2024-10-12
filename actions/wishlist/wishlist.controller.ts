@@ -24,8 +24,8 @@ class WishlistController {
 
   @handleErrors
   async addToWishlist(receiver: string): Promise<ResponseI<WishlistI>> {
-    const user = await this.roleService.requireAuth();
-    const data = await this.wishlistService.addToWishlist(user.id, receiver);
+    const { id } = await this.roleService.requireAccount();
+    const data = await this.wishlistService.addToWishlist(id, receiver);
 
     revalidatePath(`/users/${data.receiver.address}`, "page");
     return { success: true, data };
@@ -33,8 +33,8 @@ class WishlistController {
 
   @handleErrors
   async removeFromWishlist(receiver: string): Promise<ResponseI<WishlistI>> {
-    const user = await this.roleService.requireAuth();
-    const data = await this.wishlistService.removeFromWishlist(user.id, receiver);
+    const { id } = await this.roleService.requireAccount();
+    const data = await this.wishlistService.removeFromWishlist(id, receiver);
 
     revalidatePath(`/users/${data.receiver.address}`, "page");
     return { success: true, data };

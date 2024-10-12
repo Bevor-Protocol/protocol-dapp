@@ -18,15 +18,13 @@ const Fetcher = async ({ auditId }: { auditId: string }): Promise<JSX.Element> =
 
   const actions = await auditAction.getAuditActions(auditId);
 
-  const { user } = await userAction.currentUser();
+  const { address, user } = await userAction.getCurrentUser();
 
   let isMemberOfAudit = false;
   let isAuditorOfAudit = false;
   let hasPendingNotifications = false;
   if (user) {
-    const isOwner = audit.memberships.some(
-      (member) => member.userId === user.id && member.role === RoleType.OWNER,
-    );
+    const isOwner = audit.owner.id === user.id;
     const isAuditor = audit.memberships.some(
       (member) =>
         member.userId === user.id &&
@@ -37,14 +35,14 @@ const Fetcher = async ({ auditId }: { auditId: string }): Promise<JSX.Element> =
 
     isMemberOfAudit = isOwner || isAuditor;
     isAuditorOfAudit = isAuditor;
-  }
 
-  if (isMemberOfAudit && user) {
-    const pendingNotificationsCount = await notificationAction.getUserHistoryCountByAuditId(
-      user.id,
-      auditId,
-    );
-    hasPendingNotifications = pendingNotificationsCount > 0;
+    if (isMemberOfAudit) {
+      const pendingNotificationsCount = await notificationAction.getUserHistoryCountByAuditId(
+        user.id,
+        auditId,
+      );
+      hasPendingNotifications = pendingNotificationsCount > 0;
+    }
   }
 
   return (
@@ -56,10 +54,10 @@ const Fetcher = async ({ auditId }: { auditId: string }): Promise<JSX.Element> =
       />
       <AuditPage audit={audit} user={user} />
       <Suspense fallback={<Loader className="h-4 w-4" />}>
-        <Vesting audit={audit} isAuditor={isAuditorOfAudit} address={user?.address} />
+        <Vesting audit={audit} isAuditor={isAuditorOfAudit} address={address} />
       </Suspense>
       <hr className="w-full h-[1px] border-gray-200/20 my-4" />
-      <AuditMarkdown audit={audit} user={user} />
+      <AuditMarkdown audit={audit} userId={user?.id} />
     </div>
   );
 };

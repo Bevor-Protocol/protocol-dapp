@@ -1,13 +1,12 @@
 import { Suspense } from "react";
 
-import { auditAction, userAction } from "@/actions";
+import { auditAction, authAction } from "@/actions";
 import { Arrow } from "@/assets";
 import { Column } from "@/components/Box";
 import { Button } from "@/components/Button";
 import DynamicLink from "@/components/Link";
 import { LoaderFill } from "@/components/Loader";
 import AuditEditWrapper from "@/components/screens/audits/edit";
-import { RoleType } from "@prisma/client";
 
 const Fetcher = async ({ auditId }: { auditId: string }): Promise<JSX.Element> => {
   const audit = await auditAction.getAudit(auditId);
@@ -20,10 +19,8 @@ const Fetcher = async ({ auditId }: { auditId: string }): Promise<JSX.Element> =
     );
   }
 
-  const { address, user } = await userAction.currentUser();
-  const isOwner = audit.memberships.some(
-    (member) => member.userId === user?.id && member.role === RoleType.OWNER,
-  );
+  const { address, id } = await authAction.getCurrentUser();
+  const isOwner = audit.owner.id === id;
 
   if (!address) {
     return (
@@ -33,7 +30,7 @@ const Fetcher = async ({ auditId }: { auditId: string }): Promise<JSX.Element> =
     );
   }
 
-  if (!user) {
+  if (!id) {
     return (
       <Column className="items-center gap-4">
         <p>Create an account before accessing this page</p>
@@ -61,7 +58,7 @@ const Fetcher = async ({ auditId }: { auditId: string }): Promise<JSX.Element> =
     );
   }
 
-  return <AuditEditWrapper audit={audit} user={user} />;
+  return <AuditEditWrapper audit={audit} userId={id} />;
 };
 
 const EditAudit = ({ params }: { params: { slug: string } }): JSX.Element => {

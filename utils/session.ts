@@ -12,5 +12,6 @@ export const sessionOptions: SessionOptions = {
 // This is where we specify the typings of req.session.*
 export interface SessionData {
   siwe?: SiweMessage;
+  userId?: string;
   nonce?: string;
 }

@@ -137,7 +137,7 @@ class AuditService {
     if (!user) return objOut;
 
     const owner = audit.owner;
-    const auditors = audit.memberships;
+    const auditors = audit.memberships.filter((member) => member.role === RoleType.AUDITOR);
 
     if (!owner) return objOut;
 
@@ -173,7 +173,7 @@ class AuditService {
       }
       if (objOut.isAuditOwner) {
         objOut.states[AuditStateEnum.CAN_LOCK_AUDIT] = verified.length > 0 && !!audit.details;
-        objOut.states[AuditStateEnum.CAN_MANAGE_REQUESTS] = requested.length > 0;
+        objOut.states[AuditStateEnum.CAN_MANAGE_REQUESTS] = auditors.length > 0;
       }
 
       return objOut;

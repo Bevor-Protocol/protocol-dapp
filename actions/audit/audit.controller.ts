@@ -4,6 +4,7 @@ import { AuditStateI, MarkdownAuditsI, ResponseI } from "@/utils/types";
 import { ActionI, AuditDetailedI, AuditFindingsI, AuditI } from "@/utils/types/prisma";
 import { ActionType, Audit, AuditStatusType, User } from "@prisma/client";
 import { revalidatePath } from "next/cache";
+import AuthService from "../auth/auth.service";
 import NotificationService from "../notification/notification.service";
 import UserService from "../user/user.service";
 import AuditService from "./audit.service";
@@ -22,6 +23,7 @@ class AuditController {
     private readonly auditService: typeof AuditService,
     private readonly userService: typeof UserService,
     private readonly notificationService: typeof NotificationService,
+    private readonly authService: typeof AuthService,
   ) {}
 
   async getAudit(id: string): Promise<AuditI | null> {
@@ -71,7 +73,8 @@ class AuditController {
   }
 
   async safeMarkdown(audit: AuditI): Promise<MarkdownAuditsI> {
-    const { user } = await this.userService.currentUser();
+    const { address } = await this.authService.currentUser();
+    const user = await this.userService.getProfile(address);
 
     return this.auditService.safeMarkdownDisplay(audit, user);
   }
@@ -81,5 +84,10 @@ class AuditController {
   }
 }
 
-const auditController = new AuditController(AuditService, UserService, NotificationService);
+const auditController = new AuditController(
+  AuditService,
+  UserService,
+  NotificationService,
+  AuthService,
+);
 export default auditController;

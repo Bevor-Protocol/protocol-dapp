@@ -13,13 +13,8 @@ class AuthController {
     return session.nonce;
   }
 
-  async getUser(): Promise<{ success: boolean; address?: string }> {
-    const session = await this.authService.getSession();
-
-    return {
-      success: !!session.siwe,
-      address: session.siwe?.address,
-    };
+  async currentUser(): Promise<{ address: string; id: string }> {
+    return this.authService.currentUser();
   }
 
   async verify(message: string, signature: string): Promise<void> {

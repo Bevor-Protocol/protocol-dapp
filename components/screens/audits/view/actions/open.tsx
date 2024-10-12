@@ -331,7 +331,7 @@ const AuditOpenActions = ({
     );
   }
 
-  if (!state.states.CAN_ADD_REQUEST) {
+  if (state.states.CAN_REMOVE_REQUEST) {
     return (
       <Column className="gap-2 items-end w-fit *:w-full">
         <AuditorRemoveRequest auditId={audit.id} disabled={disabled} setDisabled={setDisabled} />

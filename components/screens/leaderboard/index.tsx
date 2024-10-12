@@ -18,6 +18,7 @@ const LeaderboardWrapper = ({ initialData }: { initialData: UserWithCount[] }): 
     queryKey: [LEADERBOARD, listSort, listOrder],
     queryFn: () => userAction.getLeaderboard(listSort, listOrder),
     initialData,
+    refetchOnMount: false,
   });
 
   const handleSearch = (header: string): void => {
@@ -26,6 +27,7 @@ const LeaderboardWrapper = ({ initialData }: { initialData: UserWithCount[] }): 
       setListOrder(newOrder);
     } else {
       setListSort(header);
+      setListOrder("asc");
     }
   };
 

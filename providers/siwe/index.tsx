@@ -77,8 +77,8 @@ const SiweProvider = ({ children }: { children: React.ReactNode }): JSX.Element 
     */
     let timer: ReturnType<typeof setTimeout>;
     const handleChange = async (): Promise<void> => {
-      await authAction.getUser().then((user) => {
-        const ANY_USER_AUTHED = user.success && !!user.address;
+      await authAction.getCurrentUser().then((user) => {
+        const ANY_USER_AUTHED = !!user.address;
         const ANY_WALLET_CONNECTED = !!address;
 
         if (ANY_USER_AUTHED && !ANY_WALLET_CONNECTED) {

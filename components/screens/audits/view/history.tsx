@@ -24,6 +24,7 @@ const AuditHistory = ({
   });
   const handleClick = (): void => {
     if (hasPendingNotifications) {
+      // don't make this blocking, we don't need to wait for it.
       mutateAsync();
     }
     show(<HistoryPanel actions={actions} />);

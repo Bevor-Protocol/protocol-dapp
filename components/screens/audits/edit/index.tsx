@@ -12,7 +12,7 @@ import { useToast } from "@/hooks/useContexts";
 import { ErrorTypeEnum } from "@/utils/types/enum";
 import { AuditI } from "@/utils/types/prisma";
 
-const AuditEditWrapper = ({ audit, user }: { audit: AuditI; user: User }): JSX.Element => {
+const AuditEditWrapper = ({ audit, userId }: { audit: AuditI; userId: string }): JSX.Element => {
   // only show the selected auditors that were already verified.
   const initialAuditors = audit.memberships
     .filter(
@@ -60,7 +60,7 @@ const AuditEditWrapper = ({ audit, user }: { audit: AuditI; user: User }): JSX.E
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>): void => {
     e.preventDefault();
-    if (!user) return;
+    if (!userId) return;
     const formData = new FormData(e.currentTarget);
     mutate({ formData });
   };
@@ -78,8 +78,8 @@ const AuditEditWrapper = ({ audit, user }: { audit: AuditI; user: User }): JSX.E
         that from the main audit view.
       </p>
       <AuditFormEntries
-        disabled={isPending || !user}
-        userId={user.id}
+        disabled={isPending || !userId}
+        userId={userId}
         auditors={auditors}
         setAuditors={setAuditors}
         initialState={audit}

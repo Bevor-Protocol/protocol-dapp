@@ -33,8 +33,8 @@ class AuditorController {
     status: boolean,
     comment: string,
   ): Promise<ResponseI<AuditMembership>> {
-    const user = await this.roleService.requireAuth();
-    const membership = await this.roleService.canAttest(user, auditId);
+    const { id } = await this.roleService.requireAccount();
+    const membership = await this.roleService.canAttest(id, auditId);
 
     const data = await this.auditorService.attestToTerms(membership.id, status);
 
@@ -50,8 +50,8 @@ class AuditorController {
 
   @handleErrors
   async leaveAudit(auditId: string): Promise<ResponseI<AuditMembership>> {
-    const user = await this.roleService.requireAuth();
-    const membership = await this.roleService.canLeave(user, auditId);
+    const { id } = await this.roleService.requireAccount();
+    const membership = await this.roleService.canLeave(id, auditId);
 
     const data = await this.auditorService.leaveAudit(membership.id);
 
@@ -66,8 +66,8 @@ class AuditorController {
 
   @handleErrors
   async addFinding(auditId: string, formData: FormData): Promise<ResponseI<AuditMembership>> {
-    const user = await this.roleService.requireAuth();
-    const membership = await this.roleService.canAddFindings(user, auditId);
+    const { id } = await this.roleService.requireAccount();
+    const membership = await this.roleService.canAddFindings(id, auditId);
 
     const parsed = parseForm(formData, auditFindingsSchema) as z.infer<typeof auditFindingsSchema>;
 
@@ -88,10 +88,10 @@ class AuditorController {
 
   @handleErrors
   async addRequest(auditId: string): Promise<ResponseI<AuditMembership>> {
-    const user = await this.roleService.requireAuth();
-    await this.roleService.canRequest(user, auditId);
+    const { id } = await this.roleService.requireAccount();
+    await this.roleService.canRequest(id, auditId);
 
-    const data = await this.auditorService.addRequest(auditId, user.id);
+    const data = await this.auditorService.addRequest(auditId, id);
 
     revalidatePath(`/audits/view/${auditId}`, "page");
     return { success: true, data };

@@ -4,6 +4,7 @@ import { AuditDetailedI, UserWithCount } from "@/utils/types/prisma";
 import { parseForm, userSchema, userSchemaCreate } from "@/utils/validations";
 import { Prisma, User } from "@prisma/client";
 import { revalidatePath } from "next/cache";
+import AuthService from "../auth/auth.service";
 import BlobService from "../blob/blob.service";
 import RoleService from "../roles/roles.service";
 import UserService from "./user.service";
@@ -22,14 +23,20 @@ class UserController {
     private readonly userService: typeof UserService,
     private readonly blobService: typeof BlobService,
     private readonly roleService: typeof RoleService,
+    private readonly authService: typeof AuthService,
   ) {}
 
-  async currentUser(): Promise<{ address: string; user: User | null }> {
-    return await this.userService.currentUser();
+  getProfile(address: string): Promise<User | null> {
+    return this.userService.getProfile(address);
   }
 
-  async getProfile(address: string): Promise<User | null> {
-    return this.userService.getProfile(address);
+  async getCurrentUser(): Promise<{ address: string; user: User | null }> {
+    const { address } = await this.authService.currentUser();
+    const user = await this.getProfile(address);
+    return {
+      address,
+      user,
+    };
   }
 
   @handleErrors
@@ -47,13 +54,18 @@ class UserController {
     }
 
     const data = await this.userService.createUser(dataPass);
+    // inject the userId into the session data, for quick access and prevent
+    // having to go to DB every time to verify that an SIWE authenticated address
+    // has a Bevor account.
+    const session = await this.authService.getSession();
+    await this.authService.updateSession(session, data.id);
 
     return { success: true, data };
   }
 
   @handleErrors
   async updateUser(formData: FormData): Promise<ResponseI<User>> {
-    const user = await this.roleService.requireAuth();
+    const { id } = await this.roleService.requireAccount();
     const parsed = parseForm(formData, userSchema);
 
     const { image, ...rest } = parsed;
@@ -66,28 +78,28 @@ class UserController {
       dataPass.image = blobData.url;
     }
 
-    const data = await this.userService.updateUser(user.id, dataPass);
+    const data = await this.userService.updateUser(id, dataPass);
 
     revalidatePath(`/users/${data.address}`, "page");
     return { success: true, data };
   }
 
-  async getUserAudits(address: string): Promise<AuditDetailedI[]> {
+  getUserAudits(address: string): Promise<AuditDetailedI[]> {
     return this.userService.userAudits(address);
   }
 
-  async getLeaderboard(key?: string, order?: "asc" | "desc"): Promise<UserWithCount[]> {
+  getLeaderboard(key?: string, order?: "asc" | "desc"): Promise<UserWithCount[]> {
     return this.userService.getLeaderboard(key, order);
   }
 
-  async searchUsers(filter: UserSearchI): Promise<User[]> {
+  searchUsers(filter: UserSearchI): Promise<User[]> {
     return this.userService.searchUsers(filter);
   }
 
-  async searchAuditors(query?: string): Promise<User[]> {
+  searchAuditors(query?: string): Promise<User[]> {
     return this.userService.searchAuditors(query);
   }
 }
 
-const userController = new UserController(UserService, BlobService, RoleService);
+const userController = new UserController(UserService, BlobService, RoleService, AuthService);
 export default userController;

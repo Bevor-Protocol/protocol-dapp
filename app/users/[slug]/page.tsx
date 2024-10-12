@@ -1,7 +1,7 @@
 import { Suspense } from "react";
 
 import { notificationAction, statAction, userAction, wishlistAction } from "@/actions";
-import { Loader } from "@/components/Loader";
+import { LoaderFill } from "@/components/Loader";
 import UserContent from "@/components/screens/user";
 import UserProfileActions from "@/components/screens/user/actions";
 import UserAudits from "@/components/screens/user/audits";
@@ -17,8 +17,8 @@ const Fetcher = async ({ address }: { address: string }): Promise<JSX.Element> =
     return <UserNotExist address={address} />;
   }
 
-  const currentUser = await userAction.currentUser();
-  const isOwner = currentUser.address === address;
+  const { user: currentUser } = await userAction.getCurrentUser();
+  const isOwner = currentUser?.address === address;
 
   const stats = await statAction.getUserStats(address);
   const audits = await userAction.getUserAudits(address);
@@ -27,10 +27,9 @@ const Fetcher = async ({ address }: { address: string }): Promise<JSX.Element> =
   let pendingNotifications: string[] = [];
   // constrain wishlist to authenicated Protocol Owners. Can only wishlist Auditors.
   // If a user has both roles, wishlist will still appear.
-  const canWishlist =
-    !isOwner && user.auditorRole && !!currentUser.user && currentUser.user.ownerRole;
+  const canWishlist = !isOwner && user.auditorRole && !!currentUser?.id && currentUser?.ownerRole;
   if (canWishlist) {
-    isWishlistedFlag = await wishlistAction.isWishlisted(currentUser.user!.id, user.id);
+    isWishlistedFlag = await wishlistAction.isWishlisted(currentUser?.id, user.id);
   }
   if (isOwner) {
     const notifications = await notificationAction.getUserNotifications(user.id);
@@ -56,7 +55,7 @@ const Fetcher = async ({ address }: { address: string }): Promise<JSX.Element> =
 const UserPage = ({ params }: { params: { slug: string } }): JSX.Element => {
   return (
     <section className="flex flex-col h-full items-center">
-      <Suspense fallback={<Loader className="h-12" />}>
+      <Suspense fallback={<LoaderFill className="h-12 w-12" />}>
         <Fetcher address={params.slug} />
       </Suspense>
     </section>

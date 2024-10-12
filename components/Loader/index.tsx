@@ -1,6 +1,6 @@
+import * as Card from "@/components/Card";
 import { cn } from "@/utils";
 import { Column, Row } from "../Box";
-import * as Card from "@/components/Card";
 
 export const Loader = ({ className }: { className: string }): JSX.Element => {
   return <div className={cn("conic animate-spin duration-1250", className)} />;

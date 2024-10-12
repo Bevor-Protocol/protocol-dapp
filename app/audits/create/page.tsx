@@ -8,7 +8,7 @@ import AuditCreation from "@/components/screens/audits/create";
 import { Suspense } from "react";
 
 const Fetcher = async (): Promise<JSX.Element> => {
-  const { address, user } = await userAction.currentUser();
+  const { address, user } = await userAction.getCurrentUser();
 
   if (!address) {
     return (
@@ -52,7 +52,7 @@ const Fetcher = async (): Promise<JSX.Element> => {
 const CreateAudit = (): JSX.Element => {
   return (
     <section className="flex flex-col h-full items-center">
-      <Suspense fallback={<LoaderFill />}>
+      <Suspense fallback={<LoaderFill className="h-12 w-12" />}>
         <Fetcher />
       </Suspense>
     </section>

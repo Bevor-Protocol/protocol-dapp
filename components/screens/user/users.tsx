@@ -1,17 +1,16 @@
 "use client";
 
-import { useQuery } from "@tanstack/react-query";
 import { useState } from "react";
 
 import { userAction } from "@/actions";
-import { Column, Row } from "@/components/Box";
+import { Row } from "@/components/Box";
 import * as Form from "@/components/Form";
 import { UserCard } from "@/components/User";
 import { USERS } from "@/constants/queryKeys";
 import { useDebounce } from "@/hooks/useDebounce";
-import { cn } from "@/utils";
 import { UserSearchI } from "@/utils/types";
 import { User } from "@prisma/client";
+import { useQuery } from "@tanstack/react-query";
 
 const UsersWrapper = ({ initialData }: { initialData: User[] }): JSX.Element => {
   const [filter, setFilter] = useState<UserSearchI>({
@@ -28,53 +27,39 @@ const UsersWrapper = ({ initialData }: { initialData: User[] }): JSX.Element => 
     queryKey: [USERS, debouncedData],
     queryFn: () => userAction.searchUsers(debouncedData),
     initialData,
+    refetchOnMount: false,
   });
 
   return (
-    <Column className="gap-10 py-8 justify-center items-center w-full max-w-[1000px]">
-      <div className="grad-light text-grad">
-        <h2 className="text-4xl font-extrabold leading-[normal]">Users</h2>
-      </div>
+    <>
       <Row className="gap-6">
         <Form.Search onChange={(e) => setFilter((prev) => ({ ...prev, search: e.target.value }))} />
         <ul>
           <li>
-            <label className="flex gap-2 *:text-sm w-fit *:cursor-pointer items-center">
-              <input
-                type="checkbox"
-                className={cn(
-                  "appearance-none bg-transparent checked:bg-primary-light-50",
-                  "border border-1 border-white",
-                  "h-3 w-3 rounded-sm",
-                )}
-                name="ownerRole"
-                checked={filter.isOwner}
-                onChange={() => setFilter((prev) => ({ ...prev, isOwner: !filter.isOwner }))}
-                onKeyDownCapture={() =>
-                  setFilter((prev) => ({ ...prev, isOwner: !filter.isOwner }))
+            <Form.Checkbox
+              name="ownerRole"
+              checked={filter.isOwner}
+              onChange={() => setFilter((prev) => ({ ...prev, isOwner: !filter.isOwner }))}
+              onKeyDownCapture={(e) => {
+                if (e.key === "Enter") {
+                  setFilter((prev) => ({ ...prev, isOwner: !filter.isOwner }));
                 }
-              />
-              <p>is protocol owner</p>
-            </label>
+              }}
+              text="is protocol owner"
+            />
           </li>
           <li>
-            <label className="flex gap-2 *:text-sm w-fit *:cursor-pointer items-center">
-              <input
-                type="checkbox"
-                className={cn(
-                  "appearance-none bg-transparent checked:bg-primary-light-50",
-                  "border border-1 border-white",
-                  "h-3 w-3 rounded-sm",
-                )}
-                name="auditorRole"
-                checked={filter.isAuditor}
-                onChange={() => setFilter((prev) => ({ ...prev, isAuditor: !filter.isAuditor }))}
-                onKeyDownCapture={() =>
-                  setFilter((prev) => ({ ...prev, isAuditor: !filter.isAuditor }))
+            <Form.Checkbox
+              name="auditorRole"
+              checked={filter.isAuditor}
+              onChange={() => setFilter((prev) => ({ ...prev, isAuditor: !filter.isAuditor }))}
+              onKeyDownCapture={(e) => {
+                if (e.key === "Enter") {
+                  setFilter((prev) => ({ ...prev, isAuditor: !filter.isAuditor }));
                 }
-              />
-              <p>is auditor</p>
-            </label>
+              }}
+              text="is auditor"
+            />
           </li>
         </ul>
       </Row>
@@ -86,7 +71,7 @@ const UsersWrapper = ({ initialData }: { initialData: User[] }): JSX.Element => 
         ))}
         {data.length === 0 && <p className="px-1 text-center col-span-5">No results to show</p>}
       </div>
-    </Column>
+    </>
   );
 };
 
