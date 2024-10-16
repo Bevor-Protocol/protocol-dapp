@@ -2,13 +2,13 @@
 
 import { useAccount } from "wagmi";
 
-import { Icon } from "@/components/Icon";
 import { CoinbaseWallet, WalletConnect } from "@/assets/wallets";
 import { Column, Row } from "@/components/Box";
-import { Loader } from "@/components/Loader";
-import Image from "next/image";
-import { useSiwe } from "@/hooks/useContexts";
 import { Button } from "@/components/Button";
+import { Icon } from "@/components/Icon";
+import { Loader } from "@/components/Loader";
+import { useSiwe } from "@/hooks/useContexts";
+import Image from "next/image";
 
 const IconMapper: Record<string, React.ReactNode> = {
   walletConnect: <WalletConnect height="20" width="20" />,
@@ -35,8 +35,10 @@ const SignIn = (): JSX.Element => {
             size="md"
             className="absolute -translate-x-1/2 -translate-y-1/2 left-1/2 top-1/2"
           />
-        ) : (
+        ) : activeConnector.id in IconMapper ? (
           <div className="h-10 w-10">{IconMapper[activeConnector.id]}</div>
+        ) : (
+          <></>
         )}
         {!isPending && !isAuthenticated && <div className="conic-full h-14 w-14 bg-gray-400/40" />}
         {isPending && <Loader className="h-14 w-14" />}

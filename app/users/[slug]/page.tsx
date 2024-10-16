@@ -9,16 +9,14 @@ import UserNotExist from "@/components/screens/user/onboard";
 import UserWishlist from "@/components/screens/user/wishlist";
 
 const Fetcher = async ({ address }: { address: string }): Promise<JSX.Element> => {
-  // this is already stored in a context, but since we conditionally fetch the stats server-side,
-  // I'll throw a re-request here. Memoization should prevent actually going back to data store.
+  // a user can be authenticated via SIWE, but not have an account.
   const user = await userAction.getProfile(address);
-
-  if (!user) {
-    return <UserNotExist address={address} />;
-  }
-
   const { user: currentUser } = await userAction.getCurrentUser();
   const isOwner = currentUser?.address === address;
+
+  if (!user) {
+    return <UserNotExist address={address} isOwner={isOwner} />;
+  }
 
   const stats = await statAction.getUserStats(address);
   const audits = await userAction.getUserAudits(address);

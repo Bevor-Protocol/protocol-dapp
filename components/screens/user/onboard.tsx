@@ -1,8 +1,7 @@
 "use client";
 import { useMutation } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
-import { useMemo, useState } from "react";
-import { useAccount } from "wagmi";
+import { useState } from "react";
 
 import { userAction } from "@/actions";
 import { Column, Row } from "@/components/Box";
@@ -131,13 +130,7 @@ const UserOnboard = ({ address }: { address: string }): JSX.Element => {
   );
 };
 
-const UserNotExist = ({ address }: { address: string }): JSX.Element => {
-  const { address: connectedAddress } = useAccount();
-
-  const isOwner = useMemo(() => {
-    return connectedAddress == address;
-  }, [address, connectedAddress]);
-
+const UserNotExist = ({ address, isOwner }: { address: string; isOwner: boolean }): JSX.Element => {
   // If user doesn't exist, and person doesn't own the wallet for the account
   // trying to be viewed, show this.
   if (!isOwner) {
@@ -145,7 +138,7 @@ const UserNotExist = ({ address }: { address: string }): JSX.Element => {
   }
 
   // If user doesn't exist, but person owns the address trying to be viewed,
-  // bring them through the onboarding flow
+  // bring them through the onboarding flow (if authenticated)
   return <UserOnboard address={address} />;
 };
 

@@ -43,7 +43,9 @@ const SiweProvider = ({ children }: { children: React.ReactNode }): JSX.Element 
       .nonce()
       .then((nonce) => {
         messageParsed = createSiweMessage(addressUse, chainIdUse, nonce);
-        return signMessageAsync({ message: messageParsed });
+        return signMessageAsync({
+          message: messageParsed,
+        });
       })
       .then((signature) => {
         return authAction.verify(messageParsed, signature);

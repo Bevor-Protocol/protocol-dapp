@@ -1,7 +1,8 @@
-import { http, cookieStorage, createStorage, createConfig } from "wagmi";
+import { cookieStorage, createConfig, createStorage, http } from "wagmi";
 // import { walletConnect, injected, coinbaseWallet } from "wagmi/connectors";
-import { injected } from "wagmi/connectors";
+import { injected, mock } from "wagmi/connectors";
 
+import { createClient } from "viem";
 import { base, localhost, type Chain } from "wagmi/chains";
 
 // const projectId = process.env.NEXT_PUBLIC_WC_PROJECT_ID as string;
@@ -9,33 +10,30 @@ import { base, localhost, type Chain } from "wagmi/chains";
 // if (!projectId) throw new Error("Project ID is not defined");
 
 let chains: readonly [Chain, ...Chain[]];
-let transports;
+let connectors = [];
 
 if (process.env.NODE_ENV === "development") {
-  chains = [base, localhost];
-  transports = {
-    [base.id]: http(),
-    [localhost.id]: http(),
-  };
+  chains = [localhost, base];
+  connectors = [
+    injected({ shimDisconnect: true }),
+    mock({
+      accounts: ["0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266"],
+      features: {
+        signMessageError: false,
+        signTypedDataError: false,
+      },
+    }),
+  ];
 } else {
   chains = [base];
-  transports = {
-    [base.id]: http(),
-  };
+  connectors = [injected({ shimDisconnect: true })];
 }
 
 const config = createConfig({
   chains,
-  transports,
-  connectors: [
-    // walletConnect({ projectId, metadata, showQrModal: false }),
-    injected({ shimDisconnect: true }),
-    // coinbaseWallet({
-    //   appName: metadata.name,
-    //   appLogoUrl: metadata.icons[0],
-    //   headlessMode: true,
-    // }),
-  ],
+  // transports,
+  client: ({ chain }) => createClient({ chain, transport: http() }),
+  connectors,
   ssr: true,
   storage: createStorage({
     storage: cookieStorage,
