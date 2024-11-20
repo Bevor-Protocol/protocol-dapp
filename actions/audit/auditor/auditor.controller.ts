@@ -4,8 +4,9 @@ import RoleService from "@/actions/roles/roles.service";
 import { handleErrors } from "@/utils/decorators";
 import { ValidationError } from "@/utils/error";
 import { ResponseI } from "@/utils/types";
+import { ActionEnum, AuditStatusEnum } from "@/utils/types/enum";
+import { AuditMembershipInsert } from "@/utils/types/tables";
 import { auditFindingsSchema, parseForm } from "@/utils/validations";
-import { ActionType, AuditMembership, AuditStatusType } from "@prisma/client";
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
 import AuditorService from "./auditor.service";
@@ -32,7 +33,7 @@ class AuditorController {
     auditId: string,
     status: boolean,
     comment: string,
-  ): Promise<ResponseI<AuditMembership>> {
+  ): Promise<ResponseI<AuditMembershipInsert>> {
     const { id } = await this.roleService.requireAccount();
     const membership = await this.roleService.canAttest(id, auditId);
 
@@ -40,7 +41,7 @@ class AuditorController {
 
     this.notificationService.createAndBroadcastAction(
       membership,
-      status ? ActionType.AUDITOR_TERMS_APPROVED : ActionType.AUDITOR_TERMS_REJECTED,
+      status ? ActionEnum.AUDITOR_TERMS_APPROVED : ActionEnum.AUDITOR_TERMS_REJECTED,
       comment,
     );
 
@@ -49,15 +50,15 @@ class AuditorController {
   }
 
   @handleErrors
-  async leaveAudit(auditId: string): Promise<ResponseI<AuditMembership>> {
+  async leaveAudit(auditId: string): Promise<ResponseI<AuditMembershipInsert>> {
     const { id } = await this.roleService.requireAccount();
     const membership = await this.roleService.canLeave(id, auditId);
 
     const data = await this.auditorService.leaveAudit(membership.id);
 
-    if (membership.audit.status === AuditStatusType.AUDITING) {
-      await this.auditorService.resetAttestations(membership.auditId);
-      this.notificationService.createAndBroadcastAction(membership, ActionType.AUDITOR_LEFT);
+    if (membership.audit.status === AuditStatusEnum.AUDITING) {
+      await this.auditorService.resetAttestations(membership.audit_id);
+      this.notificationService.createAndBroadcastAction(membership, ActionEnum.AUDITOR_LEFT);
     }
 
     revalidatePath(`/audits/view/${auditId}`, "page");
@@ -65,7 +66,7 @@ class AuditorController {
   }
 
   @handleErrors
-  async addFinding(auditId: string, formData: FormData): Promise<ResponseI<AuditMembership>> {
+  async addFinding(auditId: string, formData: FormData): Promise<ResponseI<AuditMembershipInsert>> {
     const { id } = await this.roleService.requireAccount();
     const membership = await this.roleService.canAddFindings(id, auditId);
 
@@ -80,14 +81,14 @@ class AuditorController {
 
     const data = await this.auditorService.addFindings(membership.id, blobData!.url);
 
-    this.notificationService.createAndBroadcastAction(membership, ActionType.AUDITOR_FINDINGS);
+    this.notificationService.createAndBroadcastAction(membership, ActionEnum.AUDITOR_FINDINGS);
 
     revalidatePath(`/audits/view/${auditId}`, "page");
     return { success: true, data };
   }
 
   @handleErrors
-  async addRequest(auditId: string): Promise<ResponseI<AuditMembership>> {
+  async addRequest(auditId: string): Promise<ResponseI<AuditMembershipInsert>> {
     const { id } = await this.roleService.requireAccount();
     await this.roleService.canRequest(id, auditId);
 

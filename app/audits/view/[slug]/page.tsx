@@ -6,7 +6,7 @@ import AuditPage from "@/components/screens/audits/view";
 import AuditHistory from "@/components/screens/audits/view/history";
 import AuditMarkdown from "@/components/screens/audits/view/markdown";
 import Vesting from "@/components/screens/audits/view/vesting";
-import { MembershipStatusType, RoleType } from "@prisma/client";
+import { MembershipStatusEnum, RoleTypeEnum } from "@/utils/types/enum";
 
 const Fetcher = async ({ auditId }: { auditId: string }): Promise<JSX.Element> => {
   // Parsed this into 3 separate requests.
@@ -28,9 +28,9 @@ const Fetcher = async ({ auditId }: { auditId: string }): Promise<JSX.Element> =
     const isAuditor = audit.memberships.some(
       (member) =>
         member.userId === user.id &&
-        member.role === RoleType.AUDITOR &&
+        member.role === RoleTypeEnum.AUDITOR &&
         member.isActive &&
-        member.status === MembershipStatusType.VERIFIED,
+        member.status === MembershipStatusEnum.VERIFIED,
     );
 
     isMemberOfAudit = isOwner || isAuditor;

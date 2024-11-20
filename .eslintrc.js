@@ -26,6 +26,7 @@ module.exports = {
     "no-unescaped-entities": OFF,
     "no-restricted-syntax": [ERROR, "WithStatement"],
     "@typescript-eslint/quotes": [ERROR, "double"],
+    "@typescript-eslint/no-shadow": WARN,
     "import/export": OFF,
     quotes: [ERROR, "double"],
     "no-console": OFF,

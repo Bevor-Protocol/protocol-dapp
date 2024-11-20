@@ -1,222 +1,171 @@
-import { prisma } from "@/db/prisma.server";
+import { db } from "@/db";
+import { auditMembership } from "@/db/schema/audit-membership.sql";
+import { audit } from "@/db/schema/audit.sql";
+import { user } from "@/db/schema/user.sql";
+import { wishlist } from "@/db/schema/wishlist.sql";
 import { UserSearchI } from "@/utils/types";
-import { AuditDetailedI, UserWithCount } from "@/utils/types/prisma";
+import { Leaderboard, UserAudit } from "@/utils/types/custom";
+import { AuditStatusEnum, MembershipStatusEnum, RoleTypeEnum } from "@/utils/types/enum";
+import { User, UserInsert } from "@/utils/types/tables";
 import {
-  AuditStatusType,
-  MembershipStatusType,
-  Prisma,
-  PrismaPromise,
-  RoleType,
-  User,
-} from "@prisma/client";
+  aliasedTable,
+  and,
+  asc,
+  countDistinct,
+  desc,
+  eq,
+  getTableColumns,
+  ilike,
+  not,
+  or,
+  sql,
+} from "drizzle-orm";
 
 class UserService {
-  getProfile(address: string): PrismaPromise<User | null> {
-    return prisma.user.findUnique({
-      where: {
-        address,
-      },
+  getUserById(id: string): Promise<User | undefined> {
+    return db.query.user.findFirst({
+      where: eq(user.id, id),
     });
   }
 
-  createUser(data: Prisma.UserCreateInput): PrismaPromise<User> {
-    return prisma.user.create({
-      data,
+  getProfile(address: string): Promise<User | undefined> {
+    return db.query.user.findFirst({
+      where: eq(user.address, address),
     });
   }
 
-  updateUser(id: string, data: Prisma.UserUpdateInput): PrismaPromise<User> {
-    return prisma.user.update({
-      where: {
-        id,
-      },
-      data,
-    });
+  createUser(data: UserInsert): Promise<User> {
+    return db
+      .insert(user)
+      .values(data)
+      .returning()
+      .then((res) => res[0]);
   }
 
-  getLeaderboard(key?: string, order?: "asc" | "desc"): Promise<UserWithCount[]> {
+  updateUser(id: string, data: Partial<UserInsert>): Promise<User> {
+    return db
+      .update(user)
+      .set(data)
+      .where(eq(user.id, id))
+      .returning()
+      .then((res) => res[0]);
+  }
+
+  getLeaderboard(key: string = "name", order: "asc" | "desc" = "asc"): Promise<Leaderboard[]> {
     // Can't currently sort on aggregations or further filtered counts of relations...
     // Handle these more unique cases post-query.
-    const orderClause: { orderBy: Prisma.UserOrderByWithRelationInput[] } = {
-      orderBy: [],
-    };
-    if (key === "name") {
-      orderClause.orderBy.push({
-        name: order ?? "asc",
-      });
-      orderClause.orderBy.push({
-        address: order ?? "asc",
-      });
-    }
-    if (key == "date") {
-      orderClause.orderBy.push({
-        createdAt: order ?? "asc",
-      });
-    }
+    const orderFct = order == "desc" ? desc : asc;
+    const audits = db
+      .select()
+      .from(audit)
+      .where(not(eq(audit.status, AuditStatusEnum.DISCOVERY)))
+      .as("audits_filtered");
 
-    // come back to this.
-    return prisma.user
-      .findMany({
-        where: {
-          auditorRole: true,
-        },
-        include: {
-          memberships: {
-            where: {
-              status: MembershipStatusType.VERIFIED,
-              role: RoleType.AUDITOR,
-              isActive: true,
-              audit: {
-                status: {
-                  not: AuditStatusType.DISCOVERY,
-                },
-              },
-            },
-            include: {
-              audit: true,
-            },
-          },
-          wishlistAsReceiver: true,
-        },
-        ...orderClause,
+    const memberships = db
+      .select()
+      .from(auditMembership)
+      .where(
+        and(
+          eq(auditMembership.status, MembershipStatusEnum.VERIFIED),
+          eq(auditMembership.role, RoleTypeEnum.AUDITOR),
+          eq(auditMembership.is_active, true),
+        ),
+      )
+      .as("memberships_filtered");
+
+    return db
+      .select({
+        ...getTableColumns(user),
+        value_potential: sql<number>`
+          SUM(CASE 
+            WHEN audits_filtered.status IN (${AuditStatusEnum.AUDITING}, ${AuditStatusEnum.CHALLENGEABLE}) 
+            THEN audits_filtered.price 
+            ELSE 0 
+          END)
+        `.as("value_potential"),
+        value_complete: sql<number>`
+          SUM(CASE 
+              WHEN audits_filtered.status = ${AuditStatusEnum.FINALIZED} 
+              THEN audits_filtered.price 
+              ELSE 0 
+            END)
+          `.as("value_complete"),
+        num_active: sql<number>`
+          COUNT(CASE
+            WHEN audits_filtered.status != ${AuditStatusEnum.FINALIZED}
+            THEN 1
+            ELSE NULL
+          END)
+        `.as("num_active"),
+        num_complete: sql<number>`
+          COUNT(CASE 
+            WHEN audits_filtered.status = ${AuditStatusEnum.FINALIZED} 
+            THEN 1 
+            ELSE NULL 
+          END)
+        `.as("num_complete"),
+        num_wishlist: countDistinct(wishlist.sender_id).as("num_wishlist"),
       })
-      .then((users) => {
-        const toReturn = users.map((user) => {
-          const { memberships, wishlistAsReceiver, ...rest } = user;
-
-          const numWishlist = wishlistAsReceiver.length;
-          let valuePotential = 0;
-          let valueComplete = 0;
-          let numActive = 0;
-          let numComplete = 0;
-
-          memberships.forEach((member) => {
-            const { status, price } = member.audit;
-            if (status === AuditStatusType.AUDITING || status === AuditStatusType.CHALLENGEABLE) {
-              valuePotential += price;
-            }
-            if (status === AuditStatusType.FINALIZED) {
-              valueComplete += price;
-              numComplete += 1;
-            } else {
-              numActive += 1;
-            }
-          });
-
-          return {
-            ...rest,
-            stats: {
-              valuePotential,
-              valueComplete,
-              numActive,
-              numComplete,
-              numWishlist,
-            },
-          };
-        });
-        if (key == "value_potential") {
-          return toReturn.sort(
-            (a, b) =>
-              (a.stats.valuePotential - b.stats.valuePotential) * (2 * Number(order == "asc") - 1),
-          );
+      .from(user)
+      .leftJoin(memberships, eq(memberships.user_id, user.id))
+      .leftJoin(audits, eq(memberships.audit_id, audits.id))
+      .leftJoin(wishlist, eq(user.id, wishlist.receiver_id))
+      .where(and(eq(user.auditor_role, true)))
+      .groupBy(({ id }) => id)
+      .orderBy((row) => {
+        switch (key) {
+          case "date":
+            return orderFct(row.created_at);
+          case "value_potential":
+            return orderFct(row.value_potential);
+          case "value_completed":
+            return orderFct(row.value_complete);
+          case "num_active":
+            return orderFct(row.num_active);
+          case "num_complete":
+            return orderFct(row.num_complete);
+          case "num_wishlist":
+            return orderFct(row.num_wishlist);
+          default:
+            return [orderFct(row.name), orderFct(row.address)];
         }
-        if (key == "value_complete") {
-          return toReturn.sort(
-            (a, b) =>
-              (a.stats.valueComplete - b.stats.valueComplete) * (2 * Number(order == "asc") - 1),
-          );
-        }
-        if (key == "num_active") {
-          return toReturn.sort(
-            (a, b) => (a.stats.numActive - b.stats.numActive) * (2 * Number(order == "asc") - 1),
-          );
-        }
-        if (key == "num_complete") {
-          return toReturn.sort(
-            (a, b) =>
-              (a.stats.numComplete - b.stats.numComplete) * (2 * Number(order == "asc") - 1),
-          );
-        }
-        if (key == "num_wishlist") {
-          return toReturn.sort(
-            (a, b) =>
-              (a.stats.numWishlist - b.stats.numWishlist) * (2 * Number(order == "asc") - 1),
-          );
-        }
-        return toReturn;
       });
   }
 
-  userAudits(address: string): PrismaPromise<AuditDetailedI[]> {
-    return prisma.audit.findMany({
-      where: {
-        memberships: {
-          some: {
-            user: {
-              address,
-            },
-            isActive: true,
-          },
-        },
-      },
-      include: {
-        owner: true,
-        memberships: {
-          where: {
-            isActive: true,
-          },
-          include: {
-            user: true,
-          },
-        },
-      },
-      orderBy: {
-        createdAt: "desc",
-      },
-    });
+  userAudits(address: string): Promise<UserAudit[]> {
+    const owner = aliasedTable(user, "owner");
+    return db
+      .select({
+        ...getTableColumns(audit),
+        auditMemberships: getTableColumns(auditMembership),
+      })
+      .from(auditMembership)
+      .innerJoin(audit, eq(auditMembership.audit_id, audit.id))
+      .innerJoin(user, eq(auditMembership.user_id, user.id))
+      .innerJoin(owner, eq(audit.owner_id, owner.id))
+      .where(and(eq(user.address, address), eq(auditMembership.is_active, true)))
+      .orderBy(({ created_at }) => desc(created_at));
   }
 
-  searchUsers(filter: UserSearchI): PrismaPromise<User[]> {
+  searchUsers(filter: UserSearchI): Promise<User[]> {
     const search = filter.search
-      ? {
-          OR: [
-            {
-              address: {
-                contains: filter.search,
-                mode: Prisma.QueryMode.insensitive,
-              },
-            },
-            {
-              name: {
-                contains: filter.search,
-                mode: Prisma.QueryMode.insensitive,
-              },
-            },
-          ],
-        }
-      : {};
+      ? or(ilike(user.name, filter.search), ilike(user.address, filter.search))
+      : or();
 
     const roleFilters = [];
     if (filter.isAuditor) {
-      roleFilters.push({ auditorRole: true });
+      roleFilters.push(eq(user.auditor_role, true));
     }
     if (filter.isOwner) {
-      roleFilters.push({ ownerRole: true });
+      roleFilters.push(eq(user.owner_role, true));
     }
 
-    return prisma.user.findMany({
-      where: {
-        AND: [
-          search,
-          {
-            AND: roleFilters,
-          },
-        ],
-      },
+    return db.query.user.findMany({
+      where: and(search, and(...roleFilters)),
     });
   }
 
-  searchAuditors(query?: string): PrismaPromise<User[]> {
+  searchAuditors(query?: string): Promise<User[]> {
     return this.searchUsers({
       search: query ?? "",
       isAuditor: true,

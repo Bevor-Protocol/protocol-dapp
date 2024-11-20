@@ -1,13 +1,11 @@
 import { Prisma, User } from "@prisma/client";
 
 export interface UserWithCount extends User {
-  stats: {
-    valuePotential: number;
-    valueComplete: number;
-    numActive: number;
-    numComplete: number;
-    numWishlist: number;
-  };
+  valuePotential: number;
+  valueComplete: number;
+  numActive: number;
+  numComplete: number;
+  numWishlist: number;
 }
 
 export type MembershipAuditI = Prisma.AuditMembershipGetPayload<{

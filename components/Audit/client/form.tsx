@@ -1,7 +1,6 @@
 /* eslint-disable @next/next/no-img-element */
 "use client";
 
-import { MembershipStatusType, User } from "@prisma/client";
 import { useQuery } from "@tanstack/react-query";
 import React, { useMemo, useState } from "react";
 
@@ -15,7 +14,9 @@ import { AUDITORS, WISHLIST } from "@/constants/queryKeys";
 import { AvailableTokens } from "@/constants/web3";
 import { useDebounce } from "@/hooks/useDebounce";
 import { cn } from "@/utils";
+import { MembershipStatusEnum } from "@/utils/types/enum";
 import { AuditI } from "@/utils/types/prisma";
+import { User } from "@/utils/types/tables";
 
 const AuditFormEntries = ({
   userId,
@@ -80,8 +81,8 @@ const AuditFormEntries = ({
       initialState?.memberships
         .filter(
           (member) =>
-            member.status === MembershipStatusType.REQUESTED ||
-            member.status === MembershipStatusType.REJECTED,
+            member.status === MembershipStatusEnum.REQUESTED ||
+            member.status === MembershipStatusEnum.REJECTED,
         )
         .map((member) => member.user.id) || [];
     // also want to exclude auditors who has previously requested to audit. Managing those will
@@ -103,8 +104,8 @@ const AuditFormEntries = ({
       initialState?.memberships
         .filter(
           (member) =>
-            member.status === MembershipStatusType.REQUESTED ||
-            member.status === MembershipStatusType.REJECTED,
+            member.status === MembershipStatusEnum.REQUESTED ||
+            member.status === MembershipStatusEnum.REJECTED,
         )
         .map((member) => member.user.id) || [];
     // also want to exclude auditors who has previously requested to audit. Managing those will

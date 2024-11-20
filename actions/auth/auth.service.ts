@@ -26,7 +26,8 @@ class AuthService {
   }
 
   async getSession(): Promise<IronSession<SessionData>> {
-    return await getIronSession<SessionData>(cookies(), sessionOptions);
+    const cookieStore = await cookies();
+    return await getIronSession<SessionData>(cookieStore, sessionOptions);
   }
 
   async updateSession(session: IronSession<SessionData>, userId: string): Promise<void> {

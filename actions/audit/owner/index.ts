@@ -1,7 +1,7 @@
 "use server";
 
 import { ResponseI } from "@/utils/types";
-import { Audit, User } from "@prisma/client";
+import { Audit, User } from "@/utils/types/tables";
 import ownerController from "./owner.controller";
 
 const createAudit = async (formData: FormData, auditors: User[]): Promise<ResponseI<Audit>> => {

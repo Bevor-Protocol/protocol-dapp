@@ -4,7 +4,7 @@ import { wishlistAction } from "@/actions";
 import { Heart } from "@/assets";
 import * as Tooltip from "@/components/Tooltip";
 import { cn } from "@/utils";
-import { User } from "@prisma/client";
+import { User } from "@/utils/types/tables";
 import { useMutation } from "@tanstack/react-query";
 
 const UserWishlist = ({

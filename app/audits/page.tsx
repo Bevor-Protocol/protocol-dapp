@@ -4,10 +4,10 @@ import { auditAction } from "@/actions";
 import { Column } from "@/components/Box";
 import { LoaderFill } from "@/components/Loader";
 import Audits from "@/components/screens/audits";
-import { AuditStatusType } from "@prisma/client";
+import { AuditStatusEnum } from "@/utils/types/enum";
 
 const Fetcher = async (): Promise<JSX.Element> => {
-  const data = await auditAction.getAuditsDetailed(AuditStatusType.DISCOVERY);
+  const data = await auditAction.getAuditsDetailed(AuditStatusEnum.DISCOVERY);
 
   return <Audits initialData={data} />;
 };

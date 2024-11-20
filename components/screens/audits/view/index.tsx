@@ -1,5 +1,3 @@
-import { AuditStatusType, MembershipStatusType, RoleType, User } from "@prisma/client";
-
 import { AuditAuditor } from "@/components/Audit/client";
 import { Column, Row } from "@/components/Box";
 import { Icon } from "@/components/Icon";
@@ -7,25 +5,28 @@ import DynamicLink from "@/components/Link";
 import { Loader } from "@/components/Loader";
 import { AvailableTokens } from "@/constants/web3";
 import { trimAddress } from "@/utils/formatters";
+import { AuditStatusEnum, MembershipStatusEnum, RoleTypeEnum } from "@/utils/types/enum";
 import { AuditI } from "@/utils/types/prisma";
+import { User } from "@/utils/types/tables";
 import { Suspense } from "react";
 import AuditDashboardActions from "./actions";
 
 const AuditPage = ({ audit, user }: { audit: AuditI; user: User | null }): JSX.Element => {
   const verifiedAuditors = audit.memberships.filter(
     (member) =>
-      member.status == MembershipStatusType.VERIFIED &&
-      member.role === RoleType.AUDITOR &&
+      member.status == MembershipStatusEnum.VERIFIED &&
+      member.role === RoleTypeEnum.AUDITOR &&
       member.isActive,
   );
   const requestedAuditors = audit.memberships.filter(
     (member) =>
-      member.status == MembershipStatusType.REQUESTED &&
-      member.role === RoleType.AUDITOR &&
+      member.status == MembershipStatusEnum.REQUESTED &&
+      member.role === RoleTypeEnum.AUDITOR &&
       member.isActive,
   );
   const rejectedAuditors = audit.memberships.filter(
-    (member) => member.status == MembershipStatusType.REJECTED && member.role === RoleType.AUDITOR,
+    (member) =>
+      member.status == MembershipStatusEnum.REJECTED && member.role === RoleTypeEnum.AUDITOR,
   );
 
   const attestationPending = verifiedAuditors.filter((member) => !member.attestedTerms);
@@ -53,7 +54,7 @@ const AuditPage = ({ audit, user }: { audit: AuditI; user: User | null }): JSX.E
           <p className="text-base my-2">{audit.description}</p>
         </div>
         <div>
-          {audit.status === AuditStatusType.DISCOVERY && (
+          {audit.status === AuditStatusEnum.DISCOVERY && (
             <>
               <Row className="items-center gap-4 h-[32px] md:h-[27px]">
                 <p className="w-40">Verified to Audit:</p>
@@ -105,7 +106,7 @@ const AuditPage = ({ audit, user }: { audit: AuditI; user: User | null }): JSX.E
               </Row>
             </>
           )}
-          {audit.status === AuditStatusType.ATTESTATION && (
+          {audit.status === AuditStatusEnum.ATTESTATION && (
             <>
               <Row className="items-center gap-4 h-[32px] md:h-[27px]">
                 <p className="w-44">Pending Attestation:</p>
@@ -157,8 +158,8 @@ const AuditPage = ({ audit, user }: { audit: AuditI; user: User | null }): JSX.E
               </Row>
             </>
           )}
-          {audit.status !== AuditStatusType.DISCOVERY &&
-            audit.status !== AuditStatusType.ATTESTATION && (
+          {audit.status !== AuditStatusEnum.DISCOVERY &&
+            audit.status !== AuditStatusEnum.ATTESTATION && (
               <Row className="items-center gap-4 h-[32px] md:h-[27px]">
                 <p className="w-40">Auditors:</p>
                 {verifiedAuditors.length > 0 ? (

@@ -9,7 +9,7 @@ import { UserCard } from "@/components/User";
 import { USERS } from "@/constants/queryKeys";
 import { useDebounce } from "@/hooks/useDebounce";
 import { UserSearchI } from "@/utils/types";
-import { User } from "@prisma/client";
+import { User } from "@/utils/types/tables";
 import { useQuery } from "@tanstack/react-query";
 
 const UsersWrapper = ({ initialData }: { initialData: User[] }): JSX.Element => {

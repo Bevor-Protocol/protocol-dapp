@@ -10,7 +10,7 @@ import { AuditStateI } from "@/utils/types";
 import { AuditI } from "@/utils/types/prisma";
 
 import RevealAudit from "@/components/Modal/Content/onchain/revealAudit";
-import { User } from "@prisma/client";
+import { User } from "@/utils/types/tables";
 
 const AuditorSubmitFindings = ({
   auditId,

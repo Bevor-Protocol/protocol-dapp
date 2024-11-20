@@ -8,27 +8,27 @@ import { AuditCard } from "@/components/Audit";
 import { Column, Row } from "@/components/Box";
 import { Toggle } from "@/components/Toggle";
 import { AUDITS } from "@/constants/queryKeys";
+import { AuditStatusEnum } from "@/utils/types/enum";
 import { AuditDetailedI } from "@/utils/types/prisma";
-import { AuditStatusType } from "@prisma/client";
 
 const statusMapper = {
-  [AuditStatusType.DISCOVERY]: "open",
-  [AuditStatusType.ATTESTATION]: "locked",
-  [AuditStatusType.AUDITING]: "ongoing",
-  [AuditStatusType.CHALLENGEABLE]: "challengeable",
-  [AuditStatusType.FINALIZED]: "completed",
+  [AuditStatusEnum.DISCOVERY]: "open",
+  [AuditStatusEnum.ATTESTATION]: "locked",
+  [AuditStatusEnum.AUDITING]: "ongoing",
+  [AuditStatusEnum.CHALLENGEABLE]: "challengeable",
+  [AuditStatusEnum.FINALIZED]: "completed",
 };
 
 const statusOrder = [
-  AuditStatusType.DISCOVERY,
-  AuditStatusType.ATTESTATION,
-  AuditStatusType.AUDITING,
-  AuditStatusType.CHALLENGEABLE,
-  AuditStatusType.FINALIZED,
+  AuditStatusEnum.DISCOVERY,
+  AuditStatusEnum.ATTESTATION,
+  AuditStatusEnum.AUDITING,
+  AuditStatusEnum.CHALLENGEABLE,
+  AuditStatusEnum.FINALIZED,
 ];
 
 const Audits = ({ initialData }: { initialData: AuditDetailedI[] }): JSX.Element => {
-  const [display, setDisplay] = useState<AuditStatusType>(AuditStatusType.DISCOVERY);
+  const [display, setDisplay] = useState<AuditStatusEnum>(AuditStatusEnum.DISCOVERY);
 
   const { data, isPending } = useQuery({
     queryKey: [AUDITS, display],

@@ -1,29 +1,29 @@
 "use server";
 
 import { ResponseI } from "@/utils/types";
-import { AuditMembership } from "@prisma/client";
+import { AuditMembershipInsert } from "@/utils/types/tables";
 import auditorController from "./auditor.controller";
 
 const attestToTerms = async (
   auditId: string,
   status: boolean,
   comment: string,
-): Promise<ResponseI<AuditMembership>> => {
+): Promise<ResponseI<AuditMembershipInsert>> => {
   return auditorController.attestToTerms(auditId, status, comment);
 };
 
-const leaveAudit = async (auditId: string): Promise<ResponseI<AuditMembership>> => {
+const leaveAudit = async (auditId: string): Promise<ResponseI<AuditMembershipInsert>> => {
   return auditorController.leaveAudit(auditId);
 };
 
 const addFinding = async (
   auditId: string,
   formData: FormData,
-): Promise<ResponseI<AuditMembership>> => {
+): Promise<ResponseI<AuditMembershipInsert>> => {
   return auditorController.addFinding(auditId, formData);
 };
 
-const addRequest = async (auditId: string): Promise<ResponseI<AuditMembership>> => {
+const addRequest = async (auditId: string): Promise<ResponseI<AuditMembershipInsert>> => {
   return auditorController.addRequest(auditId);
 };
 

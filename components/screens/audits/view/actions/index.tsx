@@ -1,7 +1,7 @@
-import { AuditStatusType, User } from "@prisma/client";
-
 import { auditAction } from "@/actions";
+import { AuditStatusEnum } from "@/utils/types/enum";
 import { AuditI } from "@/utils/types/prisma";
+import { User } from "@/utils/types/tables";
 import AuditChallengeableActions from "./challengeable";
 import AuditLockedActions from "./locked";
 import AuditOngoingActions from "./ongoing";
@@ -16,19 +16,19 @@ const AuditDashboardActions = async ({
 }): Promise<JSX.Element> => {
   const state = await auditAction.getState(audit, user);
 
-  if (audit.status === AuditStatusType.DISCOVERY) {
+  if (audit.status === AuditStatusEnum.DISCOVERY) {
     return <AuditOpenActions user={user} audit={audit} state={state} />;
   }
 
-  if (audit.status === AuditStatusType.ATTESTATION) {
+  if (audit.status === AuditStatusEnum.ATTESTATION) {
     return <AuditLockedActions audit={audit} state={state} />;
   }
 
-  if (audit.status === AuditStatusType.AUDITING) {
+  if (audit.status === AuditStatusEnum.AUDITING) {
     return <AuditOngoingActions audit={audit} user={user} state={state} />;
   }
 
-  if (audit.status === AuditStatusType.CHALLENGEABLE) {
+  if (audit.status === AuditStatusEnum.CHALLENGEABLE) {
     return <AuditChallengeableActions />;
   }
 

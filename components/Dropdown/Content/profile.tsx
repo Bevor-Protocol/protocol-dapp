@@ -13,7 +13,7 @@ import { useCopyToClipboard } from "@/hooks/useCopyToClipboard";
 import { cn } from "@/utils";
 import { trimAddress } from "@/utils/formatters";
 import { UserNotificationI } from "@/utils/types/prisma";
-import { User } from "@prisma/client";
+import { User } from "@/utils/types/tables";
 
 const Profile = ({
   address,

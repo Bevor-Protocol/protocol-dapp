@@ -15,7 +15,7 @@ import { cn } from "@/utils";
 import { trimAddress } from "@/utils/formatters";
 import { getNetworkImage } from "@/utils/helpers";
 import { UserNotificationI } from "@/utils/types/prisma";
-import { User } from "@prisma/client";
+import { User } from "@/utils/types/tables";
 
 const Web3Network = (): JSX.Element => {
   const { chain } = useAccount();

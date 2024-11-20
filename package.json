@@ -4,34 +4,22 @@
   "private": true,
   "scripts": {
     "dev": "doppler run -- next dev",
-    "testing": "doppler run -- printenv",
     "build": "doppler run -- next build",
     "prevercel-build": "curl -Ls https://cli.doppler.com/install.sh | sh",
-    "vercel-build": "doppler run --command='prisma generate && prisma migrate deploy && next build'",
+    "vercel-build": "doppler run --command='drizzle-kit push && next build'",
     "start": "doppler run -- next start",
     "prepare": "husky install",
-    "lint": "doppler run --command='next lint && prettier --check \"**/*.{ts,tsx,js,jsx,md,json}\" && prisma validate && tsc --noEmit'",
-    "format": "prettier --write \"**/*.{ts,tsx,js,jsx,md,json}\" && eslint --fix && prisma format",
-    "db:studio": "doppler run -- npx prisma studio",
-    "db:push": "doppler run -- npx prisma db push",
-    "db:migration:generate": "doppler run -- bash prisma/scripts/migration_generate.sh",
-    "db:migration:run": "doppler run -- npx prisma migrate dev",
-    "db:migration:revert": "doppler run -- bash prisma/scripts/migration_revert.sh",
-    "db:migration:diff": "doppler run -- npx prisma migrate diff --from-schema-datamodel prisma/schema.prisma --to-schema-datasource prisma/schema.prisma --script",
-    "db:migration:show": "doppler run -- npx prisma migrate status",
-    "db:reset": "doppler run -- npx prisma migrate reset",
-    "db:clear": "doppler run -- npx prisma migrate reset --skip-seed",
-    "db:seed": "doppler run -- npx prisma db seed",
-    "db:seed:offchain": "doppler run -- tsx prisma/scripts/seed-offchain.ts",
-    "db:seed:onchain": "doppler run -- tsx prisma/scripts/seed-onchain.ts",
+    "lint": "doppler run --command='next lint && prettier --check \"**/*.{ts,tsx,js,jsx,md,json}\" && tsc --noEmit'",
+    "format": "prettier --write \"**/*.{ts,tsx,js,jsx,md,json}\" && eslint --fix",
+    "db:studio": "doppler run -- drizzle-kit studio",
+    "db:migration:generate": "doppler run -- drizzle-kit generate",
+    "db:migration:migrate": "doppler run -- drizzle-kit migrate",
+    "db:migration:check": "doppler run -- drizzle-kit check",
+    "db:seed": "doppler run -- tsx db/scripts/seed.ts",
+    "db:seed:offchain": "doppler run -- tsx db/scripts/seed-offchain.ts",
+    "db:seed:onchain": "doppler run -- tsx db/scripts/seed-onchain.ts",
     "cy:open": "cypress open",
     "cy:run": "cypress run --browser chrome --headless"
-  },
-  "prisma": {
-    "seed": "bash prisma/seed.sh",
-    "migrate": {
-      "dev": ""
-    }
   },
   "lint-staged": {
     "**/*.{ts,tsx,js,jsx}": [
@@ -40,13 +28,10 @@
     ],
     "**/*.{md,json}": [
       "prettier --write"
-    ],
-    "**/*.prisma": [
-      "prisma format"
     ]
   },
   "dependencies": {
-    "@prisma/client": "^5.9.1",
+    "@neondatabase/serverless": "^0.10.3",
     "@tanstack/react-query": "^5.22.2",
     "@types/node": "20.11.30",
     "@types/react": "18.2.69",
@@ -55,13 +40,13 @@
     "@vercel/blob": "^0.22.2",
     "@vercel/speed-insights": "^1.0.10",
     "dotenv": "^16.4.5",
+    "drizzle-orm": "^0.36.3",
     "eslint": "8.57.0",
     "eslint-config-next": "14.1.4",
     "ethers": "^6.11.1",
     "gray-matter": "^4.0.3",
     "iron-session": "^8.0.1",
-    "next": "14.1.4",
-    "prisma": "5.20.0",
+    "next": "^15.0.3",
     "react": "18.2.0",
     "react-dom": "18.2.0",
     "remark": "^15.0.1",
@@ -71,15 +56,18 @@
     "typescript": "5.4.5",
     "viem": "^2.7.12",
     "wagmi": "^2.5.12",
+    "ws": "^8.18.0",
     "zod": "^3.22.4"
   },
   "devDependencies": {
     "@next/eslint-plugin-next": "14.1.4",
     "@opentelemetry/api": "^1.9.0",
+    "@types/ws": "^8.5.13",
     "@typescript-eslint/eslint-plugin": "7.3.1",
     "@typescript-eslint/parser": "7.3.1",
     "autoprefixer": "^10.4.19",
     "cypress": "^13.8.0",
+    "drizzle-kit": "^0.28.1",
     "eslint-config-airbnb-typescript": "18.0.0",
     "eslint-config-prettier": "^9.1.0",
     "eslint-plugin-cypress": "^2.15.2",

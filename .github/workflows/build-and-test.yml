@@ -52,18 +52,18 @@ jobs:
       - name: Build
         run: yarn build
         env:
-          DATABASE_URL_UNPOOLED: postgres://postgres:postgres@localhost:5432/postgres
+          DATABASE_URL: postgres://postgres:postgres@localhost:5432/postgres
 
       # Generate Prisma Client to reflect latest database schema
       - name: Generate Prisma Client
         run: yarn prisma generate
         env:
-          DATABASE_URL_UNPOOLED: postgres://postgres:postgres@localhost:5432/postgres
+          DATABASE_URL: postgres://postgres:postgres@localhost:5432/postgres
 
       - name: Deploy DB
         run: yarn prisma migrate deploy
         env:
-          DATABASE_URL_UNPOOLED: postgres://postgres:postgres@localhost:5432/postgres
+          DATABASE_URL: postgres://postgres:postgres@localhost:5432/postgres
 
       - name: Run Tests
         uses: cypress-io/github-action@v6
@@ -72,4 +72,4 @@ jobs:
           browser: chrome
           wait-on: "http://localhost:3000"
         env:
-          DATABASE_URL_UNPOOLED: postgres://postgres:postgres@localhost:5432/postgres
+          DATABASE_URL: postgres://postgres:postgres@localhost:5432/postgres

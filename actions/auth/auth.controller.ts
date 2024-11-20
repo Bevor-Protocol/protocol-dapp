@@ -18,8 +18,9 @@ class AuthController {
   }
 
   async verify(message: string, signature: string): Promise<void> {
+    const headerList = await headers();
     const session = await this.authService.getSession();
-    const domain = headers().get("x-forwarded-host") ?? "";
+    const domain = headerList.get("x-forwarded-host") ?? "";
 
     await this.authService.verifyMessage(message, signature, session, domain);
   }

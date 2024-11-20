@@ -13,7 +13,7 @@ import * as Tooltip from "@/components/Tooltip";
 import { useModal, useToast } from "@/hooks/useContexts";
 import { AuditStateI } from "@/utils/types";
 import { AuditI } from "@/utils/types/prisma";
-import { User } from "@prisma/client";
+import { User } from "@/utils/types/tables";
 import { useState } from "react";
 
 const AuditeeEditAudit = ({ id }: { id: string }): JSX.Element => {
@@ -347,7 +347,7 @@ const AuditOpenActions = ({
     );
   }
 
-  if (user.auditorRole) {
+  if (user.auditor_role) {
     return (
       <Column className="gap-2 items-end w-fit *:w-full">
         <AuditorAddRequest auditId={audit.id} disabled={disabled} setDisabled={setDisabled} />

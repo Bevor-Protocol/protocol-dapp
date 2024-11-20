@@ -1,7 +1,7 @@
 import { contractAction } from "@/actions";
 import { AvailableTokens } from "@/constants/web3";
+import { AuditStatusEnum } from "@/utils/types/enum";
 import { AuditI } from "@/utils/types/prisma";
-import { AuditStatusType } from "@prisma/client";
 import { Address } from "viem";
 import VestingDisplay from "./display";
 
@@ -15,8 +15,8 @@ const Vesting = async ({
   address: string | undefined;
 }): Promise<JSX.Element> => {
   if (
-    audit.status !== AuditStatusType.CHALLENGEABLE &&
-    audit.status !== AuditStatusType.FINALIZED
+    audit.status !== AuditStatusEnum.CHALLENGEABLE &&
+    audit.status !== AuditStatusEnum.FINALIZED
   ) {
     return <></>;
   }

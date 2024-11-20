@@ -1,70 +1,69 @@
-import { prisma } from "@/db/prisma.server";
-import {
-  AuditMembership,
-  MembershipStatusType,
-  Prisma,
-  PrismaPromise,
-  RoleType,
-} from "@prisma/client";
+import { db } from "@/db";
+import { auditMembership } from "@/db/schema/audit-membership.sql";
+import { MembershipStatusEnum, RoleTypeEnum } from "@/utils/types/enum";
+import { AuditMembershipInsert } from "@/utils/types/tables";
+import { eq } from "drizzle-orm";
 
 class AuditorService {
-  attestToTerms(membershipId: string, status: boolean): PrismaPromise<AuditMembership> {
+  attestToTerms(membershipId: string, status: boolean): Promise<AuditMembershipInsert> {
     // via an entry of User, we can simultaneously update Auditors, and create
     // a History observation.
-    return prisma.auditMembership.update({
-      where: {
-        id: membershipId,
-      },
-      data: {
-        acceptedTerms: status,
-        attestedTerms: true,
-      },
-    });
+    return db
+      .update(auditMembership)
+      .set({
+        accepted_terms: status,
+        attested_terms: true,
+      })
+      .where(eq(auditMembership.id, membershipId))
+      .returning()
+      .then((res) => res[0]);
   }
 
-  resetAttestations(auditId: string): PrismaPromise<Prisma.BatchPayload> {
-    return prisma.auditMembership.updateMany({
-      where: {
-        auditId,
-      },
-      data: {
-        acceptedTerms: false,
-        attestedTerms: false,
-      },
-    });
+  resetAttestations(auditId: string): Promise<AuditMembershipInsert> {
+    return db
+      .update(auditMembership)
+      .set({
+        accepted_terms: false,
+        attested_terms: false,
+      })
+      .where(eq(auditMembership.audit_id, auditId))
+      .returning()
+      .then((res) => res[0]);
   }
 
-  leaveAudit(membershipId: string): PrismaPromise<AuditMembership> {
-    return prisma.auditMembership.update({
-      where: {
-        id: membershipId,
-      },
-      data: {
-        isActive: false,
-      },
-    });
+  leaveAudit(membershipId: string): Promise<AuditMembershipInsert> {
+    return db
+      .update(auditMembership)
+      .set({
+        is_active: false,
+      })
+      .where(eq(auditMembership.id, membershipId))
+      .returning()
+      .then((res) => res[0]);
   }
 
-  addFindings(membershipId: string, findings: string): PrismaPromise<AuditMembership> {
-    return prisma.auditMembership.update({
-      where: {
-        id: membershipId,
-      },
-      data: {
+  addFindings(membershipId: string, findings: string): Promise<AuditMembershipInsert> {
+    return db
+      .update(auditMembership)
+      .set({
         findings,
-      },
-    });
+      })
+      .where(eq(auditMembership.id, membershipId))
+      .returning()
+      .then((res) => res[0]);
   }
 
-  addRequest(userId: string, auditId: string): PrismaPromise<AuditMembership> {
-    return prisma.auditMembership.create({
-      data: {
-        userId,
-        auditId,
-        role: RoleType.AUDITOR,
-        status: MembershipStatusType.REQUESTED,
-      },
-    });
+  addRequest(userId: string, auditId: string): Promise<AuditMembershipInsert> {
+    return db
+      .insert(auditMembership)
+      .values({
+        user_id: userId,
+        audit_id: auditId,
+        role: RoleTypeEnum.AUDITOR,
+        status: MembershipStatusEnum.REQUESTED,
+      })
+      .returning()
+      .then((res) => res[0]);
   }
 }
 

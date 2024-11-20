@@ -6,11 +6,11 @@ import { useState } from "react";
 import { userAction } from "@/actions";
 import { Column } from "@/components/Box";
 import { LEADERBOARD } from "@/constants/queryKeys";
-import { UserWithCount } from "@/utils/types/prisma";
+import { Leaderboard } from "@/utils/types/custom";
 import LeaderboardData from "./data";
 import LeaderboardNav from "./nav";
 
-const LeaderboardWrapper = ({ initialData }: { initialData: UserWithCount[] }): JSX.Element => {
+const LeaderboardWrapper = ({ initialData }: { initialData: Leaderboard[] }): JSX.Element => {
   const [listSort, setListSort] = useState("name");
   const [listOrder, setListOrder] = useState<"asc" | "desc">("asc");
 

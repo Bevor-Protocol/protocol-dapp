@@ -12,15 +12,17 @@ import { X } from "@/assets";
 import { AuditorItem } from "@/components/Audit";
 import { Button } from "@/components/Button";
 import ErrorToast from "@/components/Toast/Content/error";
-import { MembershipStatusType, RoleType } from "@prisma/client";
+import { MembershipStatusEnum, RoleTypeEnum } from "@/utils/types/enum";
 
 const RequestsEdit = ({ audit }: { audit: AuditI }): JSX.Element => {
-  const requestedAuditors = audit.memberships.filter((member) => member.role === RoleType.AUDITOR);
+  const requestedAuditors = audit.memberships.filter(
+    (member) => member.role === RoleTypeEnum.AUDITOR,
+  );
   const initialState = requestedAuditors.map((auditor) => {
     switch (auditor.status) {
-      case MembershipStatusType.REJECTED:
+      case MembershipStatusEnum.REJECTED:
         return -1;
-      case MembershipStatusType.REQUESTED:
+      case MembershipStatusEnum.REQUESTED:
         return 0;
     }
     return 1;

@@ -1,8 +1,9 @@
 import { handleErrors } from "@/utils/decorators";
 import { ResponseI } from "@/utils/types";
-import { WishlistI } from "@/utils/types/prisma";
+import { WishlistWithReceiver } from "@/utils/types/relations";
 import { revalidatePath } from "next/cache";
 import RoleService from "../roles/roles.service";
+import UserService from "../user/user.service";
 import WishlistService from "./wishlist.service";
 
 // Might want to add some revalidations here.
@@ -11,6 +12,7 @@ class WishlistController {
   constructor(
     private readonly wishlistService: typeof WishlistService,
     private readonly roleService: typeof RoleService,
+    private readonly userService: typeof UserService,
   ) {}
 
   async isWishlisted(requestor: string, receiver: string): Promise<boolean> {
@@ -18,28 +20,30 @@ class WishlistController {
     return !!entry;
   }
 
-  getUserWishlist(requestor: string): Promise<WishlistI[]> {
+  getUserWishlist(requestor: string): Promise<WishlistWithReceiver[]> {
     return this.wishlistService.getUserWishlist(requestor);
   }
 
   @handleErrors
-  async addToWishlist(receiver: string): Promise<ResponseI<WishlistI>> {
+  async addToWishlist(receiver: string): Promise<ResponseI<boolean>> {
     const { id } = await this.roleService.requireAccount();
-    const data = await this.wishlistService.addToWishlist(id, receiver);
+    await this.wishlistService.addToWishlist(id, receiver);
+    const userReceiver = await this.userService.getUserById(receiver);
 
-    revalidatePath(`/users/${data.receiver.address}`, "page");
-    return { success: true, data };
+    revalidatePath(`/users/${userReceiver!.address}`, "page");
+    return { success: true, data: true };
   }
 
   @handleErrors
-  async removeFromWishlist(receiver: string): Promise<ResponseI<WishlistI>> {
+  async removeFromWishlist(receiver: string): Promise<ResponseI<boolean>> {
     const { id } = await this.roleService.requireAccount();
-    const data = await this.wishlistService.removeFromWishlist(id, receiver);
+    await this.wishlistService.removeFromWishlist(id, receiver);
+    const userReceiver = await this.userService.getUserById(receiver);
 
-    revalidatePath(`/users/${data.receiver.address}`, "page");
-    return { success: true, data };
+    revalidatePath(`/users/${userReceiver!.address}`, "page");
+    return { success: true, data: true };
   }
 }
 
-const wishlistController = new WishlistController(WishlistService, RoleService);
+const wishlistController = new WishlistController(WishlistService, RoleService, UserService);
 export default wishlistController;

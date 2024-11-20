@@ -5,8 +5,8 @@ import DynamicLink from "@/components/Link";
 import { usePanel } from "@/hooks/useContexts";
 import { cn } from "@/utils";
 import { timeSince } from "@/utils/dates";
+import { ActionEnum } from "@/utils/types/enum";
 import { UserNotificationI } from "@/utils/types/prisma";
-import { ActionType } from "@prisma/client";
 
 export const NotificationPanel = ({
   notifications,
@@ -36,37 +36,37 @@ export const NotificationPanel = ({
                           <span
                             className={cn(
                               "h-1 w-1 rounded-full mb-auto",
-                              notification.action.type == ActionType.AUDITOR_LEFT && "bg-red-400",
-                              notification.action.type == ActionType.AUDITOR_TERMS_APPROVED &&
+                              notification.action.type == ActionEnum.AUDITOR_LEFT && "bg-red-400",
+                              notification.action.type == ActionEnum.AUDITOR_TERMS_APPROVED &&
                                 "bg-green-600",
-                              notification.action.type == ActionType.AUDITOR_TERMS_REJECTED &&
+                              notification.action.type == ActionEnum.AUDITOR_TERMS_REJECTED &&
                                 "bg-red-400",
-                              notification.action.type == ActionType.OWNER_EDITED && "bg-gray-600",
-                              notification.action.type == ActionType.AUDITOR_FINDINGS &&
+                              notification.action.type == ActionEnum.OWNER_EDITED && "bg-gray-600",
+                              notification.action.type == ActionEnum.AUDITOR_FINDINGS &&
                                 "bg-green-600",
-                              notification.action.type == ActionType.OWNER_LOCKED && "bg-gray-600",
-                              notification.action.type == ActionType.OWNER_OPENED && "bg-gray-600",
-                              notification.action.type == ActionType.OWNER_FINALIZED &&
+                              notification.action.type == ActionEnum.OWNER_LOCKED && "bg-gray-600",
+                              notification.action.type == ActionEnum.OWNER_OPENED && "bg-gray-600",
+                              notification.action.type == ActionEnum.OWNER_FINALIZED &&
                                 "bg-green-600",
-                              notification.action.type == ActionType.OWNER_REVEALED &&
+                              notification.action.type == ActionEnum.OWNER_REVEALED &&
                                 "bg-green-600",
                             )}
                           />
                           <span>
-                            {notification.action.type == ActionType.AUDITOR_LEFT && "Left Audit"}
-                            {notification.action.type == ActionType.AUDITOR_TERMS_APPROVED &&
+                            {notification.action.type == ActionEnum.AUDITOR_LEFT && "Left Audit"}
+                            {notification.action.type == ActionEnum.AUDITOR_TERMS_APPROVED &&
                               "Approved Terms"}
-                            {notification.action.type == ActionType.AUDITOR_TERMS_REJECTED &&
+                            {notification.action.type == ActionEnum.AUDITOR_TERMS_REJECTED &&
                               "Rejected Audit"}
-                            {notification.action.type == ActionType.OWNER_EDITED && "Edited Audit"}
-                            {notification.action.type == ActionType.AUDITOR_FINDINGS &&
+                            {notification.action.type == ActionEnum.OWNER_EDITED && "Edited Audit"}
+                            {notification.action.type == ActionEnum.AUDITOR_FINDINGS &&
                               "Submitted Findings"}
-                            {notification.action.type == ActionType.OWNER_LOCKED && "Locked Audit"}
-                            {notification.action.type == ActionType.OWNER_OPENED &&
+                            {notification.action.type == ActionEnum.OWNER_LOCKED && "Locked Audit"}
+                            {notification.action.type == ActionEnum.OWNER_OPENED &&
                               "Re-Opened Audit"}
-                            {notification.action.type == ActionType.OWNER_FINALIZED &&
+                            {notification.action.type == ActionEnum.OWNER_FINALIZED &&
                               "Kicked off Audit (on-chain)"}
-                            {notification.action.type == ActionType.OWNER_REVEALED &&
+                            {notification.action.type == ActionEnum.OWNER_REVEALED &&
                               "Requested to view Findings (on-chain)"}
                           </span>
                         </Row>

@@ -6,16 +6,17 @@ import DynamicLink from "@/components/Link";
 import { AvailableTokens } from "@/constants/web3";
 import { cn } from "@/utils";
 import { trimAddress } from "@/utils/formatters";
+import { AuditStatusEnum, MembershipStatusEnum, RoleTypeEnum } from "@/utils/types/enum";
 import { AuditDetailedI } from "@/utils/types/prisma";
-import { AuditStatusType, MembershipStatusType, RoleType, User } from "@prisma/client";
+import { User } from "@/utils/types/tables";
 import { AuditAuditor } from "./client";
 
-const statusMapper = {
-  [AuditStatusType.DISCOVERY]: "open",
-  [AuditStatusType.ATTESTATION]: "locked",
-  [AuditStatusType.AUDITING]: "ongoing",
-  [AuditStatusType.CHALLENGEABLE]: "challengeable",
-  [AuditStatusType.FINALIZED]: "completed",
+const statusMapper: Record<AuditStatusEnum, string> = {
+  [AuditStatusEnum.DISCOVERY]: "open",
+  [AuditStatusEnum.ATTESTATION]: "locked",
+  [AuditStatusEnum.AUDITING]: "ongoing",
+  [AuditStatusEnum.CHALLENGEABLE]: "challengeable",
+  [AuditStatusEnum.FINALIZED]: "completed",
 };
 
 export const AuditCardTruncated = ({
@@ -34,7 +35,7 @@ export const AuditCardTruncated = ({
         <Card.Main className="w-full cursor-pointer transition-colors hover:bg-dark-primary-30">
           <Card.Content className="gap-4 relative p-4">
             <div className="absolute -top-2 left-1 bg-primary-light-20 rounded-md text-xxs px-1">
-              {statusMapper[audit.status]}
+              {statusMapper[audit.status as keyof typeof AuditStatusEnum]}
             </div>
             <Icon image={audit.owner.image} seed={audit.owner.address} size="lg" />
             <Column className="justify-start items-start w-full">
@@ -64,8 +65,8 @@ export const AuditCard = ({ audit }: { audit: AuditDetailedI }): JSX.Element => 
   const token = AvailableTokens.Localhost.find((t) => t.address == audit.token);
   const verifiedAuditors = audit.memberships.filter(
     (member) =>
-      member.role === RoleType.AUDITOR &&
-      member.status === MembershipStatusType.VERIFIED &&
+      member.role === RoleTypeEnum.AUDITOR &&
+      member.status === MembershipStatusEnum.VERIFIED &&
       member.isActive,
   );
   return (
