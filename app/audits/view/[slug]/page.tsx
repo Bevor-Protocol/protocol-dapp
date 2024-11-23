@@ -15,7 +15,6 @@ const Fetcher = async ({ auditId }: { auditId: string }): Promise<JSX.Element> =
   const audit = await auditAction.getAudit(auditId);
 
   if (!audit) return <h2>This audit does not exist</h2>;
-
   const actions = await auditAction.getAuditActions(auditId);
 
   const { address, user } = await userAction.getCurrentUser();
@@ -25,11 +24,11 @@ const Fetcher = async ({ auditId }: { auditId: string }): Promise<JSX.Element> =
   let hasPendingNotifications = false;
   if (user) {
     const isOwner = audit.owner.id === user.id;
-    const isAuditor = audit.memberships.some(
+    const isAuditor = audit.auditMemberships.some(
       (member) =>
-        member.userId === user.id &&
+        member.user_id === user.id &&
         member.role === RoleTypeEnum.AUDITOR &&
-        member.isActive &&
+        member.is_active &&
         member.status === MembershipStatusEnum.VERIFIED,
     );
 
@@ -62,11 +61,16 @@ const Fetcher = async ({ auditId }: { auditId: string }): Promise<JSX.Element> =
   );
 };
 
-const AuditDashboardPage = ({ params }: { params: { slug: string } }): JSX.Element => {
+const AuditDashboardPage = async ({
+  params,
+}: {
+  params: { slug: string };
+}): Promise<JSX.Element> => {
+  const { slug } = await params;
   return (
     <section className="flex flex-col h-full items-center">
       <Suspense fallback={<LoaderFill />}>
-        <Fetcher auditId={params.slug} />
+        <Fetcher auditId={slug} />
       </Suspense>
     </section>
   );

@@ -4,8 +4,8 @@ CREATE TYPE "public"."MembershipStatusType" AS ENUM('VERIFIED', 'REQUESTED', 'RE
 CREATE TYPE "public"."RoleType" AS ENUM('OWNER', 'AUDITOR');--> statement-breakpoint
 CREATE TABLE IF NOT EXISTS "action" (
 	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
-	"created_at" timestamp DEFAULT now() NOT NULL,
-	"updated_at" timestamp DEFAULT now() NOT NULL,
+	"created_at" timestamp with time zone DEFAULT now() NOT NULL,
+	"updated_at" timestamp with time zone DEFAULT now() NOT NULL,
 	"membership_id" uuid NOT NULL,
 	"comment" text,
 	"type" "ActionType" NOT NULL
@@ -13,8 +13,8 @@ CREATE TABLE IF NOT EXISTS "action" (
 --> statement-breakpoint
 CREATE TABLE IF NOT EXISTS "audit_membership" (
 	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
-	"created_at" timestamp DEFAULT now() NOT NULL,
-	"updated_at" timestamp DEFAULT now() NOT NULL,
+	"created_at" timestamp with time zone DEFAULT now() NOT NULL,
+	"updated_at" timestamp with time zone DEFAULT now() NOT NULL,
 	"user_id" uuid NOT NULL,
 	"audit_id" uuid NOT NULL,
 	"role" "RoleType" NOT NULL,
@@ -27,8 +27,8 @@ CREATE TABLE IF NOT EXISTS "audit_membership" (
 --> statement-breakpoint
 CREATE TABLE IF NOT EXISTS "audit" (
 	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
-	"created_at" timestamp DEFAULT now() NOT NULL,
-	"updated_at" timestamp DEFAULT now() NOT NULL,
+	"created_at" timestamp with time zone DEFAULT now() NOT NULL,
+	"updated_at" timestamp with time zone DEFAULT now() NOT NULL,
 	"owner_id" uuid NOT NULL,
 	"title" text NOT NULL,
 	"description" text NOT NULL,
@@ -47,8 +47,8 @@ CREATE TABLE IF NOT EXISTS "audit" (
 --> statement-breakpoint
 CREATE TABLE IF NOT EXISTS "notification" (
 	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
-	"created_at" timestamp DEFAULT now() NOT NULL,
-	"updated_at" timestamp DEFAULT now() NOT NULL,
+	"created_at" timestamp with time zone DEFAULT now() NOT NULL,
+	"updated_at" timestamp with time zone DEFAULT now() NOT NULL,
 	"user_id" uuid NOT NULL,
 	"action_id" uuid NOT NULL,
 	"has_viewed" boolean DEFAULT false NOT NULL
@@ -56,8 +56,8 @@ CREATE TABLE IF NOT EXISTS "notification" (
 --> statement-breakpoint
 CREATE TABLE IF NOT EXISTS "user" (
 	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
-	"created_at" timestamp DEFAULT now() NOT NULL,
-	"updated_at" timestamp DEFAULT now() NOT NULL,
+	"created_at" timestamp with time zone DEFAULT now() NOT NULL,
+	"updated_at" timestamp with time zone DEFAULT now() NOT NULL,
 	"address" text NOT NULL,
 	"owner_role" boolean DEFAULT false NOT NULL,
 	"auditor_role" boolean DEFAULT false NOT NULL,
@@ -68,8 +68,8 @@ CREATE TABLE IF NOT EXISTS "user" (
 --> statement-breakpoint
 CREATE TABLE IF NOT EXISTS "wishlist" (
 	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
-	"created_at" timestamp DEFAULT now() NOT NULL,
-	"updated_at" timestamp DEFAULT now() NOT NULL,
+	"created_at" timestamp with time zone DEFAULT now() NOT NULL,
+	"updated_at" timestamp with time zone DEFAULT now() NOT NULL,
 	"sender_id" uuid NOT NULL,
 	"receiver_id" uuid NOT NULL
 );

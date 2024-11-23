@@ -1,6 +1,6 @@
 "use server";
 
-import { UserStats } from "@/utils/types";
+import { UserStats } from "@/utils/types/custom";
 import statController from "./stat.controller";
 
 const getUserStats = async (address: string): Promise<UserStats> => {

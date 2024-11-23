@@ -1,23 +1,26 @@
 import { db } from "@/db";
+import { action } from "@/db/schema/action.sql";
+import { auditMembership } from "@/db/schema/audit-membership.sql";
 import { audit } from "@/db/schema/audit.sql";
-import { AuditStateI, MarkdownAuditsI } from "@/utils/types";
+import { user } from "@/db/schema/user.sql";
+import { AuditState, MarkdownAudits } from "@/utils/types/custom";
 import {
   AuditStateEnum,
   AuditStatusEnum,
   MembershipStatusEnum,
   RoleTypeEnum,
 } from "@/utils/types/enum";
-import { MembershipUserI } from "@/utils/types/prisma";
 import {
+  ActionWithMembership,
   AuditMembershipSecure,
+  AuditMembershipsInsecure,
   AuditWithOwnerInsecure,
   AuditWithOwnerSecure,
   AuditWithUsersInsecure,
-  AuditWithUsersSecure,
   MembershipWithAudit,
 } from "@/utils/types/relations";
 import { AuditInsert, User } from "@/utils/types/tables";
-import { eq } from "drizzle-orm";
+import { eq, getTableColumns } from "drizzle-orm";
 import matter from "gray-matter";
 import { remark } from "remark";
 import remarkGfm from "remark-gfm";
@@ -27,10 +30,11 @@ import ContractService from "../contract/contract.service";
 class AuditService {
   constructor(private readonly contractService: typeof ContractService) {}
 
-  getAudit(auditId: string): Promise<AuditWithUsersSecure | undefined> {
+  getAudit(auditId: string): Promise<AuditWithOwnerSecure | undefined> {
     return db.query.audit.findFirst({
       where: (table, { eq }) => eq(table.id, auditId),
       with: {
+        owner: true,
         auditMemberships: {
           with: {
             user: true,
@@ -43,20 +47,44 @@ class AuditService {
     });
   }
 
-  getAuditActions(auditId: string): Promise<AuditWithUsersSecure[]> {
-    return db.query.audit.findMany({
+  getAuditWithFindings(auditId: string): Promise<AuditWithOwnerInsecure | undefined> {
+    return db.query.audit.findFirst({
       where: (table, { eq }) => eq(table.id, auditId),
       with: {
+        owner: true,
         auditMemberships: {
           with: {
             user: true,
           },
-          columns: {
-            findings: false,
-          },
         },
       },
     });
+  }
+
+  getAuditActions(auditId: string): Promise<ActionWithMembership[]> {
+    const { findings, ...rest } = getTableColumns(auditMembership);
+    return db
+      .select({
+        action: getTableColumns(action),
+        auditMembership: rest,
+        user: getTableColumns(user),
+      })
+      .from(action)
+      .innerJoin(auditMembership, eq(auditMembership.id, action.membership_id))
+      .where(eq(auditMembership.audit_id, auditId))
+      .innerJoin(user, eq(auditMembership.user_id, user.id))
+      .then((res) => {
+        return res.map((r) => {
+          const { action, auditMembership, user } = r;
+          return {
+            ...action,
+            auditMembership: {
+              ...auditMembership,
+              user,
+            },
+          };
+        });
+      });
   }
 
   getAuditAuditors(auditId: string): Promise<AuditMembershipSecure[]> {
@@ -116,7 +144,7 @@ class AuditService {
     });
   }
 
-  getAuditState(audit: AuditWithOwnerInsecure, user: User | undefined): AuditStateI {
+  async getAuditState(auditId: string, user: User | undefined): Promise<AuditState> {
     const objOut = {
       isAuditOwner: false,
       isAuditAuditor: false,
@@ -135,6 +163,8 @@ class AuditService {
     };
 
     if (!user) return objOut;
+    const audit = await this.getAuditWithFindings(auditId);
+    if (!audit) return objOut;
 
     const owner = audit.owner;
     const auditors = audit.auditMemberships.filter(
@@ -143,9 +173,9 @@ class AuditService {
 
     if (!owner) return objOut;
 
-    const verified: MembershipUserI[] = [];
-    const requested: MembershipUserI[] = [];
-    const rejected: MembershipUserI[] = [];
+    const verified: AuditMembershipsInsecure[] = [];
+    const requested: AuditMembershipsInsecure[] = [];
+    const rejected: AuditMembershipsInsecure[] = [];
 
     auditors.forEach((auditor) => {
       switch (auditor.status) {
@@ -183,7 +213,7 @@ class AuditService {
     if (audit.status === AuditStatusEnum.ATTESTATION) {
       if (objOut.isAuditOwner) {
         objOut.states[AuditStateEnum.CAN_FINALIZE] = verified.every(
-          (member) => member.attestedTerms,
+          (member) => member.attested_terms,
         );
       }
       if (userAuditor) {
@@ -273,15 +303,20 @@ class AuditService {
    * and adjusts the visibility of findings accordingly.
    */
   async safeMarkdownDisplay(
-    audit: AuditWithOwnerInsecure,
+    auditId: string,
     currentUser: User | undefined,
-  ): Promise<MarkdownAuditsI> {
-    const markdownObject: MarkdownAuditsI = {
+  ): Promise<MarkdownAudits> {
+    const markdownObject: MarkdownAudits = {
       details: "",
       globalReveal: false,
       pendingCliff: false,
       findings: [],
     };
+
+    const audit = await this.getAuditWithFindings(auditId);
+    if (!audit) {
+      return markdownObject;
+    }
 
     if (audit.details) {
       markdownObject.details = await this.parseMarkdown(audit.details);
@@ -294,7 +329,7 @@ class AuditService {
     let globalReveal = audit.status == AuditStatusEnum.FINALIZED;
     // auditor can always see their own findings.
     // Protocol owner can see once they put money in escrow.
-    const state = this.getAuditState(audit, currentUser);
+    const state = await this.getAuditState(auditId, currentUser);
 
     // effectively refetches the audit, but doesn't omit the findings.
     const auditWithFindings = await this.getAuditFindings(audit.id);
@@ -348,7 +383,7 @@ class AuditService {
 
       markdownObject.findings.push({
         user,
-        owner: isOwner,
+        isOwner,
         reveal,
         submitted,
         markdown,

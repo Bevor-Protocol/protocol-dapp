@@ -1,15 +1,14 @@
 import { handleErrors } from "@/utils/decorators";
 import { RoleError } from "@/utils/error";
-import { AuditStateI, MarkdownAuditsI, ResponseI } from "@/utils/types";
+import { ResponseI } from "@/utils/types/api";
+import { AuditState, MarkdownAudits } from "@/utils/types/custom";
 import { ActionEnum, AuditStatusEnum } from "@/utils/types/enum";
 import {
-  AuditWithOwnerInsecure,
+  ActionWithMembership,
   AuditWithOwnerSecure,
   AuditWithUsersInsecure,
-  AuditWithUsersSecure,
 } from "@/utils/types/relations";
 import { AuditInsert, User } from "@/utils/types/tables";
-import { revalidatePath } from "next/cache";
 import AuthService from "../auth/auth.service";
 import NotificationService from "../notification/notification.service";
 import UserService from "../user/user.service";
@@ -32,11 +31,11 @@ class AuditController {
     private readonly authService: typeof AuthService,
   ) {}
 
-  async getAudit(id: string): Promise<AuditWithUsersSecure | undefined> {
+  async getAudit(id: string): Promise<AuditWithOwnerSecure | undefined> {
     return this.auditService.getAudit(id);
   }
 
-  async getAuditActions(auditId: string): Promise<AuditWithUsersSecure[]> {
+  async getAuditActions(auditId: string): Promise<ActionWithMembership[]> {
     return this.auditService.getAuditActions(auditId);
   }
 
@@ -55,7 +54,6 @@ class AuditController {
 
     await this.notificationService.createAndBroadcastAction(membership, ActionEnum.OWNER_FINALIZED);
 
-    revalidatePath(`/audits/view/${auditId}`, "page");
     return { success: true, data };
   }
 
@@ -70,19 +68,18 @@ class AuditController {
 
     await this.notificationService.createAndBroadcastAction(membership, ActionEnum.OWNER_REVEALED);
 
-    revalidatePath(`/audits/view/${auditId}`, "page");
     return { success: true, data };
   }
 
-  getState(audit: AuditWithOwnerInsecure, user: User): AuditStateI {
-    return this.auditService.getAuditState(audit, user);
+  getState(auditId: string, user: User): Promise<AuditState> {
+    return this.auditService.getAuditState(auditId, user);
   }
 
-  async safeMarkdown(audit: AuditWithOwnerInsecure): Promise<MarkdownAuditsI> {
+  async safeMarkdown(auditId: string): Promise<MarkdownAudits> {
     const { address } = await this.authService.currentUser();
     const user = await this.userService.getProfile(address);
 
-    return this.auditService.safeMarkdownDisplay(audit, user);
+    return this.auditService.safeMarkdownDisplay(auditId, user);
   }
 
   async getAuditFindings(id: string): Promise<AuditWithUsersInsecure | undefined> {

@@ -3,10 +3,11 @@ import { auditMembership } from "@/db/schema/audit-membership.sql";
 import { audit } from "@/db/schema/audit.sql";
 import { user } from "@/db/schema/user.sql";
 import { wishlist } from "@/db/schema/wishlist.sql";
-import { UserSearchI } from "@/utils/types";
-import { Leaderboard, UserAudit } from "@/utils/types/custom";
+import { Leaderboard, UserSearch } from "@/utils/types/custom";
 import { AuditStatusEnum, MembershipStatusEnum, RoleTypeEnum } from "@/utils/types/enum";
+import { UserAudit } from "@/utils/types/relations";
 import { User, UserInsert } from "@/utils/types/tables";
+import { QueryResult } from "@neondatabase/serverless";
 import {
   aliasedTable,
   and,
@@ -18,6 +19,7 @@ import {
   ilike,
   not,
   or,
+  SQL,
   sql,
 } from "drizzle-orm";
 
@@ -42,13 +44,8 @@ class UserService {
       .then((res) => res[0]);
   }
 
-  updateUser(id: string, data: Partial<UserInsert>): Promise<User> {
-    return db
-      .update(user)
-      .set(data)
-      .where(eq(user.id, id))
-      .returning()
-      .then((res) => res[0]);
+  updateUser(id: string, data: Partial<UserInsert>): Promise<QueryResult> {
+    return db.update(user).set(data).where(eq(user.id, id));
   }
 
   getLeaderboard(key: string = "name", order: "asc" | "desc" = "asc"): Promise<Leaderboard[]> {
@@ -73,59 +70,66 @@ class UserService {
       )
       .as("memberships_filtered");
 
+    const valuePotentialStatement = sql<number>`
+    SUM(CASE 
+      WHEN audits_filtered.status IN (${AuditStatusEnum.AUDITING}, ${AuditStatusEnum.CHALLENGEABLE}) 
+      THEN audits_filtered.price 
+      ELSE 0 
+    END)
+  `;
+    const valueCompleteStatement: SQL<number> = sql<number>`
+    SUM(CASE 
+        WHEN audits_filtered.status = ${AuditStatusEnum.FINALIZED} 
+        THEN audits_filtered.price 
+        ELSE 0 
+      END)
+    `;
+    const numActiveStatement = sql<number>`
+    COUNT(CASE
+      WHEN audits_filtered.status != ${AuditStatusEnum.FINALIZED}
+      THEN 1
+      ELSE NULL
+    END)
+  `;
+    const numCompleteStatement = sql<number>`
+    COUNT(CASE 
+      WHEN audits_filtered.status = ${AuditStatusEnum.FINALIZED} 
+      THEN 1 
+      ELSE NULL 
+    END)
+  `;
+
     return db
       .select({
         ...getTableColumns(user),
-        value_potential: sql<number>`
-          SUM(CASE 
-            WHEN audits_filtered.status IN (${AuditStatusEnum.AUDITING}, ${AuditStatusEnum.CHALLENGEABLE}) 
-            THEN audits_filtered.price 
-            ELSE 0 
-          END)
-        `.as("value_potential"),
-        value_complete: sql<number>`
-          SUM(CASE 
-              WHEN audits_filtered.status = ${AuditStatusEnum.FINALIZED} 
-              THEN audits_filtered.price 
-              ELSE 0 
-            END)
-          `.as("value_complete"),
-        num_active: sql<number>`
-          COUNT(CASE
-            WHEN audits_filtered.status != ${AuditStatusEnum.FINALIZED}
-            THEN 1
-            ELSE NULL
-          END)
-        `.as("num_active"),
-        num_complete: sql<number>`
-          COUNT(CASE 
-            WHEN audits_filtered.status = ${AuditStatusEnum.FINALIZED} 
-            THEN 1 
-            ELSE NULL 
-          END)
-        `.as("num_complete"),
-        num_wishlist: countDistinct(wishlist.sender_id).as("num_wishlist"),
+        stats: {
+          value_potential: valuePotentialStatement.as("value_potential"),
+          value_complete: valueCompleteStatement.as("value_complete"),
+          num_active: numActiveStatement.as("num_active"),
+          num_complete: numCompleteStatement.as("num_complete"),
+          num_wishlist: countDistinct(wishlist.sender_id).as("num_wishlist"),
+        },
       })
       .from(user)
       .leftJoin(memberships, eq(memberships.user_id, user.id))
       .leftJoin(audits, eq(memberships.audit_id, audits.id))
       .leftJoin(wishlist, eq(user.id, wishlist.receiver_id))
-      .where(and(eq(user.auditor_role, true)))
+      .where(eq(user.auditor_role, true))
       .groupBy(({ id }) => id)
       .orderBy((row) => {
         switch (key) {
           case "date":
             return orderFct(row.created_at);
           case "value_potential":
-            return orderFct(row.value_potential);
+            return orderFct(row.stats.value_potential);
           case "value_completed":
-            return orderFct(row.value_complete);
+            return orderFct(row.stats.value_complete);
           case "num_active":
-            return orderFct(row.num_active);
+            return orderFct(row.stats.num_active);
           case "num_complete":
-            return orderFct(row.num_complete);
+            return orderFct(row.stats.num_complete);
           case "num_wishlist":
-            return orderFct(row.num_wishlist);
+            return orderFct(row.stats.num_wishlist);
           default:
             return [orderFct(row.name), orderFct(row.address)];
         }
@@ -137,7 +141,8 @@ class UserService {
     return db
       .select({
         ...getTableColumns(audit),
-        auditMemberships: getTableColumns(auditMembership),
+        role: auditMembership.role,
+        owner: getTableColumns(owner),
       })
       .from(auditMembership)
       .innerJoin(audit, eq(auditMembership.audit_id, audit.id))
@@ -147,21 +152,22 @@ class UserService {
       .orderBy(({ created_at }) => desc(created_at));
   }
 
-  searchUsers(filter: UserSearchI): Promise<User[]> {
-    const search = filter.search
-      ? or(ilike(user.name, filter.search), ilike(user.address, filter.search))
-      : or();
-
-    const roleFilters = [];
+  searchUsers(filter: UserSearch): Promise<User[]> {
+    const filters = [];
+    if (filter.search) {
+      filters.push(
+        or(ilike(user.name, `%${filter.search}%`), ilike(user.address, `%${filter.search}%`)),
+      );
+    }
     if (filter.isAuditor) {
-      roleFilters.push(eq(user.auditor_role, true));
+      filters.push(eq(user.auditor_role, true));
     }
     if (filter.isOwner) {
-      roleFilters.push(eq(user.owner_role, true));
+      filters.push(eq(user.owner_role, true));
     }
 
     return db.query.user.findMany({
-      where: and(search, and(...roleFilters)),
+      where: and(...filters),
     });
   }
 

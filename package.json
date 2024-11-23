@@ -46,7 +46,7 @@
     "ethers": "^6.11.1",
     "gray-matter": "^4.0.3",
     "iron-session": "^8.0.1",
-    "next": "^15.0.3",
+    "next": "15.0.3",
     "react": "18.2.0",
     "react-dom": "18.2.0",
     "remark": "^15.0.1",

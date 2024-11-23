@@ -1,6 +1,6 @@
 "use server";
 
-import { ResponseI } from "@/utils/types";
+import { ResponseI } from "@/utils/types/api";
 import { AuditMembershipInsert } from "@/utils/types/tables";
 import auditorController from "./auditor.controller";
 

@@ -1,7 +1,7 @@
 import { contractAction } from "@/actions";
 import { AvailableTokens } from "@/constants/web3";
 import { AuditStatusEnum } from "@/utils/types/enum";
-import { AuditI } from "@/utils/types/prisma";
+import { AuditWithOwnerSecure } from "@/utils/types/relations";
 import { Address } from "viem";
 import VestingDisplay from "./display";
 
@@ -10,7 +10,7 @@ const Vesting = async ({
   isAuditor,
   address,
 }: {
-  audit: AuditI;
+  audit: AuditWithOwnerSecure;
   isAuditor: boolean;
   address: string | undefined;
 }): Promise<JSX.Element> => {
@@ -21,11 +21,11 @@ const Vesting = async ({
     return <></>;
   }
 
-  if (!audit.onchainAuditInfoId) {
+  if (!audit.onchain_audit_info_id) {
     return <></>;
   }
 
-  const auditView = await contractAction.getAudit(BigInt(audit.onchainAuditInfoId));
+  const auditView = await contractAction.getAudit(BigInt(audit.onchain_audit_info_id));
 
   if (!auditView) {
     return <></>;
@@ -40,7 +40,7 @@ const Vesting = async ({
   };
   if (isAuditor && address) {
     vestingScheduleInfo = await contractAction.getAuditorVestingSchedule(
-      BigInt(audit.onchainAuditInfoId),
+      BigInt(audit.onchain_audit_info_id),
       address as Address,
       audit.token as Address,
     );

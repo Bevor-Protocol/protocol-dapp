@@ -10,6 +10,7 @@ import * as Form from "@/components/Form";
 import ErrorToast from "@/components/Toast/Content/error";
 import { useModal, useToast } from "@/hooks/useContexts";
 import { ErrorTypeEnum } from "@/utils/types/enum";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 
 const UploadFindings = ({
@@ -21,6 +22,7 @@ const UploadFindings = ({
 }): JSX.Element => {
   const initialFile = initial ? new File([], "") : undefined;
   const { hide } = useModal();
+  const router = useRouter();
   const [selectedFile, setSelectedFile] = useState<File | undefined>(initialFile);
   const { show } = useToast();
   const [errors, setErrors] = useState<Record<string, string>>({});
@@ -32,6 +34,7 @@ const UploadFindings = ({
     onSuccess: (response) => {
       if (response.success) {
         hide();
+        router.refresh();
       } else {
         const error = response.error;
         switch (error.type) {

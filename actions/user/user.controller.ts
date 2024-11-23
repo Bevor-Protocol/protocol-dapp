@@ -1,9 +1,9 @@
 import { handleErrors } from "@/utils/decorators";
-import { ResponseI, UserSearchI } from "@/utils/types";
-import { Leaderboard, UserAudit } from "@/utils/types/custom";
+import { ResponseI } from "@/utils/types/api";
+import { Leaderboard, UserSearch } from "@/utils/types/custom";
+import { UserAudit } from "@/utils/types/relations";
 import { User, UserInsert } from "@/utils/types/tables";
 import { parseForm, userSchema, userSchemaCreate } from "@/utils/validations";
-import { revalidatePath } from "next/cache";
 import AuthService from "../auth/auth.service";
 import BlobService from "../blob/blob.service";
 import RoleService from "../roles/roles.service";
@@ -64,7 +64,7 @@ class UserController {
   }
 
   @handleErrors
-  async updateUser(formData: FormData): Promise<ResponseI<User>> {
+  async updateUser(formData: FormData): Promise<ResponseI<boolean>> {
     const { id } = await this.roleService.requireAccount();
     const parsed = parseForm(formData, userSchema);
 
@@ -77,11 +77,9 @@ class UserController {
     if (blobData) {
       dataPass.image = blobData.url;
     }
+    await this.userService.updateUser(id, dataPass);
 
-    const data = await this.userService.updateUser(id, dataPass);
-
-    revalidatePath(`/users/${data.address}`, "page");
-    return { success: true, data };
+    return { success: true, data: true };
   }
 
   getUserAudits(address: string): Promise<UserAudit[]> {
@@ -92,7 +90,7 @@ class UserController {
     return this.userService.getLeaderboard(key, order);
   }
 
-  searchUsers(filter: UserSearchI): Promise<User[]> {
+  searchUsers(filter: UserSearch): Promise<User[]> {
     return this.userService.searchUsers(filter);
   }
 

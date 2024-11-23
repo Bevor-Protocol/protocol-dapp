@@ -1,7 +1,8 @@
 "use server";
 
-import { ResponseI, UserSearchI } from "@/utils/types";
-import { Leaderboard, UserAudit } from "@/utils/types/custom";
+import { ResponseI } from "@/utils/types/api";
+import { Leaderboard, UserSearch } from "@/utils/types/custom";
+import { UserAudit } from "@/utils/types/relations";
 import { User } from "@/utils/types/tables";
 import userController from "./user.controller";
 
@@ -17,7 +18,7 @@ const createUser = async (address: string, formData: FormData): Promise<Response
   return userController.createUser(address, formData);
 };
 
-const updateUser = async (formData: FormData): Promise<ResponseI<User>> => {
+const updateUser = async (formData: FormData): Promise<ResponseI<boolean>> => {
   return userController.updateUser(formData);
 };
 
@@ -29,7 +30,7 @@ const getLeaderboard = async (key?: string, order?: "asc" | "desc"): Promise<Lea
   return userController.getLeaderboard(key, order);
 };
 
-const searchUsers = async (filter: UserSearchI): Promise<User[]> => {
+const searchUsers = async (filter: UserSearch): Promise<User[]> => {
   return userController.searchUsers(filter);
 };
 

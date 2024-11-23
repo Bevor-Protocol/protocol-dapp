@@ -15,9 +15,9 @@ const LeaderboardData = ({
   if (isLoading) return <></>;
   return (
     <Column className="w-full gap-1">
-      {data.map((item, ind) => (
+      {data.map((item) => (
         <DynamicLink
-          key={item.id + ind}
+          key={item.id}
           href={`/users/${item.address}`}
           className="w-full animate-fade-in"
         >
@@ -38,25 +38,25 @@ flex items-center gap-2 whitespace-nowrap max-w-full px-4"
               className="cursor-pointer rounded-lg text-sm
 flex items-center gap-2 whitespace-nowrap max-w-full px-4"
             >
-              <span>{item.value_potential.toLocaleString()}</span>
+              <span>{item.stats.value_potential.toLocaleString()}</span>
             </li>
             <li
               className="cursor-pointer rounded-lg text-sm
 flex items-center gap-2 whitespace-nowrap max-w-full px-4"
             >
-              <span>{item.value_complete.toLocaleString()}</span>
+              <span>{item.stats.value_complete.toLocaleString()}</span>
             </li>
             <li
               className="cursor-pointer rounded-lg text-sm
 flex items-center gap-2 whitespace-nowrap max-w-full px-4"
             >
-              <span>{item.num_active.toLocaleString()}</span>
+              <span>{item.stats.num_active.toLocaleString()}</span>
             </li>
             <li
               className="cursor-pointer rounded-lg text-sm
 flex items-center gap-2 whitespace-nowrap max-w-full px-4"
             >
-              <span>{item.num_complete.toLocaleString()}</span>
+              <span>{item.stats.num_complete.toLocaleString()}</span>
             </li>
             <li
               className="cursor-pointer rounded-lg text-sm
@@ -69,7 +69,7 @@ flex items-center gap-2 whitespace-nowrap max-w-full px-4 relative"
                   !item.available && " bg-gray-600",
                 )}
               />
-              <span>{item.num_wishlist.toLocaleString()}</span>
+              <span>{item.stats.num_wishlist.toLocaleString()}</span>
             </li>
           </ul>
         </DynamicLink>

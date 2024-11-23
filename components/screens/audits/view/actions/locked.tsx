@@ -13,8 +13,9 @@ import InitiateAudit from "@/components/Modal/Content/onchain/initiateAudit";
 import ErrorToast from "@/components/Toast/Content/error";
 import * as Tooltip from "@/components/Tooltip";
 import { useModal, useToast } from "@/hooks/useContexts";
-import { AuditStateI } from "@/utils/types";
-import { AuditI } from "@/utils/types/prisma";
+import { AuditState } from "@/utils/types/custom";
+import { AuditWithOwnerSecure } from "@/utils/types/relations";
+import { useRouter } from "next/navigation";
 
 const OwnerEditAudit = ({ id, disabled }: { id: string; disabled: boolean }): JSX.Element => {
   return (
@@ -49,14 +50,16 @@ const OwnerReopenAudit = ({
   setDisabled: React.Dispatch<React.SetStateAction<boolean>>;
 }): JSX.Element => {
   const { show } = useToast();
+  const router = useRouter();
 
   const { mutate } = useMutation({
     mutationFn: () => auditAction.owner.openAudit(id),
     onMutate: () => setDisabled(true),
     onSuccess: (response) => {
       if (response.success) {
-        setDisabled(false);
+        router.refresh();
       } else {
+        setDisabled(false);
         show({
           content: <ErrorToast text={response.error.message} />,
           autoClose: true,
@@ -92,7 +95,7 @@ const OwnerInitiateAudit = ({
   disabled,
   setDisabled,
 }: {
-  audit: AuditI;
+  audit: AuditWithOwnerSecure;
   disabled: boolean;
   setDisabled: React.Dispatch<React.SetStateAction<boolean>>;
 }): JSX.Element => {
@@ -135,14 +138,16 @@ const AuditorRemoveVerification = ({
   setDisabled: React.Dispatch<React.SetStateAction<boolean>>;
 }): JSX.Element => {
   const { show } = useToast();
+  const router = useRouter();
 
   const { mutate } = useMutation({
     mutationFn: () => auditAction.auditor.leaveAudit(auditId),
     onMutate: () => setDisabled(true),
     onSuccess: (response) => {
       if (response.success) {
-        setDisabled(false);
+        router.refresh();
       } else {
+        setDisabled(false);
         show({
           content: <ErrorToast text={response.error.message} />,
           autoClose: true,
@@ -178,7 +183,7 @@ const AuditorAttestTerms = ({
   audit,
   disabled,
 }: {
-  audit: AuditI;
+  audit: AuditWithOwnerSecure;
   disabled: boolean;
 }): JSX.Element => {
   const { show } = useModal();
@@ -213,8 +218,8 @@ const AuditLockedActions = ({
   audit,
   state,
 }: {
-  audit: AuditI;
-  state: AuditStateI;
+  audit: AuditWithOwnerSecure;
+  state: AuditState;
 }): JSX.Element => {
   // I'll set a global disabled state for all mutations within children.
   const [disabled, setDisabled] = useState(false);

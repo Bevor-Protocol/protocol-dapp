@@ -25,7 +25,7 @@ const Fetcher = async ({ address }: { address: string }): Promise<JSX.Element> =
   let pendingNotifications: string[] = [];
   // constrain wishlist to authenicated Protocol Owners. Can only wishlist Auditors.
   // If a user has both roles, wishlist will still appear.
-  const canWishlist = !isOwner && user.auditorRole && !!currentUser?.id && currentUser?.ownerRole;
+  const canWishlist = !isOwner && user.auditor_role && !!currentUser?.id && currentUser?.owner_role;
   if (canWishlist) {
     isWishlistedFlag = await wishlistAction.isWishlisted(currentUser?.id, user.id);
   }
@@ -50,11 +50,12 @@ const Fetcher = async ({ address }: { address: string }): Promise<JSX.Element> =
   );
 };
 
-const UserPage = ({ params }: { params: { slug: string } }): JSX.Element => {
+const UserPage = async ({ params }: { params: { slug: string } }): Promise<JSX.Element> => {
+  const { slug } = await params;
   return (
     <section className="flex flex-col h-full items-center">
       <Suspense fallback={<LoaderFill className="h-12 w-12" />}>
-        <Fetcher address={params.slug} />
+        <Fetcher address={slug} />
       </Suspense>
     </section>
   );

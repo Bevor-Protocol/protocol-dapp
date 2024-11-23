@@ -1,8 +1,6 @@
 import { handleErrors } from "@/utils/decorators";
-import { ResponseI } from "@/utils/types";
+import { ResponseI } from "@/utils/types/api";
 import { UserNotificationsDetails } from "@/utils/types/relations";
-import { NotificationInsert } from "@/utils/types/tables";
-import { revalidateTag } from "next/cache";
 import RoleService from "../roles/roles.service";
 import NotificationService from "./notification.service";
 
@@ -33,8 +31,6 @@ class NotificationController {
       {},
     );
 
-    revalidateTag(`NOTIFICATION ${userId}`);
-
     return data;
   }
 
@@ -43,23 +39,17 @@ class NotificationController {
   }
 
   async getUserHistoryCountByAuditId(userId: string, auditId: string): Promise<number> {
-    const data = await this.notificationService.getUserNotificationsUnreadCountByAuditId(
-      userId,
-      auditId,
-    );
-
-    revalidateTag(`NOTIFICATION ${userId} ${auditId}`);
-    return data;
+    return this.notificationService.getUserNotificationsUnreadCountByAuditId(userId, auditId);
   }
 
   @handleErrors
-  async updateUserNotificationByAuditId(auditId: string): Promise<ResponseI<NotificationInsert[]>> {
+  async updateUserNotificationByAuditId(auditId: string): Promise<ResponseI<boolean>> {
     const { id } = await this.roleService.requireAccount();
-    const data = await this.notificationService.updateNotificationByAudit(id, auditId);
+    await this.notificationService.updateNotificationByAudit(id, auditId);
 
-    revalidateTag(`HISTORY ${id}`);
-    revalidateTag(`HISTORY ${id} ${auditId}`);
-    return { success: true, data };
+    // expireTag(...["HISTORY", id]);
+    // expireTag(...["HISTORY", id, auditId]);
+    return { success: true, data: true };
   }
 }
 

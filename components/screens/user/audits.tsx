@@ -6,7 +6,7 @@ import { AuditCardTruncated } from "@/components/Audit";
 import { Column, Row } from "@/components/Box";
 import { cn } from "@/utils";
 import { AuditStatusEnum } from "@/utils/types/enum";
-import { AuditDetailedI } from "@/utils/types/prisma";
+import { UserAudit } from "@/utils/types/relations";
 
 const initialStateType: Record<AuditStatusEnum, boolean> = {
   [AuditStatusEnum.DISCOVERY]: true,
@@ -36,7 +36,7 @@ const UserAudits = ({
   pendingNotifications,
 }: {
   address: string;
-  audits: AuditDetailedI[];
+  audits: UserAudit[];
   isOwner: boolean;
   pendingNotifications: string[];
 }): JSX.Element => {
@@ -44,6 +44,7 @@ const UserAudits = ({
   const [ownerFilter, setOwnerFilter] = useState(initialOwnerState);
   const [unreadOnlyFilter, setUnreadOnlyFilter] = useState(false);
 
+  // elected to just do filtering client-side
   const auditsShow = useMemo(() => {
     return audits.filter((audit) => {
       if (!typeFilter[audit.status]) {

@@ -12,13 +12,15 @@ import ErrorToast from "@/components/Toast/Content/error";
 import SuccessToast from "@/components/Toast/Content/success";
 import * as Tooltip from "@/components/Tooltip";
 import { useModal, useToast } from "@/hooks/useContexts";
-import { UserStats } from "@/utils/types";
+import { UserStats } from "@/utils/types/custom";
 import { ErrorTypeEnum } from "@/utils/types/enum";
 import { User } from "@/utils/types/tables";
+import { useRouter } from "next/navigation";
 
 const UserEdit = ({ user, stats }: { user: User; stats: UserStats }): JSX.Element => {
   const { hide } = useModal();
   const { show } = useToast();
+  const router = useRouter();
   const [selectedImage, setSelectedImage] = useState<File | undefined>();
   const [errors, setErrors] = useState<Record<string, string>>({});
 
@@ -37,6 +39,7 @@ const UserEdit = ({ user, stats }: { user: User; stats: UserStats }): JSX.Elemen
           content: <SuccessToast text="profile updated" />,
           autoClose: true,
         });
+        router.refresh();
       } else {
         const error = response.error;
         switch (error.type) {
@@ -115,7 +118,7 @@ const UserEdit = ({ user, stats }: { user: User; stats: UserStats }): JSX.Elemen
               isError={"available" in errors}
             />
             <Form.Radio
-              name="auditorRole"
+              name="auditor_role"
               text="auditor role"
               // potentially add a handler so that a user can set their availability if this is toggled on.
               defaultChecked={user.auditor_role}
@@ -124,7 +127,7 @@ const UserEdit = ({ user, stats }: { user: User; stats: UserStats }): JSX.Elemen
               isError={"auditorRole" in errors}
             />
             <Form.Radio
-              name="ownerRole"
+              name="owner_role"
               text="owner role"
               defaultChecked={user.owner_role}
               disabled={!allowOwnerUpdate || isPending}

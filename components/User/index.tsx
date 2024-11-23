@@ -8,7 +8,8 @@ import DynamicLink from "../Link";
 
 export const UserCard = ({ user, isLoading }: { user: User; isLoading: boolean }): JSX.Element => {
   return (
-    <div className="animate-fade-in">
+    // <div className="animate-fade-in">
+    <div>
       <DynamicLink href={`/users/${user.address}`} className="w-full" disabled={isLoading}>
         <Card.Main
           className={cn(

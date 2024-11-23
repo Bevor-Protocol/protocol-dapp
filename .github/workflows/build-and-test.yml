@@ -54,14 +54,8 @@ jobs:
         env:
           DATABASE_URL: postgres://postgres:postgres@localhost:5432/postgres
 
-      # Generate Prisma Client to reflect latest database schema
-      - name: Generate Prisma Client
-        run: yarn prisma generate
-        env:
-          DATABASE_URL: postgres://postgres:postgres@localhost:5432/postgres
-
       - name: Deploy DB
-        run: yarn prisma migrate deploy
+        run: yarn drizzle-kit migrate
         env:
           DATABASE_URL: postgres://postgres:postgres@localhost:5432/postgres
 

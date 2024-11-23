@@ -1,6 +1,6 @@
 import { auditAction } from "@/actions";
 import { AuditStatusEnum } from "@/utils/types/enum";
-import { AuditI } from "@/utils/types/prisma";
+import { AuditWithOwnerSecure } from "@/utils/types/relations";
 import { User } from "@/utils/types/tables";
 import AuditChallengeableActions from "./challengeable";
 import AuditLockedActions from "./locked";
@@ -11,10 +11,10 @@ const AuditDashboardActions = async ({
   audit,
   user,
 }: {
-  audit: AuditI;
+  audit: AuditWithOwnerSecure;
   user: User;
 }): Promise<JSX.Element> => {
-  const state = await auditAction.getState(audit, user);
+  const state = await auditAction.getState(audit.id, user);
 
   if (audit.status === AuditStatusEnum.DISCOVERY) {
     return <AuditOpenActions user={user} audit={audit} state={state} />;

@@ -3,10 +3,10 @@
 import * as Card from "@/components/Card";
 import { HomeStatSkeleton } from "@/components/Loader";
 import { HOME_STATS } from "@/constants/queryKeys";
-import { HomeStatI } from "@/utils/types";
+import { ProtocolStat } from "@/utils/types/custom";
 import { useQuery } from "@tanstack/react-query";
 
-export const HomeStat = ({ action, symbol, text, queryKey }: HomeStatI): JSX.Element => {
+export const HomeStat = ({ action, symbol, text, queryKey }: ProtocolStat): JSX.Element => {
   // I converted this to a client component since it's not important for user interaction
   // and it CAN block the wagmi connector. I was seeing reconnecting -> disconnected -> connected
   // state in wagmi, which made it lose its interactivity.

@@ -7,7 +7,7 @@ import { AvailableTokens } from "@/constants/web3";
 import { cn } from "@/utils";
 import { trimAddress } from "@/utils/formatters";
 import { AuditStatusEnum, MembershipStatusEnum, RoleTypeEnum } from "@/utils/types/enum";
-import { AuditDetailedI } from "@/utils/types/prisma";
+import { AuditWithUsersSecure, UserAudit } from "@/utils/types/relations";
 import { User } from "@/utils/types/tables";
 import { AuditAuditor } from "./client";
 
@@ -24,7 +24,7 @@ export const AuditCardTruncated = ({
   isProtocolOwner,
   showNoti,
 }: {
-  audit: AuditDetailedI;
+  audit: UserAudit;
   isProtocolOwner: boolean;
   showNoti: boolean;
 }): JSX.Element => {
@@ -61,13 +61,13 @@ export const AuditCardTruncated = ({
   );
 };
 
-export const AuditCard = ({ audit }: { audit: AuditDetailedI }): JSX.Element => {
+export const AuditCard = ({ audit }: { audit: AuditWithUsersSecure }): JSX.Element => {
   const token = AvailableTokens.Localhost.find((t) => t.address == audit.token);
-  const verifiedAuditors = audit.memberships.filter(
+  const verifiedAuditors = audit.auditMemberships.filter(
     (member) =>
       member.role === RoleTypeEnum.AUDITOR &&
       member.status === MembershipStatusEnum.VERIFIED &&
-      member.isActive,
+      member.is_active,
   );
   return (
     <Card.Main className="w-full animate-fade-in">
@@ -98,7 +98,7 @@ export const AuditCard = ({ audit }: { audit: AuditDetailedI }): JSX.Element => 
           </p>
           <p className="text-white/60 text-xs">
             <span className="inline-block w-32 text-right mr-4">Created: </span>
-            <span className="float-right">{new Date(audit.createdAt).toLocaleDateString()}</span>
+            <span className="float-right">{new Date(audit.created_at).toLocaleDateString()}</span>
           </p>
         </Column>
       </Card.Content>

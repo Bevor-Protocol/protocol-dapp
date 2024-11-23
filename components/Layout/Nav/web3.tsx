@@ -14,7 +14,6 @@ import { useModal } from "@/hooks/useContexts";
 import { cn } from "@/utils";
 import { trimAddress } from "@/utils/formatters";
 import { getNetworkImage } from "@/utils/helpers";
-import { UserNotificationI } from "@/utils/types/prisma";
 import { User } from "@/utils/types/tables";
 
 const Web3Network = (): JSX.Element => {

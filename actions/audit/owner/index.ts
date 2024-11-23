@@ -1,6 +1,6 @@
 "use server";
 
-import { ResponseI } from "@/utils/types";
+import { ResponseI } from "@/utils/types/api";
 import { Audit, User } from "@/utils/types/tables";
 import ownerController from "./owner.controller";
 

@@ -5,7 +5,7 @@ import { Button } from "@/components/Button";
 import DynamicLink from "@/components/Link";
 import UserEdit from "@/components/Modal/Content/userEdit";
 import { useModal } from "@/hooks/useContexts";
-import { UserStats } from "@/utils/types";
+import { UserStats } from "@/utils/types/custom";
 import { User } from "@/utils/types/tables";
 
 const UserProfileActions = ({ user, stats }: { user: User; stats: UserStats }): JSX.Element => {

@@ -242,7 +242,7 @@ const seed = async (): Promise<void> => {
     if (!firstAudit) return;
 
     const userIds: string[] = [];
-    const allActions: { userId: string; actionId: string; createdAt: Date }[] = [];
+    const allActions: { userId: string; actionId: string; createdAt: string }[] = [];
     firstAudit.auditMemberships.forEach((membership) => {
       userIds.push(membership.user_id);
       membership.actions.forEach((a) =>
@@ -254,7 +254,7 @@ const seed = async (): Promise<void> => {
       );
     });
 
-    const actionsBroadcast: { user_id: string; action_id: string; created_at: Date }[] = [];
+    const actionsBroadcast: { user_id: string; action_id: string; created_at: string }[] = [];
     for (const userId of userIds) {
       for (const a of allActions) {
         if (a.userId !== userId) {
@@ -359,7 +359,7 @@ const seed = async (): Promise<void> => {
         {
           type: ActionEnum.OWNER_LOCKED,
           membership_id: memberships[0].id,
-          created_at: new Date(new Date().getTime() - 1000),
+          created_at: new Date(new Date().getTime() - 1000).toDateString(),
         },
         {
           type: ActionEnum.AUDITOR_TERMS_REJECTED,
@@ -416,7 +416,7 @@ const seed = async (): Promise<void> => {
         {
           type: ActionEnum.OWNER_LOCKED,
           membership_id: memberships[0].id,
-          created_at: new Date(new Date().getTime() - 1000),
+          created_at: new Date(new Date().getTime() - 1000).toDateString(),
         },
         {
           type: ActionEnum.AUDITOR_TERMS_REJECTED,
@@ -482,27 +482,27 @@ const seed = async (): Promise<void> => {
         {
           type: ActionEnum.OWNER_LOCKED,
           membership_id: memberships[0].id,
-          created_at: new Date(new Date().getTime() - 4000),
+          created_at: new Date(new Date().getTime() - 4000).toDateString(),
         },
         {
           type: ActionEnum.OWNER_FINALIZED,
           membership_id: memberships[0].id,
-          created_at: new Date(new Date().getTime() - 2000),
+          created_at: new Date(new Date().getTime() - 2000).toDateString(),
         },
         {
           type: ActionEnum.AUDITOR_TERMS_APPROVED,
           membership_id: memberships[1].id,
-          created_at: new Date(new Date().getTime() - 3600),
+          created_at: new Date(new Date().getTime() - 3600).toDateString(),
         },
         {
           type: ActionEnum.AUDITOR_TERMS_APPROVED,
           membership_id: memberships[2].id,
-          created_at: new Date(new Date().getTime() - 3500),
+          created_at: new Date(new Date().getTime() - 3500).toDateString(),
         },
         {
           type: ActionEnum.AUDITOR_FINDINGS,
           membership_id: memberships[2].id,
-          created_at: new Date(new Date().getTime() - 3000),
+          created_at: new Date(new Date().getTime() - 3000).toDateString(),
         },
       ]);
     });
@@ -564,32 +564,32 @@ const seed = async (): Promise<void> => {
         {
           type: ActionEnum.OWNER_LOCKED,
           membership_id: memberships[0].id,
-          created_at: new Date(new Date().getTime() - 4000),
+          created_at: new Date(new Date().getTime() - 4000).toDateString(),
         },
         {
           type: ActionEnum.OWNER_FINALIZED,
           membership_id: memberships[0].id,
-          created_at: new Date(new Date().getTime() - 2000),
+          created_at: new Date(new Date().getTime() - 2000).toDateString(),
         },
         {
           type: ActionEnum.AUDITOR_TERMS_APPROVED,
           membership_id: memberships[1].id,
-          created_at: new Date(new Date().getTime() - 3600),
+          created_at: new Date(new Date().getTime() - 3600).toDateString(),
         },
         {
           type: ActionEnum.AUDITOR_FINDINGS,
           membership_id: memberships[1].id,
-          created_at: new Date(new Date().getTime() - 1000),
+          created_at: new Date(new Date().getTime() - 1000).toDateString(),
         },
         {
           type: ActionEnum.AUDITOR_TERMS_APPROVED,
           membership_id: memberships[2].id,
-          created_at: new Date(new Date().getTime() - 3500),
+          created_at: new Date(new Date().getTime() - 3500).toDateString(),
         },
         {
           type: ActionEnum.AUDITOR_FINDINGS,
           membership_id: memberships[2].id,
-          created_at: new Date(new Date().getTime() - 3000),
+          created_at: new Date(new Date().getTime() - 3000).toDateString(),
         },
       ]);
     });
@@ -653,32 +653,32 @@ that needs to come from on-chain",
         {
           type: ActionEnum.OWNER_LOCKED,
           membership_id: memberships[0].id,
-          created_at: new Date(new Date().getTime() - 4000),
+          created_at: new Date(new Date().getTime() - 4000).toDateString(),
         },
         {
           type: ActionEnum.OWNER_FINALIZED,
           membership_id: memberships[0].id,
-          created_at: new Date(new Date().getTime() - 2000),
+          created_at: new Date(new Date().getTime() - 2000).toDateString(),
         },
         {
           type: ActionEnum.AUDITOR_TERMS_APPROVED,
           membership_id: memberships[1].id,
-          created_at: new Date(new Date().getTime() - 3600),
+          created_at: new Date(new Date().getTime() - 3600).toDateString(),
         },
         {
           type: ActionEnum.AUDITOR_FINDINGS,
           membership_id: memberships[1].id,
-          created_at: new Date(new Date().getTime() - 1000),
+          created_at: new Date(new Date().getTime() - 1000).toDateString(),
         },
         {
           type: ActionEnum.AUDITOR_TERMS_APPROVED,
           membership_id: memberships[2].id,
-          created_at: new Date(new Date().getTime() - 3500),
+          created_at: new Date(new Date().getTime() - 3500).toDateString(),
         },
         {
           type: ActionEnum.AUDITOR_FINDINGS,
           membership_id: memberships[2].id,
-          created_at: new Date(new Date().getTime() - 3000),
+          created_at: new Date(new Date().getTime() - 3000).toDateString(),
         },
       ]);
     });

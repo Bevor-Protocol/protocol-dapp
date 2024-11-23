@@ -2,11 +2,10 @@ import BlobService from "@/actions/blob/blob.service";
 import NotificationService from "@/actions/notification/notification.service";
 import RoleService from "@/actions/roles/roles.service";
 import { handleErrors } from "@/utils/decorators";
-import { ResponseI } from "@/utils/types";
+import { ResponseI } from "@/utils/types/api";
 import { ActionEnum, AuditStatusEnum, RoleTypeEnum } from "@/utils/types/enum";
 import { Audit, User } from "@/utils/types/tables";
 import { auditFormSchema, parseForm } from "@/utils/validations";
-import { revalidatePath } from "next/cache";
 import { z } from "zod";
 import AuditService from "../audit.service";
 import AuditorService from "../auditor/auditor.service";
@@ -106,7 +105,6 @@ class OwnerController {
       this.notificationService.createAndBroadcastAction(membership, ActionEnum.OWNER_EDITED);
     }
 
-    revalidatePath(`/audits/view/${auditId}`, "page");
     return { success: true, data: true };
   }
 
@@ -128,7 +126,6 @@ class OwnerController {
 
     this.notificationService.createAndBroadcastAction(membership, ActionEnum.OWNER_LOCKED);
 
-    revalidatePath(`/audits/view/${auditId}`, "page");
     return { success: true, data: true };
   }
 
@@ -148,8 +145,6 @@ class OwnerController {
     await this.ownerService.openAudit(auditId);
 
     this.notificationService.createAndBroadcastAction(membership, ActionEnum.OWNER_OPENED);
-
-    revalidatePath(`/audits/view/${auditId}`, "page");
     return { success: true, data: true };
   }
 
@@ -167,8 +162,6 @@ class OwnerController {
     if (auditorsApprove.length > 0) {
       this.notificationService.createAndBroadcastAction(membership, ActionEnum.OWNER_APPROVED);
     }
-
-    revalidatePath(`/audits/view/${auditId}`, "page");
 
     return {
       success: true,

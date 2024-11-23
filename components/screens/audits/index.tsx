@@ -1,6 +1,5 @@
 "use client";
 
-import { useQuery } from "@tanstack/react-query";
 import { useState } from "react";
 
 import { auditAction } from "@/actions";
@@ -8,8 +7,9 @@ import { AuditCard } from "@/components/Audit";
 import { Column, Row } from "@/components/Box";
 import { Toggle } from "@/components/Toggle";
 import { AUDITS } from "@/constants/queryKeys";
+import { useQueryWithHydration } from "@/hooks/useQueryWithHydration";
 import { AuditStatusEnum } from "@/utils/types/enum";
-import { AuditDetailedI } from "@/utils/types/prisma";
+import { AuditWithOwnerSecure } from "@/utils/types/relations";
 
 const statusMapper = {
   [AuditStatusEnum.DISCOVERY]: "open",
@@ -27,14 +27,13 @@ const statusOrder = [
   AuditStatusEnum.FINALIZED,
 ];
 
-const Audits = ({ initialData }: { initialData: AuditDetailedI[] }): JSX.Element => {
+const Audits = ({ initialData }: { initialData: AuditWithOwnerSecure[] }): JSX.Element => {
   const [display, setDisplay] = useState<AuditStatusEnum>(AuditStatusEnum.DISCOVERY);
 
-  const { data, isPending } = useQuery({
+  const { data, loading } = useQueryWithHydration({
     queryKey: [AUDITS, display],
-    queryFn: () => auditAction.getAuditsDetailed(display),
+    queryFct: () => auditAction.getAuditsDetailed(display),
     initialData,
-    refetchOnMount: false,
   });
 
   return (
@@ -49,7 +48,7 @@ const Audits = ({ initialData }: { initialData: AuditDetailedI[] }): JSX.Element
           />
         ))}
       </Row>
-      {!isPending && (
+      {!loading && (
         <Column className="gap-4 justify-center items-center w-full">
           {data.length == 0 && <p>Currently no {statusMapper[display]} audits</p>}
           {data.map((audit) => (

@@ -6,12 +6,12 @@ import { usePanel } from "@/hooks/useContexts";
 import { cn } from "@/utils";
 import { timeSince } from "@/utils/dates";
 import { ActionEnum } from "@/utils/types/enum";
-import { UserNotificationI } from "@/utils/types/prisma";
+import { UserNotificationsDetails } from "@/utils/types/relations";
 
 export const NotificationPanel = ({
   notifications,
 }: {
-  notifications: Record<string, { meta: string; notifications: UserNotificationI[] }>;
+  notifications: Record<string, { meta: string; notifications: UserNotificationsDetails[] }>;
 }): JSX.Element => {
   const { hide } = usePanel();
 
@@ -30,7 +30,7 @@ export const NotificationPanel = ({
                 <Column>
                   {data.notifications.map((notification) => (
                     <div key={notification.id}>
-                      <AuditorItemSimple auditor={notification.action.membership.user} />
+                      <AuditorItemSimple auditor={notification.action.auditMembership.user} />
                       <Row className="justify-between items-center">
                         <Row className="bg-dark shadow rounded-lg p-1 w-fit text-xs items-center gap-1 m-1">
                           <span
@@ -71,7 +71,7 @@ export const NotificationPanel = ({
                           </span>
                         </Row>
                         <div className="text-xs text-white/60">
-                          {timeSince(notification.createdAt)}
+                          {timeSince(notification.created_at)}
                         </div>
                       </Row>
                     </div>

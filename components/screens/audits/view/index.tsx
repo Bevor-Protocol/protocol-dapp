@@ -6,33 +6,39 @@ import { Loader } from "@/components/Loader";
 import { AvailableTokens } from "@/constants/web3";
 import { trimAddress } from "@/utils/formatters";
 import { AuditStatusEnum, MembershipStatusEnum, RoleTypeEnum } from "@/utils/types/enum";
-import { AuditI } from "@/utils/types/prisma";
+import { AuditWithOwnerSecure } from "@/utils/types/relations";
 import { User } from "@/utils/types/tables";
 import { Suspense } from "react";
 import AuditDashboardActions from "./actions";
 
-const AuditPage = ({ audit, user }: { audit: AuditI; user: User | null }): JSX.Element => {
-  const verifiedAuditors = audit.memberships.filter(
+const AuditPage = ({
+  audit,
+  user,
+}: {
+  audit: AuditWithOwnerSecure;
+  user: User | undefined;
+}): JSX.Element => {
+  const verifiedAuditors = audit.auditMemberships.filter(
     (member) =>
       member.status == MembershipStatusEnum.VERIFIED &&
       member.role === RoleTypeEnum.AUDITOR &&
-      member.isActive,
+      member.is_active,
   );
-  const requestedAuditors = audit.memberships.filter(
+  const requestedAuditors = audit.auditMemberships.filter(
     (member) =>
       member.status == MembershipStatusEnum.REQUESTED &&
       member.role === RoleTypeEnum.AUDITOR &&
-      member.isActive,
+      member.is_active,
   );
-  const rejectedAuditors = audit.memberships.filter(
+  const rejectedAuditors = audit.auditMemberships.filter(
     (member) =>
       member.status == MembershipStatusEnum.REJECTED && member.role === RoleTypeEnum.AUDITOR,
   );
 
-  const attestationPending = verifiedAuditors.filter((member) => !member.attestedTerms);
-  const attestationAccepted = verifiedAuditors.filter((member) => member.acceptedTerms);
+  const attestationPending = verifiedAuditors.filter((member) => !member.attested_terms);
+  const attestationAccepted = verifiedAuditors.filter((member) => member.accepted_terms);
   const attestationRejected = verifiedAuditors.filter(
-    (member) => member.attestedTerms && !member.acceptedTerms,
+    (member) => member.attested_terms && !member.accepted_terms,
   );
 
   const token = AvailableTokens.Localhost.find((t) => t.address == audit.token);
@@ -198,7 +204,7 @@ const AuditPage = ({ audit, user }: { audit: AuditI; user: User | null }): JSX.E
           <Row className="gap-4 text-sm text-white/60">
             <div className="inline-block w-36 text-right">Created: </div>
             <div className="flex-1 text-right">
-              {new Date(audit.createdAt).toLocaleDateString()}
+              {new Date(audit.created_at).toLocaleDateString()}
             </div>
           </Row>
         </div>

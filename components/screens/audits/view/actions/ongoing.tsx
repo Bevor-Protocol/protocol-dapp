@@ -6,10 +6,10 @@ import { Button } from "@/components/Button";
 import UploadFindings from "@/components/Modal/Content/uploadFindings";
 import * as Tooltip from "@/components/Tooltip";
 import { useModal } from "@/hooks/useContexts";
-import { AuditStateI } from "@/utils/types";
-import { AuditI } from "@/utils/types/prisma";
+import { AuditState } from "@/utils/types/custom";
 
 import RevealAudit from "@/components/Modal/Content/onchain/revealAudit";
+import { AuditWithOwnerSecure } from "@/utils/types/relations";
 import { User } from "@/utils/types/tables";
 
 const AuditorSubmitFindings = ({
@@ -74,7 +74,7 @@ const OwnerLockStake = ({
   // disabled,
   // setDisabled,
 }: {
-  audit: AuditI;
+  audit: AuditWithOwnerSecure;
   user: User;
   // disabled: boolean;
   // setDisabled: React.Dispatch<React.SetStateAction<boolean>>;
@@ -115,8 +115,8 @@ const AuditOngoingActions = ({
   state,
 }: {
   user: User;
-  audit: AuditI;
-  state: AuditStateI;
+  audit: AuditWithOwnerSecure;
+  state: AuditState;
 }): JSX.Element => {
   if (state.isAuditAuditor) {
     return (

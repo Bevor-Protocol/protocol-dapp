@@ -11,9 +11,10 @@ import RequestsEdit from "@/components/Modal/Content/requestsEdit";
 import ErrorToast from "@/components/Toast/Content/error";
 import * as Tooltip from "@/components/Tooltip";
 import { useModal, useToast } from "@/hooks/useContexts";
-import { AuditStateI } from "@/utils/types";
-import { AuditI } from "@/utils/types/prisma";
+import { AuditState } from "@/utils/types/custom";
+import { AuditWithOwnerSecure } from "@/utils/types/relations";
 import { User } from "@/utils/types/tables";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 
 const AuditeeEditAudit = ({ id }: { id: string }): JSX.Element => {
@@ -40,7 +41,7 @@ const AuditeeManageRequest = ({
   audit,
   disabled,
 }: {
-  audit: AuditI;
+  audit: AuditWithOwnerSecure;
   disabled: boolean;
 }): JSX.Element => {
   const { show } = useModal();
@@ -81,6 +82,7 @@ const AuditorRemoveRequest = ({
   setDisabled: React.Dispatch<React.SetStateAction<boolean>>;
 }): JSX.Element => {
   const { show } = useToast();
+  const router = useRouter();
 
   const { mutate } = useMutation({
     mutationFn: () => auditAction.auditor.leaveAudit(auditId),
@@ -88,7 +90,7 @@ const AuditorRemoveRequest = ({
     onError: (error) => console.log(error),
     onSuccess: (response) => {
       if (response.success) {
-        setDisabled(false);
+        router.refresh();
       } else {
         show({
           content: <ErrorToast text={response.error.message} />,
@@ -129,13 +131,16 @@ const AuditorAddRequest = ({
   setDisabled: React.Dispatch<React.SetStateAction<boolean>>;
 }): JSX.Element => {
   const { show } = useToast();
+  const router = useRouter();
+
   const { mutate } = useMutation({
     mutationFn: () => auditAction.auditor.addRequest(auditId),
     onMutate: () => setDisabled(true),
     onSuccess: (response) => {
       if (response.success) {
-        setDisabled(false);
+        router.refresh();
       } else {
+        setDisabled(false);
         show({
           content: <ErrorToast text={response.error.message} />,
           autoClose: true,
@@ -176,14 +181,16 @@ const AuditorRemoveVerification = ({
   setDisabled: React.Dispatch<React.SetStateAction<boolean>>;
 }): JSX.Element => {
   const { show } = useToast();
+  const router = useRouter();
 
   const { mutate } = useMutation({
     mutationFn: () => auditAction.auditor.leaveAudit(auditId),
     onMutate: () => setDisabled(true),
     onSuccess: (response) => {
       if (response.success) {
-        setDisabled(false);
+        router.refresh();
       } else {
+        setDisabled(false);
         show({
           content: <ErrorToast text={response.error.message} />,
           autoClose: true,
@@ -247,14 +254,16 @@ const AuditeeLockAudit = ({
   setDisabled: React.Dispatch<React.SetStateAction<boolean>>;
 }): JSX.Element => {
   const { show } = useToast();
+  const router = useRouter();
 
   const { mutate } = useMutation({
     mutationFn: () => auditAction.owner.lockAudit(auditId),
     onMutate: () => setDisabled(true),
     onSuccess: (response) => {
       if (response.success) {
-        setDisabled(false);
+        router.refresh();
       } else {
+        setDisabled(false);
         show({
           content: <ErrorToast text={response.error.message} />,
           autoClose: true,
@@ -294,8 +303,8 @@ const AuditOpenActions = ({
   state,
 }: {
   user: User;
-  audit: AuditI;
-  state: AuditStateI;
+  audit: AuditWithOwnerSecure;
+  state: AuditState;
 }): JSX.Element => {
   // All of the possible audit actions to take for OPEN audits.
 

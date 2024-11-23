@@ -5,9 +5,9 @@ import { usePanel } from "@/hooks/useContexts";
 import { cn } from "@/utils";
 import { timeSince } from "@/utils/dates";
 import { ActionEnum, RoleTypeEnum } from "@/utils/types/enum";
-import { ActionI } from "@/utils/types/prisma";
+import { ActionWithMembership } from "@/utils/types/relations";
 
-export const HistoryPanel = ({ actions }: { actions: ActionI[] }): JSX.Element => {
+export const HistoryPanel = ({ actions }: { actions: ActionWithMembership[] }): JSX.Element => {
   const { hide } = usePanel();
 
   return (
@@ -21,11 +21,11 @@ export const HistoryPanel = ({ actions }: { actions: ActionI[] }): JSX.Element =
           <div key={action.id} className="pr-4">
             <Row className="justify-between items-center">
               <div className="text-sm">
-                {action.membership.role == RoleTypeEnum.OWNER ? "Protocol Owner" : "Auditor"}
+                {action.auditMembership.role == RoleTypeEnum.OWNER ? "Protocol Owner" : "Auditor"}
               </div>
-              <div className="text-xs text-white/60">{timeSince(action.createdAt)}</div>
+              <div className="text-xs text-white/60">{timeSince(action.created_at)}</div>
             </Row>
-            <AuditorItemSimple auditor={action.membership.user} />
+            <AuditorItemSimple auditor={action.auditMembership.user} />
             <Row className="bg-dark shadow rounded-lg p-1 w-fit text-xs items-center gap-1 m-1">
               <span
                 className={cn(

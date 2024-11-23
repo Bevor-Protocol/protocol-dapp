@@ -15,7 +15,7 @@ import { AvailableTokens } from "@/constants/web3";
 import { useDebounce } from "@/hooks/useDebounce";
 import { cn } from "@/utils";
 import { MembershipStatusEnum } from "@/utils/types/enum";
-import { AuditI } from "@/utils/types/prisma";
+import { AuditWithOwnerSecure } from "@/utils/types/relations";
 import { User } from "@/utils/types/tables";
 
 const AuditFormEntries = ({
@@ -31,7 +31,7 @@ const AuditFormEntries = ({
   disabled: boolean;
   auditors: User[];
   setAuditors: React.Dispatch<React.SetStateAction<User[]>>;
-  initialState?: AuditI;
+  initialState?: AuditWithOwnerSecure;
   initialAuditors?: User[];
   errors: Record<string, string>;
 }): JSX.Element => {
@@ -78,7 +78,7 @@ const AuditFormEntries = ({
     // 2) Filter the requested or rejected auditors from the search results -> managed separately.
     const chosenAuditors = auditors.map((auditor) => auditor.id);
     const alreadyRequested =
-      initialState?.memberships
+      initialState?.auditMemberships
         .filter(
           (member) =>
             member.status === MembershipStatusEnum.REQUESTED ||
@@ -101,7 +101,7 @@ const AuditFormEntries = ({
   const wishlistShow = useMemo(() => {
     const chosenAuditors = auditors.map((auditor) => auditor.id);
     const alreadyRequested =
-      initialState?.memberships
+      initialState?.auditMemberships
         .filter(
           (member) =>
             member.status === MembershipStatusEnum.REQUESTED ||

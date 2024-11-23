@@ -32,7 +32,7 @@ const Fetcher = async (): Promise<JSX.Element> => {
     );
   }
 
-  if (!user.ownerRole) {
+  if (!user.owner_role) {
     return (
       <Column className="items-center gap-4">
         <p>Claim the Owner role before creating an audit</p>

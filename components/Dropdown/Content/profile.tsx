@@ -12,7 +12,6 @@ import { usePanel, useSiwe } from "@/hooks/useContexts";
 import { useCopyToClipboard } from "@/hooks/useCopyToClipboard";
 import { cn } from "@/utils";
 import { trimAddress } from "@/utils/formatters";
-import { UserNotificationI } from "@/utils/types/prisma";
 import { User } from "@/utils/types/tables";
 
 const Profile = ({

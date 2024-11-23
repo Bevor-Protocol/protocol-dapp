@@ -4,7 +4,8 @@ import { auditMembership } from "@/db/schema/audit-membership.sql";
 import { notification } from "@/db/schema/notification.sql";
 import { ActionEnum } from "@/utils/types/enum";
 import { MembershipWithAudit, UserNotificationsDetails } from "@/utils/types/relations";
-import { ActionInsert, Notification, NotificationInsert } from "@/utils/types/tables";
+import { ActionInsert, Notification } from "@/utils/types/tables";
+import { QueryResult } from "@neondatabase/serverless";
 import { and, eq, inArray, not } from "drizzle-orm";
 
 class NotificationService {
@@ -48,17 +49,12 @@ class NotificationService {
 
   deleteUserAuditNotifications(userId: string, auditId: string): Promise<Notification[]> {
     const relevantActions = db
-      .$with("actions")
-      .as(
-        db
-          .select({ id: action.id })
-          .from(action)
-          .leftJoin(auditMembership, eq(action.membership_id, auditMembership.id))
-          .where(eq(auditMembership.audit_id, auditId)),
-      );
+      .select({ id: action.id })
+      .from(action)
+      .leftJoin(auditMembership, eq(action.membership_id, auditMembership.id))
+      .where(eq(auditMembership.audit_id, auditId));
 
     return db
-      .with(relevantActions)
       .delete(notification)
       .where(
         and(eq(notification.user_id, userId), inArray(notification.action_id, relevantActions)),
@@ -90,14 +86,10 @@ class NotificationService {
 
   getUserNotificationsUnreadCountByAuditId(userId: string, auditId: string): Promise<number> {
     const relevantActions = db
-      .$with("actions")
-      .as(
-        db
-          .select({ id: action.id })
-          .from(action)
-          .leftJoin(auditMembership, eq(action.membership_id, auditMembership.id))
-          .where(eq(auditMembership.audit_id, auditId)),
-      );
+      .select({ id: action.id })
+      .from(action)
+      .leftJoin(auditMembership, eq(action.membership_id, auditMembership.id))
+      .where(eq(auditMembership.audit_id, auditId));
 
     return db.$count(
       notification,
@@ -109,27 +101,21 @@ class NotificationService {
     );
   }
 
-  updateNotificationByAudit(userId: string, auditId: string): Promise<NotificationInsert[]> {
+  updateNotificationByAudit(userId: string, auditId: string): Promise<QueryResult> {
     const relevantActions = db
-      .$with("actions")
-      .as(
-        db
-          .select({ id: action.id })
-          .from(action)
-          .leftJoin(auditMembership, eq(action.membership_id, auditMembership.id))
-          .where(eq(auditMembership.audit_id, auditId)),
-      );
+      .select({ id: action.id })
+      .from(action)
+      .innerJoin(auditMembership, eq(action.membership_id, auditMembership.id))
+      .where(eq(auditMembership.audit_id, auditId));
 
     return db
-      .with(relevantActions)
       .update(notification)
       .set({
-        has_viewed: true,
+        has_viewed: not(notification.has_viewed),
       })
       .where(
         and(eq(notification.user_id, userId), inArray(notification.action_id, relevantActions)),
-      )
-      .returning();
+      );
   }
 }
 

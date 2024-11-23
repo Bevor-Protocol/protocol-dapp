@@ -2,7 +2,7 @@
 /* eslint-disable @typescript-eslint/explicit-function-return-type */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { handleErrorResponse } from "./error";
-import { ResponseI } from "./types";
+import { ResponseI } from "./types/api";
 
 export function handleErrors<T>(
   target: any,

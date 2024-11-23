@@ -1,3 +1,6 @@
+import AuditService from "@/actions/audit/audit.service";
+import AuthService from "@/actions/auth/auth.service";
+import UserService from "@/actions/user/user.service";
 import { db } from "@/db";
 import { auditMembership } from "@/db/schema/audit-membership.sql";
 import { audit } from "@/db/schema/audit.sql";
@@ -6,9 +9,6 @@ import { AuditStatusEnum, MembershipStatusEnum, RoleTypeEnum } from "@/utils/typ
 import { MembershipWithAudit } from "@/utils/types/relations";
 import { Audit, User } from "@/utils/types/tables";
 import { and, eq, ne } from "drizzle-orm";
-import AuditService from "../audit/audit.service";
-import AuthService from "../auth/auth.service";
-import UserService from "../user/user.service";
 
 class RoleService {
   constructor(

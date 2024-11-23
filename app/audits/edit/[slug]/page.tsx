@@ -61,11 +61,12 @@ const Fetcher = async ({ auditId }: { auditId: string }): Promise<JSX.Element> =
   return <AuditEditWrapper audit={audit} userId={id} />;
 };
 
-const EditAudit = ({ params }: { params: { slug: string } }): JSX.Element => {
+const EditAudit = async ({ params }: { params: { slug: string } }): Promise<JSX.Element> => {
+  const { slug } = await params;
   return (
     <section className="flex flex-col h-full items-center">
       <Suspense fallback={<LoaderFill />}>
-        <Fetcher auditId={params.slug} />
+        <Fetcher auditId={slug} />
       </Suspense>
     </section>
   );

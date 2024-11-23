@@ -3,11 +3,10 @@ import NotificationService from "@/actions/notification/notification.service";
 import RoleService from "@/actions/roles/roles.service";
 import { handleErrors } from "@/utils/decorators";
 import { ValidationError } from "@/utils/error";
-import { ResponseI } from "@/utils/types";
+import { ResponseI } from "@/utils/types/api";
 import { ActionEnum, AuditStatusEnum } from "@/utils/types/enum";
 import { AuditMembershipInsert } from "@/utils/types/tables";
 import { auditFindingsSchema, parseForm } from "@/utils/validations";
-import { revalidatePath } from "next/cache";
 import { z } from "zod";
 import AuditorService from "./auditor.service";
 
@@ -45,7 +44,6 @@ class AuditorController {
       comment,
     );
 
-    revalidatePath(`/audits/view/${auditId}`, "page");
     return { success: true, data };
   }
 
@@ -61,7 +59,6 @@ class AuditorController {
       this.notificationService.createAndBroadcastAction(membership, ActionEnum.AUDITOR_LEFT);
     }
 
-    revalidatePath(`/audits/view/${auditId}`, "page");
     return { success: true, data };
   }
 
@@ -83,7 +80,6 @@ class AuditorController {
 
     this.notificationService.createAndBroadcastAction(membership, ActionEnum.AUDITOR_FINDINGS);
 
-    revalidatePath(`/audits/view/${auditId}`, "page");
     return { success: true, data };
   }
 
@@ -94,7 +90,6 @@ class AuditorController {
 
     const data = await this.auditorService.addRequest(auditId, id);
 
-    revalidatePath(`/audits/view/${auditId}`, "page");
     return { success: true, data };
   }
 }

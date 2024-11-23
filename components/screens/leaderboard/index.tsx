@@ -1,11 +1,11 @@
 "use client";
 
-import { useQuery } from "@tanstack/react-query";
 import { useState } from "react";
 
 import { userAction } from "@/actions";
 import { Column } from "@/components/Box";
 import { LEADERBOARD } from "@/constants/queryKeys";
+import { useQueryWithHydration } from "@/hooks/useQueryWithHydration";
 import { Leaderboard } from "@/utils/types/custom";
 import LeaderboardData from "./data";
 import LeaderboardNav from "./nav";
@@ -14,11 +14,10 @@ const LeaderboardWrapper = ({ initialData }: { initialData: Leaderboard[] }): JS
   const [listSort, setListSort] = useState("name");
   const [listOrder, setListOrder] = useState<"asc" | "desc">("asc");
 
-  const { data, isLoading } = useQuery({
+  const { data, loading } = useQueryWithHydration({
     queryKey: [LEADERBOARD, listSort, listOrder],
-    queryFn: () => userAction.getLeaderboard(listSort, listOrder),
+    queryFct: () => userAction.getLeaderboard(listSort, listOrder),
     initialData,
-    refetchOnMount: false,
   });
 
   const handleSearch = (header: string): void => {
@@ -34,7 +33,7 @@ const LeaderboardWrapper = ({ initialData }: { initialData: Leaderboard[] }): JS
   return (
     <Column className="leaderboard">
       <LeaderboardNav sort={listSort} order={listOrder} handleSearch={handleSearch} />
-      <LeaderboardData data={data} isLoading={isLoading} />
+      <LeaderboardData data={data} isLoading={loading} />
     </Column>
   );
 };

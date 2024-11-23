@@ -2,7 +2,7 @@ import { Column, Row } from "@/components/Box";
 import * as Form from "@/components/Form";
 import { Icon } from "@/components/Icon";
 import { trimAddress } from "@/utils/formatters";
-import { UserStats } from "@/utils/types";
+import { UserStats } from "@/utils/types/custom";
 import { User } from "@/utils/types/tables";
 
 const UserContent = async ({

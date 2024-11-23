@@ -3,7 +3,7 @@ import Image from "next/image";
 import { notificationAction, userAction } from "@/actions";
 import { Column, Row } from "@/components/Box";
 import DynamicLink from "@/components/Link";
-import { UserNotificationI } from "@/utils/types/prisma";
+import { UserNotificationsDetails } from "@/utils/types/relations";
 import { Suspense } from "react";
 import { NavDropdown, NavMenuItems } from "./Nav/menuItems";
 import NavWeb3 from "./Nav/web3";
@@ -25,7 +25,8 @@ export const Footer = (): JSX.Element => {
 
 export const Nav = async (): Promise<JSX.Element> => {
   const { address, user } = await userAction.getCurrentUser();
-  let notifications: Record<string, { meta: string; notifications: UserNotificationI[] }> = {};
+  let notifications: Record<string, { meta: string; notifications: UserNotificationsDetails[] }> =
+    {};
   if (user) {
     notifications = await notificationAction.getUserNotifications(user.id);
   }

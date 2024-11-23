@@ -9,17 +9,23 @@ import AuditFormEntries from "@/components/Audit/client/form";
 import ErrorToast from "@/components/Toast/Content/error";
 import { useToast } from "@/hooks/useContexts";
 import { ErrorTypeEnum, MembershipStatusEnum, RoleTypeEnum } from "@/utils/types/enum";
-import { AuditI } from "@/utils/types/prisma";
+import { AuditWithOwnerSecure } from "@/utils/types/relations";
 import { User } from "@/utils/types/tables";
 
-const AuditEditWrapper = ({ audit, userId }: { audit: AuditI; userId: string }): JSX.Element => {
+const AuditEditWrapper = ({
+  audit,
+  userId,
+}: {
+  audit: AuditWithOwnerSecure;
+  userId: string;
+}): JSX.Element => {
   // only show the selected auditors that were already verified.
-  const initialAuditors = audit.memberships
+  const initialAuditors = audit.auditMemberships
     .filter(
       (member) =>
         member.status === MembershipStatusEnum.VERIFIED &&
         member.role === RoleTypeEnum.AUDITOR &&
-        member.isActive,
+        member.is_active,
     )
     .map((member) => member.user);
 

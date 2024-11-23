@@ -21,14 +21,14 @@ class WishlistService {
     });
   }
 
-  addToWishlist(requestor: string, receiver: string): Promise<QueryResult<never>> {
+  addToWishlist(requestor: string, receiver: string): Promise<QueryResult> {
     return db.insert(wishlist).values({
       receiver_id: receiver,
       sender_id: requestor,
     });
   }
 
-  removeFromWishlist(requestor: string, receiver: string): Promise<QueryResult<never>> {
+  removeFromWishlist(requestor: string, receiver: string): Promise<QueryResult> {
     return db
       .delete(wishlist)
       .where(and(eq(wishlist.receiver_id, receiver), eq(wishlist.sender_id, requestor)));
