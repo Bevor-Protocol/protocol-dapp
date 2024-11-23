@@ -1,6 +1,5 @@
-import { Pool, neonConfig } from "@neondatabase/serverless";
+import { Pool } from "@neondatabase/serverless";
 import { drizzle } from "drizzle-orm/neon-serverless";
-import ws from "ws";
 import { action } from "./schema/action.sql";
 import { auditMembership } from "./schema/audit-membership.sql";
 import { audit } from "./schema/audit.sql";
@@ -10,9 +9,9 @@ import * as relations from "./schema/relations.helpers";
 import { user } from "./schema/user.sql";
 import { wishlist } from "./schema/wishlist.sql";
 
-if (process.env.NODE_ENV !== "production") {
-  neonConfig.webSocketConstructor = ws;
-}
+// if (process.env.NODE_ENV !== "production") {
+//   neonConfig.webSocketConstructor = ws;
+// }
 
 const pool = new Pool({ connectionString: process.env.DATABASE_URL! });
 
