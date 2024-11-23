@@ -35,7 +35,7 @@ jobs:
           node-version: "18"
 
       - name: Cache Yarn dependencies
-        uses: actions/cache@v2
+        uses: actions/cache@v4
         with:
           path: node_modules
           key: ${{ runner.os }}-yarn-${{ hashFiles('yarn.lock') }}
@@ -52,12 +52,12 @@ jobs:
       - name: Build
         run: yarn build
         env:
-          DATABASE_URL: postgres://postgres:postgres@localhost:5432/postgres
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
 
       - name: Deploy DB
         run: yarn drizzle-kit migrate
         env:
-          DATABASE_URL: postgres://postgres:postgres@localhost:5432/postgres
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
 
       - name: Run Tests
         uses: cypress-io/github-action@v6
@@ -66,4 +66,4 @@ jobs:
           browser: chrome
           wait-on: "http://localhost:3000"
         env:
-          DATABASE_URL: postgres://postgres:postgres@localhost:5432/postgres
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
