@@ -12,6 +12,7 @@ import { usePanel, useSiwe } from "@/hooks/useContexts";
 import { useCopyToClipboard } from "@/hooks/useCopyToClipboard";
 import { cn } from "@/utils";
 import { trimAddress } from "@/utils/formatters";
+import { UserNotificationsDetails } from "@/utils/types/relations";
 import { User } from "@/utils/types/tables";
 
 const Profile = ({
@@ -21,8 +22,8 @@ const Profile = ({
   close,
 }: {
   address: string;
-  user: User | null;
-  notifications: Record<string, { meta: string; notifications: UserNotificationI[] }>;
+  user: User | undefined;
+  notifications: Record<string, { meta: string; notifications: UserNotificationsDetails[] }>;
   close?: () => void;
 }): JSX.Element => {
   const { chain, connector } = useAccount();

@@ -61,7 +61,9 @@ const Fetcher = async ({ auditId }: { auditId: string }): Promise<JSX.Element> =
   return <AuditEditWrapper audit={audit} userId={id} />;
 };
 
-const EditAudit = async ({ params }: { params: { slug: string } }): Promise<JSX.Element> => {
+type Params = Promise<{ slug: string }>;
+
+const EditAudit = async ({ params }: { params: Params }): Promise<JSX.Element> => {
   const { slug } = await params;
   return (
     <section className="flex flex-col h-full items-center">

@@ -61,11 +61,9 @@ const Fetcher = async ({ auditId }: { auditId: string }): Promise<JSX.Element> =
   );
 };
 
-const AuditDashboardPage = async ({
-  params,
-}: {
-  params: { slug: string };
-}): Promise<JSX.Element> => {
+type Params = Promise<{ slug: string }>;
+
+const AuditDashboardPage = async ({ params }: { params: Params }): Promise<JSX.Element> => {
   const { slug } = await params;
   return (
     <section className="flex flex-col h-full items-center">

@@ -14,6 +14,7 @@ import { useModal } from "@/hooks/useContexts";
 import { cn } from "@/utils";
 import { trimAddress } from "@/utils/formatters";
 import { getNetworkImage } from "@/utils/helpers";
+import { UserNotificationsDetails } from "@/utils/types/relations";
 import { User } from "@/utils/types/tables";
 
 const Web3Network = (): JSX.Element => {
@@ -60,8 +61,8 @@ const Web3Profile = ({
   notifications,
 }: {
   address: string;
-  user: User | null;
-  notifications: Record<string, { meta: string; notifications: UserNotificationI[] }>;
+  user: User | undefined;
+  notifications: Record<string, { meta: string; notifications: UserNotificationsDetails[] }>;
 }): JSX.Element => {
   return (
     <Dropdown.Main
@@ -92,8 +93,8 @@ const Web3Holder = ({
   notifications,
 }: {
   address: string;
-  user: User | null;
-  notifications: Record<string, { meta: string; notifications: UserNotificationI[] }>;
+  user: User | undefined;
+  notifications: Record<string, { meta: string; notifications: UserNotificationsDetails[] }>;
 }): JSX.Element => {
   // need to pass both because a user can get authenticated via SIWE,
   // but not have an account yet.

@@ -19,9 +19,10 @@ import { parseUnits } from "viem";
 import { AvailableTokens } from "@/constants/web3";
 import BevorABI from "@/contracts/abis/BevorProtocol";
 import ERC20ABI from "@/contracts/abis/ERC20Token";
-import { Audit, User } from "@/utils/types/tables";
+import { AuditWithOwnerSecure } from "@/utils/types/relations";
+import { User } from "@/utils/types/tables";
 
-const RevealAudit = ({ audit, user }: { audit: Audit; user: User }): JSX.Element => {
+const RevealAudit = ({ audit, user }: { audit: AuditWithOwnerSecure; user: User }): JSX.Element => {
   const { hide } = useModal();
   const client = useClient();
   const [step, setStep] = useState(0);
