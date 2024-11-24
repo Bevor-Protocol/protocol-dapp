@@ -6,6 +6,9 @@ concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
+env:
+  DOPPLER_TOKEN: ${{ secrets.DOPPLER_TOKEN }}
+
 jobs:
   setup-and-build:
     permissions: write-all
