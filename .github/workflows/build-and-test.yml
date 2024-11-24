@@ -33,6 +33,7 @@ jobs:
           parent: dev/pete # optional (defaults to your primary branch)
           branch_name: preview/pr-${{ github.event.number }}-${{ steps.branch-name.outputs.current_branch }}
           username: bevor
+          database: bevor
           api_key: ${{ env.NEON_API_KEY }}
 
       - name: Cache Yarn dependencies
@@ -57,7 +58,8 @@ jobs:
 
       - name: Deploy DB
         run: |
-          echo ${{ steps.create-branch.outputs }}
+          echo ${{ steps.create-branch.outputs.host }}
+          echo ${{ steps.create-branch.outputs.branch_id }}
           echo ${{ steps.create-branch.outputs.db_url }}?sslmode=require
           yarn drizzle-kit migrate
         env:
