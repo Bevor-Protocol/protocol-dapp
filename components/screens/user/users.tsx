@@ -5,6 +5,7 @@ import { useState } from "react";
 import { userAction } from "@/actions";
 import { Row } from "@/components/Box";
 import * as Form from "@/components/Form";
+import { Loader } from "@/components/Loader";
 import { UserCard } from "@/components/User";
 import { USERS } from "@/constants/queryKeys";
 import { useDebounce } from "@/hooks/useDebounce";
@@ -62,12 +63,18 @@ const UsersWrapper = ({ initialData }: { initialData: User[] }): JSX.Element => 
           </li>
         </ul>
       </Row>
-      <div className="grid grid-cols-4 *:w-full gap-4 w-full">
-        {data?.map((user, ind) => (
-          <UserCard user={user} key={user.id + ind} isLoading={timeoutPending || loading} />
-        ))}
-        {data?.length === 0 && <p className="px-1 text-center col-span-5">No results to show</p>}
-      </div>
+      {/* We'll unmount here since the # of data will change, and this prevents flashing */}
+      {loading || timeoutPending ? (
+        <Loader className="h-12 w-12" />
+      ) : data.length === 0 ? (
+        <p className="px-1 text-center col-span-5">No results to show</p>
+      ) : (
+        <div className="grid grid-cols-4 *:w-full gap-4 w-full">
+          {data.map((user) => (
+            <UserCard user={user} key={user.id} />
+          ))}
+        </div>
+      )}
     </>
   );
 };
