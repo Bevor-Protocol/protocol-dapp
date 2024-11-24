@@ -6,10 +6,6 @@ concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
-env:
-  DOPPLER_TOKEN: ${{ secrets.DOPPLER_TOKEN }}
-  NEON_API_KEY: ${{ secrets.NEON_API_KEY }}
-
 jobs:
   setup-and-build:
     permissions: write-all
@@ -35,7 +31,7 @@ jobs:
           branch_name: preview/pr-${{ github.event.number }}-${{ steps.branch-name.outputs.current_branch }}
           username: bevor
           database: bevor
-          api_key: ${{ env.NEON_API_KEY }}
+          api_key: ${{ secrets.NEON_API_KEY }}
 
       - name: Cache Yarn dependencies
         uses: actions/cache@v4
@@ -49,7 +45,8 @@ jobs:
       - name: Install dependencies
         run: yarn install
 
-      - uses: dopplerhq/cli-action@v3
+      # not actually using this other than DATABASE_URL yet
+      # - uses: dopplerhq/cli-action@v3
 
       # Build the application
       - name: Build
@@ -62,9 +59,11 @@ jobs:
           echo ${{ steps.create-branch.outputs.host }}
           echo ${{ steps.create-branch.outputs.branch_id }}
           echo ${{ steps.create-branch.outputs.db_url }}?sslmode=require
+
           yarn drizzle-kit migrate
         env:
           DATABASE_URL: ${{ steps.create-branch.outputs.db_url }}?sslmode=require
+          # DOPPLER_TOKEN: ${{ secrets.DOPPLER_TOKEN }}
 
       - name: Comment on Pull Request
         uses: thollander/actions-comment-pull-request@v2
@@ -82,3 +81,4 @@ jobs:
       #     wait-on: "http://localhost:3000"
       #   env:
       #     DATABASE_URL: ${{ steps.create-branch.outputs.db_url }}?sslmode=require
+      #     DOPPLER_TOKEN: ${{ secrets.DOPPLER_TOKEN }}

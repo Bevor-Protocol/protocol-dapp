@@ -12,7 +12,7 @@ import LeaderboardNav from "./nav";
 
 const LeaderboardWrapper = ({ initialData }: { initialData: Leaderboard[] }): JSX.Element => {
   const [listSort, setListSort] = useState("name");
-  const [listOrder, setListOrder] = useState<"asc" | "desc">("asc");
+  const [listOrder, setListOrder] = useState<"asc" | "desc">("desc");
 
   const { data, loading } = useQueryWithHydration({
     queryKey: [LEADERBOARD, listSort, listOrder],
@@ -26,7 +26,7 @@ const LeaderboardWrapper = ({ initialData }: { initialData: Leaderboard[] }): JS
       setListOrder(newOrder);
     } else {
       setListSort(header);
-      setListOrder("asc");
+      setListOrder("desc");
     }
   };
 

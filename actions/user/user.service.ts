@@ -48,10 +48,10 @@ class UserService {
     return db.update(user).set(data).where(eq(user.id, id));
   }
 
-  getLeaderboard(key: string = "name", order: "asc" | "desc" = "asc"): Promise<Leaderboard[]> {
+  getLeaderboard(key: string = "name", order: "asc" | "desc" = "desc"): Promise<Leaderboard[]> {
     // Can't currently sort on aggregations or further filtered counts of relations...
     // Handle these more unique cases post-query.
-    const orderFct = order == "desc" ? desc : asc;
+    const orderFct = order === "desc" ? desc : asc;
     const audits = db
       .select()
       .from(audit)
@@ -118,8 +118,8 @@ class UserService {
       .groupBy(({ id }) => id)
       .orderBy((row) => {
         switch (key) {
-          case "date":
-            return orderFct(row.created_at);
+          case "name":
+            return [orderFct(row.name), orderFct(row.address)];
           case "value_potential":
             return orderFct(row.stats.value_potential);
           case "value_completed":
@@ -131,7 +131,7 @@ class UserService {
           case "num_wishlist":
             return orderFct(row.stats.num_wishlist);
           default:
-            return [orderFct(row.name), orderFct(row.address)];
+            return orderFct(row.created_at);
         }
       });
   }

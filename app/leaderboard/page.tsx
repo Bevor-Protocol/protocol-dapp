@@ -6,7 +6,7 @@ import { LoaderFill } from "@/components/Loader";
 import LeaderboardWrapper from "@/components/screens/leaderboard";
 
 const Fetcher = async (): Promise<JSX.Element> => {
-  const data = await userAction.getLeaderboard("name", "asc");
+  const data = await userAction.getLeaderboard("name", "desc");
   return <LeaderboardWrapper initialData={data} />;
 };
 
