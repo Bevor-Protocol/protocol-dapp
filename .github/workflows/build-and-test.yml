@@ -57,6 +57,7 @@ jobs:
 
       - name: Deploy DB
         run: |
+          echo ${{ steps.create-branch.outputs }}
           echo ${{ steps.create-branch.outputs.db_url }}?sslmode=require
           yarn drizzle-kit migrate
         env:
