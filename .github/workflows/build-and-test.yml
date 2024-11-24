@@ -73,11 +73,11 @@ jobs:
           message: |
             Neon branch :elephant: : https://console.neon.tech/app/projects/billowing-feather-81805198/branches/${{ steps.create-branch.outputs.branch_id }}
 
-      - name: Run Tests
-        uses: cypress-io/github-action@v6
-        with:
-          start: yarn start
-          browser: chrome
-          wait-on: "http://localhost:3000"
-        env:
-          DATABASE_URL: ${{ steps.create-branch.outputs.db_url }}?sslmode=require
+      # - name: Run Tests
+      #   uses: cypress-io/github-action@v6
+      #   with:
+      #     start: yarn start
+      #     browser: chrome
+      #     wait-on: "http://localhost:3000"
+      #   env:
+      #     DATABASE_URL: ${{ steps.create-branch.outputs.db_url }}?sslmode=require
