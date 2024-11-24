@@ -11,18 +11,18 @@ import { Column, Row } from "@/components/Box";
 import { Button } from "@/components/Button";
 import { useModal } from "@/hooks/useContexts";
 import { useContractWriteListen } from "@/hooks/useContractWriteListen";
-import { AuditI } from "@/utils/types/prisma";
 
 import { Loader } from "@/components/Loader";
 import BevorABI from "@/contracts/abis/BevorProtocol";
 import { cn } from "@/utils";
+import { AuditWithOwnerSecure } from "@/utils/types/relations";
 import { useMemo } from "react";
 
 const InitiateAudit = ({
   audit,
   setDisabled,
 }: {
-  audit: AuditI;
+  audit: AuditWithOwnerSecure;
   setDisabled: React.Dispatch<React.SetStateAction<boolean>>;
 }): JSX.Element => {
   const { hide } = useModal();
@@ -35,8 +35,8 @@ const InitiateAudit = ({
   });
 
   const args = useMemo(() => {
-    const auditorsPass: Address[] = audit.memberships
-      .filter((member) => member.acceptedTerms)
+    const auditorsPass: Address[] = audit.auditMemberships
+      .filter((member) => member.accepted_terms)
       .map((member) => member.user.address as Address);
     const DETAILS = audit
       .details!.substring(audit.details!.lastIndexOf("/") + 1)

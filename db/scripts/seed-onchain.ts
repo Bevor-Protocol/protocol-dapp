@@ -1,8 +1,10 @@
-import { prisma } from "@/db/prisma.server";
+import { db } from "@/db";
 import { ethers } from "ethers";
 
 import BevorProtocolAbi from "@/contracts/abis/BevorProtocol";
 import ERC20Abi from "@/contracts/abis/ERC20Token";
+import { eq } from "drizzle-orm";
+import { audit } from "../schema/audit.sql";
 
 const seed = async (): Promise<void> => {
   const provider = new ethers.JsonRpcProvider();
@@ -27,8 +29,6 @@ const seed = async (): Promise<void> => {
   // and retrospectively add on-chain info.
 
   let auditId;
-  let tokenId;
-
   let amount = 20_000;
 
   auditId = await bevorContract.generateAuditId(
@@ -57,15 +57,10 @@ const seed = async (): Promise<void> => {
       "I am salt",
     );
 
-  await prisma.audit.update({
-    where: {
-      id: "number1",
-    },
-    data: {
-      onchainAuditInfoId: BigInt(auditId as bigint).toString(),
-    },
-  });
-
+  await db
+    .update(audit)
+    .set({ onchain_audit_info_id: BigInt(auditId as bigint).toString() })
+    .where(eq(audit.title, "Require Onchain 1"));
   //////////////////////////////////////////////////////////////
   //////////////////////////////////////////////////////////////
   //////////////////////////////////////////////////////////////
@@ -96,14 +91,10 @@ const seed = async (): Promise<void> => {
       "I am salty",
     );
 
-  await prisma.audit.update({
-    where: {
-      id: "number2",
-    },
-    data: {
-      onchainAuditInfoId: BigInt(auditId as bigint).toString(),
-    },
-  });
+  await db
+    .update(audit)
+    .set({ onchain_audit_info_id: BigInt(auditId as bigint).toString() })
+    .where(eq(audit.title, "Require Onchain 2"));
 
   //////////////////////////////////////////////////////////////
   //////////////////////////////////////////////////////////////
@@ -136,7 +127,7 @@ const seed = async (): Promise<void> => {
       "I am salt",
     );
 
-  tokenId = await bevorContract.generateTokenId(auditId, [
+  const tokenId = await bevorContract.generateTokenId(auditId, [
     "example-q0D5zQMv65hQJ4mWfJfstcnagI5kUI",
     "example-q0D5zQMv65hQJ4mWfJfstcnagI5kUI",
   ]);
@@ -154,85 +145,20 @@ const seed = async (): Promise<void> => {
       auditId,
     );
 
-  await prisma.audit.update({
-    where: {
-      id: "number3",
-    },
-    data: {
-      onchainAuditInfoId: BigInt(auditId as bigint).toString(),
-      onchainNftId: BigInt(tokenId as bigint).toString(),
-    },
-  });
-
-  //////////////////////////////////////////////////////////////
-  //////////////////////////////////////////////////////////////
-  //////////////////////////////////////////////////////////////
-
-  // this one is finicky as we can't simulate a finished contract by fast-forwarding
-  // time in contract reads on the frontend (we can simulate it as a standalone script).
-  auditId = await bevorContract.generateAuditId(
-    accounts[3].address,
-    [accounts[2].address, accounts[5].address],
-    7 * 24 * 60 * 60,
-    70 * 24 * 60 * 60,
-    "example-7Ap1GR49l2yVbJtvIJ0dVnleKuM8pj",
-    amount,
-    ERC20Abi.address,
-    "I am salt",
-  );
-
-  await tokenContract.transfer(accounts[3].address, ethers.parseUnits(amount.toString(), 18));
-
-  await bevorContract
-    .connect(accounts[3])
-    // @ts-expect-error not recognized, but works.
-    .prepareAudit(
-      [accounts[2].address, accounts[5].address],
-      7 * 24 * 60 * 60,
-      70 * 24 * 60 * 60,
-      "example-7Ap1GR49l2yVbJtvIJ0dVnleKuM8pj",
-      amount,
-      ERC20Abi.address,
-      "I am salt",
-    );
-
-  tokenId = await bevorContract.generateTokenId(auditId, [
-    "example-q0D5zQMv65hQJ4mWfJfstcnagI5kUI",
-    "example-q0D5zQMv65hQJ4mWfJfstcnagI5kUI",
-  ]);
-
-  await tokenContract
-    .connect(accounts[3])
-    // @ts-expect-error not recognized, but works.
-    .approve(BevorProtocolAbi.address, ethers.parseUnits(amount.toString(), 18));
-
-  await bevorContract
-    .connect(accounts[3])
-    // @ts-expect-error not recognized, but works.
-    .revealFindings(
-      ["example-q0D5zQMv65hQJ4mWfJfstcnagI5kUI", "example-q0D5zQMv65hQJ4mWfJfstcnagI5kUI"],
-      auditId,
-    );
-
-  await prisma.audit.update({
-    where: {
-      id: "number4",
-    },
-    data: {
-      onchainAuditInfoId: BigInt(auditId as bigint).toString(),
-      onchainNftId: BigInt(tokenId as bigint).toString(),
-    },
-  });
+  await db
+    .update(audit)
+    .set({
+      onchain_audit_info_id: BigInt(auditId as bigint).toString(),
+      onchain_nft_id: BigInt(tokenId as bigint).toString(),
+    })
+    .where(eq(audit.title, "Require Onchain 3"));
 
   console.log("updated corresponding DB entries with on-chain data");
 };
 
 seed()
-  .then(async () => {
-    await prisma.$disconnect();
-  })
-  .catch(async (e) => {
+  .then(() => console.log("Done Seededing Onchain Data"))
+  .catch((e) => {
     console.error(e);
-    await prisma.$disconnect();
     process.exit(1);
   });

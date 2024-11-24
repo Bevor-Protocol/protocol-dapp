@@ -4,7 +4,8 @@ import { cookies } from "next/headers";
 import { SiweMessage } from "siwe";
 
 export async function GET(): Promise<Response> {
-  const session = await getIronSession<SessionData>(cookies(), sessionOptions);
+  const cookieList = await cookies();
+  const session = await getIronSession<SessionData>(cookieList, sessionOptions);
   if (session.siwe) {
     return Response.json({ user: session.siwe });
   } else {
@@ -13,7 +14,8 @@ export async function GET(): Promise<Response> {
 }
 
 export async function POST(): Promise<Response> {
-  const session = await getIronSession<SessionData>(cookies(), sessionOptions);
+  const cookieList = await cookies();
+  const session = await getIronSession<SessionData>(cookieList, sessionOptions);
   if (session.userId) {
     return Response.json({ message: "Already logged in" });
   } else {
@@ -35,7 +37,8 @@ export async function POST(): Promise<Response> {
 }
 
 export async function DELETE(): Promise<Response> {
-  const session = await getIronSession<SessionData>(cookies(), sessionOptions);
+  const cookieList = await cookies();
+  const session = await getIronSession<SessionData>(cookieList, sessionOptions);
   session.destroy();
   return Response.json({ message: "Logged out successfully" });
 }

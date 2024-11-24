@@ -1,7 +1,6 @@
 /* eslint-disable @next/next/no-img-element */
 "use client";
 
-import { MembershipStatusType, User } from "@prisma/client";
 import { useQuery } from "@tanstack/react-query";
 import React, { useMemo, useState } from "react";
 
@@ -15,7 +14,9 @@ import { AUDITORS, WISHLIST } from "@/constants/queryKeys";
 import { AvailableTokens } from "@/constants/web3";
 import { useDebounce } from "@/hooks/useDebounce";
 import { cn } from "@/utils";
-import { AuditI } from "@/utils/types/prisma";
+import { MembershipStatusEnum } from "@/utils/types/enum";
+import { AuditWithOwnerSecure } from "@/utils/types/relations";
+import { User } from "@/utils/types/tables";
 
 const AuditFormEntries = ({
   userId,
@@ -30,7 +31,7 @@ const AuditFormEntries = ({
   disabled: boolean;
   auditors: User[];
   setAuditors: React.Dispatch<React.SetStateAction<User[]>>;
-  initialState?: AuditI;
+  initialState?: AuditWithOwnerSecure;
   initialAuditors?: User[];
   errors: Record<string, string>;
 }): JSX.Element => {
@@ -77,11 +78,11 @@ const AuditFormEntries = ({
     // 2) Filter the requested or rejected auditors from the search results -> managed separately.
     const chosenAuditors = auditors.map((auditor) => auditor.id);
     const alreadyRequested =
-      initialState?.memberships
+      initialState?.auditMemberships
         .filter(
           (member) =>
-            member.status === MembershipStatusType.REQUESTED ||
-            member.status === MembershipStatusType.REJECTED,
+            member.status === MembershipStatusEnum.REQUESTED ||
+            member.status === MembershipStatusEnum.REJECTED,
         )
         .map((member) => member.user.id) || [];
     // also want to exclude auditors who has previously requested to audit. Managing those will
@@ -100,11 +101,11 @@ const AuditFormEntries = ({
   const wishlistShow = useMemo(() => {
     const chosenAuditors = auditors.map((auditor) => auditor.id);
     const alreadyRequested =
-      initialState?.memberships
+      initialState?.auditMemberships
         .filter(
           (member) =>
-            member.status === MembershipStatusType.REQUESTED ||
-            member.status === MembershipStatusType.REJECTED,
+            member.status === MembershipStatusEnum.REQUESTED ||
+            member.status === MembershipStatusEnum.REJECTED,
         )
         .map((member) => member.user.id) || [];
     // also want to exclude auditors who has previously requested to audit. Managing those will

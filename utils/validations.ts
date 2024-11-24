@@ -33,21 +33,21 @@ export const userSchema = z.object({
     .optional(),
   name: z.string().max(100).trim().optional(),
   available: z.string().transform(customFormToggleValidation).optional(),
-  auditorRole: z
+  auditor_role: z
     .string()
     .transform((value) => value == "yes")
     .optional(),
-  ownerRole: z
+  owner_role: z
     .string()
     .transform((value) => value == "yes")
     .optional(),
 });
 
 export const userSchemaCreate = userSchema
-  .required({ available: true, ownerRole: true, auditorRole: true })
+  .required({ available: true, owner_role: true, auditor_role: true })
   .refine(
     (schema) => {
-      if (!schema.ownerRole && !schema.auditorRole) {
+      if (!schema.owner_role && !schema.auditor_role) {
         return false;
       }
       return true;

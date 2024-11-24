@@ -1,6 +1,5 @@
 "use client";
 
-import { MembershipStatusType, RoleType, User } from "@prisma/client";
 import { useMutation } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
 import React, { useState } from "react";
@@ -9,17 +8,24 @@ import { auditAction } from "@/actions";
 import AuditFormEntries from "@/components/Audit/client/form";
 import ErrorToast from "@/components/Toast/Content/error";
 import { useToast } from "@/hooks/useContexts";
-import { ErrorTypeEnum } from "@/utils/types/enum";
-import { AuditI } from "@/utils/types/prisma";
+import { ErrorTypeEnum, MembershipStatusEnum, RoleTypeEnum } from "@/utils/types/enum";
+import { AuditWithOwnerSecure } from "@/utils/types/relations";
+import { User } from "@/utils/types/tables";
 
-const AuditEditWrapper = ({ audit, userId }: { audit: AuditI; userId: string }): JSX.Element => {
+const AuditEditWrapper = ({
+  audit,
+  userId,
+}: {
+  audit: AuditWithOwnerSecure;
+  userId: string;
+}): JSX.Element => {
   // only show the selected auditors that were already verified.
-  const initialAuditors = audit.memberships
+  const initialAuditors = audit.auditMemberships
     .filter(
       (member) =>
-        member.status === MembershipStatusType.VERIFIED &&
-        member.role === RoleType.AUDITOR &&
-        member.isActive,
+        member.status === MembershipStatusEnum.VERIFIED &&
+        member.role === RoleTypeEnum.AUDITOR &&
+        member.is_active,
     )
     .map((member) => member.user);
 

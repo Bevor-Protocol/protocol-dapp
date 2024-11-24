@@ -5,8 +5,8 @@ import { Button } from "@/components/Button";
 import DynamicLink from "@/components/Link";
 import UserEdit from "@/components/Modal/Content/userEdit";
 import { useModal } from "@/hooks/useContexts";
-import { UserStats } from "@/utils/types";
-import { User } from "@prisma/client";
+import { UserStats } from "@/utils/types/custom";
+import { User } from "@/utils/types/tables";
 
 const UserProfileActions = ({ user, stats }: { user: User; stats: UserStats }): JSX.Element => {
   const { show } = useModal();
@@ -20,7 +20,7 @@ const UserProfileActions = ({ user, stats }: { user: User; stats: UserStats }): 
       <Button onClick={handleModal} variant="outline">
         Edit
       </Button>
-      {user.ownerRole && (
+      {user.owner_role && (
         <DynamicLink href="/audits/create" asButton>
           <Row className="btn-outline">Create Audit</Row>
         </DynamicLink>

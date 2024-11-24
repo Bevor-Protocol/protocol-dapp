@@ -14,15 +14,15 @@ import { Loader } from "@/components/Loader";
 import { useModal } from "@/hooks/useContexts";
 import { useContractWriteListen } from "@/hooks/useContractWriteListen";
 import { cn } from "@/utils";
-import { AuditI } from "@/utils/types/prisma";
 import { parseUnits } from "viem";
 
 import { AvailableTokens } from "@/constants/web3";
 import BevorABI from "@/contracts/abis/BevorProtocol";
 import ERC20ABI from "@/contracts/abis/ERC20Token";
-import { User } from "@prisma/client";
+import { AuditWithOwnerSecure } from "@/utils/types/relations";
+import { User } from "@/utils/types/tables";
 
-const RevealAudit = ({ audit, user }: { audit: AuditI; user: User }): JSX.Element => {
+const RevealAudit = ({ audit, user }: { audit: AuditWithOwnerSecure; user: User }): JSX.Element => {
   const { hide } = useModal();
   const client = useClient();
   const [step, setStep] = useState(0);
@@ -88,11 +88,11 @@ const RevealAudit = ({ audit, user }: { audit: AuditI; user: User }): JSX.Elemen
       .getAuditFindings(audit.id)
       .then((result) => {
         if (!result) return;
-        findings = result.memberships.map((member) => {
+        findings = result.auditMemberships.map((member) => {
           const finding = member.findings!;
           return finding.substring(finding.lastIndexOf("/") + 1).replace(".md", "");
         });
-        auditIdGenerated = result.onchainAuditInfoId as string;
+        auditIdGenerated = result.onchain_audit_info_id as string;
 
         return readContract(client, {
           address: BevorABI.address as Address,

@@ -9,12 +9,18 @@ import DynamicLink from "@/components/Link";
 import { Loader } from "@/components/Loader";
 import { Toggle } from "@/components/Toggle";
 import { MARKDOWN } from "@/constants/queryKeys";
-import { AuditI } from "@/utils/types/prisma";
+import { AuditWithOwnerSecure } from "@/utils/types/relations";
 
-const AuditMarkdown = ({ audit, userId }: { audit: AuditI; userId?: string }): JSX.Element => {
+const AuditMarkdown = ({
+  audit,
+  userId,
+}: {
+  audit: AuditWithOwnerSecure;
+  userId?: string;
+}): JSX.Element => {
   const { data, isPending } = useQuery({
     queryKey: [MARKDOWN, audit.id, userId ?? ""],
-    queryFn: () => auditAction.safeMarkdown(audit),
+    queryFn: () => auditAction.safeMarkdown(audit.id),
   });
 
   const [active, setActive] = useState("details");
@@ -61,10 +67,10 @@ const AuditMarkdown = ({ audit, userId }: { audit: AuditI; userId?: string }): J
       {active == "details" && data.details && (
         <div className="markdown" dangerouslySetInnerHTML={{ __html: data.details }} />
       )}
-      {active == "findings" && data.findings[findingsActive].owner && (
+      {active == "findings" && data.findings[findingsActive].isOwner && (
         <p className="my-2">your submission</p>
       )}
-      {active == "findings" && !data.globalReveal && data.findings[findingsActive].owner && (
+      {active == "findings" && !data.globalReveal && data.findings[findingsActive].isOwner && (
         <p className="my-2">currently only visible to you</p>
       )}
       {active == "findings" && (

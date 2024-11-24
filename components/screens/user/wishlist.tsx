@@ -4,8 +4,9 @@ import { wishlistAction } from "@/actions";
 import { Heart } from "@/assets";
 import * as Tooltip from "@/components/Tooltip";
 import { cn } from "@/utils";
-import { User } from "@prisma/client";
+import { User } from "@/utils/types/tables";
 import { useMutation } from "@tanstack/react-query";
+import { useRouter } from "next/navigation";
 
 const UserWishlist = ({
   isWishlistedFlag,
@@ -14,6 +15,7 @@ const UserWishlist = ({
   isWishlistedFlag: boolean;
   receiver: User;
 }): JSX.Element => {
+  const router = useRouter();
   const { mutate } = useMutation({
     mutationFn: () => {
       if (isWishlistedFlag) {
@@ -21,6 +23,7 @@ const UserWishlist = ({
       }
       return wishlistAction.addToWishlist(receiver.id);
     },
+    onSuccess: () => router.refresh(),
   });
 
   return (

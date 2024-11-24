@@ -6,7 +6,7 @@ import DynamicLink from "@/components/Link";
 import { WISHLIST } from "@/constants/queryKeys";
 import { usePanel } from "@/hooks/useContexts";
 import { cn } from "@/utils";
-import { User } from "@prisma/client";
+import { User } from "@/utils/types/tables";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { useState } from "react";
 

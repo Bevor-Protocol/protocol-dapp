@@ -1,6 +1,6 @@
 name: Build and Test
 
-on: [push]
+on: [pull_request]
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -11,31 +11,33 @@ env:
 
 jobs:
   setup-and-build:
+    permissions: write-all
     runs-on: ubuntu-22.04
-    services:
-      postgres:
-        image: postgres:12
-        env:
-          POSTGRES_DB: postgres
-          POSTGRES_USER: postgres
-          POSTGRES_PASSWORD: postgres
-        ports:
-          - 5432:5432
-        options: >-
-          --health-cmd pg_isready
-          --health-interval 10s
-          --health-timeout 5s
-          --health-retries 5
     steps:
       - uses: actions/checkout@v4
+
+      - name: Get branch name
+        id: branch-name
+        uses: tj-actions/branch-names@v8
 
       - name: Set up Node.js
         uses: actions/setup-node@v3
         with:
           node-version: "18"
 
+      - name: Create Neon Branch
+        id: create-branch
+        uses: neondatabase/create-branch-action@v4
+        with:
+          project_id: billowing-feather-81805198
+          parent: dev/pete # optional (defaults to your primary branch)
+          branch_name: preview/pr-${{ github.event.number }}-${{ steps.branch-name.outputs.current_branch }}
+          username: bevor
+          database: bevor
+          api_key: ${{ secrets.NEON_API_KEY }}
+
       - name: Cache Yarn dependencies
-        uses: actions/cache@v2
+        uses: actions/cache@v4
         with:
           path: node_modules
           key: ${{ runner.os }}-yarn-${{ hashFiles('yarn.lock') }}
@@ -46,30 +48,40 @@ jobs:
       - name: Install dependencies
         run: yarn install
 
-      - uses: dopplerhq/cli-action@v3
+      - name: Install doppler
+        uses: dopplerhq/cli-action@v3
 
       # Build the application
       - name: Build
         run: yarn build
         env:
-          DATABASE_URL_UNPOOLED: postgres://postgres:postgres@localhost:5432/postgres
-
-      # Generate Prisma Client to reflect latest database schema
-      - name: Generate Prisma Client
-        run: yarn prisma generate
-        env:
-          DATABASE_URL_UNPOOLED: postgres://postgres:postgres@localhost:5432/postgres
+          DATABASE_URL: ${{ steps.create-branch.outputs.db_url }}?sslmode=require
 
       - name: Deploy DB
-        run: yarn prisma migrate deploy
-        env:
-          DATABASE_URL_UNPOOLED: postgres://postgres:postgres@localhost:5432/postgres
+        run: |
+          echo ${{ steps.create-branch.outputs.host }}
+          echo ${{ steps.create-branch.outputs.branch_id }}
+          echo ${{ steps.create-branch.outputs.db_url }}?sslmode=require
 
-      - name: Run Tests
-        uses: cypress-io/github-action@v6
-        with:
-          start: yarn start
-          browser: chrome
-          wait-on: "http://localhost:3000"
+          yarn drizzle-kit migrate
         env:
-          DATABASE_URL_UNPOOLED: postgres://postgres:postgres@localhost:5432/postgres
+          DATABASE_URL: ${{ steps.create-branch.outputs.db_url }}?sslmode=require
+          # DOPPLER_TOKEN: ${{ secrets.DOPPLER_TOKEN }}
+
+      - name: Comment on Pull Request
+        uses: thollander/actions-comment-pull-request@v2
+        with:
+          GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
+          comment_tag: neon-branch
+          message: |
+            Neon branch :elephant: : https://console.neon.tech/app/projects/billowing-feather-81805198/branches/${{ steps.create-branch.outputs.branch_id }}
+
+      # - name: Run Tests
+      #   uses: cypress-io/github-action@v6
+      #   with:
+      #     start: yarn start
+      #     browser: chrome
+      #     wait-on: "http://localhost:3000"
+      #   env:
+      #     DATABASE_URL: ${{ steps.create-branch.outputs.db_url }}?sslmode=require
+      #     DOPPLER_TOKEN: ${{ secrets.DOPPLER_TOKEN }}

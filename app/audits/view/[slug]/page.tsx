@@ -6,7 +6,7 @@ import AuditPage from "@/components/screens/audits/view";
 import AuditHistory from "@/components/screens/audits/view/history";
 import AuditMarkdown from "@/components/screens/audits/view/markdown";
 import Vesting from "@/components/screens/audits/view/vesting";
-import { MembershipStatusType, RoleType } from "@prisma/client";
+import { MembershipStatusEnum, RoleTypeEnum } from "@/utils/types/enum";
 
 const Fetcher = async ({ auditId }: { auditId: string }): Promise<JSX.Element> => {
   // Parsed this into 3 separate requests.
@@ -15,7 +15,6 @@ const Fetcher = async ({ auditId }: { auditId: string }): Promise<JSX.Element> =
   const audit = await auditAction.getAudit(auditId);
 
   if (!audit) return <h2>This audit does not exist</h2>;
-
   const actions = await auditAction.getAuditActions(auditId);
 
   const { address, user } = await userAction.getCurrentUser();
@@ -25,12 +24,12 @@ const Fetcher = async ({ auditId }: { auditId: string }): Promise<JSX.Element> =
   let hasPendingNotifications = false;
   if (user) {
     const isOwner = audit.owner.id === user.id;
-    const isAuditor = audit.memberships.some(
+    const isAuditor = audit.auditMemberships.some(
       (member) =>
-        member.userId === user.id &&
-        member.role === RoleType.AUDITOR &&
-        member.isActive &&
-        member.status === MembershipStatusType.VERIFIED,
+        member.user_id === user.id &&
+        member.role === RoleTypeEnum.AUDITOR &&
+        member.is_active &&
+        member.status === MembershipStatusEnum.VERIFIED,
     );
 
     isMemberOfAudit = isOwner || isAuditor;
@@ -62,11 +61,14 @@ const Fetcher = async ({ auditId }: { auditId: string }): Promise<JSX.Element> =
   );
 };
 
-const AuditDashboardPage = ({ params }: { params: { slug: string } }): JSX.Element => {
+type Params = Promise<{ slug: string }>;
+
+const AuditDashboardPage = async ({ params }: { params: Params }): Promise<JSX.Element> => {
+  const { slug } = await params;
   return (
     <section className="flex flex-col h-full items-center">
       <Suspense fallback={<LoaderFill />}>
-        <Fetcher auditId={params.slug} />
+        <Fetcher auditId={slug} />
       </Suspense>
     </section>
   );

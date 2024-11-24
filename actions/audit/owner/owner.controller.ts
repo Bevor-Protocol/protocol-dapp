@@ -2,10 +2,10 @@ import BlobService from "@/actions/blob/blob.service";
 import NotificationService from "@/actions/notification/notification.service";
 import RoleService from "@/actions/roles/roles.service";
 import { handleErrors } from "@/utils/decorators";
-import { ResponseI } from "@/utils/types";
+import { ResponseI } from "@/utils/types/api";
+import { ActionEnum, AuditStatusEnum, RoleTypeEnum } from "@/utils/types/enum";
+import { Audit, User } from "@/utils/types/tables";
 import { auditFormSchema, parseForm } from "@/utils/validations";
-import { ActionType, Audit, AuditStatusType, RoleType, User } from "@prisma/client";
-import { revalidatePath } from "next/cache";
 import { z } from "zod";
 import AuditService from "../audit.service";
 import AuditorService from "../auditor/auditor.service";
@@ -39,7 +39,7 @@ class OwnerController {
       ...rest,
     };
 
-    const user = await this.roleService.requireRole(RoleType.OWNER);
+    const user = await this.roleService.requireRole(RoleTypeEnum.OWNER);
 
     const blobData = await this.blobService.addBlob("audit-details", details);
     if (blobData) {
@@ -100,12 +100,11 @@ class OwnerController {
 
     await this.ownerService.updateAudit(auditId, dataPass, activate, deactivate, create);
 
-    if (membership.audit.status === AuditStatusType.ATTESTATION) {
+    if (membership.audit.status === AuditStatusEnum.ATTESTATION) {
       await this.auditorService.resetAttestations(auditId);
-      this.notificationService.createAndBroadcastAction(membership, ActionType.OWNER_EDITED);
+      this.notificationService.createAndBroadcastAction(membership, ActionEnum.OWNER_EDITED);
     }
 
-    revalidatePath(`/audits/view/${auditId}`, "page");
     return { success: true, data: true };
   }
 
@@ -123,11 +122,10 @@ class OwnerController {
     const { id } = await this.roleService.requireAccount();
     const membership = await this.roleService.canLock(id, auditId);
 
-    await this.ownerService.lockAudit(membership.auditId);
+    await this.ownerService.lockAudit(membership.audit_id);
 
-    this.notificationService.createAndBroadcastAction(membership, ActionType.OWNER_LOCKED);
+    this.notificationService.createAndBroadcastAction(membership, ActionEnum.OWNER_LOCKED);
 
-    revalidatePath(`/audits/view/${auditId}`, "page");
     return { success: true, data: true };
   }
 
@@ -146,9 +144,7 @@ class OwnerController {
 
     await this.ownerService.openAudit(auditId);
 
-    this.notificationService.createAndBroadcastAction(membership, ActionType.OWNER_OPENED);
-
-    revalidatePath(`/audits/view/${auditId}`, "page");
+    this.notificationService.createAndBroadcastAction(membership, ActionEnum.OWNER_OPENED);
     return { success: true, data: true };
   }
 
@@ -164,10 +160,8 @@ class OwnerController {
     await this.ownerService.updateAudit(auditId, {}, auditorsApprove, auditorsReject, []);
 
     if (auditorsApprove.length > 0) {
-      this.notificationService.createAndBroadcastAction(membership, ActionType.OWNER_APPROVED);
+      this.notificationService.createAndBroadcastAction(membership, ActionEnum.OWNER_APPROVED);
     }
-
-    revalidatePath(`/audits/view/${auditId}`, "page");
 
     return {
       success: true,

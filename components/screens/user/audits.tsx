@@ -1,27 +1,27 @@
 "use client";
 
-import { AuditStatusType } from "@prisma/client";
 import { useMemo, useState } from "react";
 
 import { AuditCardTruncated } from "@/components/Audit";
 import { Column, Row } from "@/components/Box";
 import { cn } from "@/utils";
-import { AuditDetailedI } from "@/utils/types/prisma";
+import { AuditStatusEnum } from "@/utils/types/enum";
+import { UserAudit } from "@/utils/types/relations";
 
-const initialStateType = {
-  [AuditStatusType.DISCOVERY]: true,
-  [AuditStatusType.ATTESTATION]: true,
-  [AuditStatusType.AUDITING]: true,
-  [AuditStatusType.CHALLENGEABLE]: true,
-  [AuditStatusType.FINALIZED]: true,
+const initialStateType: Record<AuditStatusEnum, boolean> = {
+  [AuditStatusEnum.DISCOVERY]: true,
+  [AuditStatusEnum.ATTESTATION]: true,
+  [AuditStatusEnum.AUDITING]: true,
+  [AuditStatusEnum.CHALLENGEABLE]: true,
+  [AuditStatusEnum.FINALIZED]: true,
 };
 
-const statusMapper = {
-  [AuditStatusType.DISCOVERY]: "open",
-  [AuditStatusType.ATTESTATION]: "locked",
-  [AuditStatusType.AUDITING]: "ongoing",
-  [AuditStatusType.CHALLENGEABLE]: "challengeable",
-  [AuditStatusType.FINALIZED]: "completed",
+const statusMapper: Record<AuditStatusEnum, string> = {
+  [AuditStatusEnum.DISCOVERY]: "open",
+  [AuditStatusEnum.ATTESTATION]: "locked",
+  [AuditStatusEnum.AUDITING]: "ongoing",
+  [AuditStatusEnum.CHALLENGEABLE]: "challengeable",
+  [AuditStatusEnum.FINALIZED]: "completed",
 };
 
 const initialOwnerState = {
@@ -36,7 +36,7 @@ const UserAudits = ({
   pendingNotifications,
 }: {
   address: string;
-  audits: AuditDetailedI[];
+  audits: UserAudit[];
   isOwner: boolean;
   pendingNotifications: string[];
 }): JSX.Element => {
@@ -44,6 +44,7 @@ const UserAudits = ({
   const [ownerFilter, setOwnerFilter] = useState(initialOwnerState);
   const [unreadOnlyFilter, setUnreadOnlyFilter] = useState(false);
 
+  // elected to just do filtering client-side
   const auditsShow = useMemo(() => {
     return audits.filter((audit) => {
       if (!typeFilter[audit.status]) {
@@ -89,7 +90,7 @@ const UserAudits = ({
                     onChange={() => setTypeFilter((prev) => ({ ...prev, [k]: !v }))}
                     onKeyDownCapture={() => setTypeFilter((prev) => ({ ...prev, [k]: !v }))}
                   />
-                  <p>{statusMapper[k as keyof typeof AuditStatusType]}</p>
+                  <p>{statusMapper[k as keyof typeof AuditStatusEnum]}</p>
                 </label>
               </li>
             ))}

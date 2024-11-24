@@ -8,12 +8,12 @@ import * as Form from "@/components/Form";
 import { UserCard } from "@/components/User";
 import { USERS } from "@/constants/queryKeys";
 import { useDebounce } from "@/hooks/useDebounce";
-import { UserSearchI } from "@/utils/types";
-import { User } from "@prisma/client";
-import { useQuery } from "@tanstack/react-query";
+import { useQueryWithHydration } from "@/hooks/useQueryWithHydration";
+import { UserSearch } from "@/utils/types/custom";
+import { User } from "@/utils/types/tables";
 
 const UsersWrapper = ({ initialData }: { initialData: User[] }): JSX.Element => {
-  const [filter, setFilter] = useState<UserSearchI>({
+  const [filter, setFilter] = useState<UserSearch>({
     search: "",
     isAuditor: false,
     isOwner: false,
@@ -23,11 +23,10 @@ const UsersWrapper = ({ initialData }: { initialData: User[] }): JSX.Element => 
     data: filter,
   });
 
-  const { data, isLoading } = useQuery({
-    queryKey: [USERS, debouncedData],
-    queryFn: () => userAction.searchUsers(debouncedData),
+  const { data, loading } = useQueryWithHydration({
     initialData,
-    refetchOnMount: false,
+    queryKey: [USERS, debouncedData],
+    queryFct: () => userAction.searchUsers(debouncedData),
   });
 
   return (
@@ -64,12 +63,10 @@ const UsersWrapper = ({ initialData }: { initialData: User[] }): JSX.Element => 
         </ul>
       </Row>
       <div className="grid grid-cols-4 *:w-full gap-4 w-full">
-        {data.map((user, ind) => (
-          // Explicitly using a combination of user.id + ind to prevent flashing
-          // and get the nice fade-in effect.
-          <UserCard user={user} key={user.id + ind} isLoading={timeoutPending || isLoading} />
+        {data?.map((user, ind) => (
+          <UserCard user={user} key={user.id + ind} isLoading={timeoutPending || loading} />
         ))}
-        {data.length === 0 && <p className="px-1 text-center col-span-5">No results to show</p>}
+        {data?.length === 0 && <p className="px-1 text-center col-span-5">No results to show</p>}
       </div>
     </>
   );

@@ -12,11 +12,13 @@ import ErrorToast from "@/components/Toast/Content/error";
 import { useModal, useToast } from "@/hooks/useContexts";
 import { cn } from "@/utils";
 import { ErrorTypeEnum } from "@/utils/types/enum";
-import { AuditI } from "@/utils/types/prisma";
+import { Audit } from "@/utils/types/tables";
+import { useRouter } from "next/navigation";
 import React from "react";
 
-const AuditorAttest = ({ audit }: { audit: AuditI }): JSX.Element => {
-  const { hide } = useModal(); // const [showRejected, setShowRejected] = useState(false);
+const AuditorAttest = ({ audit }: { audit: Audit }): JSX.Element => {
+  const { hide } = useModal(); // const [showRejected, setShowRejected] = useState(false)
+  const router = useRouter();
   const [comment, setComment] = useState("");
   const { show } = useToast();
   const [errors, setErrors] = useState<Record<string, string>>({});
@@ -28,6 +30,7 @@ const AuditorAttest = ({ audit }: { audit: AuditI }): JSX.Element => {
     onSuccess: (response) => {
       if (response.success) {
         hide();
+        router.refresh();
       } else {
         const error = response.error;
         switch (error.type) {

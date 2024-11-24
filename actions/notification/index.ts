@@ -1,13 +1,12 @@
 "use server";
 
-import { ResponseI } from "@/utils/types";
-import { UserNotificationI } from "@/utils/types/prisma";
-import { Prisma } from "@prisma/client";
+import { ResponseI } from "@/utils/types/api";
+import { UserNotificationsDetails } from "@/utils/types/relations";
 import notificationController from "./notification.controller";
 
 const getUserNotifications = async (
   address: string,
-): Promise<Record<string, { meta: string; notifications: UserNotificationI[] }>> => {
+): Promise<Record<string, { meta: string; notifications: UserNotificationsDetails[] }>> => {
   return notificationController.getUserNotifications(address);
 };
 
@@ -19,9 +18,7 @@ const getUserHistoryCountByAuditId = async (userId: string, auditId: string): Pr
   return notificationController.getUserHistoryCountByAuditId(userId, auditId);
 };
 
-const updateUserNotificationByAuditId = async (
-  auditId: string,
-): Promise<ResponseI<Prisma.BatchPayload>> => {
+const updateUserNotificationByAuditId = async (auditId: string): Promise<ResponseI<boolean>> => {
   return notificationController.updateUserNotificationByAuditId(auditId);
 };
 

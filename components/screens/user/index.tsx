@@ -2,8 +2,8 @@ import { Column, Row } from "@/components/Box";
 import * as Form from "@/components/Form";
 import { Icon } from "@/components/Icon";
 import { trimAddress } from "@/utils/formatters";
-import { UserStats } from "@/utils/types";
-import { User } from "@prisma/client";
+import { UserStats } from "@/utils/types/custom";
+import { User } from "@/utils/types/tables";
 
 const UserContent = async ({
   user,
@@ -23,7 +23,7 @@ const UserContent = async ({
           </p>
           <p className="text-white/60 text-xs my-1">
             Member Since:
-            <span> {new Date(user.createdAt).toLocaleDateString()}</span>
+            <span> {new Date(user.created_at).toLocaleDateString()}</span>
           </p>
         </div>
         <Row className="gap-4">
@@ -37,14 +37,14 @@ const UserContent = async ({
           <Form.Radio
             name="auditorRole"
             text="auditor role"
-            checked={user.auditorRole}
+            checked={user.auditor_role}
             disabled={true}
             aria-disabled={true}
           />
           <Form.Radio
             name="ownerRole"
             text="owner role"
-            checked={user.ownerRole}
+            checked={user.owner_role}
             disabled={true}
             aria-disabled={true}
           />
@@ -67,7 +67,7 @@ const UserContent = async ({
           <span className="inline-block w-32 text-right mr-4"># Audits Audited: </span>
           <span className="float-right">{stats.numAuditsAudited}</span>
         </p>
-        {user.auditorRole && (
+        {user.auditor_role && (
           <p>
             <span className="inline-block w-32 text-right mr-4"># Wishlists: </span>
             <span className="float-right">{stats.numWishlist}</span>

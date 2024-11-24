@@ -1,101 +1,102 @@
-import { prisma } from "@/db/prisma.server";
-import { AuditStatusType, MembershipStatusType, RoleType } from "@prisma/client";
+import { db } from "@/db";
+import { auditMembership } from "@/db/schema/audit-membership.sql";
+import { audit } from "@/db/schema/audit.sql";
+import { user } from "@/db/schema/user.sql";
+import { wishlist } from "@/db/schema/wishlist.sql";
+import { AuditStatusEnum, MembershipStatusEnum, RoleTypeEnum } from "@/utils/types/enum";
+import { and, count, eq, inArray, sum } from "drizzle-orm";
 
 class StatService {
   getUserMoneyPaid(address: string): Promise<number> {
     // doesn't take into account the asset.
-    return prisma.audit
-      .aggregate({
-        where: {
-          status: AuditStatusType.FINALIZED,
-          owner: {
-            address,
-          },
-        },
-        _sum: {
-          price: true,
-        },
+    return db
+      .select({
+        summed: sum(audit.price),
       })
-      .then((result) => result._sum.price || 0);
+      .from(audit)
+      .leftJoin(user, eq(audit.owner_id, user.id))
+      .where(and(eq(audit.status, AuditStatusEnum.FINALIZED), eq(user.address, address)))
+      .then((res) => (res[0].summed || 0) as number);
   }
 
   getUserMoneyEarned(address: string): Promise<number> {
     // doesn't take into account the asset.
-    return prisma.audit
-      .aggregate({
-        where: {
-          status: AuditStatusType.FINALIZED,
-          memberships: {
-            some: {
-              user: {
-                address,
-              },
-              role: RoleType.AUDITOR,
-              status: MembershipStatusType.VERIFIED,
-              isActive: true,
-            },
-          },
-        },
-        _sum: {
-          price: true,
-        },
+    return db
+      .select({
+        summed: sum(audit.price),
       })
-      .then((result) => result._sum.price || 0);
+      .from(audit)
+      .leftJoin(user, eq(audit.owner_id, user.id))
+      .leftJoin(auditMembership, eq(auditMembership.audit_id, audit.id))
+      .where(
+        and(
+          eq(audit.status, AuditStatusEnum.FINALIZED),
+          eq(user.address, address),
+          eq(auditMembership.role, RoleTypeEnum.AUDITOR),
+          eq(auditMembership.status, MembershipStatusEnum.VERIFIED),
+          eq(auditMembership.is_active, true),
+        ),
+      )
+      .then((res) => (res[0].summed || 0) as number);
   }
 
   getUserNumAuditsOwner(address: string): Promise<number> {
-    return prisma.auditMembership.count({
-      where: {
-        user: {
-          address,
-        },
-        role: RoleType.OWNER,
-        status: MembershipStatusType.VERIFIED,
-      },
-    });
+    return db
+      .select({
+        num: count(),
+      })
+      .from(audit)
+      .leftJoin(user, eq(audit.owner_id, user.id))
+      .where(eq(user.address, address))
+      .then((res) => (res[0].num || 0) as number);
   }
 
   getUserNumAuditsAuditor(address: string): Promise<number> {
-    return prisma.audit.count({
-      where: {
-        owner: {
-          address,
-        },
-      },
-    });
+    return db
+      .select({
+        num: count(),
+      })
+      .from(auditMembership)
+      .leftJoin(user, eq(auditMembership.user_id, user.id))
+      .where(
+        and(
+          eq(user.address, address),
+          eq(auditMembership.role, RoleTypeEnum.AUDITOR),
+          eq(auditMembership.status, MembershipStatusEnum.VERIFIED),
+        ),
+      )
+      .then((res) => (res[0].num || 0) as number);
   }
 
   getUserNumWishlistReciever(address: string): Promise<number> {
-    return prisma.wishlist.count({
-      where: {
-        receiver: {
-          address,
-        },
-      },
-    });
+    return db
+      .select({
+        num: count(),
+      })
+      .from(wishlist)
+      .leftJoin(user, eq(wishlist.receiver_id, user.id))
+      .where(eq(user.address, address))
+      .then((res) => (res[0].num || 0) as number);
   }
 
   getProtocolNumAudits(): Promise<number> {
-    return prisma.audit.count();
+    return db.$count(audit);
   }
 
   getProtocolDataFunds(): Promise<number> {
-    return prisma.audit
-      .aggregate({
-        where: {
-          status: {
-            in: [
-              AuditStatusType.AUDITING,
-              AuditStatusType.CHALLENGEABLE,
-              AuditStatusType.FINALIZED,
-            ],
-          },
-        },
-        _sum: {
-          price: true,
-        },
+    return db
+      .select({
+        summed: sum(audit.price),
       })
-      .then((result) => result._sum.price || 0);
+      .from(audit)
+      .where(
+        inArray(audit.status, [
+          AuditStatusEnum.AUDITING,
+          AuditStatusEnum.CHALLENGEABLE,
+          AuditStatusEnum.FINALIZED,
+        ]),
+      )
+      .then((res) => (res[0].summed || 0) as number);
   }
 
   async getProtocolDataVulnerabilities(): Promise<number> {
@@ -105,11 +106,7 @@ class StatService {
   }
 
   getProtocolDataAuditors(): Promise<number> {
-    return prisma.user.count({
-      where: {
-        auditorRole: true,
-      },
-    });
+    return db.$count(user, eq(user.auditor_role, true));
   }
 }
 

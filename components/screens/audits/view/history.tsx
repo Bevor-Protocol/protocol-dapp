@@ -6,8 +6,9 @@ import { Row } from "@/components/Box";
 import { Button } from "@/components/Button";
 import { HistoryPanel } from "@/components/Panel/Content/history";
 import { usePanel } from "@/hooks/useContexts";
-import { ActionI } from "@/utils/types/prisma";
+import { ActionWithMembership } from "@/utils/types/relations";
 import { useMutation } from "@tanstack/react-query";
+import { useRouter } from "next/navigation";
 
 const AuditHistory = ({
   auditId,
@@ -15,14 +16,16 @@ const AuditHistory = ({
   hasPendingNotifications,
 }: {
   auditId: string;
-  actions: ActionI[];
+  actions: ActionWithMembership[];
   hasPendingNotifications: boolean;
 }): JSX.Element => {
   const { show } = usePanel();
+  const router = useRouter();
   const { mutateAsync } = useMutation({
     mutationFn: () => notificationAction.updateUserNotificationByAuditId(auditId),
+    onSuccess: () => router.refresh(),
   });
-  const handleClick = (): void => {
+  const handleClick = async (): Promise<void> => {
     if (hasPendingNotifications) {
       // don't make this blocking, we don't need to wait for it.
       mutateAsync();

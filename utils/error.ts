@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { BlobError } from "@vercel/blob";
-import { ResponseFailureI } from "./types";
+import { ResponseFailureI } from "./types/api";
 import { ErrorTypeEnum } from "./types/enum";
 
 export class ValidationError extends Error {

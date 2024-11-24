@@ -5,7 +5,7 @@ import DynamicLink from "@/components/Link";
 import * as Tooltip from "@/components/Tooltip";
 import { cn } from "@/utils";
 import { trimAddress } from "@/utils/formatters";
-import { User } from "@prisma/client";
+import { User } from "@/utils/types/tables";
 
 export const AuditAuditor = ({
   position,

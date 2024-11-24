@@ -1,7 +1,6 @@
 import { handleErrors } from "@/utils/decorators";
-import { ResponseI } from "@/utils/types";
-import { WishlistI } from "@/utils/types/prisma";
-import { revalidatePath } from "next/cache";
+import { ResponseI } from "@/utils/types/api";
+import { WishlistWithReceiver } from "@/utils/types/relations";
 import RoleService from "../roles/roles.service";
 import WishlistService from "./wishlist.service";
 
@@ -18,26 +17,24 @@ class WishlistController {
     return !!entry;
   }
 
-  getUserWishlist(requestor: string): Promise<WishlistI[]> {
+  getUserWishlist(requestor: string): Promise<WishlistWithReceiver[]> {
     return this.wishlistService.getUserWishlist(requestor);
   }
 
   @handleErrors
-  async addToWishlist(receiver: string): Promise<ResponseI<WishlistI>> {
+  async addToWishlist(receiver: string): Promise<ResponseI<boolean>> {
     const { id } = await this.roleService.requireAccount();
-    const data = await this.wishlistService.addToWishlist(id, receiver);
+    await this.wishlistService.addToWishlist(id, receiver);
 
-    revalidatePath(`/users/${data.receiver.address}`, "page");
-    return { success: true, data };
+    return { success: true, data: true };
   }
 
   @handleErrors
-  async removeFromWishlist(receiver: string): Promise<ResponseI<WishlistI>> {
+  async removeFromWishlist(receiver: string): Promise<ResponseI<boolean>> {
     const { id } = await this.roleService.requireAccount();
-    const data = await this.wishlistService.removeFromWishlist(id, receiver);
+    await this.wishlistService.removeFromWishlist(id, receiver);
 
-    revalidatePath(`/users/${data.receiver.address}`, "page");
-    return { success: true, data };
+    return { success: true, data: true };
   }
 }
 

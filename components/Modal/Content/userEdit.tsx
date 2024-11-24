@@ -12,18 +12,21 @@ import ErrorToast from "@/components/Toast/Content/error";
 import SuccessToast from "@/components/Toast/Content/success";
 import * as Tooltip from "@/components/Tooltip";
 import { useModal, useToast } from "@/hooks/useContexts";
-import { UserStats } from "@/utils/types";
+import { UserStats } from "@/utils/types/custom";
 import { ErrorTypeEnum } from "@/utils/types/enum";
-import { User } from "@prisma/client";
+import { User } from "@/utils/types/tables";
+import { useRouter } from "next/navigation";
 
 const UserEdit = ({ user, stats }: { user: User; stats: UserStats }): JSX.Element => {
   const { hide } = useModal();
   const { show } = useToast();
+  const router = useRouter();
   const [selectedImage, setSelectedImage] = useState<File | undefined>();
   const [errors, setErrors] = useState<Record<string, string>>({});
 
-  const allowAuditorUpdate = !user.auditorRole || (user.auditorRole && stats.numAuditsAudited == 0);
-  const allowOwnerUpdate = !user.ownerRole || (user.ownerRole && stats.numAuditsCreated == 0);
+  const allowAuditorUpdate =
+    !user.auditor_role || (user.auditor_role && stats.numAuditsAudited == 0);
+  const allowOwnerUpdate = !user.owner_role || (user.owner_role && stats.numAuditsCreated == 0);
 
   const { mutate, isPending } = useMutation({
     mutationFn: (variables: { formData: FormData }) => {
@@ -36,6 +39,7 @@ const UserEdit = ({ user, stats }: { user: User; stats: UserStats }): JSX.Elemen
           content: <SuccessToast text="profile updated" />,
           autoClose: true,
         });
+        router.refresh();
       } else {
         const error = response.error;
         switch (error.type) {
@@ -109,23 +113,23 @@ const UserEdit = ({ user, stats }: { user: User; stats: UserStats }): JSX.Elemen
               name="available"
               text="is available"
               defaultChecked={user.available}
-              disabled={isPending || !user.auditorRole}
-              aria-disabled={isPending || !user.auditorRole}
+              disabled={isPending || !user.auditor_role}
+              aria-disabled={isPending || !user.auditor_role}
               isError={"available" in errors}
             />
             <Form.Radio
-              name="auditorRole"
+              name="auditor_role"
               text="auditor role"
               // potentially add a handler so that a user can set their availability if this is toggled on.
-              defaultChecked={user.auditorRole}
+              defaultChecked={user.auditor_role}
               disabled={!allowAuditorUpdate || isPending}
               aria-disabled={!allowAuditorUpdate || isPending}
               isError={"auditorRole" in errors}
             />
             <Form.Radio
-              name="ownerRole"
+              name="owner_role"
               text="owner role"
-              defaultChecked={user.ownerRole}
+              defaultChecked={user.owner_role}
               disabled={!allowOwnerUpdate || isPending}
               aria-disabled={!allowOwnerUpdate || isPending}
               isError={"ownerRole" in errors}

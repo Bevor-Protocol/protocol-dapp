@@ -1,18 +1,18 @@
-import "./globals.css";
 import { Analytics } from "@vercel/analytics/react";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import { Metadata, Viewport } from "next";
+import { Plus_Jakarta_Sans } from "next/font/google";
 import { headers } from "next/headers";
 import { cookieToInitialState } from "wagmi";
-import { Plus_Jakarta_Sans } from "next/font/google";
+import "./globals.css";
 
-import WalletProvider from "@/providers/wallet";
 import ModalProvider from "@/providers/modal";
 import SiweProvider from "@/providers/siwe";
 import ToastProvider from "@/providers/toast";
+import WalletProvider from "@/providers/wallet";
 import { config } from "@/providers/wallet/config";
 
-import { Layout, Footer, Nav } from "@/components/Layout";
+import { Footer, Layout, Nav } from "@/components/Layout";
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://app.bevor.io"),
@@ -76,8 +76,9 @@ export const viewport: Viewport = {
 
 const jakarta = Plus_Jakarta_Sans({ subsets: ["latin"], weight: ["500", "600", "700", "800"] });
 
-const Page = ({ children }: { children: React.ReactNode }): JSX.Element => {
-  const initialState = cookieToInitialState(config, headers().get("cookie"));
+const Page = async ({ children }: { children: React.ReactNode }): Promise<JSX.Element> => {
+  const headerList = await headers();
+  const initialState = cookieToInitialState(config, headerList.get("cookie"));
   return (
     <html lang="en">
       <body className={jakarta.className}>

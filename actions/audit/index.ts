@@ -1,40 +1,46 @@
 "use server";
 
-import { AuditStateI, MarkdownAuditsI, ResponseI } from "@/utils/types";
-import { ActionI, AuditDetailedI, AuditFindingsI, AuditI } from "@/utils/types/prisma";
+import { ResponseI } from "@/utils/types/api";
 
-import { Audit, AuditStatusType, User } from "@prisma/client";
+import { AuditState, MarkdownAudits } from "@/utils/types/custom";
+import { AuditStatusEnum } from "@/utils/types/enum";
+import {
+  ActionWithMembership,
+  AuditWithOwnerSecure,
+  AuditWithUsersInsecure,
+} from "@/utils/types/relations";
+import { AuditInsert, User } from "@/utils/types/tables";
 import auditController from "./audit.controller";
 
-const getAudit = async (id: string): Promise<AuditI | null> => {
+const getAudit = async (id: string): Promise<AuditWithOwnerSecure | undefined> => {
   return auditController.getAudit(id);
 };
 
-const getAuditActions = async (auditId: string): Promise<ActionI[]> => {
+const getAuditActions = async (auditId: string): Promise<ActionWithMembership[]> => {
   return auditController.getAuditActions(auditId);
 };
 
-const getAuditsDetailed = async (status?: AuditStatusType): Promise<AuditDetailedI[]> => {
+const getAuditsDetailed = async (status?: AuditStatusEnum): Promise<AuditWithOwnerSecure[]> => {
   return auditController.getAuditsDetailed(status);
 };
 
-const addAuditInfo = async (id: string, infoId: string): Promise<ResponseI<Audit>> => {
+const addAuditInfo = async (id: string, infoId: string): Promise<ResponseI<AuditInsert>> => {
   return auditController.addAuditInfo(id, infoId);
 };
 
-const addNftInfo = async (id: string, nftId: string): Promise<ResponseI<Audit>> => {
+const addNftInfo = async (id: string, nftId: string): Promise<ResponseI<AuditInsert>> => {
   return auditController.addNftInfo(id, nftId);
 };
 
-const getState = async (audit: AuditI, user: User): Promise<AuditStateI> => {
-  return auditController.getState(audit, user);
+const getState = async (auditId: string, user: User): Promise<AuditState> => {
+  return auditController.getState(auditId, user);
 };
 
-const safeMarkdown = async (audit: AuditI): Promise<MarkdownAuditsI> => {
-  return auditController.safeMarkdown(audit);
+const safeMarkdown = async (auditId: string): Promise<MarkdownAudits> => {
+  return auditController.safeMarkdown(auditId);
 };
 
-const getAuditFindings = async (id: string): Promise<AuditFindingsI | null> => {
+const getAuditFindings = async (id: string): Promise<AuditWithUsersInsecure | undefined> => {
   return auditController.getAuditFindings(id);
 };
 

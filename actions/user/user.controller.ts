@@ -1,9 +1,9 @@
 import { handleErrors } from "@/utils/decorators";
-import { ResponseI, UserSearchI } from "@/utils/types";
-import { AuditDetailedI, UserWithCount } from "@/utils/types/prisma";
+import { ResponseI } from "@/utils/types/api";
+import { Leaderboard, UserSearch } from "@/utils/types/custom";
+import { UserAudit } from "@/utils/types/relations";
+import { User, UserInsert } from "@/utils/types/tables";
 import { parseForm, userSchema, userSchemaCreate } from "@/utils/validations";
-import { Prisma, User } from "@prisma/client";
-import { revalidatePath } from "next/cache";
 import AuthService from "../auth/auth.service";
 import BlobService from "../blob/blob.service";
 import RoleService from "../roles/roles.service";
@@ -26,11 +26,11 @@ class UserController {
     private readonly authService: typeof AuthService,
   ) {}
 
-  getProfile(address: string): Promise<User | null> {
+  getProfile(address: string): Promise<User | undefined> {
     return this.userService.getProfile(address);
   }
 
-  async getCurrentUser(): Promise<{ address: string; user: User | null }> {
+  async getCurrentUser(): Promise<{ address: string; user: User | undefined }> {
     const { address } = await this.authService.currentUser();
     const user = await this.getProfile(address);
     return {
@@ -43,7 +43,7 @@ class UserController {
   async createUser(address: string, formData: FormData): Promise<ResponseI<User>> {
     const parsed = parseForm(formData, userSchemaCreate);
     const { image, ...rest } = parsed;
-    const dataPass: Prisma.UserCreateInput = {
+    const dataPass: UserInsert = {
       address,
       ...rest,
     };
@@ -64,12 +64,12 @@ class UserController {
   }
 
   @handleErrors
-  async updateUser(formData: FormData): Promise<ResponseI<User>> {
+  async updateUser(formData: FormData): Promise<ResponseI<boolean>> {
     const { id } = await this.roleService.requireAccount();
     const parsed = parseForm(formData, userSchema);
 
     const { image, ...rest } = parsed;
-    const dataPass: Prisma.UserUpdateInput = {
+    const dataPass: UserInsert = {
       ...rest,
     };
 
@@ -77,22 +77,20 @@ class UserController {
     if (blobData) {
       dataPass.image = blobData.url;
     }
+    await this.userService.updateUser(id, dataPass);
 
-    const data = await this.userService.updateUser(id, dataPass);
-
-    revalidatePath(`/users/${data.address}`, "page");
-    return { success: true, data };
+    return { success: true, data: true };
   }
 
-  getUserAudits(address: string): Promise<AuditDetailedI[]> {
+  getUserAudits(address: string): Promise<UserAudit[]> {
     return this.userService.userAudits(address);
   }
 
-  getLeaderboard(key?: string, order?: "asc" | "desc"): Promise<UserWithCount[]> {
+  getLeaderboard(key?: string, order?: "asc" | "desc"): Promise<Leaderboard[]> {
     return this.userService.getLeaderboard(key, order);
   }
 
-  searchUsers(filter: UserSearchI): Promise<User[]> {
+  searchUsers(filter: UserSearch): Promise<User[]> {
     return this.userService.searchUsers(filter);
   }
 

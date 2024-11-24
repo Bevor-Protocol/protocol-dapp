@@ -1,8 +1,6 @@
 import { handleErrors } from "@/utils/decorators";
-import { ResponseI } from "@/utils/types";
-import { UserNotificationI } from "@/utils/types/prisma";
-import { Prisma } from "@prisma/client";
-import { revalidateTag } from "next/cache";
+import { ResponseI } from "@/utils/types/api";
+import { UserNotificationsDetails } from "@/utils/types/relations";
 import RoleService from "../roles/roles.service";
 import NotificationService from "./notification.service";
 
@@ -14,12 +12,12 @@ class NotificationController {
 
   async getUserNotifications(
     userId: string,
-  ): Promise<Record<string, { meta: string; notifications: UserNotificationI[] }>> {
+  ): Promise<Record<string, { meta: string; notifications: UserNotificationsDetails[] }>> {
     const notifications = await this.notificationService.getUserNotications(userId);
 
     const data = notifications.reduce(
-      (prev: Record<string, { meta: string; notifications: UserNotificationI[] }>, next) => {
-        const { id, title } = next.action.membership.audit;
+      (prev: Record<string, { meta: string; notifications: UserNotificationsDetails[] }>, next) => {
+        const { id, title } = next.action.auditMembership.audit;
         if (!(id in prev)) {
           prev[id] = {
             meta: title,
@@ -33,8 +31,6 @@ class NotificationController {
       {},
     );
 
-    revalidateTag(`NOTIFICATION ${userId}`);
-
     return data;
   }
 
@@ -43,23 +39,17 @@ class NotificationController {
   }
 
   async getUserHistoryCountByAuditId(userId: string, auditId: string): Promise<number> {
-    const data = await this.notificationService.getUserNotificationsUnreadCountByAuditId(
-      userId,
-      auditId,
-    );
-
-    revalidateTag(`NOTIFICATION ${userId} ${auditId}`);
-    return data;
+    return this.notificationService.getUserNotificationsUnreadCountByAuditId(userId, auditId);
   }
 
   @handleErrors
-  async updateUserNotificationByAuditId(auditId: string): Promise<ResponseI<Prisma.BatchPayload>> {
+  async updateUserNotificationByAuditId(auditId: string): Promise<ResponseI<boolean>> {
     const { id } = await this.roleService.requireAccount();
-    const data = await this.notificationService.updateNotificationByAudit(id, auditId);
+    await this.notificationService.updateNotificationByAudit(id, auditId);
 
-    revalidateTag(`HISTORY ${id}`);
-    revalidateTag(`HISTORY ${id} ${auditId}`);
-    return { success: true, data };
+    // expireTag(...["HISTORY", id]);
+    // expireTag(...["HISTORY", id, auditId]);
+    return { success: true, data: true };
   }
 }
 

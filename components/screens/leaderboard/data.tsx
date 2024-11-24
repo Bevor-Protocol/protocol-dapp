@@ -3,21 +3,21 @@ import { Icon } from "@/components/Icon";
 import DynamicLink from "@/components/Link";
 import { cn } from "@/utils";
 import { trimAddress } from "@/utils/formatters";
-import { UserWithCount } from "@/utils/types/prisma";
+import { Leaderboard } from "@/utils/types/custom";
 
 const LeaderboardData = ({
   data,
   isLoading,
 }: {
-  data: UserWithCount[];
+  data: Leaderboard[];
   isLoading: boolean;
 }): JSX.Element => {
   if (isLoading) return <></>;
   return (
     <Column className="w-full gap-1">
-      {data.map((item, ind) => (
+      {data.map((item) => (
         <DynamicLink
-          key={item.id + ind}
+          key={item.id}
           href={`/users/${item.address}`}
           className="w-full animate-fade-in"
         >
@@ -38,25 +38,25 @@ flex items-center gap-2 whitespace-nowrap max-w-full px-4"
               className="cursor-pointer rounded-lg text-sm
 flex items-center gap-2 whitespace-nowrap max-w-full px-4"
             >
-              <span>{item.stats.valuePotential.toLocaleString()}</span>
+              <span>{item.stats.value_potential.toLocaleString()}</span>
             </li>
             <li
               className="cursor-pointer rounded-lg text-sm
 flex items-center gap-2 whitespace-nowrap max-w-full px-4"
             >
-              <span>{item.stats.valueComplete.toLocaleString()}</span>
+              <span>{item.stats.value_complete.toLocaleString()}</span>
             </li>
             <li
               className="cursor-pointer rounded-lg text-sm
 flex items-center gap-2 whitespace-nowrap max-w-full px-4"
             >
-              <span>{item.stats.numActive.toLocaleString()}</span>
+              <span>{item.stats.num_active.toLocaleString()}</span>
             </li>
             <li
               className="cursor-pointer rounded-lg text-sm
 flex items-center gap-2 whitespace-nowrap max-w-full px-4"
             >
-              <span>{item.stats.numComplete.toLocaleString()}</span>
+              <span>{item.stats.num_complete.toLocaleString()}</span>
             </li>
             <li
               className="cursor-pointer rounded-lg text-sm
@@ -69,7 +69,7 @@ flex items-center gap-2 whitespace-nowrap max-w-full px-4 relative"
                   !item.available && " bg-gray-600",
                 )}
               />
-              <span>{item.stats.numWishlist.toLocaleString()}</span>
+              <span>{item.stats.num_wishlist.toLocaleString()}</span>
             </li>
           </ul>
         </DynamicLink>

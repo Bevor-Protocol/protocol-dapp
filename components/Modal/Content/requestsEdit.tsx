@@ -5,28 +5,32 @@ import { useState } from "react";
 
 import { Column, Row } from "@/components/Box";
 import { useModal, useToast } from "@/hooks/useContexts";
-import { AuditI } from "@/utils/types/prisma";
 // import * as Form from "@/components/Form";
 import { auditAction } from "@/actions";
 import { X } from "@/assets";
 import { AuditorItem } from "@/components/Audit";
 import { Button } from "@/components/Button";
 import ErrorToast from "@/components/Toast/Content/error";
-import { MembershipStatusType, RoleType } from "@prisma/client";
+import { MembershipStatusEnum, RoleTypeEnum } from "@/utils/types/enum";
+import { AuditWithOwnerSecure } from "@/utils/types/relations";
+import { useRouter } from "next/navigation";
 
-const RequestsEdit = ({ audit }: { audit: AuditI }): JSX.Element => {
-  const requestedAuditors = audit.memberships.filter((member) => member.role === RoleType.AUDITOR);
+const RequestsEdit = ({ audit }: { audit: AuditWithOwnerSecure }): JSX.Element => {
+  const requestedAuditors = audit.auditMemberships.filter(
+    (member) => member.role === RoleTypeEnum.AUDITOR,
+  );
   const initialState = requestedAuditors.map((auditor) => {
     switch (auditor.status) {
-      case MembershipStatusType.REJECTED:
+      case MembershipStatusEnum.REJECTED:
         return -1;
-      case MembershipStatusType.REQUESTED:
+      case MembershipStatusEnum.REQUESTED:
         return 0;
     }
     return 1;
   });
 
   const { hide } = useModal();
+  const router = useRouter();
   const [checked, setChecked] = useState<(1 | -1 | 0)[]>([...initialState]);
   const { show } = useToast();
   // const [showRejected, setShowRejected] = useState(false);
@@ -46,6 +50,7 @@ const RequestsEdit = ({ audit }: { audit: AuditI }): JSX.Element => {
     onSuccess: (response) => {
       if (response.success) {
         hide();
+        router.refresh();
       } else {
         show({
           content: <ErrorToast text="something went wrong, try again later" />,

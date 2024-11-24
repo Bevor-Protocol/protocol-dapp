@@ -9,7 +9,7 @@ import AuditFormEntries from "@/components/Audit/client/form";
 import ErrorToast from "@/components/Toast/Content/error";
 import { useToast } from "@/hooks/useContexts";
 import { ErrorTypeEnum } from "@/utils/types/enum";
-import { User } from "@prisma/client";
+import { User } from "@/utils/types/tables";
 
 const AuditCreation = ({ user }: { user: User }): JSX.Element => {
   const router = useRouter();
