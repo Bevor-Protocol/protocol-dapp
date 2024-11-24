@@ -8,7 +8,6 @@ concurrency:
 
 env:
   DOPPLER_TOKEN: ${{ secrets.DOPPLER_TOKEN }}
-  DATABASE_URL: ${{ secrets.DATABASE_URL }}
   NEON_API_KEY: ${{ secrets.NEON_API_KEY }}
 
 jobs:
@@ -53,14 +52,18 @@ jobs:
       # Build the application
       - name: Build
         run: yarn build
+        env:
+          DATABASE_URL: ${{ steps.create-branch.outputs.db_url }}?sslmode=require
 
       - name: Deploy DB
         run: yarn drizzle-kit migrate
+        env:
+          DATABASE_URL: ${{ steps.create-branch.outputs.db_url }}?sslmode=require
 
       - name: Comment on Pull Request
         uses: thollander/actions-comment-pull-request@v2
         with:
-          # GITHUB_TOKEN: ${{ env.GH_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
           message: |
             Neon branch :elephant: : https://console.neon.tech/app/projects/billowing-feather-81805198/branches/${{ steps.create-branch.outputs.branch_id }}
 
@@ -70,3 +73,5 @@ jobs:
           start: yarn start
           browser: chrome
           wait-on: "http://localhost:3000"
+        env:
+          DATABASE_URL: ${{ steps.create-branch.outputs.db_url }}?sslmode=require
