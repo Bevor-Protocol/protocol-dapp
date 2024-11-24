@@ -45,8 +45,8 @@ jobs:
       - name: Install dependencies
         run: yarn install
 
-      # not actually using this other than DATABASE_URL yet
-      # - uses: dopplerhq/cli-action@v3
+      - name: Install doppler
+        uses: dopplerhq/cli-action@v3
 
       # Build the application
       - name: Build
