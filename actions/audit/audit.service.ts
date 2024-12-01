@@ -231,7 +231,8 @@ class AuditService {
         objOut.states[AuditStateEnum.CAN_UNLOCK] = verified.every((member) => !!member.findings);
       }
       if (userAsAuditor) {
-        objOut.states[AuditStateEnum.CAN_SUBMIT_FINDINGS] = !userAsAuditor.findings;
+        objOut.states[AuditStateEnum.CAN_SUBMIT_FINDINGS] =
+          userAsAuditor.accepted_terms && !userAsAuditor.findings;
       }
     }
 
