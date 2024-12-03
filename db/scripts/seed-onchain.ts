@@ -1,6 +1,7 @@
 import { db } from "@/db";
 import { ethers } from "ethers";
 
+import { Contracts } from "@/constants/web3";
 import BevorProtocolAbi from "@/contracts/abis/BevorProtocol";
 import ERC20Abi from "@/contracts/abis/ERC20Token";
 import { eq } from "drizzle-orm";
@@ -13,8 +14,16 @@ const seed = async (): Promise<void> => {
   // skip the signer for seeding, as the nonce is wrong due to deployer script.
   const [, ...accounts] = await provider.listAccounts();
 
-  const tokenContract = new ethers.Contract(ERC20Abi.address, ERC20Abi.abi, signer);
-  const bevorContract = new ethers.Contract(BevorProtocolAbi.address, BevorProtocolAbi.abi, signer);
+  const tokenContract = new ethers.Contract(
+    Contracts.Localhost.bvrToken.address,
+    ERC20Abi.abi,
+    signer,
+  );
+  const bevorContract = new ethers.Contract(
+    Contracts.Localhost.bevorProtocol.address,
+    BevorProtocolAbi.abi,
+    signer,
+  );
 
   const WALLETS = accounts.slice(0, 10).map((acct) => acct.address);
 
@@ -38,7 +47,7 @@ const seed = async (): Promise<void> => {
     50 * 24 * 60 * 60,
     "example-7Ap1GR49l2yVbJtvIJ0dVnleKuM8pj",
     amount,
-    ERC20Abi.address,
+    Contracts.Localhost.bvrToken.address,
     "I am salt",
   );
 
@@ -53,7 +62,7 @@ const seed = async (): Promise<void> => {
       50 * 24 * 60 * 60,
       "example-7Ap1GR49l2yVbJtvIJ0dVnleKuM8pj",
       amount,
-      ERC20Abi.address,
+      Contracts.Localhost.bvrToken.address,
       "I am salt",
     );
 
@@ -72,7 +81,7 @@ const seed = async (): Promise<void> => {
     50 * 24 * 60 * 60,
     "example-7Ap1GR49l2yVbJtvIJ0dVnleKuM8pj",
     amount,
-    ERC20Abi.address,
+    Contracts.Localhost.bvrToken.address,
     "I am salty",
   );
 
@@ -87,7 +96,7 @@ const seed = async (): Promise<void> => {
       50 * 24 * 60 * 60,
       "example-7Ap1GR49l2yVbJtvIJ0dVnleKuM8pj",
       amount,
-      ERC20Abi.address,
+      Contracts.Localhost.bvrToken.address,
       "I am salty",
     );
 
@@ -108,7 +117,7 @@ const seed = async (): Promise<void> => {
     50 * 24 * 60 * 60,
     "example-7Ap1GR49l2yVbJtvIJ0dVnleKuM8pj",
     amount,
-    ERC20Abi.address,
+    Contracts.Localhost.bvrToken.address,
     "I am salt",
   );
 
@@ -123,7 +132,7 @@ const seed = async (): Promise<void> => {
       50 * 24 * 60 * 60,
       "example-7Ap1GR49l2yVbJtvIJ0dVnleKuM8pj",
       amount,
-      ERC20Abi.address,
+      Contracts.Localhost.bvrToken.address,
       "I am salt",
     );
 

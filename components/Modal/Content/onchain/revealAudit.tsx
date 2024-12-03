@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import { useEffect, useState } from "react";
-import { Abi, Address } from "viem";
+import { Abi } from "viem";
 import { readContract } from "viem/actions";
 import { useClient } from "wagmi";
 
@@ -16,14 +16,16 @@ import { useContractWriteListen } from "@/hooks/useContractWriteListen";
 import { cn } from "@/utils";
 import { parseUnits } from "viem";
 
-import { AvailableTokens } from "@/constants/web3";
+import { AvailableTokens, Contracts } from "@/constants/web3";
 import BevorABI from "@/contracts/abis/BevorProtocol";
 import ERC20ABI from "@/contracts/abis/ERC20Token";
 import { AuditWithOwnerSecure } from "@/utils/types/relations";
 import { User } from "@/utils/types/tables";
+import { useRouter } from "next/navigation";
 
 const RevealAudit = ({ audit, user }: { audit: AuditWithOwnerSecure; user: User }): JSX.Element => {
   const { hide } = useModal();
+  const router = useRouter();
   const client = useClient();
   const [step, setStep] = useState(0);
 
@@ -48,13 +50,13 @@ const RevealAudit = ({ audit, user }: { audit: AuditWithOwnerSecure; user: User 
   // following approvals overwrite previous ones, so we can safely call it again.
   const { state: stateApproval, writeContractWithEvents: writeApproval } = useContractWriteListen({
     abi: ERC20ABI.abi as Abi,
-    address: ERC20ABI.address as Address,
+    address: Contracts.Localhost.bvrToken.address,
     functionName: "approve",
   });
 
   const { state, writeContractWithEvents } = useContractWriteListen({
     abi: BevorABI.abi as Abi,
-    address: BevorABI.address as Address,
+    address: Contracts.Localhost.bevorProtocol.address,
     functionName: "revealFindings",
   });
 
@@ -69,7 +71,7 @@ const RevealAudit = ({ audit, user }: { audit: AuditWithOwnerSecure; user: User 
     if (!token) return;
     const convertedValue = parseUnits(audit.price.toString(), token.decimals);
 
-    writeApproval([BevorABI.address, convertedValue])
+    writeApproval([Contracts.Localhost.bevorProtocol.address, convertedValue])
       .then(() => {
         setStep(1);
       })
@@ -95,7 +97,7 @@ const RevealAudit = ({ audit, user }: { audit: AuditWithOwnerSecure; user: User 
         auditIdGenerated = result.onchain_audit_info_id as string;
 
         return readContract(client, {
-          address: BevorABI.address as Address,
+          address: Contracts.Localhost.bevorProtocol.address,
           abi: BevorABI.abi as Abi,
           functionName: "generateTokenId",
           args: [auditIdGenerated, findings],
@@ -110,6 +112,7 @@ const RevealAudit = ({ audit, user }: { audit: AuditWithOwnerSecure; user: User 
       })
       .then(() => {
         setStep(2);
+        router.refresh();
       })
       .catch((error) => {
         console.log(error);
