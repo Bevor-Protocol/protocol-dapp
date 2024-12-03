@@ -1,4 +1,5 @@
 import { Column } from "@/components/Box";
+import { code } from "@/components/font";
 import { Icon } from "@/components/Icon";
 import DynamicLink from "@/components/Link";
 import { cn } from "@/utils";
@@ -35,32 +36,47 @@ flex items-center gap-2 whitespace-nowrap max-w-full px-4"
               </span>
             </li>
             <li
-              className="cursor-pointer rounded-lg text-sm
-flex items-center gap-2 whitespace-nowrap max-w-full px-4"
+              className={cn(
+                "cursor-pointer rounded-lg text-sm",
+                "flex items-center gap-2 whitespace-nowrap max-w-full px-4",
+                code.className,
+              )}
             >
               <span>{item.stats.value_potential.toLocaleString()}</span>
             </li>
             <li
-              className="cursor-pointer rounded-lg text-sm
-flex items-center gap-2 whitespace-nowrap max-w-full px-4"
+              className={cn(
+                "cursor-pointer rounded-lg text-sm",
+                "flex items-center gap-2 whitespace-nowrap max-w-full px-4",
+                code.className,
+              )}
             >
               <span>{item.stats.value_complete.toLocaleString()}</span>
             </li>
             <li
-              className="cursor-pointer rounded-lg text-sm
-flex items-center gap-2 whitespace-nowrap max-w-full px-4"
+              className={cn(
+                "cursor-pointer rounded-lg text-sm",
+                "flex items-center gap-2 whitespace-nowrap max-w-full px-4",
+                code.className,
+              )}
             >
               <span>{item.stats.num_active.toLocaleString()}</span>
             </li>
             <li
-              className="cursor-pointer rounded-lg text-sm
-flex items-center gap-2 whitespace-nowrap max-w-full px-4"
+              className={cn(
+                "cursor-pointer rounded-lg text-sm",
+                "flex items-center gap-2 whitespace-nowrap max-w-full px-4",
+                code.className,
+              )}
             >
               <span>{item.stats.num_complete.toLocaleString()}</span>
             </li>
             <li
-              className="cursor-pointer rounded-lg text-sm
-flex items-center gap-2 whitespace-nowrap max-w-full px-4 relative"
+              className={cn(
+                "cursor-pointer rounded-lg text-sm relative",
+                "flex items-center gap-2 whitespace-nowrap max-w-full px-4",
+                code.className,
+              )}
             >
               <span
                 className={cn(

@@ -13,6 +13,7 @@ import { useModal } from "@/hooks/useContexts";
 import { useContractWriteListen } from "@/hooks/useContractWriteListen";
 
 import { Loader } from "@/components/Loader";
+import { Contracts } from "@/constants/web3";
 import BevorABI from "@/contracts/abis/BevorProtocol";
 import { cn } from "@/utils";
 import { AuditWithOwnerSecure } from "@/utils/types/relations";
@@ -30,7 +31,7 @@ const InitiateAudit = ({
 
   const { state, writeContractWithEvents } = useContractWriteListen({
     abi: BevorABI.abi as Abi,
-    address: BevorABI.address as Address,
+    address: Contracts.Localhost.bevorProtocol.address,
     functionName: "prepareAudit",
   });
 
@@ -64,7 +65,7 @@ const InitiateAudit = ({
     if (!client) return;
     let auditIdGenerated = BigInt(0);
     readContract(client, {
-      address: BevorABI.address as Address,
+      address: Contracts.Localhost.bevorProtocol.address,
       abi: BevorABI.abi as Abi,
       functionName: "generateAuditId",
       args: args,

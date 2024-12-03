@@ -27,7 +27,7 @@ const UserWishlist = ({
   });
 
   return (
-    <div className="absolute -right-10 top-0">
+    <div className="absolute right-0 top-0">
       <Tooltip.Reference>
         <Tooltip.Trigger>
           <div className="cursor-pointer" onClick={() => mutate()}>

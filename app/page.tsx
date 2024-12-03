@@ -7,7 +7,7 @@ import { cn } from "@/utils";
 
 const Page = (): JSX.Element => {
   return (
-    <section className="flex flex-col h-full justify-center items-center">
+    <section className="flex flex-col h-full justify-center items-center sm:pb-14">
       <div className="grid grid-cols-2 w-full md:grid-cols-1 gap-6 items-center justify-center">
         <Column className="items-start gap-8 text-left md:text-center md:items-center">
           <div className="grad-light text-grad">
@@ -39,7 +39,7 @@ const Page = (): JSX.Element => {
             "grid grid-cols-2 grid-rows-2 relative z-[1] gap-2",
             "before:flex before:absolute before:inset-0 before:scale-110 \
             before:blur-[50px] before:bg-dark-primary-50 before:-z-20",
-            "sm:grid-cols-1 sm:grid-rows-4",
+            "xs:grid-cols-1 sm:grid-rows-4",
             "md:grid-cols-2 md:grid-rows-2",
             "xl:grid-cols-1 xl:grid-rows-4",
           )}

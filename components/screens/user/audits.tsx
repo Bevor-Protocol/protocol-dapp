@@ -71,7 +71,7 @@ const UserAudits = ({
 
   return (
     <div className="grid grid-cols-5 relative">
-      <Column className="gap-2 sticky top-10 self-start">
+      <Column className="gap-2 sticky top-10 self-start sm:hidden">
         <div>
           <p className="mb-1">Status</p>
           <ul>
@@ -141,7 +141,7 @@ const UserAudits = ({
           </div>
         )}
       </Column>
-      <Row className="col-start-2 col-end-6 flex-wrap">
+      <Row className="col-start-2 col-end-6 flex-wrap sm:col-start-1">
         {auditsShow.map((audit) => (
           <AuditCardTruncated
             key={audit.id}
@@ -150,6 +150,7 @@ const UserAudits = ({
             showNoti={pendingNotifications.includes(audit.id)}
           />
         ))}
+        {auditsShow.length === 0 && <p className="w-full text-center">no audits to show</p>}
       </Row>
     </div>
   );

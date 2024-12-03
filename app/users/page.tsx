@@ -15,7 +15,7 @@ const Fetcher = async (): Promise<JSX.Element> => {
 
 const UsersPage = (): JSX.Element => {
   return (
-    <section className="flex flex-col h-full items-center">
+    <section className="flex flex-col h-full items-center sm:pb-14">
       <Column className="gap-10 py-8 justify-start items-center w-full max-w-[1000px] h-full">
         <div className="grad-light text-grad">
           <h2 className="text-4xl font-extrabold leading-[normal]">Users</h2>

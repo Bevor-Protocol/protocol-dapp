@@ -43,13 +43,8 @@ export const NavDropdown = (): JSX.Element => {
           <Ellipses className="transition-colors text-white/60" />
         </HoverItem>
       </Dropdown.Trigger>
-      <Dropdown.Content className="top-full right-0">
-        <Card.Main
-          className={cn(
-            "cursor-default text-sm min-w-52",
-            "md:text-base md:top-[unset] md:-right-5 md:bottom-full md:w-svw md:rounded-t-lg",
-          )}
-        >
+      <Dropdown.Content className="top-full right-0 md:top-[unset] md:-right-5 md:bottom-full md:w-svw">
+        <Card.Main className="cursor-default text-sm min-w-52 md:text-base md:rounded-t-lg">
           <Card.Content className="px-2 py-2">
             <Column className="items-stretch gap-1 w-full">
               <DynamicLink href="/dao" className="w-full">

@@ -12,10 +12,10 @@ const Fetcher = async (): Promise<JSX.Element> => {
 
 const LeaderboardPage = (): JSX.Element => {
   return (
-    <section className="flex flex-col h-full items-center">
-      <Column className="gap-4 py-8 justify-start items-center w-full max-w-[1000px] h-full">
+    <section className="flex flex-col h-full items-center sm:pb-14">
+      <Column className="gap-4 py-8 justify-start items-center w-full max-w-[1000px] h-full constrain-height">
         <div className="grad-light text-grad">
-          <h2 className="text-4xl font-extrabold leading-[normal]">Leaderboard</h2>
+          <h2 className="text-4xl font-extrabold leading-[1.25]">Leaderboard</h2>
         </div>
         <Suspense fallback={<LoaderFill className="h-12 w-12" />}>
           <Fetcher />

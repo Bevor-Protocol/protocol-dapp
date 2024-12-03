@@ -1,4 +1,4 @@
-import { AvailableTokens } from "@/constants/web3";
+import { AvailableTokens, Contracts } from "@/constants/web3";
 import BevorABI from "@/contracts/abis/BevorProtocol";
 import ERC20ABI from "@/contracts/abis/ERC20Token";
 import {
@@ -55,10 +55,10 @@ class ContractService {
   getBalance(address: string): Promise<number> {
     return this.publicClient
       .readContract({
-        address: ERC20ABI.address as Address,
+        address: Contracts.Localhost.bvrToken.address,
         abi: ERC20ABI.abi as Abi,
         functionName: "allowance",
-        args: [address, BevorABI.address],
+        args: [address, Contracts.Localhost.bevorProtocol.address],
       })
       .then((data) => {
         return data as number;
@@ -72,7 +72,7 @@ class ContractService {
   getAudit(auditId: bigint): Promise<AuditContractStructuredI | null> {
     return this.publicClient
       .readContract({
-        address: BevorABI.address as Address,
+        address: Contracts.Localhost.bevorProtocol.address,
         abi: BevorABI.abi as Abi,
         functionName: "audits",
         args: [auditId],
@@ -111,14 +111,14 @@ class ContractService {
     this.provider.send("evm_increaseTime", [3600]);
     this.provider.send("evm_mine", []);
     ///////////////////////////////////////////
-    const tokenUse = AvailableTokens.localhost.find((t) => t.address == token);
+    const tokenUse = AvailableTokens.Localhost.find((t) => t.address == token);
     if (!tokenUse) {
       return Promise.resolve(returnObj);
     }
 
     return this.publicClient
       .readContract({
-        address: BevorABI.address as Address,
+        address: Contracts.Localhost.bevorProtocol.address,
         abi: BevorABI.abi as Abi,
         functionName: "getVestingScheduleIdByAddressAndAudit",
         args: [user, auditId],
@@ -127,7 +127,7 @@ class ContractService {
         const scheduleIdTyped = scheduleId as bigint;
         returnObj.vestingScheduleId = scheduleIdTyped;
         return this.publicClient.readContract({
-          address: BevorABI.address as Address,
+          address: Contracts.Localhost.bevorProtocol.address,
           abi: BevorABI.abi as Abi,
           functionName: "vestingSchedules",
           args: [scheduleIdTyped],
@@ -137,7 +137,7 @@ class ContractService {
         const vestingScheduleTyped = vestingSchedule as VestingContractView;
         returnObj.withdrawn = formatUnits(vestingScheduleTyped[2], tokenUse.decimals);
         return this.publicClient.readContract({
-          address: BevorABI.address as Address,
+          address: Contracts.Localhost.bevorProtocol.address,
           abi: BevorABI.abi as Abi,
           functionName: "computeReleasableAmount",
           args: [returnObj.vestingScheduleId],

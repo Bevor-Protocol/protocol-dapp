@@ -66,59 +66,63 @@ body.modal-show {
     margin: 0;
   }
 
-  input[type=file]::-webkit-file-upload-button {
+  input[type="file"]::-webkit-file-upload-button {
     visibility: hidden;
+  }
 }
+
+@layer components {
+  @media screen(lg) {
+    /* summation of nav and footer */
+    .constrain-height {
+      max-height: calc(100vh - (3rem + 4rem + 2px + 3.5rem + 3rem));
+      max-height: calc(100dvh - (3rem + 4rem + 2px + 3.5rem + 3rem));
+    }
+  }
+
+  @media screen(sm) {
+    /* summation of nav and padding for fixed footer */
+    .constrain-height {
+      max-height: calc(100vh - (3rem + 4rem + 2px + 3.5rem));
+      max-height: calc(100dvh - (3rem + 4rem + 2px + 3.5rem));
+    }
+  }
 }
 
 @layer components {
   .leaderboard {
-    @apply relative max-h-none py-0 mt-8 mb-8 w-full max-w-[1000px] h-full
+    @apply relative max-h-none py-0 mt-8 mb-8 w-full max-w-[1000px] h-full flex-grow;
   }
   .leaderboard::-webkit-scrollbar {
-    @apply w-[10px] h-[10px]
+    @apply w-[10px] h-[10px];
   }
   .leaderboard::-webkit-scrollbar-track {
-    @apply rounded-lg bg-dark-primary-15
+    @apply rounded-lg bg-dark-primary-15;
   }
   .leaderboard::-webkit-scrollbar-thumb {
-    @apply rounded-lg bg-primary-light-15
-  }
-
-  @media screen(xl) {
-    .leaderboard {
-      @apply block overflow-y-scroll mb-0;
-      max-height: calc(100vh - (3rem + 60px));
-      max-height: calc(100dvh - (3rem + 60px));
-    }
+    @apply rounded-lg bg-dark-light-15;
   }
 
   @media screen(lg) {
     .leaderboard {
-      @apply overflow-x-scroll
+      @apply block overflow-y-scroll overflow-x-scroll m-0;
     }
-    .leaderboard > div {
-      @apply min-w-[914px]
-    }
-  }
 
-  @media screen(md) {
-    .leaderboard {
-      max-height: calc(100vh - (3rem + 60px + 3rem));
-      max-height: calc(100dvh - (3rem + 60px + 3rem));
+    .leaderboard > div {
+      @apply min-w-[914px];
     }
   }
 }
 
 @layer components {
   .nav-fixed-bottom {
-    @apply fixed bottom-0 left-0 w-full bg-dark z-[999] rounded-t-lg justify-between px-5 shadow shadow-gray-200/20
+    @apply fixed bottom-0 left-0 w-full bg-dark z-[999] rounded-t-lg justify-between px-5 shadow shadow-gray-200/20;
   }
 }
 
 @layer components {
   .leaderboard-element {
-    @apply flex flex-row list-none m-0 p-2
+    @apply flex flex-row list-none m-0 p-2;
   }
   .leaderboard-element li:nth-child(1) {
     width: 25%;
@@ -173,7 +177,7 @@ body.modal-show {
     width: var(--size-desktop);
     min-height: var(--size-desktop);
     min-width: var(--size-desktop);
-    @apply rounded-full transition-all bg-no-repeat bg-cover bg-center
+    @apply rounded-full transition-all bg-no-repeat bg-cover bg-center;
   }
 
   @media screen(md) {
@@ -191,7 +195,7 @@ body.modal-show {
     max-width: 100%;
     overflow: hidden;
   }
-  
+
   .markdown > * {
     margin: 1rem 0;
   }
@@ -211,7 +215,7 @@ body.modal-show {
   .markdown td,
   .markdown th {
     padding: 2px 4px;
-    @apply border border-gray-200/20
+    @apply border border-gray-200/20;
   }
 
   .markdown a {
@@ -221,42 +225,42 @@ body.modal-show {
 
 @layer components {
   .btn-gradient {
-    @apply flex flex-row items-center justify-center outline-none border-none rounded-md py-2 px-3 text-dark text-sm gap-1 font-semibold transition-opacity
+    @apply flex flex-row items-center justify-center outline-none border-none rounded-md py-2 px-3 text-dark text-sm gap-1 font-semibold transition-opacity;
   }
   .btn-gradient:not(:disabled):hover,
   .btn-gradient:not(:disabled):focus-visible,
   .btn-gradient:not(:disabled):active,
   a:not(.disabled):focus-visible .btn-gradient,
   a:not(.disabled):active .btn-gradient {
-    @apply opacity-hover
+    @apply opacity-hover;
   }
 
   .btn-outline {
-    @apply flex flex-row items-center justify-center rounded-lg h-9 px-3 text-sm gap-1 bg-dark transition-colors outline-offset-0 text-zinc-400 outline-none border border-zinc-400 min-w-16
+    @apply flex flex-row items-center justify-center rounded-lg h-9 px-3 text-sm gap-1 bg-dark transition-colors outline-offset-0 text-zinc-400 outline-none border border-zinc-400 min-w-16;
   }
   .btn-outline:not(:disabled):hover,
   .btn-outline:not(:disabled):focus-visible,
   .btn-outline:not(:disabled):active,
   a:not(.disabled):focus-visible .btn-outline,
   a:not(.disabled):active .btn-outline {
-    @apply bg-slate-800/60 text-white shadow-md shadow-zinc-400/20
+    @apply bg-slate-800/60 text-white shadow-md shadow-zinc-400/20;
   }
 
   .btn-gradient:disabled,
   .btn-outline:disabled,
   a.btn-gradient.disabled,
   a.btn-outline.disabled {
-    @apply opacity-disable
+    @apply opacity-disable;
   }
 }
 
 @layer components {
   label.toggle {
-    @apply relative inline-block w-[35px] h-[20px]
+    @apply relative inline-block w-[35px] h-[20px];
   }
 
   input.toggle {
-    @apply hidden appearance-none
+    @apply hidden appearance-none;
   }
 
   span.toggle {
@@ -307,7 +311,11 @@ body.modal-show {
 
 @layer utilities {
   .grad-light {
-    background: linear-gradient(180deg, theme("colors.off-white") 6.58%, theme("colors.dark-white") 81.58%);
+    background: linear-gradient(
+      180deg,
+      theme("colors.off-white") 6.58%,
+      theme("colors.dark-white") 81.58%
+    );
   }
   .text-grad {
     background-clip: text;
@@ -320,35 +328,43 @@ body.modal-show {
   .conic {
     aspect-ratio: 1 / 1;
     background: conic-gradient(theme("colors.white"), theme("colors.transparent"));
-    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-    mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    -webkit-mask:
+      linear-gradient(#fff 0 0) content-box,
+      linear-gradient(#fff 0 0);
+    mask:
+      linear-gradient(#fff 0 0) content-box,
+      linear-gradient(#fff 0 0);
     -webkit-mask-composite: xor;
     mask-composite: exclude;
-    @apply aspect-square z-0 p-[3px] rounded-full
+    @apply aspect-square z-0 p-[3px] rounded-full;
   }
 
   .conic-full {
     aspect-ratio: 1 / 1;
-    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-    mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    -webkit-mask:
+      linear-gradient(#fff 0 0) content-box,
+      linear-gradient(#fff 0 0);
+    mask:
+      linear-gradient(#fff 0 0) content-box,
+      linear-gradient(#fff 0 0);
     -webkit-mask-composite: xor;
     mask-composite: exclude;
-    @apply aspect-square z-0 p-[3px] rounded-full
+    @apply aspect-square z-0 p-[3px] rounded-full;
   }
 }
 
 @layer utilities {
   .focus-border {
-    @apply border border-transparent outline-none transition-all focus-visible:border-gray-200/20 focus-visible:outline-none
+    @apply border border-transparent outline-none transition-all focus-visible:border-gray-200/20 focus-visible:outline-none;
   }
 
   .focus-input {
-    @apply focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-blue-300
+    @apply focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-blue-300;
   }
 }
 
 @layer utilities {
   .after-underline {
-    @apply after:absolute after:-bottom-1 after:left-0 after:right-0 after:h-[1px] after:bg-current
+    @apply after:absolute after:-bottom-1 after:left-0 after:right-0 after:h-[1px] after:bg-current;
   }
 }

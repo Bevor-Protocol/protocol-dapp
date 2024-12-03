@@ -32,9 +32,9 @@ const UsersWrapper = ({ initialData }: { initialData: User[] }): JSX.Element => 
 
   return (
     <>
-      <Row className="gap-6">
+      <Row className="gap-x-6 gap-y-4 flex-wrap justify-center">
         <Form.Search onChange={(e) => setFilter((prev) => ({ ...prev, search: e.target.value }))} />
-        <ul>
+        <ul className="md:w-full md:flex md:flex-row gap-x-4 justify-center">
           <li>
             <Form.Checkbox
               name="ownerRole"
@@ -69,7 +69,7 @@ const UsersWrapper = ({ initialData }: { initialData: User[] }): JSX.Element => 
       ) : data.length === 0 ? (
         <p className="px-1 text-center col-span-5">No results to show</p>
       ) : (
-        <div className="grid grid-cols-4 *:w-full gap-4 w-full">
+        <div className="grid grid-cols-4 *:w-full gap-4 w-full md:grid-cols-3 sm:grid-cols-2">
           {data.map((user) => (
             <UserCard user={user} key={user.id} />
           ))}
