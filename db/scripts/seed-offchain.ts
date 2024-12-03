@@ -3,6 +3,7 @@ import { user } from "@/db/schema/user.sql";
 import { ethers } from "ethers";
 import { audit } from "../schema/audit.sql";
 
+import { Contracts } from "@/constants/web3";
 import ERC20ABI from "@/contracts/abis/ERC20Token";
 import {
   ActionEnum,
@@ -22,7 +23,7 @@ const seed = async (): Promise<void> => {
   if (!provider) {
     throw new Error("make sure the local blockchain is running");
   }
-  const tokenContract = new ethers.Contract(ERC20ABI.address, ERC20ABI.abi);
+  const tokenContract = new ethers.Contract(Contracts.Localhost.bvrToken.address, ERC20ABI.abi);
   const tokenAddress = await tokenContract.getAddress();
 
   // skip the signer for seeding, as the nonce is wrong due to deployer script.

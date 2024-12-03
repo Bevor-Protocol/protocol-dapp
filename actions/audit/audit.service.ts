@@ -191,43 +191,48 @@ class AuditService {
       }
     });
 
-    objOut.isAuditOwner = owner.id === user.id;
-    const userAuditor = auditors.find((auditor) => auditor.user_id === user.id);
+    const isAuditOwner = owner.id === user.id;
+    objOut.isAuditOwner = isAuditOwner;
+
+    const userAsAuditor = auditors.find((auditor) => auditor.user_id === user.id);
 
     if (audit.status === AuditStatusEnum.DISCOVERY) {
-      objOut.states[AuditStateEnum.CAN_ADD_REQUEST] = !userAuditor && user.auditor_role;
-      if (userAuditor) {
-        const { status } = userAuditor;
+      objOut.states[AuditStateEnum.CAN_ADD_REQUEST] =
+        !isAuditOwner && !userAsAuditor && user.auditor_role;
+      if (userAsAuditor) {
+        const { status } = userAsAuditor;
         objOut.states[AuditStateEnum.CAN_REMOVE_REQUEST] = status !== MembershipStatusEnum.REJECTED;
         objOut.states[AuditStateEnum.CAN_REMOVE_VERIFICATION] =
           status === MembershipStatusEnum.VERIFIED;
         objOut.states[AuditStateEnum.IS_REJECTED] = status === MembershipStatusEnum.REJECTED;
       }
-      if (objOut.isAuditOwner) {
+      if (isAuditOwner) {
         objOut.states[AuditStateEnum.CAN_LOCK_AUDIT] = verified.length > 0 && !!audit.details;
         objOut.states[AuditStateEnum.CAN_MANAGE_REQUESTS] = auditors.length > 0;
       }
 
       return objOut;
     }
+
     if (audit.status === AuditStatusEnum.ATTESTATION) {
-      if (objOut.isAuditOwner) {
+      if (isAuditOwner) {
         objOut.states[AuditStateEnum.CAN_FINALIZE] = verified.every(
-          (member) => member.attested_terms,
+          (member) => member.accepted_terms,
         );
       }
-      if (userAuditor) {
-        objOut.states[AuditStateEnum.CAN_ATTEST] = !userAuditor.attested_terms;
+      if (userAsAuditor) {
+        objOut.states[AuditStateEnum.CAN_ATTEST] = !userAsAuditor.attested_terms;
       }
-
       return objOut;
     }
+
     if (audit.status === AuditStatusEnum.AUDITING) {
-      if (userAuditor) {
-        objOut.states[AuditStateEnum.CAN_SUBMIT_FINDINGS] = !userAuditor.findings;
-      }
-      if (objOut.isAuditAuditor) {
+      if (isAuditOwner) {
         objOut.states[AuditStateEnum.CAN_UNLOCK] = verified.every((member) => !!member.findings);
+      }
+      if (userAsAuditor) {
+        objOut.states[AuditStateEnum.CAN_SUBMIT_FINDINGS] =
+          userAsAuditor.accepted_terms && !userAsAuditor.findings;
       }
     }
 

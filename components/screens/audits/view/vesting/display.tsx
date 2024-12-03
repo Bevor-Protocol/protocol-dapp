@@ -1,16 +1,17 @@
 "use client";
 
-import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
 
-import { Button } from "@/components/Button";
 import { Column } from "@/components/Box";
+import { Button } from "@/components/Button";
 import { useContractWriteListen } from "@/hooks/useContractWriteListen";
 
-import BevorABI from "@/contracts/abis/BevorProtocol";
-import { Abi, Address } from "viem";
-import { cn } from "@/utils";
 import { Loader } from "@/components/Loader";
+import { Contracts } from "@/constants/web3";
+import BevorABI from "@/contracts/abis/BevorProtocol";
+import { cn } from "@/utils";
+import { Abi } from "viem";
 
 type InitialStateI = {
   startTime: number;
@@ -36,7 +37,7 @@ const VestingDisplay = ({
 
   const { state, dispatch, writeContractWithEvents } = useContractWriteListen({
     abi: BevorABI.abi as Abi,
-    address: BevorABI.address as Address,
+    address: Contracts.Localhost.bevorProtocol.address,
     functionName: "withdraw",
   });
 
