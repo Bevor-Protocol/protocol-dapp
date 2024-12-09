@@ -55,7 +55,7 @@ type Params = Promise<{ slug: string }>;
 const UserPage = async ({ params }: { params: Params }): Promise<JSX.Element> => {
   const { slug } = await params;
   return (
-    <section className="flex flex-col h-full items-center">
+    <section className="flex flex-col h-full items-center sm:pb-14">
       <Suspense fallback={<LoaderFill className="h-12 w-12" />}>
         <Fetcher address={slug} />
       </Suspense>

@@ -51,7 +51,7 @@ const Fetcher = async (): Promise<JSX.Element> => {
 
 const CreateAudit = (): JSX.Element => {
   return (
-    <section className="flex flex-col h-full items-center">
+    <section className="flex flex-col h-full items-center sm:pb-14">
       <Suspense fallback={<LoaderFill className="h-12 w-12" />}>
         <Fetcher />
       </Suspense>

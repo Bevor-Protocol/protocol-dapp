@@ -9,6 +9,7 @@ import { trimAddress } from "@/utils/formatters";
 import { AuditStatusEnum, MembershipStatusEnum, RoleTypeEnum } from "@/utils/types/enum";
 import { AuditWithUsersSecure, UserAudit } from "@/utils/types/relations";
 import { User } from "@/utils/types/tables";
+import { code } from "../font";
 import { AuditAuditor } from "./client";
 
 const statusMapper: Record<AuditStatusEnum, string> = {
@@ -30,7 +31,7 @@ export const AuditCardTruncated = ({
 }): JSX.Element => {
   const token = AvailableTokens.Localhost.find((t) => t.address == audit.token);
   return (
-    <div className="w-1/2 p-2 animate-fade-in">
+    <div className="w-1/2 p-2 animate-fade-in lg:w-full">
       <DynamicLink href={`/audits/view/${audit.id}`} className="w-full">
         <Card.Main className="w-full cursor-pointer transition-colors hover:bg-dark-primary-30">
           <Card.Content className="gap-4 relative p-4">
@@ -81,29 +82,35 @@ export const AuditCard = ({ audit }: { audit: AuditWithUsersSecure }): JSX.Eleme
             {audit.description}
           </p>
         </Column>
-        <Column className="text-sm whitespace-nowrap min-w-fit">
+        <Column className="text-sm whitespace-nowrap min-w-fit xs:hidden">
           <p>
-            <span className="inline-block w-32 text-right mr-4">Prize Pool: </span>
-            <span className="float-right">
+            <span className="inline-block w-32 text-right mr-4 md:hidden">Prize Pool: </span>
+            <span className={cn("float-right", code.className)}>
               {audit.price.toLocaleString()} {token?.symbol}
             </span>
           </p>
-          <p className="text-white/60 text-xs">
+          <p className="text-white/60 text-xs md:hidden">
             <span className="inline-block w-32 text-right mr-4">Vesting Duration: </span>
-            <span className="float-right">{audit.duration.toLocaleString() || "TBD"} days</span>
+            <span className={cn("float-right", code.className)}>
+              {audit.duration.toLocaleString() || "TBD"} days
+            </span>
           </p>
-          <p className="text-white/60 text-xs">
+          <p className="text-white/60 text-xs md:hidden">
             <span className="inline-block w-32 text-right mr-4">Vesting Cliff: </span>
-            <span className="float-right">{audit.cliff.toLocaleString() || "TBD"} days</span>
+            <span className={cn("float-right", code.className)}>
+              {audit.cliff.toLocaleString() || "TBD"} days
+            </span>
           </p>
-          <p className="text-white/60 text-xs">
+          <p className="text-white/60 text-xs md:hidden">
             <span className="inline-block w-32 text-right mr-4">Created: </span>
-            <span className="float-right">{new Date(audit.created_at).toLocaleDateString()}</span>
+            <span className={cn("float-right", code.className)}>
+              {new Date(audit.created_at).toLocaleDateString()}
+            </span>
           </p>
         </Column>
       </Card.Content>
-      <Card.Footer className="p-2">
-        <Row className="justify-center items-center gap-2">
+      <Card.Footer className="px-2 py-1 text-sm">
+        <Row className="justify-center items-center gap-2 xs:hidden">
           <span className="text-white/60">auditors:</span>
           {verifiedAuditors.length > 0 ? (
             <Row>
@@ -115,6 +122,9 @@ export const AuditCard = ({ audit }: { audit: AuditWithUsersSecure }): JSX.Eleme
             <span className="text-white/60">TBD</span>
           )}
         </Row>
+        <span className={cn("hidden xs:inline-block text-sm", code.className)}>
+          {audit.price.toLocaleString()} {token?.symbol}
+        </span>
         <DynamicLink href={`/audits/view/${audit.id}`}>
           <span className="block p-1 hover:opacity-hover">View Audit</span>
         </DynamicLink>

@@ -1,7 +1,7 @@
+import { jakarta } from "@/components/font";
 import { Analytics } from "@vercel/analytics/react";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import { Metadata, Viewport } from "next";
-import { Plus_Jakarta_Sans } from "next/font/google";
 import { headers } from "next/headers";
 import { cookieToInitialState } from "wagmi";
 import "./globals.css";
@@ -73,8 +73,6 @@ export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
 };
-
-const jakarta = Plus_Jakarta_Sans({ subsets: ["latin"], weight: ["500", "600", "700", "800"] });
 
 const Page = async ({ children }: { children: React.ReactNode }): Promise<JSX.Element> => {
   const headerList = await headers();

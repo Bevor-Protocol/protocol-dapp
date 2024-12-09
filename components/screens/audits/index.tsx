@@ -38,7 +38,7 @@ const Audits = ({ initialData }: { initialData: AuditWithOwnerSecure[] }): JSX.E
 
   return (
     <>
-      <Row className="gap-4">
+      <Row className="gap-4 max-w-full xs:overflow-x-auto xs:pb-2">
         {statusOrder.map((status, ind) => (
           <Toggle
             key={ind}

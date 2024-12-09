@@ -15,7 +15,7 @@ export const Layout = ({ children }: { children: React.ReactNode }): JSX.Element
 export const Footer = (): JSX.Element => {
   return (
     <footer>
-      <Column className="gap-4 w-full py-7 text-center text-xs md:hidden">
+      <Column className="gap-4 w-full py-7 text-center text-xs sm:hidden">
         <p className="opacity-disable">audit. incentivize. de-risk. decentralize.</p>
         <span className="opacity-disable">Bevor &copy; {`${new Date().getFullYear()}`}</span>
       </Column>
@@ -31,7 +31,7 @@ export const Nav = async (): Promise<JSX.Element> => {
     notifications = await notificationAction.getUserNotifications(user.id);
   }
   return (
-    <nav className="py-6 w-full flex flex-row justify-between items-center md:py-4">
+    <nav className="py-6 w-full flex flex-row justify-between items-center">
       <Row className="gap-6">
         <DynamicLink href="/">
           <div className="aspect-[1091/1685] relative h-16">

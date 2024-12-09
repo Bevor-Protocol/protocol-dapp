@@ -39,6 +39,7 @@ const AuditFormEntries = ({
 
   const [queryString, setQueryString] = useState("");
   const [selectedFile, setSelectedFile] = useState<File | undefined>(mockFileDefault);
+  const [showOnlyWishlist, setShowOnlyWishlist] = useState(false);
 
   const { timeoutPending, debouncedData } = useDebounce({
     data: queryString,
@@ -49,7 +50,7 @@ const AuditFormEntries = ({
     queryFn: () => userAction.searchAuditors(debouncedData),
   });
 
-  const { data: dataWishlist, isPending: isPendingWishlist } = useQuery({
+  const { data: dataWishlist } = useQuery({
     queryKey: [WISHLIST, userId],
     queryFn: () => wishlistAction.getUserWishlist(userId),
   });
@@ -59,8 +60,7 @@ const AuditFormEntries = ({
   };
 
   const removeAuditorSet = (id: string): void => {
-    const interAuditors = [...auditors].filter((auditor) => auditor.id != id);
-    setAuditors(interAuditors);
+    setAuditors((prev) => prev.filter((auditor) => auditor.id != id));
   };
 
   const uncontrolledReset = (): void => {
@@ -77,6 +77,7 @@ const AuditFormEntries = ({
     // 1) Filter the verified auditors from the search results
     // 2) Filter the requested or rejected auditors from the search results -> managed separately.
     const chosenAuditors = auditors.map((auditor) => auditor.id);
+    const wishlistedAuditors = dataWishlist?.map((auditors) => auditors.id);
     const alreadyRequested =
       initialState?.auditMemberships
         .filter(
@@ -85,56 +86,33 @@ const AuditFormEntries = ({
             member.status === MembershipStatusEnum.REJECTED,
         )
         .map((member) => member.user.id) || [];
-    // also want to exclude auditors who has previously requested to audit. Managing those will
-    // be a different task.
     return (
       data?.filter((item) => {
         return (
           !chosenAuditors.includes(item.id) &&
           item.id !== userId &&
-          !alreadyRequested.includes(item.id)
+          !alreadyRequested.includes(item.id) &&
+          (!showOnlyWishlist || wishlistedAuditors?.includes(item.id))
         );
       }) || []
     );
-  }, [auditors, data, userId, initialState]);
-
-  const wishlistShow = useMemo(() => {
-    const chosenAuditors = auditors.map((auditor) => auditor.id);
-    const alreadyRequested =
-      initialState?.auditMemberships
-        .filter(
-          (member) =>
-            member.status === MembershipStatusEnum.REQUESTED ||
-            member.status === MembershipStatusEnum.REJECTED,
-        )
-        .map((member) => member.user.id) || [];
-    // also want to exclude auditors who has previously requested to audit. Managing those will
-    // be a different task.
-    return (
-      dataWishlist?.filter((item) => {
-        return (
-          !chosenAuditors.includes(item.receiver.id) &&
-          item.receiver.id !== userId &&
-          !alreadyRequested.includes(item.receiver.id)
-        );
-      }) || []
-    );
-  }, [auditors, dataWishlist, userId, initialState]);
+  }, [auditors, data, userId, initialState, showOnlyWishlist, dataWishlist]);
 
   return (
     <>
-      <Column className="gap-2 my-4">
+      <Column className="gap-2 my-4 md:w-full">
         <Form.Input
           type="text"
-          placeholder="Lorem ipsum..."
+          placeholder="audit title..."
           name="title"
           text="Title"
           defaultValue={initialState?.title}
           disabled={disabled}
           isError={"title" in errors}
+          className="w-1/2 md:w-full"
         />
         <Form.TextArea
-          placeholder="Sed ut perspiciatis unde omnis iste natus error sit voluptatem..."
+          placeholder="audit description..."
           className="h-16"
           name="description"
           text="Description"
@@ -151,79 +129,75 @@ const AuditFormEntries = ({
           setSelected={setSelectedFile}
         />
         <hr className="border-gray-200/20 my-4" />
-        <Row className="text-sm justify-between">
-          <p className="w-80">Find Auditors</p>
-          <p className="w-80">Your Wishlisted Auditors:</p>
-        </Row>
-        <Row className="justify-between">
-          <Form.Search disabled={disabled} onChange={(e) => setQueryString(e.target.value)}>
-            <Column
-              className="w-full overflow-scroll px-2 justify-start"
-              style={{ maxHeight: "calc(5 * 32px)", height: "calc(5 * 32px)" }}
+        <Row className="gap-4 md:flex-wrap">
+          <Column className="gap-2 basis-1/2 flex-grow">
+            <Form.Search
+              disabled={disabled}
+              onChange={(e) => setQueryString(e.target.value)}
+              text="Find Auditors"
+              className="w-1/2"
             >
-              {(isPending || timeoutPending) && (
-                <Column className="h-full justify-center">
-                  <Loader className="h-5 w-5 self-center" />
-                </Column>
-              )}
-              {!isPending &&
-                !timeoutPending &&
-                auditorsShow.length > 0 &&
-                auditorsShow.map((auditor) => (
-                  <AuditorItem
-                    key={auditor.id}
-                    auditor={auditor}
-                    disabled={disabled}
-                    onClick={() => addAuditorSet(auditor)}
-                    hover
-                  />
-                ))}
-              {!isPending && !timeoutPending && auditorsShow.length == 0 && (
-                <p className="text-sm px-1">No results to show</p>
-              )}
-            </Column>
-          </Form.Search>
-          <div className="border border-gray-200/20 rounded py-2 overflow-hidden w-80">
-            <Column
-              className={cn("overflow-scroll px-2 justify-start")}
-              style={{ maxHeight: "calc(6 * 32px)", height: "calc(6 * 32px)" }}
-            >
-              {isPendingWishlist && <Loader className="h-5 w-5 self-center" />}
-              {!isPendingWishlist &&
-                wishlistShow.length > 0 &&
-                wishlistShow.map((auditor) => (
-                  <AuditorItem
-                    key={auditor.receiver.id}
-                    auditor={auditor.receiver}
-                    disabled={disabled}
-                    onClick={() => addAuditorSet(auditor.receiver)}
-                    hover
-                  />
-                ))}
-              {!isPendingWishlist && wishlistShow.length == 0 && (
-                <p className="text-sm px-1">No results to show</p>
-              )}
+              <Column
+                className="w-full overflow-scroll px-2 justify-start"
+                style={{ maxHeight: "calc(5 * 32px)", height: "calc(5 * 32px)" }}
+              >
+                {(isPending || timeoutPending) && (
+                  <Column className="h-full justify-center">
+                    <Loader className="h-5 w-5 self-center" />
+                  </Column>
+                )}
+                {!isPending &&
+                  !timeoutPending &&
+                  auditorsShow.length > 0 &&
+                  auditorsShow.map((auditor) => (
+                    <AuditorItem
+                      key={auditor.id}
+                      auditor={auditor}
+                      disabled={disabled}
+                      onClick={() => addAuditorSet(auditor)}
+                      hover
+                    />
+                  ))}
+                {!isPending && !timeoutPending && auditorsShow.length == 0 && (
+                  <p className="text-sm px-1">No results to show</p>
+                )}
+              </Column>
+            </Form.Search>
+            <label className="flex gap-2 *:text-sm w-fit *:cursor-pointer items-center">
+              <input
+                type="checkbox"
+                name="wishlist-toggle"
+                className={cn(
+                  "appearance-none bg-transparent checked:bg-primary-light-50",
+                  "border border-1 border-white",
+                  "h-3 w-3 rounded-sm",
+                )}
+                checked={showOnlyWishlist}
+                onChange={() => setShowOnlyWishlist(!showOnlyWishlist)}
+                onKeyDownCapture={() => setShowOnlyWishlist(!showOnlyWishlist)}
+              />
+              <p>show wishlisted auditors</p>
+            </label>
+          </Column>
+          <div className="basis-1/2 flex-grow">
+            <p className="mb-1 text-sm">Verified Auditors:</p>
+            <Column className="gap-x-4 gap-y-0 flex-wrap content-start">
+              {auditors.map((auditor) => (
+                <AuditorItem
+                  key={auditor.id}
+                  auditor={auditor}
+                  disabled={disabled}
+                  onClick={() => removeAuditorSet(auditor.id)}
+                  canClose
+                />
+              ))}
             </Column>
           </div>
         </Row>
-        <div>
-          <p className="my-2">Verified Auditors:</p>
-          <Row className="gap-x-4 gap-y-0 flex-wrap content-start min-h-6">
-            {auditors.map((auditor) => (
-              <AuditorItem
-                key={auditor.id}
-                auditor={auditor}
-                disabled={disabled}
-                onClick={() => removeAuditorSet(auditor.id)}
-                canClose
-              />
-            ))}
-          </Row>
-        </div>
       </Column>
       <hr className="border-gray-200/20 my-4" />
-      <Column className="gap-4">
-        <p>Terms:</p>
+      <p className="my-2">Terms:</p>
+      <div className="grid grid-cols-3 gap-4 md:grid-cols-4">
         <Form.Select
           text="Select a Token"
           placeholder="-- token --"
@@ -231,6 +205,7 @@ const AuditFormEntries = ({
           defaultValue={initialState?.token ?? ""}
           disabled={disabled}
           isError={"token" in errors}
+          className="col-start-1 col-span-1 md:col-span-2"
         >
           {AvailableTokens.Localhost.map((option) => (
             <option key={option.symbol} value={option.address}>
@@ -238,47 +213,48 @@ const AuditFormEntries = ({
             </option>
           ))}
         </Form.Select>
-        <Row className="max-w-full gap-4 justify-start items-center flex-wrap">
-          <Form.Input
-            type="number"
-            placeholder="1000"
-            min={0}
-            name="price"
-            text="Total Price ($)"
-            defaultValue={initialState?.price}
-            disabled={disabled}
-            isError={"price" in errors}
-          />
-          <Form.Input
-            type="number"
-            placeholder="30"
-            min={0}
-            name="duration"
-            text="Vesting Duration (days)"
-            defaultValue={initialState?.duration}
-            disabled={disabled}
-            isError={"duration" in errors}
-          />
-          <Form.Input
-            type="number"
-            placeholder="3"
-            min={0}
-            name="cliff"
-            text="Vesting Cliff (days)"
-            defaultValue={initialState?.cliff}
-            disabled={disabled}
-            isError={"cliff" in errors}
-          />
-        </Row>
-      </Column>
+        <Form.Input
+          type="number"
+          placeholder="1000"
+          min={0}
+          name="price"
+          text="Total Price (# tokens)"
+          defaultValue={initialState?.price}
+          disabled={disabled}
+          isError={"price" in errors}
+          className="col-span-1 md:col-span-2"
+        />
+        <Form.Input
+          type="number"
+          placeholder="30"
+          min={0}
+          name="duration"
+          text="Vesting Duration (days)"
+          defaultValue={initialState?.duration}
+          disabled={disabled}
+          isError={"duration" in errors}
+          className="col-start-1 col-span-1 md:col-span-2"
+        />
+        <Form.Input
+          type="number"
+          placeholder="3"
+          min={0}
+          name="cliff"
+          text="Vesting Cliff (days)"
+          defaultValue={initialState?.cliff}
+          disabled={disabled}
+          isError={"cliff" in errors}
+          className="col-span-1 md:col-span-2"
+        />
+      </div>
       <hr className="border-gray-200/20 my-4" />
       <Row className="my-4 gap-4">
-        <Button type="submit" variant="gradient" disabled={disabled}>
-          Submit
-        </Button>
         {/* combines both controlled and uncontrolled elements */}
         <Button type="reset" onClick={uncontrolledReset} variant="gradient" disabled={disabled}>
           Reset
+        </Button>
+        <Button type="submit" variant="gradient" disabled={disabled}>
+          Submit
         </Button>
       </Row>
       {errors &&

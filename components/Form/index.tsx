@@ -51,17 +51,15 @@ interface CheckboxI extends React.InputHTMLAttributes<HTMLInputElement> {
 
 export const Input: React.FC<InputI> = ({ className, text, type, isError, ...rest }) => {
   return (
-    <label className="w-fit max-w-fit *:text-sm">
+    <label className={cn("*:text-sm", className)}>
       {text && <p className="mb-1">{text}</p>}
       <input
+        type={type}
         className={cn(
-          "appearance-none bg-transparent outline-none",
+          "appearance-none bg-transparent outline-none w-full",
           "font-inherit px-2 py-1 rounded border border-gray-200/20",
           "focus-input disabled:opacity-80 placeholder:text-gray-400/80",
-          type == "text" && "w-48",
-          type == "number" && "w-28",
           isError && "ring-1 ring-red-500",
-          className,
         )}
         {...rest}
       />
@@ -229,7 +227,7 @@ export const Dropbox: React.FC<DropI> = ({
 
 export const Search: React.FC<SearchI> = ({ children, className, text, ...rest }) => {
   return (
-    <div className="w-80 min-w-80">
+    <div className="min-w-80">
       <label className="w-fit max-w-fit *:text-sm">
         {text && <p className="mb-1">{text}</p>}
         <Row
@@ -288,7 +286,7 @@ export const Radio: React.FC<InputI> = ({ className, text, isError, ...rest }) =
   // TODO: this is kind of buggy, come back to this.
   return (
     <Row className="gap-2 items-center justify-between *:text-sm">
-      {text && <p className={cn(isError && "text-red-500")}>{text}</p>}
+      {text && <p className={cn(isError && "text-red-500", "whitespace-nowrap")}>{text}</p>}
       <label className="toggle w-fit">
         <input type="hidden" {...rest} value="no" />
         <input type="checkbox" className={cn("toggle", className)} {...rest} value="yes" />
@@ -309,15 +307,14 @@ export const Select: React.FC<SelectI> = ({
   // the hidden input field ensures that token gets passed even if nothing is submitted.
   // order matters here.
   return (
-    <label className="w-fit max-w-fit *:text-sm">
+    <label className={cn("*:text-sm", className)}>
       {text && <p className="mb-1">{text}</p>}
       <input type="hidden" name={rest.name} value="" />
       <select
         className={cn(
           "rounded-md border border-gray-200/20 bg-transparent p-1 focus-input",
-          "outline-none font-inherit w-48",
+          "outline-none font-inherit w-full",
           isError && "ring-1 ring-red-500",
-          className,
         )}
         {...rest}
       >

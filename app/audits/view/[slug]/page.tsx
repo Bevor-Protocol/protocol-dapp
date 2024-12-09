@@ -66,7 +66,7 @@ type Params = Promise<{ slug: string }>;
 const AuditDashboardPage = async ({ params }: { params: Params }): Promise<JSX.Element> => {
   const { slug } = await params;
   return (
-    <section className="flex flex-col h-full items-center">
+    <section className="flex flex-col h-full items-center sm:pb-14">
       <Suspense fallback={<LoaderFill />}>
         <Fetcher auditId={slug} />
       </Suspense>
